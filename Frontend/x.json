@@ -1,0 +1,391 @@
+/* register */
+
+
+/*
+	"STATUS": 0   // TRUE
+	"STATUS": 1   // WRONG TYPE OR UNDEFINED
+	"STATUS": 2   // WRONG EMAIL
+	"STATUS": 3   // WRONG PASSWORD
+	"STATUS": 4   // UNAUTHORIZED
+	"STATUS": 5   // EXIST
+	"STATUS": 6   // NOT EXIST
+	"STATUS": 10  // UNKNOWN ERROR
+*/
+
+
+{
+	"REGISTER": // POST
+	{
+		"REQUEST_TYPE":
+		{
+			"FIRST_NAME": "string",
+			"LAST_NAME": "string",
+			"PHONE_NUMBER": "string",
+			"EMAIL": "string",
+			"PASSWORD": "string"
+		},
+		"RESPONSE_TYPE":
+		{
+			"STATUS": "number"
+		},
+		"EXAMPLE_RESPONSE_1":
+		{
+			"STATUS": 0
+		},
+		"EXAMPLE_RESPONSE_2":
+		{
+			"STATUS": 1
+		},
+		"EXAMPLE_RESPONSE_3":
+		{
+			"STATUS": 5
+		}
+	},
+	"LOGIN": // POST
+	{
+		"REQUEST_TYPE":
+		{
+			"EMAIL": "string",
+			"PASSWORD": "string"
+		},
+		"RESPONSE_TYPE":
+		{
+			"STATUS": "number"
+		},
+		"EXAMPLE_RESPONSE_1":
+		{
+			"STATUS": 0
+		},
+		"EXAMPLE_RESPONSE_2":
+		{
+			"STATUS": 1
+		},
+		"EXAMPLE_RESPONSE_3":
+		{
+			"STATUS": 2
+		},
+		"EXAMPLE_RESPONSE_4":
+		{
+			"STATUS": 3
+		}
+	},
+	"LOGOUT": // POST
+	{
+		"REQUEST_TYPE": {},
+		"RESPONSE_TYPE":
+		{
+			"STATUS": "number"
+		},
+		"EXAMPLE_RESPONSE_1":
+		{
+			"STATUS": 0
+		}
+	},
+	"UNREGISTER": // POST
+	{
+		"REQUEST_TYPE":
+		{
+			"PASSWORD": "string"
+		},
+		"RESPONSE_TYPE":
+		{
+			"STATUS": "number"
+		},
+		"EXAMPLE_RESPONSE_1":
+		{
+			"STATUS": 0
+		},
+		"EXAMPLE_RESPONSE_2":
+		{
+			"STATUS": 1
+		},
+		"EXAMPLE_RESPONSE_3":
+		{
+			"STATUS": 3
+		},
+		"EXAMPLE_RESPONSE_4":
+		{
+			"STATUS": 4
+		}
+	},
+	"CHANGE_PASSWORD": // POST
+	{
+		"REQUEST_TYPE":
+		{
+			"OLD_PASSWORD": "string",
+			"NEW_PASSWORD": "string"
+		},
+		"RESPONSE_TYPE":
+		{
+			"STATUS": "number"
+		},
+		"EXAMPLE_RESPONSE_1":
+		{
+			"STATUS": 0
+		},
+		"EXAMPLE_RESPONSE_2":
+		{
+			"STATUS": 1
+		},
+		"EXAMPLE_RESPONSE_3":
+		{
+			"STATUS": 3
+		},
+		"EXAMPLE_RESPONSE_4":
+		{
+			"STATUS": 4
+		}
+	},
+	"GET_USER": // GET
+	{
+		"REQUEST_TYPE": {},
+		"RESPONSE_TYPE":
+		{
+			"STATUS": "number",
+			"FIRST_NAME": "string | undefined",
+			"LAST_NAME": "string | undefined",
+			"EMAIL": "string | undefined"
+		},
+		"EXAMPLE_RESPONSE_1":
+		{
+			"STATUS": 0,
+			"FIRST_NAME": "Hüseyin Teoman",
+			"LAST_NAME": "Deniz",
+			"EMAIL": "te-odeniz@hotmail.com"
+		},
+		"EXAMPLE_RESPONSE_2":
+		{
+			"STATUS": 4
+		}
+	},
+	"ADD_BASKET": // POST
+	{
+		"REQUEST_TYPE":
+		{
+			"PRODUCT_TOKEN": "string",
+			"QUANTITY": "number"
+		},
+		"RESPONSE_TYPE":
+		{
+			"STATUS": "number"
+		},
+		"EXAMPLE_RESPONSE_1":
+		{
+			"STATUS": 0
+		},
+		"EXAMPLE_RESPONSE_2":
+		{
+			"STATUS": 1
+		},
+		"EXAMPLE_RESPONSE_3":
+		{
+			"STATUS": 6
+		}
+	},
+	"GET_BASKET": // GET
+	{
+		"REQUEST_TYPE": {},
+		"RESPONSE_TYPE":
+		{
+			"TOTAL_PRICE": "number",
+			"ITEMS":
+			[
+				{ "PRODUCT_TOKEN": "string", "QUANTITY": "number", "PRICE": "number" },
+				{ "PRODUCT_TOKEN": "string", "QUANTITY": "number", "PRICE": "number" },
+				{ "PRODUCT_TOKEN": "string", "QUANTITY": "number", "PRICE": "number" },
+				{ "PRODUCT_TOKEN": "string", "QUANTITY": "number", "PRICE": "number" }
+			]
+		}
+	},
+	"REMOVE_BASKET":
+	{
+		"REQUEST_TYPE":
+		{
+			"PRODUCT_TOKEN": "string"
+		},
+		"RESPONSE_TYPE":
+		{
+			"STATUS": "number",
+			"TOTAL_PRICE": "number",
+			"ITEMS":
+			[
+				{ "PRODUCT_TOKEN": "string", "QUANTITY": "number", "PRICE": "number" },
+				{ "PRODUCT_TOKEN": "string", "QUANTITY": "number", "PRICE": "number" },
+				{ "PRODUCT_TOKEN": "string", "QUANTITY": "number", "PRICE": "number" },
+				{ "PRODUCT_TOKEN": "string", "QUANTITY": "number", "PRICE": "number" }
+			]
+		}
+	},
+	"GET_CATEGORIES": // GET
+	{
+		"REQUEST_TYPE": {},
+		"RESPONSE_TYPE":
+		{
+			"DATA":
+			[
+				"string"
+			]
+		},
+		"EXAMPLE_RESPONSE_1":
+		{
+			"DATA":
+			[
+				"T-SHIRT",
+				"DRESS",
+				"BLA BLA"
+			]
+		}
+	},
+	"ADD_CATEGORY": // POST
+	{
+		"REQUEST_TYPE":
+		{
+			"ADMIN_TOKEN": "string",
+			"CATEGORY_NAME": "string"
+		},
+		"RESPONSE_TYPE":
+		{
+			"STATUS": "number"
+		},
+		"EXAMPLE_RESPONSE_1":
+		{
+			"STATUS": 0
+		},
+		"EXAMPLE_RESPONSE_2":
+		{
+			"STATUS": 1
+		},
+		"EXAMPLE_RESPONSE_3":
+		{
+			"STATUS": 4
+		},
+		"EXAMPLE_RESPONSE_4":
+		{
+			"STATUS": 5
+		}
+	},
+	"REMOVE_CATEGORY": // POST
+	{
+		"REQUEST_TYPE":
+		{
+			"ADMIN_TOKEN": "string",
+			"CATEGORY_NAME": "string"
+		},
+		"RESPONSE_TYPE":
+		{
+			"STATUS": "number"
+		},
+		"EXAMPLE_RESPONSE_1":
+		{
+			"STATUS": 0
+		},
+		"EXAMPLE_RESPONSE_2":
+		{
+			"STATUS": 1
+		},
+		"EXAMPLE_RESPONSE_3":
+		{
+			"STATUS": 4
+		},
+		"EXAMPLE_RESPONSE_4":
+		{
+			"STATUS": 6
+		}
+	},
+	"EDIT_CATEGORY": // POST
+	{
+		"REQUEST_TYPE":
+		{
+			"ADMIN_TOKEN": "string",
+			"CATEGORY_NAME": "string",
+			"NEW_NAME": "string"
+		},
+		"RESPONSE_TYPE":
+		{
+			"STATUS": "number"
+		},
+		"EXAMPLE_RESPONSE_1":
+		{
+			"STATUS": 0
+		},
+		"EXAMPLE_RESPONSE_2":
+		{
+			"STATUS": 1
+		},
+		"EXAMPLE_RESPONSE_3":
+		{
+			"STATUS": 4
+		},
+		"EXAMPLE_RESPONSE_4":
+		{
+			"STATUS": 5
+		}
+	},
+	"ADD_PRODUCT": // POST
+	{
+		"REQUEST_TYPE":
+		{
+			"ADMIN_TOKEN": "string",
+			"CONTEXT": "string",
+			"TAGS": [ "string" ],
+			"STOCKS": "number",
+			"NAME": "string",
+			"PRICE": "string",
+			"IMAGES": [ "png | jpg | jpeg" ],
+			"FEATURES": {
+				"SPEED": "string"
+			},
+			"DISCOUNT": "%number"
+		},
+		"RESPONSE_TYPE":
+		{
+			"STATUS": "number"
+		},
+		"EXAMPLE_RESPONSE_1":
+		{
+			"STATUS": 0
+		},
+		"EXAMPLE_RESPONSE_2":
+		{
+			"STATUS": 1
+		},
+		"EXAMPLE_RESPONSE_3":
+		{
+			"STATUS": 4
+		}
+	},
+	"REMOVE_PRODUCT":
+	{
+		"REQUEST_TYPE":
+		{
+			"ADMIN_TOKEN": "string",
+			"PRODUCT_TOKEN": "string"
+		},
+		"RESPONSE_TYPE":
+		{
+			"STATUS": "number"
+		},
+		"EXAMPLE_RESPONSE_1":
+		{
+			"STATUS": 0
+		},
+		"EXAMPLE_RESPONSE_2":
+		{
+			"STATUS": 1
+		},
+		"EXAMPLE_RESPONSE_3":
+		{
+			"STATUS": 4
+		},
+		"EXAMPLE_RESPONSE_4":
+		{
+			"STATUS": 6
+		}
+	},
+	"EDIT_":
+	{
+		"REQUEST_TYPE":
+		{
+		}
+	}
+}
