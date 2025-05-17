@@ -15,8 +15,10 @@ export class SinginPage implements IPages {
 			console.error('Container not found');
 			return;
 		}
-		renderSingin(container, this.getLang('tr'));
-
+		if (localStorage.getItem('lang') === null) {
+			localStorage.setItem('lang', 'tr');
+		}
+		renderSingin(container, this.getLang(localStorage.getItem('lang') || 'tr'));
 		//! hom sayfasındaki sorun burada da var bakalım nasıl ilerleyeceğiz
 		requestAnimationFrame(() => {
 			this.init();
@@ -72,7 +74,6 @@ export class SinginPage implements IPages {
 					console.warn(`Unknown action: ${action}`);
 			}
 		})
-
 	}
 
 	handleRegister(): void {
@@ -127,6 +128,8 @@ export function renderSingin(container: HTMLElement, data: SinginPageData): void
 		'justify-center',
 		'gap-4'
 	);
+
+	createLangSelect(formContainer, ['tr', 'en', 'fr']);
 
 	const singRegisterbuttonDiv = document.createElement('div'); // en baştaki giriş ve kayıt ol butonları için
 	singRegisterbuttonDiv.classList.add(
@@ -263,4 +266,126 @@ export function renderSingin(container: HTMLElement, data: SinginPageData): void
 	formContainer.appendChild(buttonDiv);
 	siginMain.appendChild(formContainer);
 	container.appendChild(siginMain);
+}
+
+
+
+/*
+Verilen divin sol üst köşesinde olacak şekilde çıkacak
+verilen string dizi içerisindeki dil seçeneklerini gösterecek.
+*/
+function createLangSelect(container: HTMLElement ,langs: string[]): void {
+	const div = document.createElement('div'); // ana div
+	div.id = 'lang_select';
+	div.setAttribute('data-action', 'lang_select');
+	div.textContent = localStorage.getItem('lang');
+	div.classList.add(
+		'absolute',
+		'top-4',
+		'right-4',
+		'flex',
+		'items-center',
+		'justify-center',
+		'w-[120px]',
+		'h-[40px]',
+		'z-10',
+		'rounded-3xl',
+		'bg-gray-200',
+		'shadow-lg',
+		'hover:shadow-xl',
+		'hover:bg-gray-300',
+		'hover:cursor-pointer',
+	);
+
+	const options_div = document.createElement('div'); // seçeneklerin olduğu div
+	options_div.classList.add(
+		'absolute',
+		'top-16',
+		'right-4',
+		'flex',
+		'flex-col',
+		'justify-center',
+		'items-center',
+		'bg-gray-200',
+		'gap-2',
+		'rounded-3xl',
+		'overflow-hidden',
+		'shadow-lg',
+		'hidden',
+	);
+
+	langs.forEach(lang => {
+
+		if(lang === div.textContent) return;
+		const option = document.createElement('div');
+		option.classList.add(
+			'flex',
+			'justify-center',
+			'items-center',
+			'h-[40px]',
+			'w-[120px]',
+			'bg-gray-300',
+			'hover:bg-gray-400',
+			'hover:cursor-pointer',
+		);
+		option.setAttribute('data-action', 'lang_select');
+		option.setAttribute('data-lang', lang);
+		option.textContent = lang;
+		options_div.appendChild(option);
+	})
+
+	container.appendChild(options_div);
+	container.appendChild(div);
+
+	let isInside = false;
+
+	const showPopup = () => {
+		options_div.classList.remove('hidden');
+	}
+
+	const hidePopup = () => {
+		if (!isInside)
+			options_div.classList.add('hidden');
+	}
+
+	div.addEventListener('mouseenter', () => {
+		isInside = true;
+		showPopup();
+	})
+
+	div.addEventListener('mouseleave', () => {
+		isInside = false;
+		setTimeout(hidePopup, 200);
+	})
+
+	options_div.addEventListener('mouseenter', () => {
+		isInside = true;
+	});
+
+	options_div.addEventListener('mouseleave', () => {
+		isInside = false;
+		setTimeout(hidePopup, 200);
+	});
+	
+	options_div.addEventListener('click', (event) => {
+		// daha öncesinde işlenen ve tıklandığında data-action a göre işlem yapan bir event varsa
+		// çıkabilecek sorunlar için, diğer eventlerin işlenmesini engellemek için stopPropagation kullanıyoruz
+		// bir alt satırı yorum satırına alırsan, sınıf içerisinde tanımlanana tıklama eventinden aynı veriyi alıp
+		// caselaer içerisinde yorumluyor ve doğru case i göremediği için bilinmeyene düşüp erar vermesine neden oluyor
+		// consolda görülen eror mesajının nedeni sator -> 71 deki console.warm.
+		event.stopPropagation();
+		const target = event.target as HTMLElement;
+		const action = target.getAttribute('data-action');
+		const lang = target.getAttribute('data-lang');
+
+		if (action === 'lang_select' && lang) {
+			console.log(`Selected language: ${lang}`);
+			// burada dil değişimi yapılacak
+			isInside = false;
+			hidePopup();
+			// sayfa yeniden yükle
+			localStorage.setItem('lang', lang);
+			location.reload();
+		}
+	});
 }

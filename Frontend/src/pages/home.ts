@@ -7,6 +7,7 @@ interface HomePageData {
 	play_button_name: string;
 	settings_button_name: string;
 	profile_button_name: string;
+	exit_button_name: string;
 }
 
 export class HomePage implements IPages {
@@ -15,7 +16,7 @@ export class HomePage implements IPages {
 			console.error('Container not found');
 			return;
 		}
-		renderHome(container, this.getLang('en'));
+		renderHome(container, this.getLang(localStorage.getItem('lang') || 'tr'));
 		// setTimeout(() => this.init(), 3);
 		// //! Burada yaşanan sıktıntı render fonsiyonu tam bitmeden init fonksiyonu çalışıyor
 		// //! bu yüzden init fonsiyonu main div i bulamıyor
@@ -27,6 +28,8 @@ export class HomePage implements IPages {
 			this.init();
 		});
 		//! burada kesin bir çözüme ihtiyacım var
+
+		//? 
 	}
 
 
@@ -55,31 +58,14 @@ export class HomePage implements IPages {
 				case 'profile':
 					this.handleProfile();
 					break;
+				case 'exit':
+					this.handelExit();
+					break;
 				default:
 					console.warn(`Unknown action: ${action}`);
 			}
 		}
 		);
-
-		// document.body.addEventListener('click', (event) => {
-		// 	const target = event.target as HTMLElement;
-		// 	const action = target.getAttribute('data-action');
-
-		// 	if (!action) return;
-		// 	switch (action) {
-		// 		case 'play':
-		// 			this.handlePlay();
-		// 			break;
-		// 		case 'settings':
-		// 			this.handleSettings();
-		// 			break;
-		// 		case 'profile':
-		// 			this.handleProfile();
-		// 			break;
-		// 		default:
-		// 			console.warn(`Unknown action: ${action}`);
-		// 	}
-		// });
 	}
 
 
@@ -89,6 +75,7 @@ export class HomePage implements IPages {
 				play_button_name: 'Play',
 				settings_button_name: 'Settings',
 				profile_button_name: 'Profile',
+				exit_button_name: 'Exit',
 			};
 		} else 
 		{
@@ -96,11 +83,18 @@ export class HomePage implements IPages {
 				play_button_name: 'Oyna',
 				settings_button_name: 'Ayarlar',
 				profile_button_name: 'Profil',
+				exit_button_name: 'Çıkış',
 			};
 		}
 	}
 	handlePlay(): void {
 		console.log('Play button clicked');
+	}
+
+	handelExit(): void {
+		console.log('Exit button clicked');
+		window.location.href = '/singin';
+		
 	}
 
 	handleSettings(): void {
@@ -164,8 +158,6 @@ export function renderHome(container: HTMLElement, data: HomePageData) {
 		'z-0'
 	);
 
-
-
 	const choicesdiv = document.createElement('div');
 	choicesdiv.classList.add(
 		'flex',
@@ -182,6 +174,7 @@ export function renderHome(container: HTMLElement, data: HomePageData) {
 	CreateChoiseButton(choicesdiv, data.play_button_name, 'play');
 	CreateChoiseButton(choicesdiv, data.settings_button_name, 'settings');
 	CreateChoiseButton(choicesdiv, data.profile_button_name , 'profile');
+	CreateChoiseButton(choicesdiv, data.exit_button_name, 'exit');
 
 	maindiv.appendChild(choicesdiv);
 	container.appendChild(maindiv);

@@ -1,3 +1,5 @@
+import { HomePage } from "./home";
+
 interface choise{
 	name: string;
 	selected: string;
@@ -267,8 +269,11 @@ export function renderSettings(container: HTMLElement, data: SettingsData,
 			background: selectedBackgroundColor.value,
 			player1: selectedPlayer1Color.value,
 			player2: selectedPlayer2Color.value,
-			lang: selectedLanguage.value
+			lang: selectedLanguage.value,
 		});
+		// localStorage.setItem('lang', selectedLanguage.value);
+		// const hsn = new HomePage();
+		// hsn.render(document.getElementById('content-container') as HTMLElement);
 	});
 	gameSettingsButtonContainer.appendChild(gameSettingsButton);
 	gameSettingsContainer.appendChild(gameSettingsButtonContainer); // ayarları kaydet butonu eklendi
