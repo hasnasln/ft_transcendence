@@ -1,0 +1,51 @@
+{
+	"singin": {
+	  "title": "Sign In",
+	  "register": "Register",
+	  "email": "Email",
+	  "password": "Password",
+	  "login": "Login"
+	},
+	"register": {
+	  "title": "Register",
+	  "singin": "Sign In",
+	  "name": "Name",
+	  "surname": "Surname",
+	  "username": "Username",
+	  "email": "Email",
+	  "password": "Password",
+	  "confirmPassword": "Confirm Password",
+	  "register": "Register"
+	},
+	"home": {
+	  "play": "Play Now",
+	  "settings": "Settings",
+	  "profile": "Profile",
+	  "logout": "Logout"
+	},
+	"settings": {
+	  "title": "Settings",
+	  "ball-color": "Ball Color",
+	  "background-color": "Background Color",
+	  "player-one-color": "Player 1 Color",
+	  "player-two-color": "Player 2 Color",
+	  "language-select": "Language Selection"
+	},
+	"profile": {
+	  "title": "Profile Settings",
+	  "username": "Username",
+	  "profile-settings": "Profile Settings",
+	  "history": "Game History"
+	},
+	"profile-settings": {
+	  "username": "Username",
+	  "username-placeholder": "New Username",
+	  "email": "Email",
+	  "email-placeholder": "New Email",
+	  "password": "Password",
+	  "password-placeholder": "New Password",
+	  "confirmPassword": "Confirm Password",
+	  "confirmPassword-placeholder": "Confirm New Password",
+	  "update": "Update"
+	}
+  }

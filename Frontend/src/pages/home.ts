@@ -1,147 +1,144 @@
 import type { IPages } from './IPages';
 import { Settings } from './settings';
 import { ProfileSettings } from './profile';
-
-
-interface HomePageData {
-	play_button_name: string;
-	settings_button_name: string;
-	profile_button_name: string;
-	exit_button_name: string;
-}
+import { exmp } from '../languageMeneger';
 
 export class HomePage implements IPages {
-	render(container: HTMLElement): void {
-		if (!container) {
-			console.error('Container not found');
-			return;
-		}
-		renderHome(container, this.getLang(localStorage.getItem('lang') || 'tr'));
-		// setTimeout(() => this.init(), 3);
-		// //! Burada yaşanan sıktıntı render fonsiyonu tam bitmeden init fonksiyonu çalışıyor
-		// //! bu yüzden init fonsiyonu main div i bulamıyor
-		// //? çözüm olarak setTimeout ile 3 ms bekletiyorum
-		// //? ama bu çok mantıklı değil
-		// //? bunun yerine render fonksiyonunun bitişini beklemek daha mantıklı
-		// //? ama nasıl yapacağımı bilmiyorum
-		requestAnimationFrame(() => {
-			this.init();
-		});
-		//! burada kesin bir çözüme ihtiyacım var
+    private languageChangeHandler: (lang: string) => void;
+    private currentLanguage: string; // Mevcut dili saklamak için
+    private isInitialRender: boolean = true; // İlk render kontrolü
 
-		//? 
-	}
+    constructor() {
+        this.currentLanguage = exmp.getLanguage();
+        
+        this.languageChangeHandler = (lang: string) => {
+            if (this.currentLanguage === lang && !this.isInitialRender) {
+                return; // Aynı dil ve ilk render değilse işlem yapma
+            }
+            
+            console.log("homepage -> languageChangeHandler calisti.");
+            console.log(`Language changed to: ${lang}`);
+            
+            this.currentLanguage = lang;
+            this.isInitialRender = false;
+            
+            const container = document.getElementById('content-container');
+            if (container) {
+                container.innerHTML = '';
+                renderHome(container);
+                this.init(); // Yeni render sonrası init çağrısı
+            }
+        };
+    }
 
+    render(container: HTMLElement): void {
+        if (!container) {
+            console.error('Container not found');
+            return;
+        }
 
-	destroy(): void {
-		document.body.innerHTML = '';
-	}
+        exmp.addLanguageChangeListener(this.languageChangeHandler);
 
-	init(): void {
-		const abcdmain = document.getElementById('maindiv');
-		if (!abcdmain){
-			console.error('maindiv not found');
-			return;}
+        exmp.waitForLoad().then(() => {
+            renderHome(container);
+            this.init(); // Doğrudan init çağrısı
+        });
+    }
 
-		abcdmain.addEventListener('click', (event) => {
-			const target = event.target as HTMLElement;
-			const action = target.getAttribute('data-action');
+    destroy(): void {
+        exmp.removeLanguageChangeListener(this.languageChangeHandler);
+        document.body.innerHTML = '';
+    }
 
-			if (!action) return;
-			switch (action) {
-				case 'play':
-					this.handlePlay();
-					break;
-				case 'settings':
-					this.handleSettings();
-					break;
-				case 'profile':
-					this.handleProfile();
-					break;
-				case 'exit':
-					this.handelExit();
-					break;
-				default:
-					console.warn(`Unknown action: ${action}`);
-			}
-		}
-		);
-	}
+    init(): void {
+        const abcdmain = document.getElementById('maindiv');
+        if (!abcdmain) {
+            console.error('maindiv not found');
+            return;
+        }
 
+        // Önceki event listener'ı kaldır
+        abcdmain.removeEventListener('click', this.handleClick);
+        // Yeni event listener ekle
+        abcdmain.addEventListener('click', this.handleClick);
+    }
 
-	getLang(lang: string): HomePageData {
-		if (lang === 'en') {
-			return {
-				play_button_name: 'Play',
-				settings_button_name: 'Settings',
-				profile_button_name: 'Profile',
-				exit_button_name: 'Exit',
-			};
-		} else 
-		{
-			return {
-				play_button_name: 'Oyna',
-				settings_button_name: 'Ayarlar',
-				profile_button_name: 'Profil',
-				exit_button_name: 'Çıkış',
-			};
-		}
-	}
-	handlePlay(): void {
-		console.log('Play button clicked');
-	}
+    private handleClick = (event: MouseEvent) => {
+        const target = event.target as HTMLElement;
+        const action = target.getAttribute('data-action');
 
-	handelExit(): void {
-		console.log('Exit button clicked');
-		window.location.href = '/singin';
-		
-	}
+        if (!action) return;
+        
+        switch (action) {
+            case 'play':
+                this.handlePlay();
+                break;
+            case 'settings':
+                this.handleSettings();
+                break;
+            case 'profile':
+                this.handleProfile();
+                break;
+            case 'exit':
+                this.handelExit();
+                break;
+            default:
+                console.warn(`Unknown action: ${action}`);
+        }
+    }
 
-	handleSettings(): void {
-		console.log('Settings button clicked');
-		const old_settings = document.getElementById('settings_main');
-		if (old_settings) {
-		  old_settings.classList.remove('animate-slide-in-left');
-		  old_settings.classList.add('animate-slide-out-left');
-		  
-		  // Animasyon bittiğinde elementi kaldır
-		  old_settings.addEventListener('animationend', () => {
-			if (old_settings.classList.contains('animate-slide-out-left')) {
-			  old_settings.remove();
-			}
-		  }, { once: true });
-		  
-		  return;
-		}
-		
-		const hsn = new Settings();
-		hsn.render(document.getElementById('content-container') as HTMLElement);
-	  }
+    handlePlay(): void {
+        console.log('Play button clicked');
+    }
 
-	handleProfile(): void {
-		console.log('Profile button clicked');
+    handelExit(): void {
+        console.log('Exit button clicked');
+        window.location.href = '/singin';
+    }
 
-		const old_settings = document.getElementById('profile_main');
-		if (old_settings){
-			old_settings.classList.remove('animate-slide-in-right');
-			old_settings.classList.add('animate-slide-out-right');
+    handleSettings(): void {
+        console.log('Settings button clicked');
+        const old_settings = document.getElementById('settings_main');
+        if (old_settings) {
+            old_settings.classList.remove('animate-slide-in-left');
+            old_settings.classList.add('animate-slide-out-left');
+            
+            old_settings.addEventListener('animationend', () => {
+                if (old_settings.classList.contains('animate-slide-out-left')) {
+                    old_settings.remove();
+                }
+            }, { once: true });
+            return;
+        }
+        
+        const hsn = new Settings();
+        hsn.render(document.getElementById('content-container') as HTMLElement);
+    }
 
-			old_settings.addEventListener('animationend', () => {
-				if (old_settings.classList.contains('animate-slide-out-right')) {
-					old_settings.remove();
-				}
-			}, { once: true });
-			return;
-		}
-		const hsn = new ProfileSettings();
-		hsn.render(document.getElementById('content-container') as HTMLElement);
-	}
+    handleProfile(): void {
+        console.log('Profile button clicked');
+        const old_settings = document.getElementById('profile_main');
+        if (old_settings) {
+            old_settings.classList.remove('animate-slide-in-right');
+            old_settings.classList.add('animate-slide-out-right');
+
+            old_settings.addEventListener('animationend', () => {
+                if (old_settings.classList.contains('animate-slide-out-right')) {
+                    old_settings.remove();
+                }
+            }, { once: true });
+            return;
+        }
+        const hsn = new ProfileSettings();
+        hsn.render(document.getElementById('content-container') as HTMLElement);
+    }
 }
 
+// renderHome ve CreateChoiseButton fonksiyonları aynı kalacak
 
 
 
-export function renderHome(container: HTMLElement, data: HomePageData) {
+export function renderHome(container: HTMLElement) {
 
 	const maindiv = document.createElement('div');
 	maindiv.id = 'maindiv';
@@ -171,10 +168,10 @@ export function renderHome(container: HTMLElement, data: HomePageData) {
 		'gap-6',
 	);
 
-	CreateChoiseButton(choicesdiv, data.play_button_name, 'play');
-	CreateChoiseButton(choicesdiv, data.settings_button_name, 'settings');
-	CreateChoiseButton(choicesdiv, data.profile_button_name , 'profile');
-	CreateChoiseButton(choicesdiv, data.exit_button_name, 'exit');
+	CreateChoiseButton(choicesdiv, exmp.getLang('home.play'), 'play');
+	CreateChoiseButton(choicesdiv, exmp.getLang('home.settings'), 'settings');
+	CreateChoiseButton(choicesdiv, exmp.getLang('home.profile') , 'profile');
+	CreateChoiseButton(choicesdiv, exmp.getLang('home.logout'), 'exit');
 
 	maindiv.appendChild(choicesdiv);
 	container.appendChild(maindiv);

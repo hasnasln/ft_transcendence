@@ -1,55 +1,47 @@
 import type { IPages } from "./IPages";
+import { exmp } from "../languageMeneger";
 
-
-interface SinginPageData {
-	top_button_name: string;
-	nicname_or_mail_input_placeholder: string;
-	password_input_placeholder: string;
-	singin_button_name: string;
-	singin_with_google_button_name: string;
-}
 
 export class SinginPage implements IPages {
+
+	private languageChangeHandler: (lang: string) => void;
+
+	constructor() {
+		this.languageChangeHandler = (lang: string) => {
+			console.log("SiningPage -> languageChangeHandler calisti.");
+			console.log(`Language changed to: ${lang}`);
+			const container = document.getElementById('asd123');
+			if (container) {
+				container.innerHTML = ''; // Clear the container
+				renderSingin(container);
+			}
+		}
+	}
+
+
 	render(container: HTMLElement): void {
 		if (!container) {
 			console.error('Container not found');
 			return;
 		}
-		if (localStorage.getItem('lang') === null) {
-			localStorage.setItem('lang', 'tr');
-		}
-		renderSingin(container, this.getLang(localStorage.getItem('lang') || 'tr'));
-		//! hom sayfasındaki sorun burada da var bakalım nasıl ilerleyeceğiz
-		requestAnimationFrame(() => {
-			this.init();
+
+		exmp.addLanguageChangeListener(this.languageChangeHandler);
+		
+		exmp.waitForLoad().then(() => {
+			renderSingin(container);
+			//! hom sayfasındaki sorun burada da var bakalım nasıl ilerleyeceğiz
+			requestAnimationFrame(() => {
+				this.init();
+			});
 		});
 	}
 
 	destroy(): void {
 		// Implement destroy logic if needed
+		exmp.removeLanguageChangeListener(this.languageChangeHandler);
 		document.body.innerHTML = '';
 	}
 
-	getLang(lang: string): SinginPageData {
-		if (lang === 'en'){
-			return {
-				top_button_name: 'Register',
-				nicname_or_mail_input_placeholder: 'Username or Email',
-				password_input_placeholder: 'Password',
-				singin_button_name: 'Login',
-				singin_with_google_button_name: 'Login with Google',
-			};
-		}
-		else{
-			return {
-				top_button_name: 'Kayıt Ol',
-				nicname_or_mail_input_placeholder: 'Kullanıcı Adı veya Mail',
-				password_input_placeholder: 'Şifre',
-				singin_button_name: 'Giriş Yap',
-				singin_with_google_button_name: 'Google ile Giriş Yap',
-			};
-		}
-	}
 	init(): void {
 		const x = document.getElementById('asd123');
 		if (!x)
@@ -67,9 +59,6 @@ export class SinginPage implements IPages {
 				case 'singin':
 					this.handleLogin();
 					break;
-				case 'singin-with-google':
-					this.handleLoginWithGoogle();
-					break;
 				default:
 					console.warn(`Unknown action: ${action}`);
 			}
@@ -84,19 +73,34 @@ export class SinginPage implements IPages {
 
 	handleLogin(): void {
 		console.log('Login button clicked');
+		const name = "1";
+		const password = "1";
+
+		const nicnameOrMailInput = document.getElementById('nicname_or_mail_input') as HTMLInputElement;
+		const passwordInput = document.getElementById('password_input') as HTMLInputElement;
+		const nicnameOrMail = nicnameOrMailInput.value;
+		const passwordValue = passwordInput.value;
 		// burada giriş işlemi yapılıp ana sayfaya yönlendirme yapılacak
 		history.pushState({}, '', '/');
-		window.dispatchEvent(new Event('popstate'));
-	}
-
-	handleLoginWithGoogle(): void {
-		console.log('Login with Google button clicked');
+		if (name === nicnameOrMail && password === passwordValue) {
+			console.log('Login successful');
+			//! sayfadeğiştirme işlemlerinde langufe dinleyisicini silebiliriz
+			exmp.removeLanguageChangeListener(this.languageChangeHandler);
+			window.dispatchEvent(new Event('popstate'));
+		}
+		else {
+			const x = document.getElementById('error_message');
+			if (!x) return;
+			x.classList.remove('hidden');
+			x.textContent = 'Kullanıcı adı veya şifre hatalı';
+			console.log('Login failed');
+		}
 	}
 }
 
 
 
-export function renderSingin(container: HTMLElement, data: SinginPageData): void {
+export function renderSingin(container: HTMLElement): void {
 
 	const siginMain = document.createElement('div');
 	siginMain.id = 'asd123';
@@ -183,7 +187,7 @@ export function renderSingin(container: HTMLElement, data: SinginPageData): void
 	const registerButton = document.createElement('button');
 	registerButton.setAttribute('data-action', 'register');
 
-	registerButton.textContent = data.top_button_name;
+	registerButton.textContent = exmp.getLang('singin.register');
 	registerButton.classList.add(
 		'bg-blue-500',
 		'hover:bg-blue-700',
@@ -201,7 +205,7 @@ export function renderSingin(container: HTMLElement, data: SinginPageData): void
 	const nicNaneOrMailInput = document.createElement('input');
 	nicNaneOrMailInput.type = 'text';
 	nicNaneOrMailInput.id = 'nicname_or_mail_input';
-	nicNaneOrMailInput.placeholder = data.nicname_or_mail_input_placeholder;
+	nicNaneOrMailInput.placeholder = exmp.getLang('singin.email');
 	nicNaneOrMailInput.classList.add(
 		'border',
 		'border-gray-300',
@@ -212,10 +216,23 @@ export function renderSingin(container: HTMLElement, data: SinginPageData): void
 	);
 	NicNameOrMaildiv.appendChild(nicNaneOrMailInput);
 
+	const showError = document.createElement('div');
+	showError.id = 'error_message';
+	showError.classList.add(
+		'text-red-500',
+		'text-sm',
+		'font-bold',
+		'mt-2',
+		'hidden',
+		'w-[60%]',
+	);
+
+
+
 	const passwordInput = document.createElement('input');
 	passwordInput.type = 'password';
 	passwordInput.id = 'password_input';
-	passwordInput.placeholder = data.password_input_placeholder;
+	passwordInput.placeholder = exmp.getLang('singin.password');
 	passwordInput.classList.add(
 		'border',
 		'border-gray-300',
@@ -227,25 +244,27 @@ export function renderSingin(container: HTMLElement, data: SinginPageData): void
 	passworddiv.appendChild(passwordInput);
 //#endregion
 
-//#region Giriş Butonları
-	const singinWithGoogleButton = document.createElement('button');
-	singinWithGoogleButton.setAttribute('data-action', 'singin-with-google');
-	singinWithGoogleButton.textContent = 'Google ile Giriş Yap';
-	singinWithGoogleButton.classList.add(
-		'bg-red-500',
-		'hover:bg-red-700',
-		'text-white',
-		'font-bold',
-		'py-2',
-		'px-4',
-		'w-[50%]',
-		'rounded-lg',
-	);
-	singinWithGogleDiv.appendChild(singinWithGoogleButton);
+//#region GOOGLE ile Giriş Yap butonu
+	// const singinWithGoogleButton = document.createElement('button');
+	// singinWithGoogleButton.setAttribute('data-action', 'singin-with-google');
+	// singinWithGoogleButton.textContent = 'Google ile Giriş Yap';
+	// singinWithGoogleButton.classList.add(
+	// 	'bg-red-500',
+	// 	'hover:bg-red-700',
+	// 	'text-white',
+	// 	'font-bold',
+	// 	'py-2',
+	// 	'px-4',
+	// 	'w-[50%]',
+	// 	'rounded-lg',
+	// );
+	// singinWithGogleDiv.appendChild(singinWithGoogleButton);
+//#endregion
 
+//#region Normal Giriş Yap butonu
 	const grisButton = document.createElement('button');
 	grisButton.setAttribute('data-action', 'singin');
-	grisButton.textContent = data.singin_button_name;
+	grisButton.textContent = exmp.getLang('singin.login');
 	grisButton.classList.add(
 		'bg-green-500',
 		'hover:bg-green-700',
@@ -262,7 +281,8 @@ export function renderSingin(container: HTMLElement, data: SinginPageData): void
 	formContainer.appendChild(singRegisterbuttonDiv);
 	formContainer.appendChild(NicNameOrMaildiv);
 	formContainer.appendChild(passworddiv);
-	formContainer.appendChild(singinWithGogleDiv);
+	// formContainer.appendChild(singinWithGogleDiv);
+	formContainer.appendChild(showError);
 	formContainer.appendChild(buttonDiv);
 	siginMain.appendChild(formContainer);
 	container.appendChild(siginMain);
@@ -278,7 +298,7 @@ function createLangSelect(container: HTMLElement ,langs: string[]): void {
 	const div = document.createElement('div'); // ana div
 	div.id = 'lang_select';
 	div.setAttribute('data-action', 'lang_select');
-	div.textContent = localStorage.getItem('lang');
+	div.textContent = exmp.getLanguage();
 	div.classList.add(
 		'absolute',
 		'top-4',
@@ -315,7 +335,6 @@ function createLangSelect(container: HTMLElement ,langs: string[]): void {
 	);
 
 	langs.forEach(lang => {
-
 		if(lang === div.textContent) return;
 		const option = document.createElement('div');
 		option.classList.add(
@@ -367,7 +386,7 @@ function createLangSelect(container: HTMLElement ,langs: string[]): void {
 		setTimeout(hidePopup, 200);
 	});
 	
-	options_div.addEventListener('click', (event) => {
+	options_div.addEventListener('click', async (event) => {
 		// daha öncesinde işlenen ve tıklandığında data-action a göre işlem yapan bir event varsa
 		// çıkabilecek sorunlar için, diğer eventlerin işlenmesini engellemek için stopPropagation kullanıyoruz
 		// bir alt satırı yorum satırına alırsan, sınıf içerisinde tanımlanana tıklama eventinden aynı veriyi alıp
@@ -384,8 +403,7 @@ function createLangSelect(container: HTMLElement ,langs: string[]): void {
 			isInside = false;
 			hidePopup();
 			// sayfa yeniden yükle
-			localStorage.setItem('lang', lang);
-			location.reload();
+			await exmp.setLanguage(lang);
 		}
 	});
 }

@@ -1,0 +1,51 @@
+{
+	"singin": {
+		"title": "Giriş Yap",
+		"register": "Kayıt Ol",
+		"email": "E-posta",
+		"password": "Şifre",
+		"login": "Giriş Yap"
+	},
+	"register": {
+		"title": "Kayıt Ol",
+		"singin": "Giriş Yap",
+		"name": "İsim",
+		"surname": "Soyisim",
+		"username": "Kullanıcı Adı",
+		"email": "E-posta",
+		"password": "Şifre",
+		"confirmPassword": "Şifreyi Onayla",
+		"register": "Kayıt Ol"
+	},
+	"home":{
+		"play": "Şimdi Oyna",
+		"settings": "Ayarlar",
+		"profile": "Profil",
+		"logout": "Çıkış Yap"
+	},
+	"settings": {
+		"title": "Ayarlar",
+		"ball-color": "Top Rengi",
+		"background-color": "Arka Plan Rengi",
+		"player-one-color": "1. Oyuncu Rengi",
+		"player-two-color": "2. Oyuncu Rengi",
+		"language-select": "Dil Seçimi"
+	},
+	"profile": {
+		"title": "Profil Ayarları",
+		"username": "Kullanıcı Adı",
+		"profile-settings": "Profil Ayarları",
+		"history": "Oyun Geçmişi"
+	},
+	"profile-settings": {
+		"username": "Kullanıcı Adı",
+		"username-placeholder": "Yeni Kullanıcı Adı",
+		"email": "E-posta",
+		"email-placeholder": "Yeni E-posta",
+		"password": "Şifre",
+		"password-placeholder": "Yeni Şifre",
+		"confirmPassword": "Şifreyi Onayla",
+		"confirmPassword-placeholder": "Yeni Şifreyi Onayla",
+		"update": "Güncelle"
+	}
+}

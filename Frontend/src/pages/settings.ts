@@ -1,73 +1,16 @@
-import { HomePage } from "./home";
-
-interface choise{
-	name: string;
-	selected: string;
-}
-
-interface language{
-	name: string;
-	code: string;
-}
-
-interface SettingsData {
-	section_title: string;
-	ball: choise;
-	background: choise;
-	player1: choise;
-	player2: choise;
-	language: language[];
-}
-
-
-interface hasan{
-	top: string;
-	background: string;
-	player1: string;
-	player2: string;
-	lang: string;
-}
-
+import { exmp } from "../languageMeneger";
 
 export class Settings {
-	private selectedTopColor: string;
-	private selectedBackgroundColor: string;
-	private selectedPlayer1Color: string;
-	private selectedPlayer2Color: string;
-	private selectedLanguage: string;
-	constructor() {
-		this.selectedTopColor = '#ffffff';
-		this.selectedBackgroundColor = '#ffffff';
-		this.selectedPlayer1Color = '#ffffff';
-		this.selectedPlayer2Color = '#ffffff';
-		this.selectedLanguage = 'tr';
-	}
-
-	setSelectedTopColor(color: string): void { this.selectedBackgroundColor = color; }
-	setSelectedBackgroundColor(color: string): void { this.selectedBackgroundColor = color; }
-	setSelectedPlayer1Color(color: string): void { this.selectedPlayer1Color = color; }
-	setSelectedPlayer2Color(color: string): void { this.selectedPlayer2Color = color; }
-	setSelectedLanguage(lang: string): void { this.selectedLanguage = lang; }
-
 
 	render(container: HTMLElement): void {
 		if (!container) {
 			console.error('Container not found');
 			return;
 		}
-		renderSettings(container, this.getLang('en'), (ahmet: hasan) => {
-			this.setSelectedTopColor(ahmet.top);
-			this.setSelectedBackgroundColor(ahmet.background);
-			this.setSelectedPlayer1Color(ahmet.player1);
-			this.setSelectedPlayer2Color(ahmet.player2);
-			this.setSelectedLanguage(ahmet.lang);
-			console.log('Selected Top Color:', this.selectedTopColor);
-			console.log('Selected Background Color:', this.selectedBackgroundColor);
-			console.log('Selected Player 1 Color:', this.selectedPlayer1Color);
-			console.log('Selected Player 2 Color:', this.selectedPlayer2Color);
-			console.log('Selected Language:', this.selectedLanguage);
+		renderSettings(container);
+		requestAnimationFrame(() => {
+			this.init();
 		});
-		this.init();
 	}
 
 	init(): void {
@@ -86,36 +29,6 @@ export class Settings {
 					break;
 			}
 		});
-	}
-
-	getLang(lang: string): SettingsData {
-		if (lang === 'en') {
-			return {
-				section_title: 'Game Settings',
-				ball:{name: 'Ball Color', selected: '#ffffff'},
-				background: {name: 'Background Color', selected: '#ffffff'},
-				player1:{name: 'Player 1 Color', selected: '#ffffff'},
-				player2:{name: 'Player 2 Color', selected: '#ffffff'},
-				language: [
-					{name: 'English', code: 'en'},
-					{name: 'Turkish', code: 'tr'}
-				] 
-			}
-		}
-		else 
-		{
-			return {
-				section_title: 'Oyun Ayarları',
-				ball:{name: 'Top Rengi', selected: '#ffffff'},
-				background: {name: 'Arka Plan Rengi', selected: '#ffffff'},
-				player1:{name: 'Oyuncu 1 Rengi', selected: '#ffffff'},
-				player2:{name: 'Oyuncu 2 Rengi', selected: '#ffffff'},
-				language: [
-					{name: 'Türkçe', code: 'tr'},
-					{name: 'İngilizce', code: 'en'}
-				]
-			}
-		}
 	}
 
 	hendelColoerChoise(): void
@@ -142,9 +55,7 @@ export class Settings {
 }
 
 
-export function renderSettings(container: HTMLElement, data: SettingsData, 
-	onSave: (Selection: hasan) => void
-): void 
+export function renderSettings(container: HTMLElement): void 
 {
 	const settings_main = document.createElement('div');
 	settings_main.id = 'settings_main';
@@ -201,7 +112,7 @@ export function renderSettings(container: HTMLElement, data: SettingsData,
 	gameSettingsTitleContainer.classList.add(
 	);
 	const gameSettingsTitle = document.createElement('h1');
-	gameSettingsTitle.textContent = data.section_title;
+	gameSettingsTitle.textContent = exmp.getLang("settings.title");
 	gameSettingsTitle.classList.add(
 		'text-2xl',
 		'font-bold',
@@ -215,29 +126,34 @@ export function renderSettings(container: HTMLElement, data: SettingsData,
 	const selectedBackgroundColor = { value: '#ffffff' };
 	const selectedPlayer1Color = { value: '#ffffff' };
 	const selectedPlayer2Color = { value: '#ffffff' };
+	let selectedLanguage = exmp.getLanguage();
 
+
+//#region  COLOR PALETTE 
 	// Top rengi
-	createColorPalette(data.ball.name, gameSettingsContainer, [
+	createColorPalette(exmp.getLang("settings.ball-color"), gameSettingsContainer, [
 	'#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#000000'
 	], selectedTopColor);
 
 	// Arka Plan Rengi
-	createColorPalette(data.background.name, gameSettingsContainer, [
+	createColorPalette(exmp.getLang("settings.background-color"), gameSettingsContainer, [
 		'#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#000000'
 		], selectedBackgroundColor);
 	
 	// Oyuncu 1 (sen) Rengi
-	createColorPalette(data.player1.name, gameSettingsContainer, [
+	createColorPalette(exmp.getLang("settings.player-one-color"), gameSettingsContainer, [
 		'#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#000000'
 		], selectedPlayer1Color);
 
 	// Oyuncu 2 (rakip) Rengi
-	createColorPalette(data.player2.name, gameSettingsContainer, [
+	createColorPalette(exmp.getLang("settings.player-two-color"), gameSettingsContainer, [
 		'#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#000000'
 		], selectedPlayer2Color);
+//#endregion
 
-	const selectedLanguage = { value: 'tr' };
-	createLanguageSelector(gameSettingsContainer, selectedLanguage, data.language);
+	createLanguageSelector(gameSettingsContainer, selectedLanguage, exmp.getLanguageChoises(),
+	(lang: string ) => {selectedLanguage = lang; }
+	);
 
 	// Gönder Butonu
 	const gameSettingsButtonContainer = document.createElement('div');
@@ -250,7 +166,7 @@ export function renderSettings(container: HTMLElement, data: SettingsData,
 		'm-2',
 	);
 	const gameSettingsButton = document.createElement('button');
-	gameSettingsButton.textContent = 'Ayarları Kaydet';
+	gameSettingsButton.textContent = exmp.getLang("settings.save-button");
 	gameSettingsButton.classList.add(
 		'bg-blue-500',
 		'text-white',
@@ -260,25 +176,23 @@ export function renderSettings(container: HTMLElement, data: SettingsData,
 		'rounded-lg',
 		'hover:bg-blue-700',
 	);
-
-
-	//! onsave fonksiyonu ayarları sınıf içerisi kaydettik sınıf içerisindeki bir istek ile bacende yönlendirilecek
-	gameSettingsButton.addEventListener('click', () => {
-		onSave({
-			top: selectedTopColor.value,
-			background: selectedBackgroundColor.value,
-			player1: selectedPlayer1Color.value,
-			player2: selectedPlayer2Color.value,
-			lang: selectedLanguage.value,
-		});
-		// localStorage.setItem('lang', selectedLanguage.value);
-		// const hsn = new HomePage();
-		// hsn.render(document.getElementById('content-container') as HTMLElement);
-	});
+	
 	gameSettingsButtonContainer.appendChild(gameSettingsButton);
 	gameSettingsContainer.appendChild(gameSettingsButtonContainer); // ayarları kaydet butonu eklendi
 	settings_main.appendChild(gameSettingsContainer); // ayarları kaydet butonu eklendi
 	container.appendChild(settings_main); // ayarları kaydet butonu eklendi
+
+	
+	//! onsave fonksiyonu ayarları sınıf içerisi kaydettik sınıf içerisindeki bir istek ile bacende yönlendirilecek
+	gameSettingsButton.addEventListener('click', async () => {
+		if (selectedLanguage !== exmp.getLanguage())
+		{
+			// console.log("1");
+			await exmp.setLanguage(selectedLanguage);
+		}
+		// console.log("enter tusuna basıldıktan sonra değer :" + selectedLanguage);
+		Settings.prototype.close();
+	});
 }
 
 function createColorPalette(title: string, container: HTMLElement, colorList: string[], selectedColor: { value: string }) {
@@ -318,28 +232,32 @@ function createColorPalette(title: string, container: HTMLElement, colorList: st
 	container.appendChild(wrapper);
 }
 
-function createLanguageSelector(container: HTMLElement, selectedLanguage: { value: string }, langs: language[]) {
+function createLanguageSelector(container: HTMLElement, selectedLanguage: string, langs: string[], onChange: (lang: string) => void ) {
 	const wrapper = document.createElement('div');
 	wrapper.classList.add('flex', 'flex-col', 'w-[80%]', 'm-2');
 
+
+	console.log("selectedLanguage: " + selectedLanguage);
 	const label = document.createElement('label');
-	label.textContent = 'Dil Seçimi:';
+	label.textContent = exmp.getLang("settings.language-select");
 	label.classList.add('text-lg', 'text-gray-800', 'mb-1');
 	wrapper.appendChild(label);
 
 	const select = document.createElement('select');
+	select.value = selectedLanguage;
 	select.classList.add('border', 'border-gray-300', 'rounded-lg', 'px-2', 'py-1', 'text-gray-800');
 
 	langs.forEach(lang => {
 		const option = document.createElement('option');
-		option.value = lang.code;
-		option.textContent = lang.name;
+		option.value = lang;
+		option.textContent = lang;
+		if (lang == selectedLanguage) { option.selected = true; }
 		select.appendChild(option);
 	});
 
 	select.addEventListener('change', () => {
-		selectedLanguage.value = select.value;
-		console.log('Seçilen dil:', selectedLanguage.value);
+		selectedLanguage = select.value;
+		onChange(selectedLanguage);
 	});
 
 	wrapper.appendChild(select);

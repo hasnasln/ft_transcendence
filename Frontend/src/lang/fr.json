@@ -1,0 +1,51 @@
+{
+	"singin": {
+	  "title": "Se Connecter",
+	  "register": "S'inscrire",
+	  "email": "E-mail",
+	  "password": "Mot de passe",
+	  "login": "Connexion"
+	},
+	"register": {
+	  "title": "S'inscrire",
+	  "singin": "Se Connecter",
+	  "name": "Prénom",
+	  "surname": "Nom",
+	  "username": "Nom d'utilisateur",
+	  "email": "E-mail",
+	  "password": "Mot de passe",
+	  "confirmPassword": "Confirmer le mot de passe",
+	  "register": "S'inscrire"
+	},
+	"home": {
+	  "play": "Jouer Maintenant",
+	  "settings": "Paramètres",
+	  "profile": "Profil",
+	  "logout": "Déconnexion"
+	},
+	"settings": {
+	  "title": "Paramètres",
+	  "ball-color": "Couleur de la Balle",
+	  "background-color": "Couleur de Fond",
+	  "player-one-color": "Couleur Joueur 1",
+	  "player-two-color": "Couleur Joueur 2",
+	  "language-select": "Sélection de la Langue"
+	},
+	"profile": {
+	  "title": "Paramètres du Profil",
+	  "username": "Nom d'utilisateur",
+	  "profile-settings": "Paramètres du Profil",
+	  "history": "Historique des Parties"
+	},
+	"profile-settings": {
+	  "username": "Nom d'utilisateur",
+	  "username-placeholder": "Nouveau nom d'utilisateur",
+	  "email": "E-mail",
+	  "email-placeholder": "Nouvel e-mail",
+	  "password": "Mot de passe",
+	  "password-placeholder": "Nouveau mot de passe",
+	  "confirmPassword": "Confirmer le mot de passe",
+	  "confirmPassword-placeholder": "Confirmer le nouveau mot de passe",
+	  "update": "Mettre à jour"
+	}
+  }

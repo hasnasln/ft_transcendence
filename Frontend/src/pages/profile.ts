@@ -1,3 +1,5 @@
+import { exmp } from '../languageMeneger';
+
 interface history {
 	// tarih
 	date: string;
@@ -20,12 +22,6 @@ interface ISection {
 	action: string;
 }
 
-interface IProfileSettingsData {
-	section_title: string;
-	username: string;
-	profile_settings_button: string;
-	history_button: string;
-}
 
 export class ProfileSettings{
 	// private name: string;
@@ -48,7 +44,7 @@ export class ProfileSettings{
 			console.error('Container not found');
 			return;
 		}
-		renderProfile(container, this.getlang('en'));
+		renderProfile(container);
 		this.init();
 	}
 
@@ -154,24 +150,6 @@ export class ProfileSettings{
 		}
 	}
 
-	getlang(lang: string): IProfileSettingsData {
-		if (lang === 'en') {
-			return {
-				section_title: 'Profile Settings',
-				username: 'Username',
-				profile_settings_button: 'Profile Settings',
-				history_button: 'History'
-			};
-		} else {
-			return {
-				section_title: 'Profil Ayarları',
-				username: 'Kullanıcı Adı',
-				profile_settings_button: 'Profil Ayarları',
-				history_button: 'Geçmiş'
-			};
-		}
-	}
-
 	getHistory(): history[] {
 		return [
 			{
@@ -211,7 +189,7 @@ export class ProfileSettings{
 	}
 }
 
-function renderProfile(container: HTMLElement, data: IProfileSettingsData) {
+function renderProfile(container: HTMLElement) {
 
 	const wrapper = document.createElement('div');
 	wrapper.id = 'profile_main';
@@ -292,7 +270,7 @@ function renderProfile(container: HTMLElement, data: IProfileSettingsData) {
 
 	const titleContainer = document.createElement('div');
 	const title = document.createElement('h1');
-	title.textContent = data.section_title;
+	title.textContent = exmp.getLang('profile.title');
 	title.classList.add(
 		'text-2xl',
 		'font-bold',
@@ -317,7 +295,7 @@ function renderProfile(container: HTMLElement, data: IProfileSettingsData) {
 
 	const nameContainer = document.createElement('div');
 	const name = document.createElement('h2');
-	name.textContent = data.username;
+	name.textContent =exmp.getLang('profile.username');
 	name.classList.add(
 		'text-xl',
 		'font-bold',
@@ -327,7 +305,7 @@ function renderProfile(container: HTMLElement, data: IProfileSettingsData) {
 	firstPart.appendChild(nameContainer);
 
 	const ProfileSettingsButton = document.createElement('button');
-	ProfileSettingsButton.textContent = data.profile_settings_button;
+	ProfileSettingsButton.textContent = exmp.getLang('profile.profile-settings');
 	ProfileSettingsButton.setAttribute('data-action', 'profile-settings');
 	ProfileSettingsButton.id = 'profile-settings-button';
 	ProfileSettingsButton.classList.add(
@@ -340,7 +318,7 @@ function renderProfile(container: HTMLElement, data: IProfileSettingsData) {
 
 	firstPart.appendChild(ProfileSettingsButton);
 	const HistoryButton = document.createElement('button');
-	HistoryButton.textContent = data.history_button;
+	HistoryButton.textContent = exmp.getLang('profile.history');
 	HistoryButton.setAttribute('data-action', 'history');
 	HistoryButton.id = 'history-button';
 	HistoryButton.classList.add(
