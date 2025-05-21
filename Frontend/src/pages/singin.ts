@@ -91,7 +91,7 @@ export class SinginPage implements IPages {
 		else {
 			const x = document.getElementById('error_message');
 			if (!x) return;
-			x.classList.remove('hidden');
+			x.style.visibility = 'visible';
 			x.textContent = 'Kullanıcı adı veya şifre hatalı';
 			console.log('Login failed');
 		}
@@ -223,9 +223,10 @@ export function renderSingin(container: HTMLElement): void {
 		'text-sm',
 		'font-bold',
 		'mt-2',
-		'hidden',
 		'w-[60%]',
 	);
+	showError.style.height = '1.5rem';
+	showError.style.visibility = 'hidden';
 
 
 

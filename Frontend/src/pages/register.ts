@@ -1,15 +1,7 @@
 import type { IPages } from "./IPages";
-
-interface RegisterPageData{
-	top_button_name: string;
-	name_input_placeholder: string;
-	surname_input_placeholder: string;
-	username_input_placeholder: string;
-	email_input_placeholder: string;
-	password_input_placeholder: string;
-	repeat_password_input_placeholder: string;
-	register_button_name: string;
-}
+import { exmp } from "../languageMeneger";
+import {_apiManager } from "../APIManeger";
+import type { IApiRegister } from "../APIManeger";
 
 export class RegisterPage implements IPages {
 	render(container: HTMLElement): void {
@@ -17,18 +9,21 @@ export class RegisterPage implements IPages {
 			console.error('Container not found');
 			return;
 		}
-		renderRegister(container, this.getLang('en'));
+		renderRegister(container);
 		this.init();
 	}
 
 	destroy(): void {
 		// Implement destroy logic if needed
-		document.body.innerHTML = '';
+		document.body.removeEventListener('click', this.mainClikHandler); // sayfa değişince eventleri temizler
 	}
 
 	init(): void {
-		document.body.addEventListener('click', (event) => {
-			const target = event.target as HTMLElement;
+		document.body.addEventListener('click', this.mainClikHandler);
+	}
+
+	private mainClikHandler = (event: MouseEvent) => {
+		const target = event.target as HTMLElement;
 			const action = target.getAttribute('data-action');
 
 			if (!action) return;
@@ -42,10 +37,9 @@ export class RegisterPage implements IPages {
 				default:
 					console.warn(`Unknown action: ${action}`);
 			}
-		});
 	}
 
-	handleRegister(): void {
+	async handleRegister(): Promise	<void> {
 		console.log('Register button clicked');
 		// Implement register logic here
 		// burada kayıt olma isteği atılacak
@@ -57,31 +51,43 @@ export class RegisterPage implements IPages {
 		const password = (document.getElementById('password') as HTMLInputElement)?.value.trim();
 		const repeatPassword = (document.getElementById('repeat_password') as HTMLInputElement)?.value.trim();
 
-		const lang = "tr";
+		console.log('name: ', name);
+		console.log('surname: ', surname);
+		console.log('username: ', username);
+		console.log('email: ', email);
+		console.log('password: ', password);
 
-		const body = {
-			NAME: name,
-			SURNAME: surname,
-			USERNAME: username,
-			EMAIL: email,
-			PASSWORD: password,
-			REPEAT_PASSWORD: repeatPassword,
-			LANG: lang,
+		const x: IApiRegister = 
+		{
+			name : name,
+			surname : surname,
+			username : username,
+			email : email,
+			password : password,
 		}
 
-		fetch('http://localhost:8080/api/register', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(body),
-		})
-		.then((response) => {
-			if (!response.ok) {
-				throw new Error('Network response was not ok');
+		if (password !== repeatPassword) {
+			alert(exmp.getLang('register.passwordNotMatch'));
+			return;
+		}
+
+		try{
+			await _apiManager.register(x);
+		} catch (error: any) {
+			const erorrdiv = document.getElementById('error-message');
+			if (error.status === 409) {
+				// erorrdiv!.textContent = exmp.getLang('register.usernameAlreadyExists');
+				erorrdiv!.textContent = "Kullanıcı adı zaten mevcut !";
+				erorrdiv!.style.visibility = 'visible';
+			} else if(error.status === 400) {
+				// erorrdiv!.textContent = exmp.getLang('register.emailAlreadyExists');
+				erorrdiv!.textContent = "E-posta adresi zaten mevcut !";
+				erorrdiv!.style.visibility = 'visible';
 			}
-			return response.json();
-		});
+			else{
+				alert(exmp.getLang('register.registerFailed'));
+			}
+		}
 	}
 
 	handleLogin(): void {
@@ -89,6 +95,7 @@ export class RegisterPage implements IPages {
 		console.log('Login button clicked');
 		history.pushState(null, '', '/singin');
 		window.dispatchEvent(new PopStateEvent('popstate'));
+		this.destroy();
 	}
 
 	getTitle(): string {
@@ -98,41 +105,9 @@ export class RegisterPage implements IPages {
 	getPath(): string {
 		return "/register";
 	}
-
-	
-	getLang(languege: string): RegisterPageData {
-		if (languege === 'tr')
-		{
-			const registerPageData: RegisterPageData = {
-				top_button_name: 'Giriş Yap',
-				name_input_placeholder: 'Ad',
-				surname_input_placeholder: 'Soy Ad',
-				username_input_placeholder: 'Kullanıcı Adı',
-				email_input_placeholder: 'E-posta',
-				password_input_placeholder: 'Şifre',
-				repeat_password_input_placeholder: 'Şifre Tekrar',
-				register_button_name: 'Kayit Ol',
-			};
-			return registerPageData;
-		}
-		else //(languege === 'en')
-		{
-			const registerPageData: RegisterPageData = {
-				top_button_name: 'Sing In',
-				name_input_placeholder: 'Name',
-				surname_input_placeholder: 'Surname',
-				username_input_placeholder: 'Username',
-				email_input_placeholder: 'Email',
-				password_input_placeholder: 'Password',
-				repeat_password_input_placeholder: 'Repeat Password',
-				register_button_name: 'Register',
-			};
-			return registerPageData;
-		}
-	}
 }
 
-export function renderRegister(container: HTMLElement, lang: RegisterPageData) {
+export function renderRegister(container: HTMLElement) {
 
 	container.classList.add(
 		`flex`,
@@ -213,7 +188,7 @@ export function renderRegister(container: HTMLElement, lang: RegisterPageData) {
 	const singinButton = document.createElement('button');
 	singinButton.setAttribute('data-action', 'login');
 
-	singinButton.textContent = lang.top_button_name;
+	singinButton.textContent = exmp.getLang('register.singin');
 	singinButton.classList.add(
 		'bg-blue-500',
 		'hover:bg-blue-700',
@@ -231,18 +206,35 @@ export function renderRegister(container: HTMLElement, lang: RegisterPageData) {
 
 formContainer.appendChild(singsinginButtonDiv);
 //#region İnput alanları
-	createInput("name", lang.name_input_placeholder, 'text', formContainer);
-	createInput("surname", lang.surname_input_placeholder, 'text', formContainer);
-	createInput("username", lang.username_input_placeholder, 'text', formContainer);
-	createInput("email", lang.email_input_placeholder, 'email', formContainer);
-	createInput("password", lang.password_input_placeholder, 'password', formContainer);
-	createInput("repeat_password", lang.repeat_password_input_placeholder, 'password', formContainer);
+	createInput("name", exmp.getLang("register.name"), 'text', formContainer);
+	createInput("surname", exmp.getLang("register.surname"), 'text', formContainer);
+	createInput("username", exmp.getLang("register.username"), 'text', formContainer);
+	createInput("email", exmp.getLang("register.email"), 'email', formContainer);
+	createInput("password", exmp.getLang("register.password"), 'password', formContainer);
+	createInput("repeat_password", exmp.getLang("register.confirmPassword"), 'password', formContainer);
 //#endregion
+
+ //! burada hata kısmını yazdırmak için bir p oluşturacağım
+	const errorDiv = document.createElement('div');
+	errorDiv.classList.add(
+		'border-gray-300',
+		'rounded-lg',
+		'px-4',
+		'py-2',
+		'w-[70%]',
+		'text-red-500',
+		'text-sm',
+		'font-bold',
+	);
+	errorDiv.id = 'error-message';
+	errorDiv.style.height = '1.5rem'; // Set a fixed height for the error message div
+	errorDiv.style.visibility = 'hidden'; // Initially hidden
+	formContainer.appendChild(errorDiv);
 
 //#region Giriş Butonları
 	const grisButton = document.createElement('button');
 	grisButton.setAttribute('data-action', 'register');
-	grisButton.textContent = lang.register_button_name;
+	grisButton.textContent = exmp.getLang("register.register");
 	grisButton.classList.add(
 		'bg-green-500',
 		'hover:bg-green-700',
@@ -260,6 +252,12 @@ formContainer.appendChild(singsinginButtonDiv);
 	container.appendChild(formContainer);
 }
 
+/*
+@param id : string -> id of the input
+@param placeholder : string -> placeholder of the input
+@param type : string -> type of the input
+@param container : HTMLElement -> container of the input
+*/
 function createInput(id: string, placeholder: string, type: string, container: HTMLElement) {
 	const input = document.createElement('input');
 	input.type = type;

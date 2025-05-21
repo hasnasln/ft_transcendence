@@ -47,5 +47,12 @@
 		"confirmPassword": "Şifreyi Onayla",
 		"confirmPassword-placeholder": "Yeni Şifreyi Onayla",
 		"update": "Güncelle"
+	},
+	"tournament": {
+		"title": "Turnuva",
+		"create": "Turnuva Oluştur",
+		"join": "Turnuvaya Katıl",
+		"name": "Turnuva Adı",
+		"create-button": "Oluştur"
 	}
 }

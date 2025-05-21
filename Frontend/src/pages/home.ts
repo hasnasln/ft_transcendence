@@ -4,134 +4,144 @@ import { ProfileSettings } from './profile';
 import { exmp } from '../languageMeneger';
 
 export class HomePage implements IPages {
-    private languageChangeHandler: (lang: string) => void;
-    private currentLanguage: string; // Mevcut dili saklamak için
-    private isInitialRender: boolean = true; // İlk render kontrolü
+	private languageChangeHandler: (lang: string) => void;
+	private currentLanguage: string; // Mevcut dili saklamak için
+	private isInitialRender: boolean = true; // İlk render kontrolü
 
-    constructor() {
-        this.currentLanguage = exmp.getLanguage();
-        
-        this.languageChangeHandler = (lang: string) => {
-            if (this.currentLanguage === lang && !this.isInitialRender) {
-                return; // Aynı dil ve ilk render değilse işlem yapma
-            }
-            
-            console.log("homepage -> languageChangeHandler calisti.");
-            console.log(`Language changed to: ${lang}`);
-            
-            this.currentLanguage = lang;
-            this.isInitialRender = false;
-            
-            const container = document.getElementById('content-container');
-            if (container) {
-                container.innerHTML = '';
-                renderHome(container);
-                this.init(); // Yeni render sonrası init çağrısı
-            }
-        };
-    }
+	constructor() {
+		this.currentLanguage = exmp.getLanguage();
+		
+		this.languageChangeHandler = (lang: string) => {
+			if (this.currentLanguage === lang && !this.isInitialRender) {
+				return; // Aynı dil ve ilk render değilse işlem yapma
+			}
+			
+			console.log("homepage -> languageChangeHandler calisti.");
+			console.log(`Language changed to: ${lang}`);
+			
+			this.currentLanguage = lang;
+			this.isInitialRender = false;
+			
+			const container = document.getElementById('content-container');
+			if (container) {
+				container.innerHTML = '';
+				renderHome(container);
+				this.init(); // Yeni render sonrası init çağrısı
+			}
+		};
+	}
 
-    render(container: HTMLElement): void {
-        if (!container) {
-            console.error('Container not found');
-            return;
-        }
+	render(container: HTMLElement): void {
+		if (!container) {
+			console.error('Container not found');
+			return;
+		}
 
-        exmp.addLanguageChangeListener(this.languageChangeHandler);
+		exmp.addLanguageChangeListener(this.languageChangeHandler);
 
-        exmp.waitForLoad().then(() => {
-            renderHome(container);
-            this.init(); // Doğrudan init çağrısı
-        });
-    }
+		exmp.waitForLoad().then(() => {
+			renderHome(container);
+			this.init(); // Doğrudan init çağrısı
+		});
+	}
 
-    destroy(): void {
-        exmp.removeLanguageChangeListener(this.languageChangeHandler);
-        document.body.innerHTML = '';
-    }
+	destroy(): void {
+		exmp.removeLanguageChangeListener(this.languageChangeHandler);
+		document.body.innerHTML = '';
+	}
 
-    init(): void {
-        const abcdmain = document.getElementById('maindiv');
-        if (!abcdmain) {
-            console.error('maindiv not found');
-            return;
-        }
+	init(): void {
+		const abcdmain = document.getElementById('maindiv');
+		if (!abcdmain) {
+			console.error('maindiv not found');
+			return;
+		}
 
-        // Önceki event listener'ı kaldır
-        abcdmain.removeEventListener('click', this.handleClick);
-        // Yeni event listener ekle
-        abcdmain.addEventListener('click', this.handleClick);
-    }
+		// Önceki event listener'ı kaldır
+		abcdmain.removeEventListener('click', this.handleClick);
+		// Yeni event listener ekle
+		abcdmain.addEventListener('click', this.handleClick);
+	}
 
-    private handleClick = (event: MouseEvent) => {
-        const target = event.target as HTMLElement;
-        const action = target.getAttribute('data-action');
+	private handleClick = (event: MouseEvent) => {
+		const target = event.target as HTMLElement;
+		const action = target.getAttribute('data-action');
 
-        if (!action) return;
-        
-        switch (action) {
-            case 'play':
-                this.handlePlay();
-                break;
-            case 'settings':
-                this.handleSettings();
-                break;
-            case 'profile':
-                this.handleProfile();
-                break;
-            case 'exit':
-                this.handelExit();
-                break;
-            default:
-                console.warn(`Unknown action: ${action}`);
-        }
-    }
+		if (!action) return;
+		
+		switch (action) {
+			case 'play':
+				this.handlePlay();
+				break;
+			case 'settings':
+				this.handleSettings();
+				break;
+			case 'profile':
+				this.handleProfile();
+				break;
+			case 'tournament':
+				this.handleTournament();
+				break;
+			case 'exit':
+				this.handelExit();
+				break;
+			default:
+				console.warn(`Unknown action: ${action}`);
+		}
+	}
 
-    handlePlay(): void {
-        console.log('Play button clicked');
-    }
+	handlePlay(): void {
+		console.log('Play button clicked');
+	}
 
-    handelExit(): void {
-        console.log('Exit button clicked');
-        window.location.href = '/singin';
-    }
+	handelExit(): void {
+		console.log('Exit button clicked');
+		window.location.href = '/singin';
+	}
 
-    handleSettings(): void {
-        console.log('Settings button clicked');
-        const old_settings = document.getElementById('settings_main');
-        if (old_settings) {
-            old_settings.classList.remove('animate-slide-in-left');
-            old_settings.classList.add('animate-slide-out-left');
-            
-            old_settings.addEventListener('animationend', () => {
-                if (old_settings.classList.contains('animate-slide-out-left')) {
-                    old_settings.remove();
-                }
-            }, { once: true });
-            return;
-        }
-        
-        const hsn = new Settings();
-        hsn.render(document.getElementById('content-container') as HTMLElement);
-    }
+	handleSettings(): void {
+		console.log('Settings button clicked');
+		const old_settings = document.getElementById('settings_main');
+		if (old_settings) {
+			old_settings.classList.remove('animate-slide-in-left');
+			old_settings.classList.add('animate-slide-out-left');
+			
+			old_settings.addEventListener('animationend', () => {
+				if (old_settings.classList.contains('animate-slide-out-left')) {
+					old_settings.remove();
+				}
+			}, { once: true });
+			return;
+		}
+		
+		const hsn = new Settings();
+		hsn.render(document.getElementById('content-container') as HTMLElement);
+	}
 
-    handleProfile(): void {
-        console.log('Profile button clicked');
-        const old_settings = document.getElementById('profile_main');
-        if (old_settings) {
-            old_settings.classList.remove('animate-slide-in-right');
-            old_settings.classList.add('animate-slide-out-right');
+	handleProfile(): void {
+		console.log('Profile button clicked');
+		const old_settings = document.getElementById('profile_main');
+		if (old_settings) {
+			old_settings.classList.remove('animate-slide-in-right');
+			old_settings.classList.add('animate-slide-out-right');
 
-            old_settings.addEventListener('animationend', () => {
-                if (old_settings.classList.contains('animate-slide-out-right')) {
-                    old_settings.remove();
-                }
-            }, { once: true });
-            return;
-        }
-        const hsn = new ProfileSettings();
-        hsn.render(document.getElementById('content-container') as HTMLElement);
-    }
+			old_settings.addEventListener('animationend', () => {
+				if (old_settings.classList.contains('animate-slide-out-right')) {
+					old_settings.remove();
+				}
+			}, { once: true });
+			return;
+		}
+		const hsn = new ProfileSettings();
+		hsn.render(document.getElementById('content-container') as HTMLElement);
+	}
+
+	
+	handleTournament(): void {
+		console.log('Tournament button clicked');
+		history.pushState({}, '', '/tournament');
+		window.dispatchEvent(new Event('popstate'));
+	}
 }
 
 // renderHome ve CreateChoiseButton fonksiyonları aynı kalacak
@@ -171,6 +181,7 @@ export function renderHome(container: HTMLElement) {
 	CreateChoiseButton(choicesdiv, exmp.getLang('home.play'), 'play');
 	CreateChoiseButton(choicesdiv, exmp.getLang('home.settings'), 'settings');
 	CreateChoiseButton(choicesdiv, exmp.getLang('home.profile') , 'profile');
+	CreateChoiseButton(choicesdiv, exmp.getLang('home.tournament'), 'tournament'); 
 	CreateChoiseButton(choicesdiv, exmp.getLang('home.logout'), 'exit');
 
 	maindiv.appendChild(choicesdiv);

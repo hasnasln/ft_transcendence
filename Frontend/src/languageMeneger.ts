@@ -48,7 +48,13 @@ const en = {
 	  "confirmPassword": "Confirm Password",
 	  "confirmPassword-placeholder": "Confirm New Password",
 	  "update": "Update"
-	}
+	},
+	"tournament": {
+		"title": "Tournament",
+		"input": "Enter Tournament Name",
+		"input2": "Enter Number of Players",
+		"button": "Create Tournament"
+	  }
   }
 
 const tr  = {
@@ -74,7 +80,8 @@ const tr  = {
 		"play": "Şimdi Oyna",
 		"settings": "Ayarlar",
 		"profile": "Profil",
-		"logout": "Çıkış Yap"
+		"logout": "Çıkış Yap",
+		"tournament": "Turnuva"
 	},
 	"settings": {
 		"title": "Ayarlar",
@@ -101,6 +108,19 @@ const tr  = {
 		"confirmPassword": "Şifreyi Onayla",
 		"confirmPassword-placeholder": "Yeni Şifreyi Onayla",
 		"update": "Güncelle"
+	},
+	"tournament": {
+		"title": "Turnuva",
+		"join-room":"Odaya Katıl",
+		"input": "Turnuva Adını Girin",
+		"input2": "Oyuncu Sayısını Girin",
+		"button": "Turnuva Oluştur",
+		"id": "Turnuva ID",
+		"creater": "Turnuva Oluşturan",
+		"total-player": "Toplam Oyuncu",
+		"exit": "Çıkış Yap",
+		"joined-player": "Katılan Oyuncular",
+		"play": "Oyna",
 	}
 }
 
