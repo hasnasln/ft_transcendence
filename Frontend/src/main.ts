@@ -17,7 +17,7 @@ const app = document.getElementById('app') as HTMLElement;
 
 if (app){
 	// ilk girişte singin e yönlendir
-	window.history.pushState({}, '', '/tournament');
+	window.history.pushState({}, '', '/singin');
 	router();
 	// Popstate event listener'ını ekleyelim
 }

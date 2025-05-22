@@ -3,11 +3,11 @@ import { exmp } from '../languageMeneger';
 
 
 export class TournamentPage {
-	private  currentLanguage: string; // Mevcut dili saklamak için
+	// private  currentLanguage: string; // Mevcut dili saklamak için
 
 
 	constructor() {
-		this.currentLanguage = exmp.getLanguage();
+		// this.currentLanguage = exmp.getLanguage();
 	}
 
 	render(container: HTMLElement): void {
@@ -16,12 +16,68 @@ export class TournamentPage {
 			return;
 		}
 		renderTournament(container);
+		requestAnimationFrame(() => {
+			this.init();
+		});
+	}
+
+	init(): void {
+		const container = document.getElementById('tournament-main');
+		if (!container) {
+			console.error('Container not found');
+			return;
+		}
+		container.addEventListener('click', (event) => {
+			event.preventDefault();
+			//! closet metodu ile tıklanan elementin üstündeki data-action attribute'ü olan elementi buluyoruz
+			//? burası sorun farklı noktalarda sorun çıkarabilir
+			//* örnek olarak içerideki bir tıklanma istenmeyen dışardaki bir tıklamayı çalıştırabilir, düşünülmesi lazım
+			const target = (event.target as HTMLElement).closest('[data-action]');
+			if (!target) return;
+			const action = target.getAttribute('data-action');
+			if (!action) return;
+			switch (action) {
+				case 'create-tournament':
+					this.createTournament(container);
+					break;
+				case 'join-room':
+					this.joinRoom(container);
+					break;
+				case 'exit-tournament':
+					this.exitTournament(container);
+					break;
+				default:
+					break;
+			}
+		});
+	}
+
+	private createTournament(contaier: HTMLElement): void {
+		const input = document.querySelector('#tournament-form input') as HTMLInputElement;
+		const tournamentId = input.value;
+		console.log(`Creating tournament with ID: ${tournamentId}`);
+		contaier.innerHTML = ''; // Clear the container
+		ShowTournament(contaier); // Re-render the tournament section
+	}
+
+	private joinRoom(contaier: HTMLElement): void {
+		const input = document.querySelector('#tournament-form input') as HTMLInputElement;
+		const tournamentId = input.value;
+		console.log(`Joining room with ID: ${tournamentId}`);
+		contaier.innerHTML = ''; // Clear the container
+		ShowTournament(contaier); // Re-render the tournament section
+	}
+
+	private exitTournament(container: HTMLElement): void {
+		console.log('Exiting tournament');
+		container.innerHTML = ''; // Clear the container
+		createTournamentSection(container); // Re-render the tournament section
 	}
 }
 
 function renderTournament(container: HTMLElement) {
 	const div = document.createElement('div');
-	div.id = 'tornament-main';
+	div.id = 'tournament-main';
 	div.classList.add(
 		'flex',
 		'flex-col',
@@ -37,14 +93,7 @@ function renderTournament(container: HTMLElement) {
 	);
 
 	createTournamentSection(div);
-	
-	
-	ShowTournament(div);
-	
-	
-	
-	
-	
+	// ShowTournament(div);
 	container.appendChild(div);
 }
 
@@ -91,7 +140,6 @@ function createTournamentSection(container: HTMLElement): void{
 		'gap-4',
 	);
 
-
 	const input = document.createElement('input');
 	input.type = 'text';
 	input.placeholder = exmp.getLang('tournament.input');
@@ -127,8 +175,6 @@ function createTournamentSection(container: HTMLElement): void{
 	);
 	button2.setAttribute('data-action', 'join-room');
 
-
-	
 
 	const button = document.createElement('button');
 	button.textContent = exmp.getLang('tournament.button');
@@ -174,8 +220,6 @@ function ShowTournament(container: HTMLElement): void {
 		'gap-4',
 		'overflow-y-auto'
 	);
-
-	
 	TournamentInformation(div02);
 	
 	container.appendChild(div02);
@@ -238,6 +282,7 @@ function TournamentInformation(container: HTMLElement): void {
 	div001.appendChild(title);
 
 	const exit = document.createElement('div');
+	exit.setAttribute('data-action', 'exit-tournament');
 	exit.classList.add(
 		'flex',
 		'justify-center',

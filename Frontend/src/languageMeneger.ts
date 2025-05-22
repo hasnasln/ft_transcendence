@@ -101,6 +101,8 @@ const tr  = {
 	"profile-settings": {
 		"username": "Kullanıcı Adı",
 		"username-placeholder": "Yeni Kullanıcı Adı",
+		"name": "İsim",
+		"name-placeholder": "Yeni isminizi giriniz",
 		"email": "E-posta",
 		"email-placeholder": "Yeni E-posta",
 		"password": "Şifre",

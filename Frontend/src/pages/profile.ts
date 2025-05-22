@@ -62,16 +62,10 @@ export class ProfileSettings{
 			if (!action) return;
 			switch (action) {
 				case 'nick-name':
-					this.handleX('nick-name');
-					break;
 				case 'email':
-					this.handleX('email');
-					break;
 				case 'password':
-					this.handleX('password');
-					break;
 				case 'name':
-					this.handleX('name');
+					this.handleX(action);
 					break;
 				case 'history':
 					this.handleHistory();
@@ -109,7 +103,7 @@ export class ProfileSettings{
 		const input = document.querySelector('#' + x) as HTMLInputElement;
 		if (input) {
 			this.nickname = input.value;
-			console.log('New nickname:', this.nickname);
+			console.log(x + ": ", this.nickname);
 		}
 	}
 
@@ -181,10 +175,10 @@ export class ProfileSettings{
 
 	getProfileSettings(): ISection[] {
 		return [
-			{name: 'Kullanıcı Adı', type: 'text', placeholder: 'Yeni kullanıcı adı giriniz', action: 'nick-name'},
-			{name: 'İsim', type: 'text', placeholder: 'Yeni isminizi giriniz', action: 'name'},
-			{name: 'E-posta', type: 'email', placeholder: 'Yeni e-posta giriniz', action: 'email'},
-			{name: 'Yeni Şifre', type: 'password', placeholder: 'Yeni şifre giriniz', action: 'password'},
+			{name: exmp.getLang("profile-settings.username"), type: 'text', placeholder: exmp.getLang("profile-settings.username-placeholder"), action: 'nick-name'},
+			{name: exmp.getLang("profile-settings.name"), type: 'text', placeholder: exmp.getLang("profile-settings.name-placeholder"), action: 'name'},
+			{name: exmp.getLang("profile-settings.email"), type: 'email', placeholder: exmp.getLang("profile-settings.email-placeholder"), action: 'email'},
+			{name: exmp.getLang("profile-settings.password"), type: 'password', placeholder: exmp.getLang("profile-settings.password-placeholder"), action: 'password'},
 		]
 	}
 }
@@ -505,7 +499,7 @@ function createProfileSettings(container: HTMLElement, settings: ISection[]) {
 			'focus:ring-cyan-500'
 		);
 		const saveButton = document.createElement('button');
-		saveButton.textContent = `${name} Kaydet`;
+		saveButton.textContent = name +" " + exmp.getLang("profile-settings.update"); ;
 		saveButton.setAttribute('data-action', `${action}`);
 		saveButton.classList.add(
 			'self-end',

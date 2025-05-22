@@ -47,7 +47,7 @@ export class HomePage implements IPages {
 
 	destroy(): void {
 		exmp.removeLanguageChangeListener(this.languageChangeHandler);
-		document.body.innerHTML = '';
+		document.getElementById('maindiv')?.remove();
 	}
 
 	init(): void {
@@ -92,6 +92,9 @@ export class HomePage implements IPages {
 
 	handlePlay(): void {
 		console.log('Play button clicked');
+		history.pushState({}, '', '/play');
+		window.dispatchEvent(new Event('popstate'));
+		this.destroy();
 	}
 
 	handelExit(): void {

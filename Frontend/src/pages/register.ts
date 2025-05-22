@@ -1,7 +1,7 @@
 import type { IPages } from "./IPages";
 import { exmp } from "../languageMeneger";
-import {_apiManager } from "../APIManeger";
-import type { IApiRegister } from "../APIManeger";
+import {_apiManager } from "../api/APIManeger";
+import type { IApiRegister } from "../api/APIManeger";
 
 export class RegisterPage implements IPages {
 	render(container: HTMLElement): void {

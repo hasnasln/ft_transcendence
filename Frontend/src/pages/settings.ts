@@ -185,13 +185,16 @@ export function renderSettings(container: HTMLElement): void
 	
 	//! onsave fonksiyonu ayarları sınıf içerisi kaydettik sınıf içerisindeki bir istek ile bacende yönlendirilecek
 	gameSettingsButton.addEventListener('click', async () => {
+		Settings.prototype.close();
 		if (selectedLanguage !== exmp.getLanguage())
 		{
 			// console.log("1");
+			// 0.3 saniye bekle
+			//! ne kadar mantıklı bilmiyorum ama işimizi gördü :)
+			await new Promise(resolve => setTimeout(resolve, 300));
 			await exmp.setLanguage(selectedLanguage);
 		}
 		// console.log("enter tusuna basıldıktan sonra değer :" + selectedLanguage);
-		Settings.prototype.close();
 	});
 }
 

@@ -2,6 +2,7 @@ import { HomePage } from './pages/home';
 import { SinginPage } from './pages/singin';
 import { RegisterPage } from './pages/register';
 import { TournamentPage } from './pages/TournamentPage';
+import { PlayPage } from './pages/play';
 
 export function router()
 {
@@ -41,6 +42,10 @@ export function router()
 		case '/register':
 			const registerPage = new RegisterPage();
 			registerPage.render(contentContainer);
+			break;
+		case '/play':
+			const playPage = new PlayPage();
+			playPage.render(contentContainer);
 			break;
 		case '/tournament':
 			const tournamentPage = new TournamentPage();
