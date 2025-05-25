@@ -10,16 +10,18 @@ export class RegisterPage implements IPages {
 			return;
 		}
 		renderRegister(container);
-		this.init();
+		requestAnimationFrame(() => {
+			this.init();
+		});
 	}
 
 	destroy(): void {
 		// Implement destroy logic if needed
-		document.body.removeEventListener('click', this.mainClikHandler); // sayfa değişince eventleri temizler
+		document.getElementById("register_main")?.removeEventListener('click', this.mainClikHandler); // sayfa değişince eventleri temizler
 	}
 
 	init(): void {
-		document.body.addEventListener('click', this.mainClikHandler);
+		document.getElementById("register_main")?.addEventListener('click', this.mainClikHandler);
 	}
 
 	private mainClikHandler = (event: MouseEvent) => {
@@ -50,6 +52,36 @@ export class RegisterPage implements IPages {
 		const email = (document.getElementById('email') as HTMLInputElement)?.value.trim();
 		const password = (document.getElementById('password') as HTMLInputElement)?.value.trim();
 		const repeatPassword = (document.getElementById('repeat_password') as HTMLInputElement)?.value.trim();
+
+		// if (!name || !surname || !username || !email || !password || !repeatPassword) {
+		// 	alert(exmp.getLang('register.fillAllFields'));
+		// 	return;
+		// } else if (name.length < 3 || surname.length < 3 || username.length < 3 || password.length < 6) {
+		// 	alert(exmp.getLang('register.fillAllFields'));
+		// 	return;
+		// } else if (username.length > 20 || password.length > 20) {
+		// 	alert(exmp.getLang('register.usernameAndPasswordLength'));
+		// 	return;
+		// } else if (!/^[a-zA-Z0-9_.]+@[a-zA-Z0-9_.]+\.[a-zA-Z]{2,}$/.test(email)) {
+		// 	alert(exmp.getLang('register.emailFormat'));
+		// 	return;
+		// } else if (!/^[a-zA-Z0-9_.]+$/.test(username)) {
+		// 	alert(exmp.getLang('register.usernameFormat'));
+		// 	return;
+		// } else if (!/^[a-zA-Z0-9_.]+$/.test(password)) {
+		// 	alert(exmp.getLang('register.passwordFormat'));
+		// 	return;
+		// } else if (!/^[a-zA-Z0-9_.]+$/.test(repeatPassword)) {
+		// 	alert(exmp.getLang('register.passwordFormat'));
+		// 	return;
+		// } else if (password !== repeatPassword) {
+		// 	alert(exmp.getLang('register.passwordNotMatch'));
+		// 	return;
+		// } else if (password === repeatPassword) {
+		// 	// burada şifreler eşleşiyor
+		// 	// console.log('şifreler eşleşiyor');
+		// }
+
 
 		console.log('name: ', name);
 		console.log('surname: ', surname);
@@ -88,6 +120,9 @@ export class RegisterPage implements IPages {
 				alert(exmp.getLang('register.registerFailed'));
 			}
 		}
+
+		history.pushState(null, '', '/singin');
+		window.dispatchEvent(new PopStateEvent('popstate'));
 	}
 
 	handleLogin(): void {
@@ -119,6 +154,7 @@ export function renderRegister(container: HTMLElement) {
 		"bg-cyan-500",
 	);
 	const formContainer = document.createElement('div');
+	formContainer.id = 'register_main';
 	formContainer.classList.add(
 		`bg-`,
 		`shadow-lg`,

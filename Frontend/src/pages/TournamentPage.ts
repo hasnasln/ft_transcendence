@@ -46,10 +46,39 @@ export class TournamentPage {
 				case 'exit-tournament':
 					this.exitTournament(container);
 					break;
+				case 'refresh':
+					this.handeleRefresh();
+					break;
 				default:
 					break;
 			}
 		});
+	}
+
+	private handeleRefresh(): void {
+		console.log('Refreshing player list');
+		const x = document.getElementById('list-player');
+		if (x) {
+			console.log('Refreshing player list2');
+			x.innerHTML = ''; // Clear the existing list
+			// sadece 3 saniye bekle
+			//! burada refleş işleminden dönen değerler kontorl edlip ona göre buton gözükme işlemi olacak
+			//! şimdilik ilk refleşten sonra direk gözükür durumda.
+			setTimeout(() => {
+				// 3 saniye sonra listeyi güncelle
+				// this.updatePlayerList(x);
+				listPlayers(x); // Re-render the player list
+				let status = true;
+				if (status)
+				{
+					const playButton = document.getElementById('play-button');
+					if (playButton) {
+						playButton.style.visibility = 'visible'; // Show the button
+					}
+				}
+			}, 1000);
+		}
+		
 	}
 
 	private createTournament(contaier: HTMLElement): void {
@@ -432,10 +461,10 @@ function TournamentInformation(container: HTMLElement): void {
 		'w-full',
 		'flex',
 		'flex-row',
-		'justify-start',
+		'justify-between',
 		'items-center',
-		'gap-4',
 		'pl-4',
+		'pr-5',
 		'pt-1',
 	);
 	
@@ -448,9 +477,20 @@ function TournamentInformation(container: HTMLElement): void {
 		'text-white',
 	);
 
+	const div11img = document.createElement('img');
+	div11img.src = 'IMG/refresh.png';
+	div11img.classList.add(
+		'w-[30px]',
+		'h-[35px]',
+		'hover:cursor-pointer',
+		'hover:scale-110',
+	);
+	div11img.setAttribute('data-action', 'refresh');
+
 
 	// oyuncuların sıralanacağı kısım
 	const div12 = document.createElement('div');
+	div12.id = 'list-player';
 	div12.classList.add(
 		'flex',
 		'flex-col',
@@ -477,6 +517,7 @@ function TournamentInformation(container: HTMLElement): void {
 
 
 	const div13 = document.createElement('div');
+	div13.id = 'play-button';
 	div13.classList.add(
 		'flex',
 		'flex-row',
@@ -493,6 +534,8 @@ function TournamentInformation(container: HTMLElement): void {
 		'hover:cursor-pointer',
 	);
 
+	div13.style.visibility = 'hidden'; // başlangıçta görünmez
+
 	const div13_b = document.createElement('div');
 	div13_b.classList.add(
 		'flex',
@@ -507,6 +550,7 @@ function TournamentInformation(container: HTMLElement): void {
 
 	
 	div11.appendChild(div11p1);
+	div11.appendChild(div11img);
 
 	
 	tournament02.appendChild(div11);

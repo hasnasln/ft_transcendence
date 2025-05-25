@@ -122,10 +122,10 @@ export function renderSettings(container: HTMLElement): void
 	gameSettingsContainer.appendChild(gameSettingsTitleContainer); // başlık kısmı eklendi
 	
 	// Top Rengi 2
-	const selectedTopColor = { value: '#ffffff' };
-	const selectedBackgroundColor = { value: '#ffffff' };
-	const selectedPlayer1Color = { value: '#ffffff' };
-	const selectedPlayer2Color = { value: '#ffffff' };
+	const selectedTopColor = { value: '#ffff00' };
+	const selectedBackgroundColor = { value: '#0000ff' };
+	const selectedPlayer1Color = { value: '#00ffff' };
+	const selectedPlayer2Color = { value: '#00ff00' };
 	let selectedLanguage = exmp.getLanguage();
 
 
@@ -212,9 +212,13 @@ function createColorPalette(title: string, container: HTMLElement, colorList: st
 
 	colorList.forEach((color) => {
 		const colorBox = document.createElement('div');
-		colorBox.classList.add('w-8', 'h-8', 'rounded', 'cursor-pointer', 'border-2', 'border-transparent');
+		colorBox.classList.add('w-8', 'h-8', 'rounded', 'cursor-pointer', 'border-4', 'border-transparent');
 		colorBox.style.backgroundColor = color;
 		colorBox.setAttribute('data-action', 'color');
+		if (color == selectedColor.value) {
+			colorBox.classList.remove('border-transparent');
+			colorBox.classList.add('border-black');
+		}
 
 		colorBox.addEventListener('click', () => {
 			selectedColor.value = color;

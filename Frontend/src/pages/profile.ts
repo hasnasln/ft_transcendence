@@ -24,19 +24,19 @@ interface ISection {
 
 
 export class ProfileSettings{
-	// private name: string;
-	// private surname: string;
+	private name: string;
+	private surname: string;
 	private nickname: string;
-	// private email: string;
-	// private password: string;
+	private email: string;
+	private password: string;
 
 
 	constructor() { //! constructor da istek atıp bu değişkellere yazılması gerekn değerleri yazıp buradandevam edebilirz
-		// this.name = '';
-		// this.surname = '';
+		this.name = '';
+		this.surname = '';
 		this.nickname = '';
-		// this.email = '';
-		// this.password = '';
+		this.email = '';
+		this.password = '';
 	}
 
 	render (container: HTMLElement): void {
@@ -101,10 +101,34 @@ export class ProfileSettings{
 
 	handleX(x: string): void {
 		const input = document.querySelector('#' + x) as HTMLInputElement;
-		if (input) {
+		if (!input) {
+			console.error('Input not found');
+			return;
+		} else if (input) {
+			const value = input.value.trim();
+			if (value.length < 1) {
+				console.error(x + 'Input value is empty');
+				return;
+			}
+		}
+		if (input && x === 'nick-name') {
 			this.nickname = input.value;
 			console.log(x + ": ", this.nickname);
-		}
+		} else if (input && x === 'email') {
+			this.email = input.value;
+			console.log(x + ": ", this.email);
+		} else if (input && x === 'password') {
+			this.password = input.value;
+			console.log(x + ": ", this.password);
+		} else if (input && x === 'name') {
+			this.name = input.value;
+			console.log(x + ": ", this.name);
+		} else if (input && x === 'surname') {
+			this.surname = input.value;
+			console.log(x + ": ", this.surname);
+		} else {
+			console.error('Input not found');
+		} 
 	}
 
 	handleHistory(): void {
