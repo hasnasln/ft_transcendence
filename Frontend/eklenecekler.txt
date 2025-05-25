@@ -1,0 +1,13 @@
+giriş kısmı form içerisine eklenecek, fomr içinde olmadığı için google hata veriyor. -> form içerisine almama rağmen düzelmedi, sorun teşkil etmiyor ise kalabilir
+aynı şekilde kayıt kısmı da form içerisine alınacak, aynı hatayı kayıt ol kısmında da alıyoruz. -> singin olmadığı için buna hiç uğraşmadım :D
+Kayıt ol tuşunun işlevi bitince giriş sayfasına yönlendirme yapmalı. -> tamam
+Giriş ve register kısmı için alınan verilerin varlığını kontrol edip istek atmadan hata dönmek mantıklı olur. -> basit kotroller yapıldı eklemeler olacak 
+ayarlar kısmında aktif seçili renklere çerçeve eklenmeli -> aktif seçilmiş renklerin border ı kalın şekilde işaretli.
+oyun içerisinde renk seçimini doğru yapabilmek aynı renkler seçilmemeli bunun kontrolü yapılmalı. -> buna göre kontrast renkler seçer kontrol ekleriz
+profil ayarları kısmında, alınan veriler hakkında basit kotnroller eklenmeli.
+History kısmı kaldırılacak.
+Turnuva içerisinde yapılan çıkış işlemi şu an turnuva seçime veya oluşturma kısmına dönüyor, duruma göre bakılacak
+Turnuva kısmına oyuncuları yenile butonu eklenmeli +
+turnuva sahibi başlat tuşuna bastıktan sonra oyuncularda oyna tuşu görüntülenmeli, +
+api kısmı üzerine düşünülüp dublicate ler düzenlenecek
+dil sayfası ve eror ihtimali olan veriler düzenlenecek

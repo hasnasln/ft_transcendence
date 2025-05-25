@@ -80,6 +80,14 @@ export class SinginPage implements IPages {
 		const passwordInput = document.getElementById('password_input') as HTMLInputElement;
 		const nicnameOrMail = nicnameOrMailInput.value;
 		const passwordValue = passwordInput.value;
+		if (!nicnameOrMail || !passwordValue) {
+			const x = document.getElementById('error_message');
+			if (!x) return;
+			x.style.visibility = 'visible';
+			x.textContent = 'Kullanıcı adı veya şifre boş olamaz';
+			console.log('Login failed');
+			return;
+		}
 		// burada giriş işlemi yapılıp ana sayfaya yönlendirme yapılacak
 		history.pushState({}, '', '/');
 		if (name === nicnameOrMail && password === passwordValue) {
