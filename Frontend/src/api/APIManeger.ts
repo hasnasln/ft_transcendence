@@ -1,10 +1,9 @@
-// APIManager.ts
-export enum  HTTPMethod {
-	GET = 'GET',
-	POST = 'POST',
-	PUT = 'PUT',
-	DELETE = 'DELETE',
-	PATCH = 'PATCH',
+export class HTTPMethod extends String {
+	public static GET: string = 'GET';
+	public static POST: string = 'POST';
+	public static PUT: string = 'PUT';
+	public static DELETE: string = 'DELETE';
+	public static PATCH: string = 'PATCH';
 }
 
 export interface IApiRegister {
@@ -55,7 +54,7 @@ export class APIManager
 		return this.token;
 	}
 
-	private myFetch(url: string, method: HTTPMethod, headers: HeadersInit, body?: BodyInit): Promise<Response> {
+	private myFetch(url: string, method: string, headers: HeadersInit, body?: BodyInit): Promise<Response> {
 		try{
 			const options: RequestInit = {
 				method,
