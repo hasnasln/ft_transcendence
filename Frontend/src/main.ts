@@ -15,9 +15,20 @@ const app = document.getElementById('app') as HTMLElement;
 	
 // }
 
+const isloggedIn = localStorage.getItem('token');
+
+
+
+console.log("isloggedIn:", isloggedIn);
+
 if (app){
-	// ilk girişte singin e yönlendir
-	window.history.pushState({}, '', '/singin');
+	//! sayfa içerisinde yenileme yaptığında içerideki evetler gidiyor, giriş yapılmış halde tıklama yapamıyorsun
+	//! farkında vardığım tek hata burada şimdilik açık bırakıyorum.
+	//! çıkış yapamadığın için de localStorage'dan token'ı silemiyorsun  sayfa kitlenip kalıyor
+	// if (!isloggedIn) 
+		window.history.pushState({}, '', '/singin');
+	// else
+		// window.history.pushState({}, '', '/home');
 	router();
 	// Popstate event listener'ını ekleyelim
 }

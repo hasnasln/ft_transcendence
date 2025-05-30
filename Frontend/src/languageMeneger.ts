@@ -58,73 +58,119 @@ const en = {
   }
 
 const tr  = {
-	"singin": {
-		"title": "Giriş Yap",
-		"register": "Kayıt Ol",
-		"email": "E-posta",
-		"password": "Şifre",
-		"login": "Giriş Yap"
-	},
-	"register": {
-		"title": "Kayıt Ol",
-		"singin": "Giriş Yap",
-		"name": "İsim",
-		"surname": "Soyisim",
-		"username": "Kullanıcı Adı",
-		"email": "E-posta",
-		"password": "Şifre",
-		"confirmPassword": "Şifreyi Onayla",
-		"register": "Kayıt Ol"
-	},
-	"home":{
-		"play": "Şimdi Oyna",
-		"settings": "Ayarlar",
-		"profile": "Profil",
-		"logout": "Çıkış Yap",
-		"tournament": "Turnuva"
-	},
-	"settings": {
-		"title": "Ayarlar",
-		"ball-color": "Top Rengi",
-		"background-color": "Arka Plan Rengi",
-		"player-one-color": "1. Oyuncu Rengi",
-		"player-two-color": "2. Oyuncu Rengi",
-		"language-select": "Dil Seçimi",
-		"save-button": "Kaydet",
-	},
-	"profile": {
-		"title": "Profil Ayarları",
-		"username": "Kullanıcı Adı",
-		"profile-settings": "Profil Ayarları",
-		"history": "Oyun Geçmişi"
-	},
-	"profile-settings": {
-		"username": "Kullanıcı Adı",
-		"username-placeholder": "Yeni Kullanıcı Adı",
-		"name": "İsim",
-		"name-placeholder": "Yeni isminizi giriniz",
-		"email": "E-posta",
-		"email-placeholder": "Yeni E-posta",
-		"password": "Şifre",
-		"password-placeholder": "Yeni Şifre",
-		"confirmPassword": "Şifreyi Onayla",
-		"confirmPassword-placeholder": "Yeni Şifreyi Onayla",
-		"update": "Güncelle"
-	},
-	"tournament": {
-		"title": "Turnuva",
-		"join-room":"Odaya Katıl",
-		"input": "Turnuva Adını Girin",
-		"input2": "Oyuncu Sayısını Girin",
-		"button": "Turnuva Oluştur",
-		"id": "Turnuva ID",
-		"creater": "Turnuva Oluşturan",
-		"total-player": "Toplam Oyuncu",
-		"exit": "Çıkış Yap",
-		"joined-player": "Katılan Oyuncular",
-		"play": "Oyna",
-	}
+		"singin": {
+			"title": "Giriş Yap",
+			"register": "Kayıt Ol",
+			"email": "E-posta",
+			"password": "Şifre",
+			"login": "Giriş Yap"
+		},
+		"singin-success": "Giriş başarılı! Yönlendiriliyorsunuz...",
+		"singin-errors": {
+			"required": {
+				"email": "E-posta gerekli",
+				"password": "Şifre gerekli"
+			},
+			"INVALID_CREDENTIALS": "Geçersiz e-posta veya şifre",
+			"serverError": "Sunucu hatası, lütfen daha sonra tekrar deneyin"
+		},
+		"register": {
+			"title": "Kayıt Ol",
+			"singin": "Giriş Yap",
+			"name": "İsim",
+			"surname": "Soyisim",
+			"username": "Kullanıcı Adı",
+			"email": "E-posta",
+			"password": "Şifre",
+			"confirmPassword": "Şifreyi Onayla",
+			"register": "Kayıt Ol"
+		},
+		"register-success": "Kayıt başarılı! Lütfen giriş yapın.",
+		"register-errors": {
+			"required": {
+				"name": "İsim gerekli",
+				"surname": "Soyisim gerekli",
+				"username": "Kullanıcı adı gerekli",
+				"email": "E-posta gerekli",
+				"password": "Şifre gerekli",
+				"confirmPassword": "Şifreyi onayla gerekli"
+			},
+			"minlength": {
+				"name": "İsim en az 3 karakter olmalıdır",
+				"surname": "Soyisim en az 3 karakter olmalıdır",
+				"username": "Kullanıcı adı en az 3 karakter olmalıdır",
+				"password": "Şifre en az 6 karakter olmalıdır",
+				"confirmPassword": "Şifreyi onayla en az 6 karakter olmalıdır"
+			},
+			"maxlength": {
+				"username": "Kullanıcı adı en fazla 20 karakter olmalıdır",
+				"password": "Şifre en fazla 20 karakter olmalıdır"
+			},
+			"invalidCharacters": {
+				"username": "Geçersiz username karakterleri (a-zA-Z0-9_.)",
+				"email": "Geçersiz e-posta formatı"
+			},
+			"passwordMismatch": "Şifreler eşleşmiyor",
+			"exists": {
+				"username": "Bu kullanıcı adı zaten alınmış",
+				"email": "Bu e-posta zaten kayıtlı"
+			},
+			"serverError": "Sunucu hatası, lütfen daha sonra tekrar deneyin"
+		},
+	
+		"home":{
+			"play": "Şimdi Oyna",
+			"settings": "Ayarlar",
+			"profile": "Profil",
+			"tournament": "Turnuva",
+			"logout": "Çıkış Yap"
+		},
+		"settings": {
+			"title": "Ayarlar",
+			"ball-color": "Top Rengi",
+			"background-color": "Arka Plan Rengi",
+			"player-one-color": "1. Oyuncu Rengi",
+			"player-two-color": "2. Oyuncu Rengi",
+			"language-select": "Dil Seçimi",
+			"save-button": "Ayarları Kaydet"
+		},
+		"profile": {
+			"title": "Profil Ayarları",
+			"username": "Kullanıcı Adı",
+			"profile-settings": "Profil Ayarları",
+			"history": "Oyun Geçmişi"
+		},
+		"profile-settings": {
+			"username": "Kullanıcı Adı",
+			"username-placeholder": "Yeni Kullanıcı Adı",
+			"email": "E-posta",
+			"email-placeholder": "Yeni E-posta",
+			"password": "Şifre",
+			"password-placeholder": "Yeni Şifre",
+			"confirmPassword": "Şifreyi Onayla",
+			"confirmPassword-placeholder": "Yeni Şifreyi Onayla",
+			"update": "Güncelle"
+		},
+		"tournament": {
+			"first-page": {
+				"title": "Turnuva",
+				"description": "Aşağıdaki kısma id girip katıl butonuna tıklarsanız oda arayacak, isim girip oluştur derseniz oda oluşturacak",
+				"input-placeholder": "Turnuva ID - Oda Adı",
+				"create": "Turnuva Oluştur",
+				"join": "Turnuvaya Katıl"
+			},
+			"second-page":{
+				"exit": "Turnuvadan Çık",
+				"tournament-id": "Turnuva ID",
+				"tournament-name": "Turnuva Adı",
+				"tournament-creater": "Turnuva Oluşturan",
+				"tournament-total-players": "Toplam Oyuncu",
+				"tournament-joined-players": "Katılan Oyuncular",
+				"play": "Oyna"
+			}
+		}
 }
+
 
 const fr = {
 	"singin": {

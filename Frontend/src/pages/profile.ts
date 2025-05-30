@@ -1,3 +1,4 @@
+import { _apiManager } from '../api/APIManeger';
 import { exmp } from '../languageMeneger';
 
 interface history {
@@ -37,7 +38,20 @@ export class ProfileSettings{
 		this.nickname = '';
 		this.email = '';
 		this.password = '';
+		if (!(localStorage.getItem('name') 
+			&& localStorage.getItem('surname') 
+			&& localStorage.getItem('nickname') 
+			&& localStorage.getItem('email') 
+			&& localStorage.getItem('password'))) {
+				_apiManager.getME()
+			}
+		this.name = localStorage.getItem('name') || '';
+		this.surname = localStorage.getItem('surname') || '';
+		this.nickname = localStorage.getItem('nickname') || '';
+		this.email = localStorage.getItem('email') || '';
+		this.password = localStorage.getItem('password') || '';
 	}
+
 
 	render (container: HTMLElement): void {
 		if (!container) {
@@ -82,6 +96,8 @@ export class ProfileSettings{
 		});
 	}
 
+	public static getname(): string { return this.name; }
+
 	close(): void {
 		const profileSettingsContainer = document.getElementById('profile_main');
 		if (profileSettingsContainer) {
@@ -99,7 +115,7 @@ export class ProfileSettings{
 	}
 
 
-	handleX(x: string): void {
+	async handleX(x: string): Promise<void> {
 		const input = document.querySelector('#' + x) as HTMLInputElement;
 		if (!input) {
 			console.error('Input not found');
@@ -114,17 +130,22 @@ export class ProfileSettings{
 		if (input && x === 'nick-name') {
 			this.nickname = input.value;
 			console.log(x + ": ", this.nickname);
+			await _apiManager.updateSomething('nickname', this.nickname);
 		} else if (input && x === 'email') {
 			this.email = input.value;
+			await _apiManager.updateSomething('email', this.email);
 			console.log(x + ": ", this.email);
 		} else if (input && x === 'password') {
 			this.password = input.value;
+			await _apiManager.updateSomething('password', this.password);
 			console.log(x + ": ", this.password);
 		} else if (input && x === 'name') {
 			this.name = input.value;
+			await _apiManager.updateSomething('name', this.name);
 			console.log(x + ": ", this.name);
 		} else if (input && x === 'surname') {
 			this.surname = input.value;
+			await _apiManager.updateSomething('surname', this.surname);
 			console.log(x + ": ", this.surname);
 		} else {
 			console.error('Input not found');
@@ -208,6 +229,8 @@ export class ProfileSettings{
 }
 
 function renderProfile(container: HTMLElement) {
+	const user = localStorage.getItem('user');
+	const userData = user ? JSON.parse(user) : null;
 
 	const wrapper = document.createElement('div');
 	wrapper.id = 'profile_main';
@@ -301,7 +324,7 @@ function renderProfile(container: HTMLElement) {
 
 	const imageContainer = document.createElement('div');
 	const profileImage = document.createElement('img');
-	profileImage.src = 'src/pages/profile.jpg';
+	profileImage.src = userData.avatar;
 	profileImage.alt = 'Profile Image';
 	profileImage.classList.add(
 		'rounded-full',
@@ -310,10 +333,11 @@ function renderProfile(container: HTMLElement) {
 	);
 	imageContainer.appendChild(profileImage);
 	firstPart.appendChild(imageContainer);
+	// console.log("--------------------------" + userData.name);
 
 	const nameContainer = document.createElement('div');
 	const name = document.createElement('h2');
-	name.textContent =exmp.getLang('profile.username');
+	name.textContent = "--> " + userData.name + " <--" || "Local strogadan çekilen user.data da isim bulunamadı."; // bu kısımda kullanıcı adını dinamik olarak alabiliriz
 	name.classList.add(
 		'text-xl',
 		'font-bold',

@@ -41,54 +41,76 @@ export class RegisterPage implements IPages {
 			}
 	}
 
+	private showError(message: string): void {
+		const errorDiv = document.getElementById('error-message');
+		if (errorDiv) {
+			errorDiv.textContent = message;
+			errorDiv.style.visibility = 'visible';
+		} else {
+			console.error('Error message div not found');
+		}
+	}
+
+	private getInputValue(id: string): string | null {
+		const inout = document.getElementById(id) as HTMLInputElement | null;
+		// const result = inout ? inout.value.trim() : null;
+		// return result ? result === "" ? null : result : null;
+		return inout ? inout.value.trim() : null;
+	}
+
 	async handleRegister(): Promise	<void> {
 		console.log('Register button clicked');
 		// Implement register logic here
 		// burada kayıt olma isteği atılacak
 		// ve kullanıcıya yönlendirme yapılacak
-		const name = (document.getElementById('name') as HTMLInputElement)?.value.trim();
-		const surname = (document.getElementById('surname') as HTMLInputElement)?.value.trim();
-		const username = (document.getElementById('username') as HTMLInputElement)?.value.trim();
-		const email = (document.getElementById('email') as HTMLInputElement)?.value.trim();
-		const password = (document.getElementById('password') as HTMLInputElement)?.value.trim();
-		const repeatPassword = (document.getElementById('repeat_password') as HTMLInputElement)?.value.trim();
-
-		// if (!name || !surname || !username || !email || !password || !repeatPassword) {
-		// 	alert(exmp.getLang('register.fillAllFields'));
-		// 	return;
-		// } else if (name.length < 3 || surname.length < 3 || username.length < 3 || password.length < 6) {
-		// 	alert(exmp.getLang('register.fillAllFields'));
-		// 	return;
-		// } else if (username.length > 20 || password.length > 20) {
-		// 	alert(exmp.getLang('register.usernameAndPasswordLength'));
-		// 	return;
-		// } else if (!/^[a-zA-Z0-9_.]+@[a-zA-Z0-9_.]+\.[a-zA-Z]{2,}$/.test(email)) {
-		// 	alert(exmp.getLang('register.emailFormat'));
-		// 	return;
-		// } else if (!/^[a-zA-Z0-9_.]+$/.test(username)) {
-		// 	alert(exmp.getLang('register.usernameFormat'));
-		// 	return;
-		// } else if (!/^[a-zA-Z0-9_.]+$/.test(password)) {
-		// 	alert(exmp.getLang('register.passwordFormat'));
-		// 	return;
-		// } else if (!/^[a-zA-Z0-9_.]+$/.test(repeatPassword)) {
-		// 	alert(exmp.getLang('register.passwordFormat'));
-		// 	return;
-		// } else if (password !== repeatPassword) {
-		// 	alert(exmp.getLang('register.passwordNotMatch'));
-		// 	return;
-		// } else if (password === repeatPassword) {
-		// 	// burada şifreler eşleşiyor
-		// 	// console.log('şifreler eşleşiyor');
+		const name = this.getInputValue("name");
+		const surname = this.getInputValue("surname");
+		const username = this.getInputValue("username");
+		const email = this.getInputValue("email");
+		const password = this.getInputValue("password");
+		const repeatPassword = this.getInputValue("repeat_password");
+		// console.log('name: ', name);
+		// console.log('surname: ', surname);
+		// console.log('username: ', username);
+		// console.log('email: ', email);
+		// console.log('password: ', password);
+		// console.log('repeatPassword: ', repeatPassword);
+		if (!name|| !surname || !username || !email || !password || !repeatPassword) {
+			if (!name) this.showError(exmp.getLang('register-errors.required.name'));
+			else if (!surname) this.showError(exmp.getLang('register-errors.required.surname'));
+			else if (!username) this.showError(exmp.getLang('register-errors.required.username'));
+			else if (!email) this.showError(exmp.getLang('register-errors.required.email'));
+			else if (!password) this.showError(exmp.getLang('register-errors.required.password'));
+			else if (!repeatPassword) this.showError(exmp.getLang('register-errors.required.confirmPassword')); 
+			return;
+		} 
+		else if (name.length < 3 || surname.length < 3 || username.length < 3 || password.length < 6) {
+			if (name.length < 3) this.showError(exmp.getLang('register-errors.minlength.name'));
+			else if (surname.length < 3) this.showError(exmp.getLang('register-errors.minlength.surname'));
+			else if (username.length < 3) this.showError(exmp.getLang('register-errors.minlength.username'));
+			else if (password.length < 6) this.showError(exmp.getLang('register-errors.minlength.password'));
+			return;
+		} else if (username.length > 20 || password.length > 20) {
+			if (username.length > 20) this.showError(exmp.getLang('register-errors.maxlength.username'));
+			else if (password.length > 20) this.showError(exmp.getLang('register-errors.maxlength.password'));
+			return;
+		} else if (!/^[a-zA-Z0-9_.]+@[a-zA-Z0-9_.]+\.[a-zA-Z]{2,}$/.test(email)) {
+			this.showError(exmp.getLang('register-errors.invalidCharacters.email'));
+			return;
+		} else if (!/^[a-zA-Z0-9_.]+$/.test(username)) {
+			this.showError(exmp.getLang('register-errors.invalidCharacters.username'));
+			return;
+		} else if (password !== repeatPassword) {
+			this.showError(exmp.getLang('register-errors.passwordMismatch'));
+			return;
+		}
+		// else {
+		// 	console.log('name: ', name);
+		// 	console.log('surname: ', surname);
+		// 	console.log('username: ', username);
+		// 	console.log('email: ', email);
+		// 	console.log('password: ', password);
 		// }
-
-
-		console.log('name: ', name);
-		console.log('surname: ', surname);
-		console.log('username: ', username);
-		console.log('email: ', email);
-		console.log('password: ', password);
-
 		const x: IApiRegister = 
 		{
 			name : name,
@@ -97,32 +119,19 @@ export class RegisterPage implements IPages {
 			email : email,
 			password : password,
 		}
-
-		if (password !== repeatPassword) {
-			alert(exmp.getLang('register.passwordNotMatch'));
-			return;
-		}
-
 		try{
-			await _apiManager.register(x);
+			const response = await _apiManager.register(x);
+			if (!response.success)
+			{
+				this.showError(response.message || exmp.getLang('register.registerFailed'));
+				return;
+			}
+			// console.log('Registration successful:', response.data);
+			history.pushState(null, '', '/singin');
+			window.dispatchEvent(new PopStateEvent('popstate'));
 		} catch (error: any) {
-			const erorrdiv = document.getElementById('error-message');
-			if (error.status === 409) {
-				// erorrdiv!.textContent = exmp.getLang('register.usernameAlreadyExists');
-				erorrdiv!.textContent = "Kullanıcı adı zaten mevcut !";
-				erorrdiv!.style.visibility = 'visible';
-			} else if(error.status === 400) {
-				// erorrdiv!.textContent = exmp.getLang('register.emailAlreadyExists');
-				erorrdiv!.textContent = "E-posta adresi zaten mevcut !";
-				erorrdiv!.style.visibility = 'visible';
-			}
-			else{
-				alert(exmp.getLang('register.registerFailed'));
-			}
+			console.error('Error during registration:', error);
 		}
-
-		history.pushState(null, '', '/singin');
-		window.dispatchEvent(new PopStateEvent('popstate'));
 	}
 
 	handleLogin(): void {

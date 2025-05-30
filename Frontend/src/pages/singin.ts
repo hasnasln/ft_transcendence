@@ -1,5 +1,6 @@
 import type { IPages } from "./IPages";
 import { exmp } from "../languageMeneger";
+import { _apiManager } from "../api/APIManeger";
 
 
 export class SinginPage implements IPages {
@@ -17,7 +18,6 @@ export class SinginPage implements IPages {
 			}
 		}
 	}
-
 
 	render(container: HTMLElement): void {
 		if (!container) {
@@ -71,37 +71,38 @@ export class SinginPage implements IPages {
 		window.dispatchEvent(new Event('popstate'));
 	}
 
-	handleLogin(): void {
-		console.log('Login button clicked');
-		const name = "1";
-		const password = "1";
+	private showError(message: string): void {
+		const errorMessage = document.getElementById('error_message');
+		if (!errorMessage) return;
+		errorMessage.style.visibility = 'visible';
+		errorMessage.textContent = message;
+	}
 
-		const nicnameOrMailInput = document.getElementById('nicname_or_mail_input') as HTMLInputElement;
-		const passwordInput = document.getElementById('password_input') as HTMLInputElement;
-		const nicnameOrMail = nicnameOrMailInput.value;
-		const passwordValue = passwordInput.value;
+	private getInputValue(id: string): string {
+		const input = document.getElementById(id) as HTMLInputElement;
+		const value = input ? input.value.trim() : '';
+		return value;
+	}
+
+	async handleLogin(): Promise<void> {
+		const nicnameOrMail = this.getInputValue('nicname_or_mail_input');
+		const passwordValue = this.getInputValue('password_input');
 		if (!nicnameOrMail || !passwordValue) {
-			const x = document.getElementById('error_message');
-			if (!x) return;
-			x.style.visibility = 'visible';
-			x.textContent = 'Kullanıcı adı veya şifre boş olamaz';
-			console.log('Login failed');
+			if (!nicnameOrMail)this.showError(exmp.getLang('singin-errors.required.email'));
+			else if (!passwordValue)this.showError(exmp.getLang('singin-errors.required.password'));
 			return;
 		}
-		// burada giriş işlemi yapılıp ana sayfaya yönlendirme yapılacak
-		history.pushState({}, '', '/');
-		if (name === nicnameOrMail && password === passwordValue) {
-			console.log('Login successful');
-			//! sayfadeğiştirme işlemlerinde langufe dinleyisicini silebiliriz
-			exmp.removeLanguageChangeListener(this.languageChangeHandler);
+		try{
+			const response = await _apiManager.login(nicnameOrMail, passwordValue);
+			if (!response.success) {
+				this.showError(exmp.getLang("singin-errors." + response.message || 'Mesaj bulunamadı'));
+				return;
+			}
+			history.pushState({}, '', '/');
 			window.dispatchEvent(new Event('popstate'));
-		}
-		else {
-			const x = document.getElementById('error_message');
-			if (!x) return;
-			x.style.visibility = 'visible';
-			x.textContent = 'Kullanıcı adı veya şifre hatalı';
-			console.log('Login failed');
+		} catch (error: any)
+		{
+			// throw new Error(`Login failed: ${error.message}`);
 		}
 	}
 }

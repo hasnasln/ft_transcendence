@@ -143,7 +143,7 @@ function createTournamentSection(container: HTMLElement): void{
 	)
 
 	const title = document.createElement('h1');
-	title.textContent = exmp.getLang('tournament.title');
+	title.textContent = exmp.getLang('tournament.first-page.title');
 	title.classList.add(
 		'text-2xl',
 		'font-bold',
@@ -151,7 +151,7 @@ function createTournamentSection(container: HTMLElement): void{
 	);
 
 	const p = document.createElement('p');
-	p.textContent = "aşağıdaki kısma id girip katıl butonuna tıklarsanız oda arayacak, isim girip oluştur derseniz oda oluşturacak";
+	p.textContent = exmp.getLang('tournament.first-page.description');
 	p.classList.add(
 		'text-gray-500',
 		'text-sm',
@@ -171,7 +171,7 @@ function createTournamentSection(container: HTMLElement): void{
 
 	const input = document.createElement('input');
 	input.type = 'text';
-	input.placeholder = exmp.getLang('tournament.input');
+	input.placeholder = exmp.getLang('tournament.first-page.input-placeholder');
 	input.classList.add(
 		'border',
 		'border-gray-300',
@@ -191,7 +191,7 @@ function createTournamentSection(container: HTMLElement): void{
 	);
 
 	const button2 = document.createElement('button');
-	button2.textContent = exmp.getLang('tournament.join-room');
+	button2.textContent = exmp.getLang('tournament.first-page.join');
 	button2.classList.add(
 		'bg-blue-500',
 		'text-white',
@@ -206,7 +206,7 @@ function createTournamentSection(container: HTMLElement): void{
 
 
 	const button = document.createElement('button');
-	button.textContent = exmp.getLang('tournament.button');
+	button.textContent = exmp.getLang('tournament.first-page.create');
 	button.classList.add(
 		'bg-blue-500',
 		'text-white',
@@ -292,7 +292,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 
 	const img = document.createElement('img');
-	img.src = 'IMG/trophy.png';
+	img.src = '/IMG/trophy.png';
 	img.classList.add(
 		'w-[50px]',
 		'h-[50px]',
@@ -330,14 +330,14 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 	
 	const img02 = document.createElement('img');
-	img02.src = 'IMG/exit.png';
+	img02.src = '/IMG/exit.png';
 	img02.classList.add(
 		'w-[30px]',
 		'h-[35px]',
 	);
 
 	const p = document.createElement('p');
-	p.textContent = exmp.getLang('tournament.exit');
+	p.textContent = exmp.getLang('tournament.second-page.exit');
 
 	exit.appendChild(img02);
 	exit.appendChild(p);
@@ -355,7 +355,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 
 	const div02p1 = document.createElement('p');
-	div02p1.textContent = exmp.getLang('tournament.id');
+	div02p1.textContent = exmp.getLang('tournament.second-page.tournament-id');
 	div02p1.classList.add(
 		'text-gray-400',
 		'text-lg',
@@ -386,7 +386,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 
 	const div03p1 = document.createElement('p');
-	div03p1.textContent = exmp.getLang('tournament.creater');
+	div03p1.textContent = exmp.getLang('tournament.second-page.tournament-creater');
 	div03p1.classList.add(
 		'text-gray-400',
 		'text-lg',
@@ -417,7 +417,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 
 	const div04p1 = document.createElement('p');
-	div04p1.textContent = exmp.getLang('tournament.total-player');
+	div04p1.textContent = exmp.getLang('tournament.second-page.tournament-total-players');
 	div04p1.classList.add(
 		'text-gray-400',
 		'text-lg',
@@ -469,7 +469,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 	
 	const div11p1 = document.createElement('p');
-	div11p1.textContent = exmp.getLang('tournament.joined-player');
+	div11p1.textContent = exmp.getLang('tournament.second-page.tournament-joined-players');
 	div11p1.classList.add(
 		'text-2xl',
 		'font-bold',
@@ -478,7 +478,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 
 	const div11img = document.createElement('img');
-	div11img.src = 'IMG/refresh.png';
+	div11img.src = '/IMG/refresh.png';
 	div11img.classList.add(
 		'w-[30px]',
 		'h-[35px]',
@@ -543,7 +543,7 @@ function TournamentInformation(container: HTMLElement): void {
 		'items-center',
 		'w-full',
 	);
-	div13_b.textContent = exmp.getLang('tournament.play');
+	div13_b.textContent = exmp.getLang('tournament.second-page.play');
 
 
 	div13.appendChild(div13_b);

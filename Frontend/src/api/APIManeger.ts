@@ -1,9 +1,19 @@
+import { exmp } from "../languageMeneger";
+
 export class HTTPMethod extends String {
 	public static GET: string = 'GET';
 	public static POST: string = 'POST';
 	public static PUT: string = 'PUT';
 	public static DELETE: string = 'DELETE';
 	public static PATCH: string = 'PATCH';
+}
+
+export interface IApiSetSettings{
+	ball_color: string,
+	background_color: string,
+	player_one_color: string,
+	player_two_color: string,
+	language: string
 }
 
 export interface IApiRegister {
@@ -18,6 +28,13 @@ export interface IApiTournament {
 	name: string; // Tournament name
 	admin: string; // Admin username
 	playerCount: number; // Number of players
+}
+
+
+export interface IApiResponseWrapper {
+	success: boolean;
+	message?: string;
+	data?: any; // Data can be of any type, depending on the API response
 }
 
 /*
@@ -74,29 +91,46 @@ export class APIManager
 	}
 
 
-	public async login(username: string, password: string): Promise<any> {
+	public async login(username: string, password: string): Promise<IApiResponseWrapper> {
+		const result: IApiResponseWrapper = {success: false, message: '', data: null};
 		try{
 			const response = await this.myFetch(`${this.baseUrl}/login`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
 			}, JSON.stringify({ username, password }));
 			
-			if (!response.ok){
-				throw new Error('Login failed');
+			if (!response.ok){ 
+				result.success = false;
+				if (response.status === 401){
+					result.message = 'INVALID_CREDENTIALS';
+					return result;
+				}
 			}
 			const data = await response.json();
 			if (data.token) {
+				result.success = true;
+				result.data = data;
+				result.message = 'Login successful';
+				// console.log("Login data:", data);
 				this.setToken(data.token);
-				localStorage.setItem('token', data.token); // Store token in local storage
+				localStorage.setItem('token', data.token);
+				console.log("Token set:", this.getToken());
+				// console.log("data.uzer -----> "	+ JSON.stringify(data.user));
+				localStorage.setItem('user', JSON.stringify(data.user));
+				// const x = localStorage.getItem('user');
+				// const y = JSON.parse(x || '{}');
+				// console.log("localStorage user name:", y.name);
+				await exmp.setLanguage(data.user.language); // Set language from user data // burada beklemek sorunumuzu çözdü
 			} else {
-				throw new Error('Token not found in response');
+				result.success = false;
+				result.message = 'Token not found in response';
+				return result;
 			}
-			return data;
+			return result;
 		} catch (error) {
-			console.error('Error in login:', error);
+			// console.error('Error in login:', error);
 			throw error;
 		}
 	}
-
 
 	/*
 	!logout kısmında dil özelliğini setleyebilirz ? bakacağım
@@ -117,6 +151,44 @@ export class APIManager
 		}
 	}
 
+	public async settings(): Promise<any> {
+		try{
+			const response = await this.myFetch(`${this.baseUrl}/settings`, HTTPMethod.GET, {
+				'Content-Type': 'application/json',
+			});
+			if (!response.ok){
+				throw new Error('Settings failed');
+			}
+			const data = await response.json();
+			localStorage.setItem('settings', JSON.stringify(data));
+			console.log("Settings data:", data);
+			return data;
+		} catch (error) {
+			console.error('Error in settings:', error);
+			throw error;
+		}
+	}
+
+	public async set_settings(choises: IApiSetSettings): Promise<any>
+	{
+		try{
+			const response = await this.myFetch(`${this.baseUrl}/settings`, HTTPMethod.POST, {
+				'Content-Type': 'application/json',
+			}, JSON.stringify(choises));
+			if (!response.ok){
+				throw new Error('Settings failed');
+			}
+			const data = await response.json();
+			localStorage.setItem('settings', JSON.stringify(data));
+			console.log("Settings data:", data);
+			return data;
+		} catch (error) {
+			console.error('Error in settings:', error);
+			throw error;
+		}
+
+	}
+
 	public async getME(): Promise<any> {
 		try{
 			const response = await this.myFetch(`${this.baseUrl}/me`, HTTPMethod.GET, {
@@ -126,6 +198,17 @@ export class APIManager
 				throw new Error('Get ME failed');
 			}
 			const data = await response.json();
+			console.log("Get ME data:", data);
+			localStorage.setItem('name', data.user.name);
+			localStorage.setItem('surname', data.user.surname);
+			localStorage.setItem('username', data.user.username);
+			localStorage.setItem('email', data.user.email);
+			localStorage.setItem('prfilePicture', data.user.avatar);
+			console.log("name:", localStorage.getItem('name'));
+			console.log("surname:", localStorage.getItem('surname'));
+			console.log("username:", localStorage.getItem('username'));
+			console.log("email:", localStorage.getItem('email'));
+			console.log("profilePicture:", localStorage.getItem('prfilePicture'));
 			return data;
 		} catch (error) {
 			console.error('Error in getME:', error);
@@ -133,31 +216,32 @@ export class APIManager
 		}
 	}
 
-	public async register(registerData: IApiRegister): Promise<any> {
-		console.log('registerData: ', registerData);
-		console.log('this.baseUrl: ', this.baseUrl);
-		console.log('veri api manager istek register kısmına geldi');
-		if (registerData.username === 'hasnasln')
-		{
-			await new Promise(res =>  setTimeout(res, 1000));
-			const erorr: any = new Error('Username already exists');
-			erorr.status = 409;
-			throw erorr;
-		}
-		// try{
-		// 	const response = await this.myFetch(`${this.baseUrl}/register`, HTTPMethod.POST, {
-		// 		'Content-Type': 'application/json',
-		// 	}, JSON.stringify(registerData));
+	public async register(registerData: IApiRegister): Promise<IApiResponseWrapper> {
+		const result : IApiResponseWrapper = {success: false, message: '', data: null};
+		try{
+			const response = await this.myFetch(`${this.baseUrl}/register`, HTTPMethod.POST, {
+				'Content-Type': 'application/json',
+			}, JSON.stringify(registerData));
 			
-		// 	if (!response.ok){
-		// 		throw new Error('Register failed');
-		// 	}
-		// 	const data = await response.json();
-		// 	return data;
-		// } catch (error) {
-		// 	console.error('Error in register:', error);
-		// 	throw error;
-		// }
+			if (!response.ok){
+				result.success = false;
+				// diğer hatalar alt alta dizilecek
+				if (response.status === 409)
+					result.message = 'Username or email already exists';
+				return result;
+			}
+			result.success = true;
+			const data = await response.json();
+			if (!data)
+			{
+				console.log("hasan");
+			}
+			result.data = data;
+			return result;
+		} catch (error) {
+			console.error('Error in register:', error);
+			throw error;
+		}
 	}
 
 	/*
@@ -325,4 +409,4 @@ export class APIManager
 }
 
 
-export const _apiManager = APIManager.getInstance('http://localhost:8080/api');
+export const _apiManager = APIManager.getInstance('http://localhost:3000/api');

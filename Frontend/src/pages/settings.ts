@@ -1,12 +1,27 @@
+import { IApiSetSettings, _apiManager } from "../api/APIManeger";
 import { exmp } from "../languageMeneger";
+
+const COLORS = {
+	red: '#ff0000',
+	green: '#00ff00',
+	blue: '#0000ff',
+	yellow: '#ffff00',
+	magenta: '#ff00ff',
+	cyan: '#00ffff',
+	black: '#000000'
+}
+
 
 export class Settings {
 
-	render(container: HTMLElement): void {
+
+	async render(container: HTMLElement): Promise<void> {
 		if (!container) {
 			console.error('Container not found');
 			return;
 		}
+		
+		await _apiManager.settings();
 		renderSettings(container);
 		requestAnimationFrame(() => {
 			this.init();
@@ -121,33 +136,65 @@ export function renderSettings(container: HTMLElement): void
 	gameSettingsTitleContainer.appendChild(gameSettingsTitle);
 	gameSettingsContainer.appendChild(gameSettingsTitleContainer); // başlık kısmı eklendi
 	
+	const x = localStorage.getItem('settings');
+	const y = JSON.parse(x || '{}');
+	// console.log("settings---->:", y);
+	// console.log("settings ball color:", y.ball_color);
+	// console.log("settings background color:", y.background_color);
+	// console.log("settings player one color:", y.player_one_color);
+	// console.log("settings player two color:", y.player_two_color);
+
 	// Top Rengi 2
-	const selectedTopColor = { value: '#ffff00' };
-	const selectedBackgroundColor = { value: '#0000ff' };
-	const selectedPlayer1Color = { value: '#00ffff' };
-	const selectedPlayer2Color = { value: '#00ff00' };
+	const selectedTopColor = { value: y.ball_color }; // başlangıçta kırmızı olarak ayarlandı
+	const selectedBackgroundColor = { value: y.background_color }; // başlangıçta beyaz olarak ayarlandı
+	const selectedPlayer1Color = { value: y.player_one_color }; // başlangıçta yeşil olarak ayarlandı
+	const selectedPlayer2Color = { value: y.player_two_color }; // başlangıçta mavi olarak ayarlandı
 	let selectedLanguage = exmp.getLanguage();
 
 
 //#region  COLOR PALETTE 
 	// Top rengi
 	createColorPalette(exmp.getLang("settings.ball-color"), gameSettingsContainer, [
-	'#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#000000'
+		COLORS.red,
+		COLORS.green,
+		COLORS.blue,
+		COLORS.yellow,
+		COLORS.magenta,
+		COLORS.cyan,
+		COLORS.black
 	], selectedTopColor);
 
 	// Arka Plan Rengi
 	createColorPalette(exmp.getLang("settings.background-color"), gameSettingsContainer, [
-		'#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#000000'
+		COLORS.red,
+		COLORS.green,
+		COLORS.blue,
+		COLORS.yellow,
+		COLORS.magenta,
+		COLORS.cyan,
+		COLORS.black
 		], selectedBackgroundColor);
 	
 	// Oyuncu 1 (sen) Rengi
 	createColorPalette(exmp.getLang("settings.player-one-color"), gameSettingsContainer, [
-		'#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#000000'
+		COLORS.red,
+		COLORS.green,
+		COLORS.blue,
+		COLORS.yellow,
+		COLORS.magenta,
+		COLORS.cyan,
+		COLORS.black
 		], selectedPlayer1Color);
 
 	// Oyuncu 2 (rakip) Rengi
 	createColorPalette(exmp.getLang("settings.player-two-color"), gameSettingsContainer, [
-		'#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#000000'
+		COLORS.red,
+		COLORS.green,
+		COLORS.blue,
+		COLORS.yellow,
+		COLORS.magenta,
+		COLORS.cyan,
+		COLORS.black
 		], selectedPlayer2Color);
 //#endregion
 
@@ -194,6 +241,19 @@ export function renderSettings(container: HTMLElement): void
 			await new Promise(resolve => setTimeout(resolve, 300));
 			await exmp.setLanguage(selectedLanguage);
 		}
+		console.log(selectedBackgroundColor);
+		console.log(selectedPlayer1Color);
+		console.log(selectedPlayer2Color);
+		console.log(selectedTopColor);
+
+		const settings :IApiSetSettings = {
+			ball_color: selectedTopColor.value,
+			background_color: selectedBackgroundColor.value,
+			player_one_color: selectedPlayer1Color.value,
+			player_two_color: selectedPlayer2Color.value,
+			language: exmp.getLanguage()
+		}
+		_apiManager.set_settings(settings)
 		// console.log("enter tusuna basıldıktan sonra değer :" + selectedLanguage);
 	});
 }
@@ -242,7 +302,6 @@ function createColorPalette(title: string, container: HTMLElement, colorList: st
 function createLanguageSelector(container: HTMLElement, selectedLanguage: string, langs: string[], onChange: (lang: string) => void ) {
 	const wrapper = document.createElement('div');
 	wrapper.classList.add('flex', 'flex-col', 'w-[80%]', 'm-2');
-
 
 	console.log("selectedLanguage: " + selectedLanguage);
 	const label = document.createElement('label');

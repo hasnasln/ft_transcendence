@@ -36,7 +36,7 @@ export class HomePage implements IPages {
 			console.error('Container not found');
 			return;
 		}
-
+		
 		exmp.addLanguageChangeListener(this.languageChangeHandler);
 
 		exmp.waitForLoad().then(() => {
@@ -98,6 +98,9 @@ export class HomePage implements IPages {
 	}
 
 	handelExit(): void {
+		localStorage.removeItem('token');
+		localStorage.removeItem('user');
+		localStorage.removeItem('language');
 		console.log('Exit button clicked');
 		window.location.href = '/singin';
 	}
