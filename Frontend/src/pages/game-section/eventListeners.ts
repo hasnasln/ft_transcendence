@@ -1,8 +1,6 @@
 import { gameInstance } from "../play";
 import { GameInfo } from "./network";
 
-export const newmatchButton = document.getElementById("newmatch-button") as HTMLButtonElement;
-
 
 export function initializeEventListeners(gameInfo: GameInfo)
 {
@@ -97,12 +95,12 @@ export function initializeEventListeners(gameInfo: GameInfo)
         gameInstance.socket!.emit("pause-resume", {status: "pause"});
         // Duraklatıldığında "devam et" butonunu göster
         resumeButton.classList.remove("hidden");
-        newmatchButton.classList.remove("hidden");;
+        gameInstance.newmatchButton!.classList.remove("hidden");;
       } else {
         gameInstance.socket!.emit("pause-resume", {status: "resume"});
         // Devam edildiğinde butonu gizle
         resumeButton.classList.add("hidden");
-        newmatchButton.classList.add("hidden");
+         gameInstance.newmatchButton!.classList.add("hidden");
       }
 
       }
@@ -114,16 +112,16 @@ export function initializeEventListeners(gameInfo: GameInfo)
       gameInfo.state!.isPaused = false;
       gameInstance.socket!.emit("pause-resume", {status: "resume"});
       resumeButton.classList.add("hidden");
-      newmatchButton.classList.add("hidden");
+       gameInstance.newmatchButton!.classList.add("hidden");
     });
   }
 
 
 
-  newmatchButton?.addEventListener("click", () =>
-    {console.log(`yeni maça başlaya tıklandı, içerik : ${newmatchButton.innerText}`);
+   gameInstance.newmatchButton!.addEventListener("click", () =>
+    {console.log(`yeni maça başlaya tıklandı, içerik : ${ gameInstance.newmatchButton!.innerText}`);
     resumeButton.classList.add("hidden");
-    newmatchButton.classList.add("hidden");
+     gameInstance.newmatchButton!.classList.add("hidden");
     if (gameInstance.startButton)
       gameInstance.startButton.classList.add("hidden");
     

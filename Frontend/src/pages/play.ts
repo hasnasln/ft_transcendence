@@ -193,8 +193,9 @@ export class game
 		this.groundSize = createGround(this.scene, gameInfo).groundSize;
 	
 		// 🎮 Paddle'lar ve top
-		this.paddle1 = createPaddles(this.scene, gameInfo).paddle1;
-		this.paddle2 = createPaddles(this.scene, gameInfo).paddle2;
+		const paddles = createPaddles(this.scene, gameInfo);
+		this.paddle1 = paddles.paddle1;
+		this.paddle2 = paddles.paddle2;
 		
 		// 🎮 Top
 		this.ball = new BallController(this.scene, gameInfo);

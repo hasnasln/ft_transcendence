@@ -5,9 +5,13 @@ function renderScoreBoard(container: HTMLElement): void {
 	const ScoreBoard = document.createElement('div');
 	ScoreBoard.id = 'scoreboard';
 	ScoreBoard.classList.add(
+		'absolute',
+		'top-[5%]',
+		'z-10',
 		'w-64',                   // Sabit ve uygun genişlik
 		'bg-cyan-600',            // Arka plan rengi
 		'text-white',             // Yazı rengi
+		'text-[1.8vw]',
 		'rounded-2xl',            // Yumuşak köşeler
 		'p-3',                    // İç boşluk
 		'shadow-lg',              // Gölge efekti
@@ -63,9 +67,13 @@ function createSpanAddId(id: string): HTMLElement
 function renderSetBoard(container: HTMLElement): void {
 	const setboard = createDivAddId('setboard');
 	setboard.classList.add(
+		'absolute',
+		'bottom-[4%]',
+		'z-10',
 		'w-48',                   // Sabit genişlik (responsive uyumlu)
 		'bg-cyan-800',            // Arka plan rengi
 		'text-white',             // Yazı rengi
+		'text-[1.4vw]',
 		'rounded-3xl',            // Yumuşak köşeler
 		'p-4',                    // İç boşluk
 		'shadow-lg',              // Gölgelendirme
@@ -73,8 +81,8 @@ function renderSetBoard(container: HTMLElement): void {
 		'flex-col',
 		'items-center',
 		'gap-4',
-		'hidden' // Başlangıçta gizli
-
+		'hidden'  // Başlangıçta gizli
+		
 	);
 
 	// Başlık kısmı
@@ -298,9 +306,52 @@ export class PlayPage {
 		const devambutton = createButtonWithNameId('resume-button', 'Maça Devam Et');		// id= start-button
 		const new_mach = createButtonWithNameId('newmatch-button', 'Yeni Maça Başla');		// id= start-button
 		
+		set_toast.classList.add(
+			'absolute',
+			'bottom-[20%]',
+			'items-center',
+			'bg-cyan-600',
+			'rounded-3xl',
+			'text-white',
+			'text-xl',
+			'mb-4',
+			'z-10', 
+			'hidden' // Başlangıçta gizli
+		)
+
+		end_message.classList.add(
+			'absolute',
+			'top-[30%]',
+			'items-center',
+			'bg-cyan-600',
+			'rounded-3xl',
+			'text-white',
+			'text-xl',
+			'mb-4',
+			'z-10', 
+			'hidden' // Başlangıçta gizli
+		)
+
+
+			info.classList.add(
+			'absolute',
+			'top-[20%]',
+			'items-center',
+			'bg-cyan-600',
+			'rounded-3xl',
+			'text-white',
+			'text-xl',
+			'mb-4',
+			'z-10', 
+			'hidden' // Başlangıçta gizli
+		)
+
 		start_Button.classList.add(
-			'w-[80%]',
-			'h-[20%]',
+			'absolute',
+			'top-[50%]',
+			'items-center',
+			'p-5',
+			'text-[1.8vw]',
 			'bg-cyan-600',
 			'rounded-3xl',
 			'text-white',
@@ -311,8 +362,12 @@ export class PlayPage {
 		)
 
 		devambutton.classList.add(
-			'w-[80%]',
-			'h-[20%]',
+			'absolute',
+			'top-[40%]',
+			'items-center',
+			'z-20',
+			'p-5',
+			'text-[1.8vw]',
 			'bg-cyan-600',
 			'rounded-3xl',
 			'text-white',
@@ -322,9 +377,13 @@ export class PlayPage {
 		)
 
 		new_mach.classList.add(
-			'w-[80%]',
-			'h-[20%]',
+			'absolute',
+			'top-[70%]',
+			'items-center',
+			'z-20',
+		     'p-5',
 			'bg-cyan-600',
+			'text-[1.8vw]',
 			'rounded-3xl',
 			'text-white',
 			'text-xl',

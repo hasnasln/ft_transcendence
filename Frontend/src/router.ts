@@ -81,11 +81,11 @@ export function router()
 								gameInstance.endMsg.classList.add("hidden");
 							}
 					
-						//	 if (gameStatus.game_mode === "remoteGame")
-						// 	info.textContent = `${rival} bekleniyor ...`;
-						//	 else
-						// 	info.classList.add("hidden");
-						//	 newmatchButton.classList.add("hidden");
+							 if (gameInstance.gameStatus.game_mode === "remoteGame")
+							gameInstance.info!.textContent = `${rival} bekleniyor ...`;
+							 else
+							gameInstance.info!.classList.add("hidden");
+							 gameInstance.newmatchButton!.classList.add("hidden");
 		
 							if (gameInstance.gameStatus.currentGameStarted)
 							{
@@ -100,7 +100,7 @@ export function router()
 								gameInstance.socket!.emit("ready", true);
 								else
 								{
-								gameInstance.newmatchButton!.style.display = "block";
+								gameInstance.newmatchButton!.classList.remove("hidden");
 								return;
 								}
 							}
