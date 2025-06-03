@@ -9,6 +9,7 @@ export class HomePage implements IPages {
 	private isInitialRender: boolean = true; // İlk render kontrolü
 
 	constructor() {
+		console.log("homepage -> constructor calisti.");
 		this.currentLanguage = exmp.getLanguage();
 		
 		this.languageChangeHandler = (lang: string) => {
@@ -60,7 +61,11 @@ export class HomePage implements IPages {
 		// Önceki event listener'ı kaldır
 		abcdmain.removeEventListener('click', this.handleClick);
 		// Yeni event listener ekle
-		abcdmain.addEventListener('click', this.handleClick);
+		abcdmain.addEventListener('click', e => {
+			console.log('HomePage clicked');
+			this.handleClick(e);
+		});
+		console.log('HomePage initialized');
 	}
 
 	private handleClick = (event: MouseEvent) => {
@@ -100,7 +105,8 @@ export class HomePage implements IPages {
 	handelExit(): void {
 		localStorage.removeItem('token');
 		localStorage.removeItem('user');
-		localStorage.removeItem('language');
+		// dil ayarı silinmesin kalsın
+		// localStorage.removeItem('language');
 		console.log('Exit button clicked');
 		window.location.href = '/singin';
 	}

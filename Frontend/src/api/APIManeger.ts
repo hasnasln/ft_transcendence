@@ -1,5 +1,3 @@
-import { exmp } from "../languageMeneger";
-
 export class HTTPMethod extends String {
 	public static GET: string = 'GET';
 	public static POST: string = 'POST';
@@ -119,7 +117,7 @@ export class APIManager
 				// const x = localStorage.getItem('user');
 				// const y = JSON.parse(x || '{}');
 				// console.log("localStorage user name:", y.name);
-				await exmp.setLanguage(data.user.language); // Set language from user data // burada beklemek sorunumuzu çözdü
+				// await exmp.setLanguage(data.user.language); // Set language from user data // burada beklemek sorunumuzu çözdü
 			} else {
 				result.success = false;
 				result.message = 'Token not found in response';

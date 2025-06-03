@@ -244,14 +244,15 @@ export class LanguageManager
 	private languageChoises: string[];
 
 	private constructor() {
-		this.language = 'tr'; // Default language
+		this.language = localStorage.getItem('language') ||'tr'; // Default language
 		this.languageChoises = ['tr', 'en', 'fr']; // Available languages
 		this.languageData = new Map();
 		this.listeners = [];
 		this.loading = false;
 		this.loadPromise = null;
+		
 		console.log('languageManager instance created');
-
+		localStorage.setItem('language', this.language); // Store the default language in local storage
 		this.loadLanguageData(this.language);
 	}
 
@@ -301,6 +302,7 @@ export class LanguageManager
 			listener(this.language);
 			// i++;
 		}
+		console.log(`notifyLanguageChange: ${this.listeners.length} dinleyiciye bildirim gönderildi.`);
 		// console.log('notifyLanguageChange tamamlandı');
 		// console.log('i: ' + i);
 	}
@@ -343,7 +345,9 @@ export class LanguageManager
 		await this.loadPromise;
 		// console.log('dil ayarlandi, bir sonraki dinleyicilere yönlendirme yapılıyor');
 		// await new Promise(resolve => setTimeout(resolve, 3000));
-		this.notifyLanguageChange();
+		// ! sayfa içerisinde eventlerin çalışmamasının nedeni aşağıdaki satırın hem burada hem de 
+		// ! bunu fonsiyonu çağıran fonsiyonun hemen altında kullanılması
+		// this.notifyLanguageChange();
 	}
 
 	public getLanguage(): string {

@@ -97,16 +97,15 @@ export function renderSettings(container: HTMLElement): void
 	closeButton.textContent = 'X';
 	closeButton.setAttribute('data-action', 'close');
 	closeButton.classList.add(
-		'absolute',
-		'top-8',
-		'right-9',
-		'text-Black',
-		'px-4',
-		'py-2',
-		'rounded-full',
-		'hover:bg-cyan-700',
-		'transition-colors',
-		'duration-300'
+		'relative',
+		'border-2',
+		'border-black',
+		'group',
+		'hover:border-green-500',
+		'w-12',
+		'h-12',
+		'duration-500',
+		'overflow-hidden',
 	);
 
 	settings_main.appendChild(closeButton);
