@@ -1,6 +1,6 @@
 import { _apiManager } from '../api/APIManeger';
 import { exmp } from '../languageMeneger';
-import { close_Button } from '../companent/buttons';
+import { close_Button } from '../components/buttons';
 
 interface history {
 	// tarih

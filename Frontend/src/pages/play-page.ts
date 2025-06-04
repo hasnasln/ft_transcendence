@@ -1,4 +1,4 @@
-import { game_button } from "../companent/buttons";
+import { game_button } from "../components/buttons";
 
 /*
 Socor board ilk başta gizli olacak

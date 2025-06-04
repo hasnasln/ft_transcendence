@@ -2,7 +2,7 @@ import type { IPages } from './IPages';
 import { Settings } from './settings';
 import { ProfileSettings } from './profile';
 import { exmp } from '../languageMeneger';
-import { creaters } from '../companent/creaters';
+import { creaters } from '../components/creaters';
 
 export class HomePage implements IPages {
 	private languageChangeHandler: (lang: string) => void;

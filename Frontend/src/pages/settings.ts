@@ -1,6 +1,6 @@
 import { IApiSetSettings, _apiManager } from "../api/APIManeger";
 import { exmp } from "../languageMeneger";
-import { close_Button } from "../companent/buttons";
+import { close_Button } from "../components/buttons";
 const COLORS = {
 	red: '#ff0000',
 	green: '#00ff00',
