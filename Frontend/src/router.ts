@@ -30,7 +30,7 @@ export function router()
 		'relative',
 		'w-full',
 		'h-[100vh]',
-		'bg-red-200',
+		'bg-gray-300',
 	)
 	contentContainer.id = 'content-container';
 	switch (path) {

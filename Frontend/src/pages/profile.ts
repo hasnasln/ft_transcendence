@@ -1,5 +1,6 @@
 import { _apiManager } from '../api/APIManeger';
 import { exmp } from '../languageMeneger';
+import { close_Button } from '../companent/buttons';
 
 interface history {
 	// tarih
@@ -81,12 +82,12 @@ export class ProfileSettings{
 				case 'name':
 					this.handleX(action);
 					break;
-				case 'history':
-					this.handleHistory();
-					break;
-				case 'profile-settings':
-					this.handeleProfileSettings();
-					break;
+				// case 'history':
+				// 	this.handleHistory();
+				// 	break;
+				// case 'profile-settings':
+				// 	this.handeleProfileSettings();
+				// 	break;
 				case 'close':
 					this.close();
 					break;
@@ -152,71 +153,71 @@ export class ProfileSettings{
 		} 
 	}
 
-	handleHistory(): void {
-		const historyContainer = document.getElementById('history-button');
-		if (historyContainer) {
-			console.log('History button clicked');
-			const prof = document.getElementById('profile-settings-container');
-			if (prof) prof.remove();
-			const x = document.getElementById('history-container');
-			if (x) {
-				x.remove();
-			}else {
-				const secondPart = document.getElementById('second_part');
-				if (secondPart){
-					createHistory(this.nickname, this.getHistory(), secondPart);
-				}
-			}
-		}
-	}
+	// handleHistory(): void {
+	// 	const historyContainer = document.getElementById('history-button');
+	// 	if (historyContainer) {
+	// 		console.log('History button clicked');
+	// 		const prof = document.getElementById('profile-settings-container');
+	// 		if (prof) prof.remove();
+	// 		const x = document.getElementById('history-container');
+	// 		if (x) {
+	// 			x.remove();
+	// 		}else {
+	// 			const secondPart = document.getElementById('second_part');
+	// 			if (secondPart){
+	// 				// createHistory(this.nickname, this.getHistory(), secondPart);
+	// 			}
+	// 		}
+	// 	}
+	// }
 
-	handeleProfileSettings(): void 	{
-		const profileSettingsButton = document.getElementById('profile-settings-button');
-		if (profileSettingsButton) {
-			console.log('Profile settings button clicked');
-			const prof = document.getElementById('history-container');
-			if (prof) prof.remove();
-			const x = document.getElementById('profile-settings-container');
-			if (x) {
-				x.remove();
-			}else {
-				const secondPart = document.getElementById('second_part');
-				if (secondPart){
-					createProfileSettings(secondPart, this.getProfileSettings());
-				}
-			}
+	// handeleProfileSettings(): void 	{
+	// 	const profileSettingsButton = document.getElementById('profile-settings-button');
+	// 	if (profileSettingsButton) {
+	// 		console.log('Profile settings button clicked');
+	// 		const prof = document.getElementById('history-container');
+	// 		if (prof) prof.remove();
+	// 		const x = document.getElementById('profile-settings-container');
+	// 		if (x) {
+	// 			x.remove();
+	// 		}else {
+	// 			const secondPart = document.getElementById('second_part');
+	// 			if (secondPart){
+	// 				createProfileSettings(secondPart, this.getProfileSettings());
+	// 			}
+	// 		}
 			
-		}
-	}
+	// 	}
+	// }
 
-	getHistory(): history[] {
-		return [
-			{
-				date: '2025-05-01',
-				player1: 'Hasan',
-				player2: 'Veli',
-				player1Score: 10,
-				player2Score: 8,
-				winner: 'Hasan',
-			},
-			{
-				date: '2025-05-02',
-				player1: 'Ali',
-				player2: 'Mehmet',
-				player1Score: 5,
-				player2Score: 5,
-				winner: 'Berabere',
-			},
-			{
-				date: '2025-05-03',
-				player1: 'Hasan',
-				player2: 'Ayşe',
-				player1Score: 7,
-				player2Score: 9,
-				winner: 'Ayşe',
-			},
-		];
-	}
+	// getHistory(): history[] {
+	// 	return [
+	// 		{
+	// 			date: '2025-05-01',
+	// 			player1: 'Hasan',
+	// 			player2: 'Veli',
+	// 			player1Score: 10,
+	// 			player2Score: 8,
+	// 			winner: 'Hasan',
+	// 		},
+	// 		{
+	// 			date: '2025-05-02',
+	// 			player1: 'Ali',
+	// 			player2: 'Mehmet',
+	// 			player1Score: 5,
+	// 			player2Score: 5,
+	// 			winner: 'Berabere',
+	// 		},
+	// 		{
+	// 			date: '2025-05-03',
+	// 			player1: 'Hasan',
+	// 			player2: 'Ayşe',
+	// 			player1Score: 7,
+	// 			player2Score: 9,
+	// 			winner: 'Ayşe',
+	// 		},
+	// 	];
+	// }
 
 	getProfileSettings(): ISection[] {
 		return [
@@ -240,35 +241,17 @@ function renderProfile(container: HTMLElement) {
 		'justify-center',
 		'h-[100vh]',
 		'w-[90%]',
-		'sm:w-[60%]',
-		'md:w-[40%]',
-		'bg-cyan-500',
+		'sm:w-[45%]',
+		'md:w-[30%]',
+		'bg-blue-500',
 		'rounded-l-3xl',
 		'absolute',
 		'right-0',
 		'top-0',
 		'gap-4',
 		'animate-slide-in-right',
+		'z-20',
 	)
-
-	/* Close Button */
-	const closeButton = document.createElement('button');
-	closeButton.textContent = 'X';
-	closeButton.setAttribute('data-action', 'close');
-	closeButton.classList.add(
-		'absolute',
-		'top-8',
-		'left-9',
-		'text-Black',
-		'px-4',
-		'py-2',
-		'rounded-full',
-		'hover:bg-cyan-700',
-		'transition-colors',
-		'duration-300'
-	);
-	wrapper.appendChild(closeButton);
-
 
 	const profileContainer = document.createElement('div');
 	profileContainer.classList.add(
@@ -279,9 +262,18 @@ function renderProfile(container: HTMLElement) {
 		'border',
 		'border-gray-300',
 		'rounded-3xl',
+		'bg-gray-300',
 		'w-[90%]',
 		'h-[95%]',
+		'absolute',
 	);
+	
+	/* Close Button */
+	const closeButton = document.createElement('button');
+	closeButton.textContent = 'X';
+	closeButton.setAttribute('data-action', 'close');
+	close_Button(closeButton, 'left');
+	profileContainer.appendChild(closeButton);
 
 	const firstPart = document.createElement('div');
 	firstPart.classList.add(
@@ -293,7 +285,7 @@ function renderProfile(container: HTMLElement) {
 		'h-[40%]',
 		'gap-3',
 		'border-b-2',
-		'border-gray-900',
+		'border-blue-500',
 	);
 
 	// ayarların ve geçmişin gözükeceği kısım
@@ -345,30 +337,30 @@ function renderProfile(container: HTMLElement) {
 	nameContainer.appendChild(name);
 	firstPart.appendChild(nameContainer);
 
-	const ProfileSettingsButton = document.createElement('button');
-	ProfileSettingsButton.textContent = exmp.getLang('profile.profile-settings');
-	ProfileSettingsButton.setAttribute('data-action', 'profile-settings');
-	ProfileSettingsButton.id = 'profile-settings-button';
-	ProfileSettingsButton.classList.add(
-		'bg-blue-500',
-		'text-white',
-		'px-4',
-		'py-2',
-		'rounded-lg',
-	);
+	// const ProfileSettingsButton = document.createElement('button');
+	// ProfileSettingsButton.textContent = exmp.getLang('profile.profile-settings');
+	// ProfileSettingsButton.setAttribute('data-action', 'profile-settings');
+	// ProfileSettingsButton.id = 'profile-settings-button';
+	// ProfileSettingsButton.classList.add(
+	// 	'bg-blue-500',
+	// 	'text-white',
+	// 	'px-4',
+	// 	'py-2',
+	// 	'rounded-lg',
+	// );
 
-	firstPart.appendChild(ProfileSettingsButton);
-	const HistoryButton = document.createElement('button');
-	HistoryButton.textContent = exmp.getLang('profile.history');
-	HistoryButton.setAttribute('data-action', 'history');
-	HistoryButton.id = 'history-button';
-	HistoryButton.classList.add(
-		'bg-blue-500',
-		'text-white',
-		'px-4',
-		'py-2',
-		'rounded-lg',
-	);
+	// firstPart.appendChild(ProfileSettingsButton);
+	// const HistoryButton = document.createElement('button');
+	// HistoryButton.textContent = exmp.getLang('profile.history');
+	// HistoryButton.setAttribute('data-action', 'history');
+	// HistoryButton.id = 'history-button';
+	// HistoryButton.classList.add(
+	// 	'bg-blue-500',
+	// 	'text-white',
+	// 	'px-4',
+	// 	'py-2',
+	// 	'rounded-lg',
+	// );
 	
 	//! Butonlara çift basınca işevli oluyor sebebi nedir ?
 	//? sebebi toggle fonsiyonunu kullanmak mış remove ve add kullanmaya başladık
@@ -381,120 +373,122 @@ function renderProfile(container: HTMLElement) {
 		Bu sayede, aynı kodla bir öğeyi gizleyip göstermek (yani toggle etmek) kolaylaşır.
 	*/
 
-	firstPart.appendChild(HistoryButton);
+	
+	// firstPart.appendChild(HistoryButton);
+	createProfileSettings(secondPart, new ProfileSettings().getProfileSettings());
 	profileContainer.appendChild(firstPart);
 	profileContainer.appendChild(secondPart);
 	wrapper.appendChild(profileContainer);
 	container.appendChild(wrapper);
 }
 
-function createHistory(player: string, historyl: history[], container: HTMLElement) 
-{
-	const historyContainer = document.createElement('div');
-	historyContainer.id = 'history-container';
-	historyContainer.classList.add(
-		'flex',
-		'flex-col',
-		'items-start',         // sola hizalı kartlar daha profesyonel görünür
-		'justify-start',
-		'w-full',
-		'h-full',
-		'overflow-y-auto',
-		'overflow-x-hidden',
-		'gap-4',               // kartlar arası boşluk daha belirgin
-		'p-4',                 // iç boşluk
-		'rounded-2xl',         // yuvarlatılmış köşeler
-		'bg-cyan-500',            // arka plan beyaz
-		'shadow-inner',        // iç gölge efekti
-		'scrollbar',                // scrollbar'ı etkinleştir
-		'scrollbar-thumb-blue-600',
-		'scrollbar-track-blue-200',
-		'hover:scrollbar-thumb-blue-800',
-		'rounded-md',
-		'max-h-[90%]'          // taşma olmaması için maksimum yükseklik
-	);
-	historyl.forEach((game) => {
-		createHistoryCard(player, game, historyContainer);
-	});
-	container.appendChild(historyContainer);
-}
+// function createHistory(player: string, historyl: history[], container: HTMLElement) 
+// {
+// 	const historyContainer = document.createElement('div');
+// 	historyContainer.id = 'history-container';
+// 	historyContainer.classList.add(
+// 		'flex',
+// 		'flex-col',
+// 		'items-start',         // sola hizalı kartlar daha profesyonel görünür
+// 		'justify-start',
+// 		'w-full',
+// 		'h-full',
+// 		'overflow-y-auto',
+// 		'overflow-x-hidden',
+// 		'gap-4',               // kartlar arası boşluk daha belirgin
+// 		'p-4',                 // iç boşluk
+// 		'rounded-2xl',         // yuvarlatılmış köşeler
+// 		'bg-cyan-500',            // arka plan beyaz
+// 		'shadow-inner',        // iç gölge efekti
+// 		'scrollbar',                // scrollbar'ı etkinleştir
+// 		'scrollbar-thumb-blue-600',
+// 		'scrollbar-track-blue-200',
+// 		'hover:scrollbar-thumb-blue-800',
+// 		'rounded-md',
+// 		'max-h-[90%]'          // taşma olmaması için maksimum yükseklik
+// 	);
+// 	historyl.forEach((game) => {
+// 		createHistoryCard(player, game, historyContainer);
+// 	});
+// 	container.appendChild(historyContainer);
+// }
 
 
-// history de her bir kartı oluşturmak için fonksiyon
-function createHistoryCard(player: string, history: history, container: HTMLElement) {
-	const card = document.createElement('div');
-	card.classList.add(
-		'flex',
-		'flex-col',
-		'items-start',
-		'justify-start',
-		'p-4',
-		'rounded-2xl',
-		'w-[95%]',
-		'shadow-lg',
-		'transition-transform',
-		'hover:scale-[1.02]',
-		'hover:shadow-2xl',
-		'text-white',
-		'mb-4'
-	);
+// // history de her bir kartı oluşturmak için fonksiyon
+// function createHistoryCard(player: string, history: history, container: HTMLElement) {
+// 	const card = document.createElement('div');
+// 	card.classList.add(
+// 		'flex',
+// 		'flex-col',
+// 		'items-start',
+// 		'justify-start',
+// 		'p-4',
+// 		'rounded-2xl',
+// 		'w-[95%]',
+// 		'shadow-lg',
+// 		'transition-transform',
+// 		'hover:scale-[1.02]',
+// 		'hover:shadow-2xl',
+// 		'text-white',
+// 		'mb-4'
+// 	);
 
-	if (history.winner === 'Berabere') {
-		card.classList.add('bg-yellow-500');
-	} else if (player === history.winner) {
-		card.classList.add('bg-green-500');
-	} else {
-		card.classList.add('bg-red-500');
-	}
+// 	if (history.winner === 'Berabere') {
+// 		card.classList.add('bg-yellow-500');
+// 	} else if (player === history.winner) {
+// 		card.classList.add('bg-green-500');
+// 	} else {
+// 		card.classList.add('bg-red-500');
+// 	}
 
-	const date = document.createElement('h3');
-	date.textContent = `📅 ${history.date}`;
-	date.classList.add(
-		'text-sm',
-		'font-semibold',
-		'mb-2',
-		'text-white'
-	);
+// 	const date = document.createElement('h3');
+// 	date.textContent = `📅 ${history.date}`;
+// 	date.classList.add(
+// 		'text-sm',
+// 		'font-semibold',
+// 		'mb-2',
+// 		'text-white'
+// 	);
 
-	const match = document.createElement('div');
-	match.classList.add(
-		'flex',
-		'flex-row',
-		'items-center',
-		'justify-between',
-		'w-full',
-		'text-lg',
-		'font-bold',
-	);
+// 	const match = document.createElement('div');
+// 	match.classList.add(
+// 		'flex',
+// 		'flex-row',
+// 		'items-center',
+// 		'justify-between',
+// 		'w-full',
+// 		'text-lg',
+// 		'font-bold',
+// 	);
 
-	const player1 = document.createElement('span');
-	player1.textContent = `${history.player1} : ${history.player1Score}`;
+// 	const player1 = document.createElement('span');
+// 	player1.textContent = `${history.player1} : ${history.player1Score}`;
 
-	const vs = document.createElement('span');
-	vs.textContent = history.winner === 'Berabere' ? '🤝' : 'VS';
+// 	const vs = document.createElement('span');
+// 	vs.textContent = history.winner === 'Berabere' ? '🤝' : 'VS';
 
-	const player2 = document.createElement('span');
-	player2.textContent = `${history.player2Score} : ${history.player2}`;
+// 	const player2 = document.createElement('span');
+// 	player2.textContent = `${history.player2Score} : ${history.player2}`;
 
-	match.appendChild(player1);
-	match.appendChild(vs);
-	match.appendChild(player2);
+// 	match.appendChild(player1);
+// 	match.appendChild(vs);
+// 	match.appendChild(player2);
 
-	const result = document.createElement('p');
-	result.textContent = history.winner === 'Berabere'
-		? 'Sonuç: Berabere'
-		: `Kazanan: ${history.winner}`;
-	result.classList.add(
-		'text-sm',
-		'mt-2',
-		'italic'
-	);
+// 	const result = document.createElement('p');
+// 	result.textContent = history.winner === 'Berabere'
+// 		? 'Sonuç: Berabere'
+// 		: `Kazanan: ${history.winner}`;
+// 	result.classList.add(
+// 		'text-sm',
+// 		'mt-2',
+// 		'italic'
+// 	);
 
-	card.appendChild(date);
-	card.appendChild(match);
-	card.appendChild(result);
-	container.appendChild(card);
-}
+// 	card.appendChild(date);
+// 	card.appendChild(match);
+// 	card.appendChild(result);
+// 	container.appendChild(card);
+// }
 
 
 //! Profil kısmındaki ayarlar butonuna tıklayınca gözükecek kısım
@@ -524,7 +518,7 @@ function createProfileSettings(container: HTMLElement, settings: ISection[]) {
 			'gap-2',
 			'p-4',
 			'border',
-			'border-gray-300',
+			'border-blue-500',
 			'rounded-lg',
 			'bg-gray-50',
 			'shadow-sm'
@@ -551,13 +545,13 @@ function createProfileSettings(container: HTMLElement, settings: ISection[]) {
 		saveButton.classList.add(
 			'self-end',
 			'mt-2',
-			'bg-cyan-600',
+			'bg-blue-500',
 			'text-white',
 			'font-bold',
 			'py-1',
 			'px-4',
 			'rounded-md',
-			'hover:bg-cyan-700',
+			'hover:bg-blue-700',
 			'transition'
 		);
 		settingGroup.appendChild(settingLabel);

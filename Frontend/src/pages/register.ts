@@ -160,7 +160,7 @@ export function renderRegister(container: HTMLElement) {
 		`justify-center`,
 		`h-[100vh]`,
 		'w-full`',
-		"bg-cyan-500",
+		"bg-gray-300",
 	);
 	const formContainer = document.createElement('div');
 	formContainer.id = 'register_main';

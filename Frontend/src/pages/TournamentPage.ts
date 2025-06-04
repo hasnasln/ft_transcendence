@@ -118,7 +118,7 @@ function renderTournament(container: HTMLElement) {
 		'top-0',
 		'left-0',
 		'z-0',
-		'bg-gray-900',
+		'bg-gray-300',
 	);
 
 	createTournamentSection(div);
@@ -138,23 +138,23 @@ function createTournamentSection(container: HTMLElement): void{
 		'rounded-3xl',
 		'w-[30%]',
 		'h-[30%]',
-		'bg-white',
 		'gap-6',
 	)
 
 	const title = document.createElement('h1');
 	title.textContent = exmp.getLang('tournament.first-page.title');
 	title.classList.add(
-		'text-2xl',
+		'text-6xl',
 		'font-bold',
 		'text-center',
+		'text-gray-900',
 	);
 
 	const p = document.createElement('p');
 	p.textContent = exmp.getLang('tournament.first-page.description');
 	p.classList.add(
-		'text-gray-500',
-		'text-sm',
+		'text-gray-900',
+		'text-xl',
 		'text-center',
 		'w-[80%]',
 	);
@@ -243,9 +243,8 @@ function ShowTournament(container: HTMLElement): void {
 		'rounded-3xl',
 		'w-[90%]',
 		'h-[90%]',
-		'bg-white',
+		'bg-gray-300',
 		'p-6',
-		'shadow-xl',
 		'gap-4',
 		'overflow-y-auto'
 	);

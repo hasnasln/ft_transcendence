@@ -2,6 +2,7 @@ import type { IPages } from './IPages';
 import { Settings } from './settings';
 import { ProfileSettings } from './profile';
 import { exmp } from '../languageMeneger';
+import { creaters } from '../companent/creaters';
 
 export class HomePage implements IPages {
 	private languageChangeHandler: (lang: string) => void;
@@ -174,8 +175,19 @@ export function renderHome(container: HTMLElement) {
 		'absolute',
 		'top-0',
 		'left-0',
-		'z-0'
+		'z-0',
+		'bg-gray-300',
+		'relative',
+		'overflow-hidden',
 	);
+
+	creaters(maindiv, 'top-0', 'left-3', 50, 'hamza');
+	creaters(maindiv, 'top-0', 'right-3', 50, 'hasan');
+	creaters(maindiv, 'top-1/2', 'left-3', 50, 'batuhan');
+	creaters(maindiv, 'top-1/2', 'right-3', 50, 'ayhan');
+	creaters(maindiv, 'top-3', 'right-[50]', 10, 'fatma');
+
+
 
 	const choicesdiv = document.createElement('div');
 	choicesdiv.classList.add(
@@ -186,7 +198,6 @@ export function renderHome(container: HTMLElement) {
 		'rounded-3xl',
 		'w-[30%]',
 		'h-[30%]',
-		'bg-white',
 		'gap-6',
 	);
 
@@ -214,7 +225,10 @@ function CreateChoiseButton(container: HTMLElement, text: string, action: string
 		'hover:bg-blue-700',
 		'transition-colors',
 		'duration-300',
-		'w-[70%]'
+		'w-[70%]',
+		'hover:scale-105',
+		'transform',
+		'transition-transform',
 	);
 	container.appendChild(button);
 }

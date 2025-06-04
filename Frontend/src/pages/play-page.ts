@@ -1,3 +1,5 @@
+import { game_button } from "../companent/buttons";
+
 /*
 Socor board ilk başta gizli olacak
 */
@@ -141,7 +143,7 @@ function renderMenu(container: HTMLElement): void
 	menudiv.classList.add(
 		'w-[50%]',
 		'h-[50%]',
-		'bg-cyan-800',
+		'bg-gray-300',
 		'rounded-3xl',
 		'flex',
 		'justify-center',
@@ -149,7 +151,6 @@ function renderMenu(container: HTMLElement): void
 		'flex-col',
 		'gap-3',
 		'z-10', 
-
 		// 'hidden' //!
 	);
 	
@@ -157,36 +158,9 @@ function renderMenu(container: HTMLElement): void
 	const button2 = createButtonWithNameId('btn-find-rival','Find a Rival');
 	const button3 = createButtonWithNameId('btn-local','Local Game');
 
-	button1.classList.add(
-		'w-[80%]',
-		'h-[20%]',
-		'bg-cyan-600',
-		'rounded-3xl',
-		'text-white',
-		'text-xl',
-		'z-10', 
-
-	)
-	button2.classList.add(
-		'w-[80%]',
-		'h-[20%]',
-		'bg-cyan-600',
-		'rounded-3xl',
-		'text-white',
-		'text-xl',
-		'z-10', 
-
-	)
-	button3.classList.add(
-		'w-[80%]',
-		'h-[20%]',
-		'bg-cyan-600',
-		'rounded-3xl',
-		'text-white',
-		'text-xl',
-		'z-10', 
-
-	)
+	game_button(button1);
+	game_button(button2);
+	game_button(button3);
 
 	menudiv.appendChild(button1);
 	menudiv.appendChild(button2);
@@ -202,7 +176,7 @@ function renderDifficlty(container: HTMLElement): void
 	difficulty.classList.add(
 		'w-[50%]',
 		'h-[50%]',
-		'bg-cyan-800',
+		'bg-gray-300',
 		'rounded-3xl',
 		'flex',
 		'justify-center',
@@ -211,9 +185,8 @@ function renderDifficlty(container: HTMLElement): void
 		'gap-3',
 		'hidden',//!
 		'z-10', 
-
-		
 	);
+
 	const button1 = createButtonWithNameId('', 'Easy');
 	const button2 = createButtonWithNameId('', 'medium');
 	const button3 = createButtonWithNameId('', 'hard');
@@ -222,38 +195,9 @@ function renderDifficlty(container: HTMLElement): void
 	button2.setAttribute('data-level', 'medium');
 	button3.setAttribute('data-level', 'hard');
 
-	button1.classList.add(
-		'w-[80%]',
-		'h-[20%]',
-		'bg-cyan-600',
-		'rounded-3xl',
-		'text-white',
-		'text-xl',
-		'z-10', 
-
-	)
-
-	button2.classList.add(
-		'w-[80%]',
-		'h-[20%]',
-		'bg-cyan-600',
-		'rounded-3xl',
-		'text-white',
-		'text-xl',
-		'z-10', 
-
-	)
-
-	button3.classList.add(
-		'w-[80%]',
-		'h-[20%]',
-		'bg-cyan-600',
-		'rounded-3xl',
-		'text-white',
-		'text-xl',
-		'z-10', 
-	)
-
+	game_button(button1);
+	game_button(button2);
+	game_button(button3);
 
 	difficulty.appendChild(button1);
 	difficulty.appendChild(button2);
@@ -278,7 +222,7 @@ export class PlayPage {
 		const paly_div = document.createElement('div');
 		paly_div.id = 'game-wrapper';
 		paly_div.classList.add(
-			'bg-cyan-400',
+			'bg-gray-300',
 			'w-full',
 			'h-full',
 			'relative',
@@ -292,7 +236,6 @@ export class PlayPage {
 		canvas.classList.add(
 			"w-[90%]",
 			"absolute",
-			
 		);
 		canvas.id = 'game-canvas';
 		const set_toast = createDivAddId('set-toast');
@@ -337,7 +280,7 @@ export class PlayPage {
 			'absolute',
 			'top-[20%]',
 			'items-center',
-			'bg-cyan-600',
+			'bg-blue-500',
 			'rounded-3xl',
 			'text-white',
 			'text-xl',
@@ -348,11 +291,13 @@ export class PlayPage {
 
 		start_Button.classList.add(
 			'absolute',
-			'top-[50%]',
+			'top-[40%]',
+			'w-[50%]',
+			'h-[16%]',
 			'items-center',
 			'p-5',
 			'text-[1.8vw]',
-			'bg-cyan-600',
+			'bg-blue-500',
 			'rounded-3xl',
 			'text-white',
 			'text-xl',
@@ -368,7 +313,7 @@ export class PlayPage {
 			'z-20',
 			'p-5',
 			'text-[1.8vw]',
-			'bg-cyan-600',
+			'bg-blue-500',
 			'rounded-3xl',
 			'text-white',
 			'text-xl',
@@ -381,8 +326,8 @@ export class PlayPage {
 			'top-[70%]',
 			'items-center',
 			'z-20',
-		     'p-5',
-			'bg-cyan-600',
+			'p-5',
+			'bg-blue-500',
 			'text-[1.8vw]',
 			'rounded-3xl',
 			'text-white',

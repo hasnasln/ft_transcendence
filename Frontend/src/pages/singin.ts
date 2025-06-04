@@ -121,6 +121,7 @@ export function renderSingin(container: HTMLElement): void {
 		`justify-center`,
 		`h-[100vh]`,
 		'w-full',
+		'bg-gray-300'
 	);
 
 	const formContainer = document.createElement('div');

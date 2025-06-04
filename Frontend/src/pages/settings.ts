@@ -1,6 +1,6 @@
 import { IApiSetSettings, _apiManager } from "../api/APIManeger";
 import { exmp } from "../languageMeneger";
-
+import { close_Button } from "../companent/buttons";
 const COLORS = {
 	red: '#ff0000',
 	green: '#00ff00',
@@ -82,9 +82,9 @@ export function renderSettings(container: HTMLElement): void
 		'justify-center',
 		'h-[100vh]',
 		'w-[90%]',
-		'sm:w-[60%]',
-		'md:w-[40%]',
-		'bg-cyan-500',
+		'sm:w-[45%]',
+		'md:w-[30%]',
+		'bg-blue-500',
 		'rounded-r-3xl',
 		'top-0',
 		'left-0',
@@ -92,23 +92,6 @@ export function renderSettings(container: HTMLElement): void
 		'animate-slide-in-left',
 	);
 
-	/* Close Button */
-	const closeButton = document.createElement('button');
-	closeButton.textContent = 'X';
-	closeButton.setAttribute('data-action', 'close');
-	closeButton.classList.add(
-		'relative',
-		'border-2',
-		'border-black',
-		'group',
-		'hover:border-green-500',
-		'w-12',
-		'h-12',
-		'duration-500',
-		'overflow-hidden',
-	);
-
-	settings_main.appendChild(closeButton);
 	// Game Settings
 	const gameSettingsContainer = document.createElement('div');
 	gameSettingsContainer.classList.add(
@@ -120,11 +103,22 @@ export function renderSettings(container: HTMLElement): void
 		'border-gray-300',
 		'rounded-3xl',
 		'w-[90%]',
-		'h-[95%]'
-	);
+		'h-[95%]',
+		'bg-gray-300',
+		'shadow-2xl',
+		'shadow-gray-500',
+		'relative',
+		);
 	const gameSettingsTitleContainer = document.createElement('div');
 	gameSettingsTitleContainer.classList.add(
 	);
+	// /* Close Button */
+	const closeButton = document.createElement('button');
+	closeButton.textContent = 'X';
+	closeButton.setAttribute('data-action', 'close');
+	close_Button(closeButton, 'right');
+
+	gameSettingsTitleContainer.appendChild(closeButton);
 	const gameSettingsTitle = document.createElement('h1');
 	gameSettingsTitle.textContent = exmp.getLang("settings.title");
 	gameSettingsTitle.classList.add(
@@ -310,7 +304,7 @@ function createLanguageSelector(container: HTMLElement, selectedLanguage: string
 
 	const select = document.createElement('select');
 	select.value = selectedLanguage;
-	select.classList.add('border', 'border-gray-300', 'rounded-lg', 'px-2', 'py-1', 'text-gray-800');
+	select.classList.add('w-[50%]','border', 'border-gray-300', 'rounded-lg', 'px-2', 'py-1', 'text-gray-800');
 
 	langs.forEach(lang => {
 		const option = document.createElement('option');
