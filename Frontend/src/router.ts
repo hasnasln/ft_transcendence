@@ -46,12 +46,21 @@ export function router()
 			break;
 		case '/play':
 			const playPage = new PlayPage();
-			playPage.render(contentContainer);
+			const {info, menu} = playPage.render(contentContainer);
 			// 3 sanite bekle
-
-			setTimeout(() => {
-				gameInstance.initGameSettings();
-			}, 3000);
+			if (info !== null && menu !== null)
+			{
+				info.textContent = 'Oyun sayfası yükleniyor ...';
+				info.classList.add('bg-blue-500');
+				info.classList.remove('hidden');
+				
+				setTimeout(() => {
+					gameInstance.initGameSettings();
+					info.classList.add('hidden');
+					info.classList.remove('bg-blue-500');
+					menu.classList.remove('hidden');
+				}, 3000);
+			}
 
 			break;
 		case '/tournament':

@@ -3,75 +3,77 @@ import { game_button } from "../components/buttons";
 /*
 Socor board ilk başta gizli olacak
 */
-function renderScoreBoard(container: HTMLElement): void {
+function renderScoreBoard(container: HTMLElement): void
+{
 	const ScoreBoard = document.createElement('div');
-	ScoreBoard.id = 'scoreboard';
-	ScoreBoard.classList.add(
-			  // Konumlandırma
-		'absolute',
-		'top-[4%]',
-		'left-1/2',
-		'-translate-x-1/2',
+		ScoreBoard.id = 'scoreboard';
+		ScoreBoard.classList.add(
+				// Konumlandırma
+			'absolute',
+			'top-[4%]',
+			'left-1/2',
+			'-translate-x-1/2',
 
-		// Görünmez başlangıç
-		'hidden',
+			// Görünmez başlangıç
+			'hidden',
 
-		// Flex ayarları
-		'flex',
-		'justify-center',
-		'items-center',
+			// Flex ayarları
+			'flex',
+			'justify-center',
+			'items-center',
 
-		// Padding
-		'px-[2vw]',
-		'py-[0.5vw]',
+			// Padding
+			'px-[2vw]',
+			'py-[0.5vw]',
 
-		// Arka plan (özel gradient)
-		'bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)]',
+			// Arka plan (özel gradient)
+			'bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)]',
 
-		// Kenarlıklar
-		'border-2',
-		'border-[#555]',
-		'rounded-[12px]',
+			// Kenarlıklar
+			'border-2',
+			'border-[#555]',
+			'rounded-[12px]',
 
-		// Gölge (özel box-shadow)
-		'shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)]',
+			// Gölge (özel box-shadow)
+			'shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)]',
 
-		// Yazı tipi, boyutu ve rengi
-		'font-sans',
-		'text-[1.8vw]',
-		'text-[#eee]',
+			// Yazı tipi, boyutu ve rengi
+			'font-sans',
+			'text-[1.8vw]',
+			'text-[#eee]',
 
-		// Z-index
-		'z-10'
-	);
+			// Z-index
+			'z-10'
+		);
 
-	const span01 = document.createElement('span');
-	span01.id = 'blue-team';
-	span01.textContent = 'P1';
-	span01.classList.add(
-		'text-green-500'
-	);
+		const span01 = document.createElement('span');
+		span01.id = 'blue-team';
+		span01.textContent = 'P1';
+		span01.classList.add(
+			'text-green-500'
+		);
 
-	const span03 = document.createElement('span');
-	span03.id = 'score-table';
-	span03.textContent = '0 : 0';
-	span03.classList.add(
-		'px-[1vw]',
-		'py-[0.2vw]'
-	);
+		const span03 = document.createElement('span');
+		span03.id = 'score-table';
+		span03.textContent = '0 : 0';
+		span03.classList.add(
+			'px-[1vw]',
+			'py-[0.2vw]'
+		);
 
-	const span02 = document.createElement('span');
-	span02.id = 'red-team';
-	span02.textContent = 'P2';
-	span02.classList.add(
-		'text-green-500'
-	);
+		const span02 = document.createElement('span');
+		span02.id = 'red-team';
+		span02.textContent = 'P2';
+		span02.classList.add(
+			'text-green-500'
+		);
 
-	ScoreBoard.appendChild(span01);
-	ScoreBoard.appendChild(span03);
-	ScoreBoard.appendChild(span02);
+		ScoreBoard.appendChild(span01);
+		ScoreBoard.appendChild(span03);
+		ScoreBoard.appendChild(span02);
 
-	container.appendChild(ScoreBoard);
+		container.appendChild(ScoreBoard);
+
 }
 
 
@@ -94,86 +96,87 @@ function createSpanAddId(id: string): HTMLElement
  * setboard ilk başta gizli 
  * 
  */
-function renderSetBoard(container: HTMLElement): void {
+function renderSetBoard(container: HTMLElement): void
+{
 	const setboard = createDivAddId('setboard');
-	setboard.classList.add(
-		'absolute',
-		'bottom-[4%]',
-		'left-1/2',
-		'transform',
-		'-translate-x-1/2',
-		'mt-[0.3vw]',
+		setboard.classList.add(
+			'absolute',
+			'bottom-[4%]',
+			'left-1/2',
+			'transform',
+			'-translate-x-1/2',
+			'mt-[0.3vw]',
 
-		'hidden',              
-		'flex',
-		'flex-col',
-		'justify-center',
-		'items-center',
-		'px-[2vw]',               // padding: 0vw 2vw
-		'py-0',
+			'hidden',              
+			'flex',
+			'flex-col',
+			'justify-center',
+			'items-center',
+			'px-[2vw]',               // padding: 0vw 2vw
+			'py-0',
 
-		// Özel gradient 
-		'bg-gradient-to-br',
-		'from-[#1e1e1e]',
-		'to-[#2c2c2c]',
+			// Özel gradient 
+			'bg-gradient-to-br',
+			'from-[#1e1e1e]',
+			'to-[#2c2c2c]',
 
-		'border',
-		'border-2',
-		'border-[#555]',
-		'rounded-[12px]',
+			'border',
+			'border-2',
+			'border-[#555]',
+			'rounded-[12px]',
 
-		// Yakın bir box-shadow 
-		'shadow-[0_0_10px_rgba(255,255,255,0.2),0_0_20px_rgba(255,255,255,0.1)]',
+			// Yakın bir box-shadow 
+			'shadow-[0_0_10px_rgba(255,255,255,0.2),0_0_20px_rgba(255,255,255,0.1)]',
 
-		'font-sans',
-		'text-[1.4vw]',
-		'text-[#eee]',
-		'z-10'
-		
-	);
+			'font-sans',
+			'text-[1.4vw]',
+			'text-[#eee]',
+			'z-10'
+			
+		);
 
-  
+	
 
-	// Başlık kısmı
-	const setboard0 = createDivAddId('set-title');
+		// Başlık kısmı
+		const setboard0 = createDivAddId('set-title');
 
-	const setboard00 = createSpanAddId('setler');
-	setboard00.textContent = "SETLER";
-	setboard00.classList.add(
-		'text-[1.3vw]'
-	);
+		const setboard00 = createSpanAddId('setler');
+		setboard00.textContent = "SETLER";
+		setboard00.classList.add(
+			'text-[1.3vw]'
+		);
 
-	setboard0.appendChild(setboard00);
+		setboard0.appendChild(setboard00);
 
-	// Skor kısmı
-	const setboard1 = createDivAddId('set-skor');
+		// Skor kısmı
+		const setboard1 = createDivAddId('set-skor');
 
-	const setboard10 = createSpanAddId('blue-team-s');
-	const setboard11 = createSpanAddId('set-table');
-	const setboard12 = createSpanAddId('red-team-s');
+		const setboard10 = createSpanAddId('blue-team-s');
+		const setboard11 = createSpanAddId('set-table');
+		const setboard12 = createSpanAddId('red-team-s');
 
-	setboard10.textContent = "P1";
-	setboard10.classList.add(
-		'text-green-500'
-	);
-	setboard11.textContent = "0 : 0";
-	setboard11.classList.add(
-		'px-[1vw]',
-		'py-[0.2vw]'
-	);
-	setboard12.textContent = "P2";
-	setboard12.classList.add(
-		'text-green-500'
-	);
+		setboard10.textContent = "P1";
+		setboard10.classList.add(
+			'text-green-500'
+		);
+		setboard11.textContent = "0 : 0";
+		setboard11.classList.add(
+			'px-[1vw]',
+			'py-[0.2vw]'
+		);
+		setboard12.textContent = "P2";
+		setboard12.classList.add(
+			'text-green-500'
+		);
 
-	setboard1.appendChild(setboard10);
-	setboard1.appendChild(setboard11);
-	setboard1.appendChild(setboard12);
+		setboard1.appendChild(setboard10);
+		setboard1.appendChild(setboard11);
+		setboard1.appendChild(setboard12);
 
-	// Her şeyi birleştir
-	setboard.appendChild(setboard0);
-	setboard.appendChild(setboard1);
-	container.appendChild(setboard);
+		// Her şeyi birleştir
+		setboard.appendChild(setboard0);
+		setboard.appendChild(setboard1);
+		container.appendChild(setboard);
 }
 
 
@@ -188,85 +191,88 @@ function createButtonWithNameId(id: string, Name: string): HTMLElement {
 }
 
 
-function renderMenu(container: HTMLElement): void
+function renderMenu(container: HTMLElement): HTMLElement
 {
 	const  menudiv = createDivAddId('menu');
-	menudiv.classList.add(
-		'absolute',
-		'top-1/2',
-		'left-1/2',
-		'-translate-x-1/2',
-		'-translate-y-1/2',
-		'w-[50%]',
-		'h-[60%]',
-		'bg-gray-300',
-		'rounded-3xl',
-		'flex',
-		'flex-col',
-		'justify-center',
-		'items-center',
-		'gap-4',
-		'z-10' 
-	);
-	
-	const button1 = createButtonWithNameId('btn-vs-computer','VS Computer');
-	const button2 = createButtonWithNameId('btn-find-rival','Find a Rival');
-	const button3 = createButtonWithNameId('btn-local','Local Game');
-	const button4 = createButtonWithNameId('tournament','Tournament Game');
+		menudiv.classList.add(
+			'absolute',
+			'top-1/2',
+			'left-1/2',
+			'-translate-x-1/2',
+			'-translate-y-1/2',
+			'w-[50%]',
+			'h-[60%]',
+			'bg-gray-300',
+			'rounded-3xl',
+			'flex',
+			'flex-col',
+			'justify-center',
+			'items-center',
+			'gap-4',
+			'z-10',
+			'hidden'
+		);
+		
+		const button1 = createButtonWithNameId('btn-vs-computer','VS Computer');
+		const button2 = createButtonWithNameId('btn-find-rival','Find a Rival');
+		const button3 = createButtonWithNameId('btn-local','Local Game');
+		const button4 = createButtonWithNameId('tournament','Tournament Game');
 
-	game_button(button1);
-	game_button(button2);
-	game_button(button3);
-	game_button(button4);
+		game_button(button1);
+		game_button(button2);
+		game_button(button3);
+		game_button(button4);
 
-	menudiv.appendChild(button1);
-	menudiv.appendChild(button2);
-	menudiv.appendChild(button3);
-	menudiv.appendChild(button4);
+		menudiv.appendChild(button1);
+		menudiv.appendChild(button2);
+		menudiv.appendChild(button3);
+		menudiv.appendChild(button4);
 
-	container.appendChild(menudiv);
+		container.appendChild(menudiv);
+
+		return menudiv;
 }
 
 
-function renderDifficlty(container: HTMLElement): void
+function renderDifficulty(container: HTMLElement): void
 {
 	const difficulty = createDivAddId('difficulty');
-	difficulty.classList.add(
-		'absolute',
-		'top-1/2',
-		'left-1/2',
-		'-translate-x-1/2',
-		'-translate-y-1/2',
-		'w-[50%]',
-		'h-[60%]',
-		'bg-gray-300',
-		'rounded-3xl',
-		'flex',
-		'flex-col',
-		'justify-center',
-		'items-center',
-		'gap-4',
-		'z-10',
-		'hidden',
-	);
+		difficulty.classList.add(
+			'absolute',
+			'top-1/2',
+			'left-1/2',
+			'-translate-x-1/2',
+			'-translate-y-1/2',
+			'w-[50%]',
+			'h-[60%]',
+			'bg-gray-300',
+			'rounded-3xl',
+			'flex',
+			'flex-col',
+			'justify-center',
+			'items-center',
+			'gap-4',
+			'z-10',
+			'hidden',
+		);
 
-	const button1 = createButtonWithNameId('', 'Easy');
-	const button2 = createButtonWithNameId('', 'medium');
-	const button3 = createButtonWithNameId('', 'hard');
+		const button1 = createButtonWithNameId('', 'Easy');
+		const button2 = createButtonWithNameId('', 'medium');
+		const button3 = createButtonWithNameId('', 'hard');
 
-	button1.setAttribute('data-level', 'easy');
-	button2.setAttribute('data-level', 'medium');
-	button3.setAttribute('data-level', 'hard');
+		button1.setAttribute('data-level', 'easy');
+		button2.setAttribute('data-level', 'medium');
+		button3.setAttribute('data-level', 'hard');
 
-	game_button(button1);
-	game_button(button2);
-	game_button(button3);
+		game_button(button1);
+		game_button(button2);
+		game_button(button3);
 
-	difficulty.appendChild(button1);
-	difficulty.appendChild(button2);
-	difficulty.appendChild(button3);
+		difficulty.appendChild(button1);
+		difficulty.appendChild(button2);
+		difficulty.appendChild(button3);
 
-	container.appendChild(difficulty);
+		container.appendChild(difficulty);
 }
 
 
@@ -277,11 +283,12 @@ export class PlayPage
 	{
 		console.log("PlayPage constructor çağrıldı");
 	}
-	render (container: HTMLElement): void
+	
+	render (container: HTMLElement): {info: HTMLElement | null, menu: HTMLElement | null}
 	{
 		if (!container) {
 			console.error('Container not found');
-			return;
+			return {info: null, menu: null};
 		}
 
 		const paly_div = document.createElement('div');
@@ -298,22 +305,17 @@ export class PlayPage
 		);
 
 		const canvas = document.createElement('canvas');
+		canvas.id = 'game-canvas';
 		canvas.classList.add(
 			"w-[90%]",
 			//'left-[5%]',
 			//"absolute",
 		);
-		canvas.id = 'game-canvas';
+		paly_div.appendChild(canvas);
+		
 		const set_toast = createDivAddId('set-toast');
 		const end_message = createDivAddId('end-message');
 		const info = createDivAddId('info');
-
-		paly_div.appendChild(canvas);		// id= game-canvas
-		renderScoreBoard(paly_div);			// id= scoreboard
-		renderSetBoard(paly_div);			// id = setboard
-		const start_Button = createButtonWithNameId('start-button', 'Maçı Başlat');		// id= start-button
-		const devambutton = createButtonWithNameId('resume-button', 'Maça Devam Et');		// id= start-button
-		const new_mach = createButtonWithNameId('newmatch-button', 'Yeni Maça Başla');		// id= start-button
 		
 		set_toast.classList.add(
 			'absolute',
@@ -363,10 +365,13 @@ export class PlayPage
 			'hidden'
 		);
 
-		start_Button.classList.add(
-			
+		const start_Button = createButtonWithNameId('start-button', 'Maçı Başlat');		// id= start-button
+		const devambutton = createButtonWithNameId('resume-button', 'Maça Devam Et');		// id= start-button
+		const new_match = createButtonWithNameId('newmatch-button', 'Yeni Maça Başla');		// id= start-button
+
+		[start_Button, devambutton, new_match].forEach(btn => {
+    	btn.classList.add(	
 			  	'absolute',
-				'top-1/2',
 				'left-1/2',
 				'-translate-x-1/2',
 				'-translate-y-1/2',
@@ -377,70 +382,34 @@ export class PlayPage
 				'border-none',
 				'rounded-[12px]',
 				'cursor-pointer',
-				'z-20',
+				'z-30',
 				'bg-blue-500',
 				'hover:bg-blue-700',
 				'hover:scale-105',
 				'transition-all',
 				'transform',
 				'hidden'
-		);
+			);
+		});
 
-		devambutton.classList.add(
-			'hidden',
-			'absolute',
-			'top-[40%]',
-			'left-1/2',
-			'-translate-x-1/2',
-			'-translate-y-1/2',
-			'px-[2.8vw]',
-			'py-[1.2vw]',
-			'text-[1.5vw]',
-			'text-white',
-			'bg-blue-500',
-			'hover:bg-blue-700',
-			'border-none',
-			'rounded-[12px]',
-			'cursor-pointer',
-			'hover:scale-105',
-			'transition-all',
-			'transform',
-			'z-30'
-		);
+		start_Button.classList.add('top-1/2');
+    	devambutton.classList.add('top-[40%]');
+    	new_match.classList.add('top-[70%]');
 
-		new_mach.classList.add(
-			'hidden',
-			'absolute',
-			'top-[70%]',
-			'left-1/2',
-			'-translate-x-1/2',
-			'-translate-y-1/2',
-			'px-[2.8vw]',
-			'py-[1.2vw]',
-			'text-[1.5vw]',
-			'bg-blue-500',
-			'hover:bg-blue-700',
-			'text-white',
-			'border-none',
-			'rounded-[12px]',
-			'cursor-pointer',
-			'hover:scale-105',
-			'transition-all',
-			'transform',
-			'z-30'
-		);
 
-		paly_div.appendChild(start_Button);	// id= start-button
-		paly_div.appendChild(devambutton);	// id= resume-button
-		paly_div.appendChild(new_mach);		// id= newmatch-button
+		renderScoreBoard(paly_div);
+		renderSetBoard(paly_div);
+		const menu= renderMenu(paly_div);
+		renderDifficulty(paly_div);
 
-		renderMenu(paly_div);
-		renderDifficlty(paly_div);
-		paly_div.appendChild(set_toast);		// id= set-toast
-		paly_div.appendChild(end_message);		// id= end-message
-		paly_div.appendChild(info);		// id= info
+
+		[start_Button, devambutton, new_match, set_toast, end_message, info].forEach(child => {
+		paly_div.appendChild(child);
+		})
 
 		container.appendChild(paly_div);
+
+		return {info: info, menu: menu};
 	}
 	init (): void {
 
