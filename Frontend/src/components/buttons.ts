@@ -26,18 +26,17 @@ export function close_Button(button: HTMLElement, side): void{
 }
 
 export function game_button(button: HTMLElement): void {
-	button.classList.add(
-		'w-[80%]',
-		'h-[20%]',
-		'bg-blue-500',
-		'hover:bg-blue-700',
-		'hover:text-black',
-		'rounded-3xl',
-		'text-white',
-		'text-xl',
-		'z-10',
-		'hover:scale-105',
-		'transform',
-		'transition-all',
+	button.classList.add(		
+	'w-[80%]',           // Buton genişliği
+	'h-[15%]',           // Buton yüksekliği (menü div'inin yüksekliğiyle orantılı)
+	'bg-blue-500',
+	'hover:bg-blue-700',
+	'text-white',
+	'text-xl',
+	'rounded-xl',
+	'transition-all',
+	'transform',
+	'hover:scale-105',
+	'cursor-pointer'
 	);
 }
