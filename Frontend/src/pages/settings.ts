@@ -133,19 +133,12 @@ export function renderSettings(container: HTMLElement): void
 	const y = JSON.parse(x || '{}');
 	// console.log("settings---->:", y);
 	// console.log("settings ball color:", y.ball_color);
-	// console.log("settings background color:", y.background_color);
-	// console.log("settings player one color:", y.player_one_color);
-	// console.log("settings player two color:", y.player_two_color);
 
 	// Top Rengi 2
 	const selectedTopColor = { value: y.ball_color }; // başlangıçta kırmızı olarak ayarlandı
-	const selectedBackgroundColor = { value: y.background_color }; // başlangıçta beyaz olarak ayarlandı
-	const selectedPlayer1Color = { value: y.player_one_color }; // başlangıçta yeşil olarak ayarlandı
-	const selectedPlayer2Color = { value: y.player_two_color }; // başlangıçta mavi olarak ayarlandı
 	let selectedLanguage = exmp.getLanguage();
 
 
-//#region  COLOR PALETTE 
 	// Top rengi
 	createColorPalette(exmp.getLang("settings.ball-color"), gameSettingsContainer, [
 		COLORS.red,
@@ -157,40 +150,7 @@ export function renderSettings(container: HTMLElement): void
 		COLORS.black
 	], selectedTopColor);
 
-	// Arka Plan Rengi
-	createColorPalette(exmp.getLang("settings.background-color"), gameSettingsContainer, [
-		COLORS.red,
-		COLORS.green,
-		COLORS.blue,
-		COLORS.yellow,
-		COLORS.magenta,
-		COLORS.cyan,
-		COLORS.black
-		], selectedBackgroundColor);
 	
-	// Oyuncu 1 (sen) Rengi
-	createColorPalette(exmp.getLang("settings.player-one-color"), gameSettingsContainer, [
-		COLORS.red,
-		COLORS.green,
-		COLORS.blue,
-		COLORS.yellow,
-		COLORS.magenta,
-		COLORS.cyan,
-		COLORS.black
-		], selectedPlayer1Color);
-
-	// Oyuncu 2 (rakip) Rengi
-	createColorPalette(exmp.getLang("settings.player-two-color"), gameSettingsContainer, [
-		COLORS.red,
-		COLORS.green,
-		COLORS.blue,
-		COLORS.yellow,
-		COLORS.magenta,
-		COLORS.cyan,
-		COLORS.black
-		], selectedPlayer2Color);
-//#endregion
-
 	createLanguageSelector(gameSettingsContainer, selectedLanguage, exmp.getLanguageChoises(),
 	(lang: string ) => {selectedLanguage = lang; }
 	);
@@ -225,30 +185,20 @@ export function renderSettings(container: HTMLElement): void
 	
 	//! onsave fonksiyonu ayarları sınıf içerisi kaydettik sınıf içerisindeki bir istek ile bacende yönlendirilecek
 	gameSettingsButton.addEventListener('click', async () => {
-		Settings.prototype.close();
-		if (selectedLanguage !== exmp.getLanguage())
-		{
-			// console.log("1");
-			// 0.3 saniye bekle
-			//! ne kadar mantıklı bilmiyorum ama işimizi gördü :)
-			await new Promise(resolve => setTimeout(resolve, 300));
-			await exmp.setLanguage(selectedLanguage);
-		}
-		console.log(selectedBackgroundColor);
-		console.log(selectedPlayer1Color);
-		console.log(selectedPlayer2Color);
-		console.log(selectedTopColor);
+        Settings.prototype.close();
+        if (selectedLanguage !== exmp.getLanguage())
+        {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            await exmp.setLanguage(selectedLanguage);
+        }
+        console.log(selectedTopColor);
 
-		const settings :IApiSetSettings = {
-			ball_color: selectedTopColor.value,
-			background_color: selectedBackgroundColor.value,
-			player_one_color: selectedPlayer1Color.value,
-			player_two_color: selectedPlayer2Color.value,
-			language: exmp.getLanguage()
-		}
-		_apiManager.set_settings(settings)
-		// console.log("enter tusuna basıldıktan sonra değer :" + selectedLanguage);
-	});
+        const settings :IApiSetSettings = {
+            ball_color: selectedTopColor.value,
+            language: exmp.getLanguage()
+        }
+        _apiManager.set_settings(settings)
+    });
 }
 
 function createColorPalette(title: string, container: HTMLElement, colorList: string[], selectedColor: { value: string }) {
