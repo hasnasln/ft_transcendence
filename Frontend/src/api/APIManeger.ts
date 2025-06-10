@@ -8,9 +8,6 @@ export class HTTPMethod extends String {
 
 export interface IApiSetSettings{
 	ball_color: string,
-	background_color: string,
-	player_one_color: string,
-	player_two_color: string,
 	language: string
 }
 
