@@ -1,13 +1,13 @@
 {
-	"singin": {
+	"signin": {
 		"title": "Giriş Yap",
 		"register": "Kayıt Ol",
 		"email": "E-posta",
 		"password": "Şifre",
 		"login": "Giriş Yap"
 	},
-	"singin-success": "Giriş başarılı! Yönlendiriliyorsunuz...",
-	"singin-errors": {
+	"signin-success": "Giriş başarılı! Yönlendiriliyorsunuz...",
+	"signin-errors": {
 		"required": {
 			"email": "E-posta gerekli",
 			"password": "Şifre gerekli"
@@ -17,7 +17,7 @@
 	},
 	"register": {
 		"title": "Kayıt Ol",
-		"singin": "Giriş Yap",
+		"signin": "Giriş Yap",
 		"name": "İsim",
 		"surname": "Soyisim",
 		"username": "Kullanıcı Adı",
