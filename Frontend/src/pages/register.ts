@@ -113,8 +113,8 @@ export class RegisterPage implements IPages {
 		// }
 		const x: IApiRegister = 
 		{
-			name : name,
-			surname : surname,
+			// name : name,
+			// surname : surname,
 			username : username,
 			email : email,
 			password : password,

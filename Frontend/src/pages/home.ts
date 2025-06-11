@@ -269,7 +269,7 @@ for (let i = 0; i < positions.length; i++) {
 	CreateChoiseButton(choicesdiv, exmp.getLang('home.profile') , 'profile');
 	CreateChoiseButton(choicesdiv, exmp.getLang('home.tournament'), 'tournament'); 
 	CreateChoiseButton(choicesdiv, exmp.getLang('home.logout'), 'exit');
-	//CreateChoiseButton(choicesdiv, exmp.getLang('facetint'), 'facetint');
+	// CreateChoiseButton(choicesdiv, exmp.getLang('facetint'), 'facetint');
 
 	maindiv.appendChild(choicesdiv);
 	container.appendChild(maindiv);

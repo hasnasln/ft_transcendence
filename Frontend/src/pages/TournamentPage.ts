@@ -1,4 +1,6 @@
+import { game_button } from '../components/buttons';
 import { exmp } from '../languageMeneger';
+import { game } from './play';
 // Recommended way, to include only the icons you need.
 
 
@@ -120,10 +122,91 @@ function renderTournament(container: HTMLElement) {
 		'z-0',
 		'bg-gray-300',
 	);
-
-	createTournamentSection(div);
+	hasnasln(div);
+	// createTournamentSection(div);
 	// ShowTournament(div);
 	container.appendChild(div);
+}
+
+function hasnasln(container: HTMLElement)
+{
+	const wrapper = document.createElement('div');
+	wrapper.classList.add(
+		'w-[50%]',
+		'h-[50%]',
+		'bg-cyan-700',
+		'flex',
+		'flex-row',
+		'items-center',
+		'justify-center',
+		'relative',
+		'overflow-hidden'
+	)
+
+	
+	const create = document.createElement('div');
+	const button = document.createElement('button');
+	button.classList.add(
+		'w-[50%]',
+		'h-[10%]',
+		'bg-red-100'
+	);
+	button.textContent= 'hasan';
+	button.click
+
+	create.appendChild(button);
+	const join = document.createElement('div');
+
+	create.classList.add(
+		'w-[50%]',
+		'h-[100%]',
+		'bg-cyan-200',
+	)
+
+	join.classList.add(
+		'w-[50%]',
+		'h-[100%]',
+		'bg-cyan-400',
+	)
+
+	wrapper.appendChild(create);
+	wrapper.appendChild(join);
+
+	const animation_cycle = document.createElement('div');
+	animation_cycle.classList.add(
+		'w-[50%]',
+		'h-[105%]',
+		'rounded-full',
+		'bg-red-500',
+		'absolute',
+		// 'top-0',
+		'left-0'
+	)
+
+	wrapper.appendChild(animation_cycle);
+	container.appendChild(wrapper);
+	ahmet(animation_cycle, 1, 0);
+
+
+	setTimeout(() => {
+		ahmet(animation_cycle, -1, 150);
+	}, 3000);
+
+}
+
+function ahmet(obje: HTMLElement, dir: number, start: number)
+{
+	let x = 0;
+
+	function move(){
+		
+		x += dir * 2;
+		obje.style.transform =  `translateX(${start + x}px)`;
+		if (x === 150 || x === -150)
+			return;
+		requestAnimationFrame(move)
+	}
+	move();
 }
 
 

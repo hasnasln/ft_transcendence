@@ -1,21 +1,23 @@
-import { _apiManager } from '../api/APIManeger';
+import { IApiRegister, _apiManager } from '../api/APIManeger';
 import { exmp } from '../languageMeneger';
 import { close_Button } from '../components/buttons';
 
-interface history {
-	// tarih
-	date: string;
-	// oyuncu1
-	player1: string;
-	// oyuncu2
-	player2: string;
-	// oyuncu1 skoru
-	player1Score: number;
-	// oyuncu2 skoru
-	player2Score: number;
-	// kazanan
-	winner: string;
-}
+
+// ! kalkacak
+// interface history {
+// 	// tarih
+// 	date: string;
+// 	// oyuncu1
+// 	player1: string;
+// 	// oyuncu2
+// 	player2: string;
+// 	// oyuncu1 skoru
+// 	player1Score: number;
+// 	// oyuncu2 skoru
+// 	player2Score: number;
+// 	// kazanan
+// 	winner: string;
+// }
 
 interface ISection {
 	name: string;
@@ -78,10 +80,12 @@ export class ProfileSettings{
 			switch (action) {
 				case 'nick-name':
 				case 'email':
-				case 'password':
-				case 'name':
-					this.handleX(action);
-					break;
+					case 'name':
+						this.handleX(action);
+						break;
+				case 'pasword':
+					this.hendle_password(action);
+					break
 				// case 'history':
 				// 	this.handleHistory();
 				// 	break;
@@ -98,6 +102,25 @@ export class ProfileSettings{
 	}
 
 	public static getname(): string { return this.name; }
+
+	private hendle_password(action: string)
+	{
+		const eski_sifre = document.querySelector('#' + action + '_eski') as HTMLInputElement;
+		if (!eski_sifre)
+			console.log('eski sifre kısmı bulunamadı');
+		const new_pass = document.querySelector('#' + action)  as HTMLInputElement;
+		if (!new_pass)
+			console.log('new pas bulunamadı');
+
+		if (_apiManager.getActivePass() === eski_sifre.value)
+		{
+			_apiManager.updateSomething('password', new_pass.value);
+		}
+		else {
+			//! eror kısmı eksik
+			console.error('eski sifre hatalı')
+		}
+	}
 
 	close(): void {
 		const profileSettingsContainer = document.getElementById('profile_main');
@@ -130,25 +153,23 @@ export class ProfileSettings{
 		}
 		if (input && x === 'nick-name') {
 			this.nickname = input.value;
-			console.log(x + ": ", this.nickname);
-			await _apiManager.updateSomething('nickname', this.nickname);
+			// console.log(x + ": ", this.nickname);
+			await _apiManager.updateSomething('nickname', input.value);
 		} else if (input && x === 'email') {
 			this.email = input.value;
 			await _apiManager.updateSomething('email', this.email);
-			console.log(x + ": ", this.email);
-		} else if (input && x === 'password') {
-			this.password = input.value;
-			await _apiManager.updateSomething('password', this.password);
-			console.log(x + ": ", this.password);
-		} else if (input && x === 'name') {
-			this.name = input.value;
-			await _apiManager.updateSomething('name', this.name);
-			console.log(x + ": ", this.name);
-		} else if (input && x === 'surname') {
-			this.surname = input.value;
-			await _apiManager.updateSomething('surname', this.surname);
-			console.log(x + ": ", this.surname);
-		} else {
+			// console.log(x + ": ", this.email);
+		}
+		// else if (input && x === 'name') {
+		// 	this.name = input.value;
+		// 	await _apiManager.updateSomething('name', this.name);
+		// 	console.log(x + ": ", this.name);
+		// } else if (input && x === 'surname') {
+		// 	this.surname = input.value;
+		// 	await _apiManager.updateSomething('surname', this.surname);
+		// 	console.log(x + ": ", this.surname);
+		// } 
+		else {
 			console.error('Input not found');
 		} 
 	}
@@ -222,7 +243,7 @@ export class ProfileSettings{
 	getProfileSettings(): ISection[] {
 		return [
 			{name: exmp.getLang("profile-settings.username"), type: 'text', placeholder: exmp.getLang("profile-settings.username-placeholder"), action: 'nick-name'},
-			{name: exmp.getLang("profile-settings.name"), type: 'text', placeholder: exmp.getLang("profile-settings.name-placeholder"), action: 'name'},
+			{name: exmp.getLang("profile-settings.pasword"), type: 'password', placeholder: exmp.getLang("profile-settings.name-placeholder"), action: 'pasword'},
 			{name: exmp.getLang("profile-settings.email"), type: 'email', placeholder: exmp.getLang("profile-settings.email-placeholder"), action: 'email'},
 		]
 	}
@@ -336,7 +357,7 @@ function renderProfile(container: HTMLElement) {
 	);
 	nameContainer.appendChild(name);
 	firstPart.appendChild(nameContainer);
-
+//#region eski
 	// const ProfileSettingsButton = document.createElement('button');
 	// ProfileSettingsButton.textContent = exmp.getLang('profile.profile-settings');
 	// ProfileSettingsButton.setAttribute('data-action', 'profile-settings');
@@ -375,6 +396,7 @@ function renderProfile(container: HTMLElement) {
 
 	
 	// firstPart.appendChild(HistoryButton);
+//#endregion
 	createProfileSettings(secondPart, new ProfileSettings().getProfileSettings());
 	profileContainer.appendChild(firstPart);
 	profileContainer.appendChild(secondPart);
@@ -382,6 +404,8 @@ function renderProfile(container: HTMLElement) {
 	container.appendChild(wrapper);
 }
 
+
+//#region  eski22
 // function createHistory(player: string, historyl: history[], container: HTMLElement) 
 // {
 // 	const historyContainer = document.createElement('div');
@@ -489,7 +513,7 @@ function renderProfile(container: HTMLElement) {
 // 	card.appendChild(result);
 // 	container.appendChild(card);
 // }
-
+//#endregion
 
 //! Profil kısmındaki ayarlar butonuna tıklayınca gözükecek kısım
 function createProfileSettings(container: HTMLElement, settings: ISection[]) {
@@ -509,7 +533,7 @@ function createProfileSettings(container: HTMLElement, settings: ISection[]) {
 		'text-gray-800',
 		'overflow-y-auto'
 	);
-	settings.forEach(({ name, type, placeholder, action }) => {
+	settings.forEach(({ name, type, placeholder, action}) => {
 		const settingGroup = document.createElement('div');
 		settingGroup.classList.add(
 			'w-full',
@@ -554,10 +578,29 @@ function createProfileSettings(container: HTMLElement, settings: ISection[]) {
 			'hover:bg-blue-700',
 			'transition'
 		);
+
+		
 		settingGroup.appendChild(settingLabel);
+		if (type === 'password')
+		{
+			const eski_sifre = document.createElement('input');
+			eski_sifre.type = type;
+			eski_sifre.placeholder = placeholder + 'eski';
+			eski_sifre.id = action + '_eski';
+			eski_sifre.classList.add(
+				'border',
+				'border-gray-300',
+				'rounded-md',
+				'p-2',
+				'focus:outline-none',
+				'focus:ring-2',
+				'focus:ring-cyan-500'
+			);
+			settingGroup.appendChild(eski_sifre);
+		}
 		settingGroup.appendChild(settingInput);
 		settingGroup.appendChild(saveButton);
-
+		
 		profileSettingsContainer.appendChild(settingGroup);
 	});
 	container.appendChild(profileSettingsContainer);

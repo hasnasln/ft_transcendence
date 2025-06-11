@@ -8,15 +8,16 @@ export class HTTPMethod extends String {
 
 export interface IApiSetSettings{
 	ball_color: string,
-	language: string
+	language: string //! kaldırılacak
 }
 
 export interface IApiRegister {
 	username?: string;
 	password?: string;
 	email?: string;
-	name?: string;
-	surname?: string;
+	uuid?: string;
+	// name?: string;
+	// surname?: string;
 }
 
 export interface IApiTournament {
@@ -43,17 +44,21 @@ export class APIManager
 {
 	private static instance: APIManager;
 	private baseUrl: string;
+	private url_altarnative: string;
 	private token: string | null;
+	private active_pass: string;
+	private uuid: string;
 
 
-	private constructor(baseUrl: string, token: string | null = null) {
+	private constructor(baseUrl: string, url_altarnetive: string, token: string | null = null) {
 		this.baseUrl = baseUrl;
+		this.url_altarnative = url_altarnetive;
 		this.token = token;
 	}
 
-	public static getInstance(baseUrl: string): APIManager {
+	public static getInstance(baseUrl: string, url_altarnetive: string): APIManager {
 		if (!APIManager.instance) {
-			APIManager.instance = new APIManager(baseUrl);
+			APIManager.instance = new APIManager(baseUrl,url_altarnetive);
 		}
 		return APIManager.instance;
 	}
@@ -64,6 +69,11 @@ export class APIManager
 
 	private getToken(): string | null {
 		return this.token;
+	}
+
+	public getActivePass(): string
+	{
+		return this.active_pass;
 	}
 
 	private myFetch(url: string, method: string, headers: HeadersInit, body?: BodyInit): Promise<Response> {
@@ -88,6 +98,7 @@ export class APIManager
 
 	public async login(username: string, password: string): Promise<IApiResponseWrapper> {
 		const result: IApiResponseWrapper = {success: false, message: '', data: null};
+		this.active_pass = password;
 		try{
 			const response = await this.myFetch(`${this.baseUrl}/login`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
@@ -107,6 +118,8 @@ export class APIManager
 				result.message = 'Login successful';
 				// console.log("Login data:", data);
 				this.setToken(data.token);
+				//! uuid kısmı konuşulacak
+				this.uuid = data.uuid;
 				localStorage.setItem('token', data.token);
 				console.log("Token set:", this.getToken());
 				// console.log("data.uzer -----> "	+ JSON.stringify(data.user));
@@ -244,10 +257,23 @@ export class APIManager
 	@param data: string -> data to be updated
 	*/
 	public async updateSomething(name: string, data: string){
+		//! nul olmayan güncellencek - bos olmayan 
+		const x: IApiRegister = {
+			username: '',
+			email: '',
+			password: '',
+			uuid: this.uuid
+		}
+		if (name === 'password')
+			x.password = data;
+		else if (name === 'email')
+			x.email = data;
+		else if (name === 'nickname')
+			x.username = data;
 		try{
 			const response = await this.myFetch(`${this.baseUrl}/update/${name}`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
-			}, JSON.stringify({ data }));
+			}, JSON.stringify(x));
 
 			if (!response.ok){
 				throw new Error(`Update ${name} failed`);
@@ -404,4 +430,4 @@ export class APIManager
 }
 
 
-export const _apiManager = APIManager.getInstance('http://localhost:3000/api');
+export const _apiManager = APIManager.getInstance('http://localhost:3000/api', 'hasan.com');
