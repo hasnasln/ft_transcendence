@@ -2,23 +2,6 @@ import { IApiRegister, _apiManager } from '../api/APIManeger';
 import { exmp } from '../languageMeneger';
 import { close_Button } from '../components/buttons';
 
-
-// ! kalkacak
-// interface history {
-// 	// tarih
-// 	date: string;
-// 	// oyuncu1
-// 	player1: string;
-// 	// oyuncu2
-// 	player2: string;
-// 	// oyuncu1 skoru
-// 	player1Score: number;
-// 	// oyuncu2 skoru
-// 	player2Score: number;
-// 	// kazanan
-// 	winner: string;
-// }
-
 interface ISection {
 	name: string;
 	type: string;
