@@ -17,15 +17,10 @@ const app = document.getElementById('app') as HTMLElement;
 
 const isloggedIn = localStorage.getItem('token');
 
-
-
 console.log("isloggedIn:", isloggedIn);
-
 if (app){
 	if (!isloggedIn) 
 		window.history.pushState({}, '', '/singin');
-	else
-		history.pushState({}, '', '/');
 	router();
 	// Popstate event listener'ını ekleyelim
 }

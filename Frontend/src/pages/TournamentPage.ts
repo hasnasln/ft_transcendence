@@ -85,7 +85,8 @@ export class TournamentPage {
 	}
 
 	private createTournament(container: HTMLElement): void {
-		const input = document.querySelector('#tournament-form input') as HTMLInputElement;
+		console.log('Creating tournament');
+		const input = document.querySelector('#createInput') as HTMLInputElement;
 		const tournamentId = input.value;
 		console.log(`Creating tournament with ID: ${tournamentId}`);
 		container.innerHTML = ''; // Clear the container
@@ -93,7 +94,7 @@ export class TournamentPage {
 	}
 
 	private joinRoom(container: HTMLElement): void {
-		const input = document.querySelector('#tournament-form input') as HTMLInputElement;
+		const input = document.querySelector('#joinInput') as HTMLInputElement;
 		const tournamentId = input.value;
 		console.log(`Joining room with ID: ${tournamentId}`);
 		container.innerHTML = ''; // Clear the container
@@ -103,7 +104,7 @@ export class TournamentPage {
 	private exitTournament(container: HTMLElement): void {
 		console.log('Exiting tournament');
 		container.innerHTML = ''; // Clear the container
-		createTournamentSection(container); // Re-render the tournament section
+		t_first_section(container); // Re-render the tournament section
 	}
 }
 
@@ -123,233 +124,247 @@ function renderTournament(container: HTMLElement) {
 		'z-0',
 		'bg-gray-300',
 	);
-	hasnasln(div);
+	t_first_section(div);
 	// createTournamentSection(div);
 	// ShowTournament(div);
 	container.appendChild(div);
 }
 
-function hasnasln(container: HTMLElement) {
-    const wrapper = document.createElement('div');
-    wrapper.id = 'tournament-container';
-    wrapper.className = "relative bg-white rounded-[30px] shadow-lg w-[768px] max-w-full min-h-[480px] overflow-hidden transition-all-ease font-montserrat";
+function t_first_section(container: HTMLElement) {
+	const wrapper = document.createElement('div');
+	wrapper.id = 'tournament-container';
+	wrapper.className = "relative bg-white rounded-[30px] shadow-lg w-[768px] max-w-full min-h-[480px] overflow-hidden transition-all-ease font-montserrat";
 
 
-    // turnuva oluşturma 
-    const createPanel = document.createElement('div');
-    createPanel.id = 'createPanel';
-    createPanel.className = "absolute top-0 right-0 w-1/2 h-full z-10 flex items-center justify-center transition-all-ease";
-    createPanel.innerHTML = `
-    <form class="bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center">
-        <h1 class="text-2xl font-bold mb-2">Turnuva Oluştur</h1>
-        <input type="text" placeholder="Turnuva Adı" class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none" id="createInput"/>
-        <button type="button" class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3" id="createBtn">Oluştur</button>
-    </form>
-    `;
+	// turnuva oluşturma 
+	const createPanel = document.createElement('div');
+	createPanel.id = 'createPanel';
+	createPanel.className = "absolute top-0 right-0 w-1/2 h-full z-1 flex items-center justify-center transition-all-ease";
+	createPanel.innerHTML = `
+	<form class="bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center">
+		<h1 class="text-2xl font-bold mb-2">${exmp.getLang('tournament.first-page.title')}</h1>
+		<input type="text" placeholder="Turnuva Adı" class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none" id="createInput"/>
+		<button type="button" class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3" id="createBtn">Oluştur</button>
+	</form>
+	`;
 
-    // turnuvaya katılma paneli için
-    const joinPanel = document.createElement('div');
-    joinPanel.id = 'joinPanel';
-    joinPanel.className = "absolute top-0 left-0 w-1/2 h-full z-[1] flex items-center justify-center";
-    joinPanel.innerHTML = `
-    <form class="bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center">
-        <h1 class="text-2xl font-bold mb-2">Turnuvaya Katıl</h1>
-        <input type="text" placeholder="Turnuva Kodu" class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none" id="joinInput"/>
-        <button type="button" class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3" id="joinBtn">Katıl</button>
-    </form>
-    `;
+	// turnuvaya katılma paneli için
+	const joinPanel = document.createElement('div');
+	joinPanel.id = 'joinPanel';
+	joinPanel.className = "absolute top-0 left-0 w-1/2 h-full z-[1] flex items-center justify-center";
+	joinPanel.innerHTML = `
+	<form class="bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center">
+		<h1 class="text-2xl font-bold mb-2">Turnuvaya Katıl</h1>
+		<input type="text" placeholder="Turnuva Kodu" class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none" id="joinInput"/>
+		<button type="button" class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3" id="joinBtn" >Katıl</button>
+	</form>
+	`;
 
-	function toggleWithCreate(container : HTMLElement) {
-		container.innerHTML = `
-		<div id="fatma1234" class="w-1/2 hidden flex flex-col items-center justify-center text-center px-6 text-white">
-          <h1 class="text-3xl font-bold">Turnuvaya Katıl</h1>
-          <p class="text-sm mt-4 mb-6">Daha önce oluşturduğun turnuvaya katılabilirsin.</p>
-          <button id="showJoin" class="bg-transparent border border-white text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded">Katıl Paneli</button>
-        </div>
-		`;
+	function toggleWithJoin(container : HTMLElement) { // join panelini göster
+		container.innerHTML = ''; // Clear the container
 
-	}
-
-	function toggleWithJoin(container : HTMLElement) {
-		container.innerHTML = `
-		 <div id="fatma123" class="w-1/2 flex flex-col items-center justify-center text-center px-6 text-white">
-          <h1 class="text-3xl font-bold">Yeni Turnuva</h1>
-          <p class="text-sm mt-4 mb-6"></p>
-          <button id="showCreate" class="bg-transparent border border-white text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded">Oluştur</button>
-        </div>
-		`;
+		const div02 = document.createElement('div');
+		div02.id = 'fatma1234';
+		div02.className = "z-[100] w-1/2 flex flex-col items-center justify-center text-center px-6 text-white";
 		
+		const h2 = document.createElement('h1');
+		h2.className = "text-3xl font-bold";
+		h2.textContent = "Turnuvaya Katıl";
+		
+		const button2 = document.createElement('button');
+		button2.id = 'showCreate';
+		button2.className = "bg-transparent border border-white text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded";
+		button2.textContent = "Oluştur";
+		
+		div02.appendChild(h2);
+		div02.appendChild(button2);
+		container.appendChild(div02);
 	}
-    // panel değiştimek için bunalr
-    const toggleContainer = document.createElement('div');
-    toggleContainer.id = 'toggleContainer';
-    toggleContainer.className = "absolute top-0 left-1/2 w-1/2 h-full overflow-hidden z-[1000] transition-all-ease";
-   
+
+	function toggleWithCreate(container: HTMLElement) { // turnuva oluşturma panelini göster
+		// container.innerHTML = ''; // Clear the container
+		const div01 = document.createElement('div');
+		div01.id = 'fatma123';
+		div01.className = "hidden z-[100] w-1/2 flex flex-col items-center justify-center text-center px-6 text-white";
+
+		const h1 = document.createElement('h1');
+		h1.className = "text-3xl font-bold";
+		h1.textContent = "Turnuva Oluştur";
+
+		const button = document.createElement('button');
+		button.id = 'showJoin';
+		button.className = "bg-transparent border border-white text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded";
+		button.textContent = "Katıl Paneli";
+		
+		div01.appendChild(h1);
+		div01.appendChild(button)
+
+		container.appendChild(div01);
+	}
+
+	// panel değiştimek için bunalr
+	const toggleContainer = document.createElement('div');
+	toggleContainer.id = 'toggleContainer';
+	toggleContainer.className = "absolute top-0 w-1/2 h-full z-[10]";
+
 	const fatma = document.createElement('div');
 	fatma.id = 'fatma';
-	fatma.className = "toggle bg-gradient-to-r from-indigo-600 to-teal-500 h-full w-[200%] relative left-[-100%] transition-all-ease flex";
+	fatma.className = "bg-gradient-to-r from-indigo-600 to-teal-500 h-full w-[100%] relative flex items-center justify-center";
+	toggleWithJoin(fatma); // join panelini göster kısmı gözükecek
+	toggleWithCreate(fatma); // turnuva oluşturma paneli gizli olacak
+	
 	toggleContainer.appendChild(fatma);
+	wrapper.appendChild(createPanel);
+	wrapper.appendChild(joinPanel);
+	wrapper.appendChild(toggleContainer);
+	container.appendChild(wrapper);
 
-	toggleWithJoin(fatma);
-	toggleWithCreate(fatma);
-    wrapper.appendChild(createPanel);
-    wrapper.appendChild(joinPanel);
-    wrapper.appendChild(toggleContainer);
-    container.appendChild(wrapper);
-
+	const showCreateBtn = toggleContainer.querySelector('#showCreate') as HTMLButtonElement;
 	const showJoinBtn = toggleContainer.querySelector('#showJoin') as HTMLButtonElement;
-    const showCreateBtn = toggleContainer.querySelector('#showCreate') as HTMLButtonElement;
-    const createBtn = createPanel.querySelector('#createBtn') as HTMLButtonElement;
-    const joinBtn = joinPanel.querySelector('#joinBtn') as HTMLButtonElement;
-    const createInput = createPanel.querySelector('#createInput') as HTMLInputElement;
-    const joinInput = joinPanel.querySelector('#joinInput') as HTMLInputElement;
-	const x = toggleContainer.querySelector('#fatma1234') as HTMLDivElement;
-	const y = toggleContainer.querySelector('#fatma123') as HTMLDivElement;
 	
-	
-    // animasyonnnnn ->>>>>>>>>>
-    showCreateBtn.addEventListener('click', () => {
-		ahmet(toggleContainer, -1, 0);
-		x.classList.remove('hidden'); //fatma1234
-		y.classList.add('hidden'); //fatma123
-    });
-	
-	
-	showJoinBtn.addEventListener('click', () => {
-		ahmet(toggleContainer, 1, -400);
-		x.classList.add('hidden'); //fatma1234
-		y.classList.remove('hidden'); //fatma123
-		
+	// bunlar zaten var
+	const createBtn = createPanel.querySelector('#createBtn') as HTMLButtonElement;
+	const joinBtn = joinPanel.querySelector('#joinBtn') as HTMLButtonElement;
+	createBtn.setAttribute('data-action', 'create-tournament');
+	joinBtn.setAttribute('data-action', 'join-room');
+
+	// animasyonnnnn ->>>>>>>>>>
+	showCreateBtn.addEventListener('click', () => {
+		animation(toggleContainer, 1, 0);
+		const x = document.getElementById('fatma123') as HTMLElement;
+		x.classList.remove('hidden');
+		const y = document.getElementById('fatma1234') as HTMLElement;
+		y.classList.add('hidden');
 	});
 
-    createBtn.addEventListener('click', () => {
-		alert('Turnuva oluşturuldu: ' + createInput.value);
-    });
+	showJoinBtn.addEventListener('click', () => {
+		animation(toggleContainer, -1, 400);
+		const y = document.getElementById('fatma1234') as HTMLElement;
+		y.classList.remove('hidden');
+		const x = document.getElementById('fatma123') as HTMLElement;
+		x.classList.add('hidden');
+	});
 
-    joinBtn.addEventListener('click', () => {
-		alert('Turnuvaya katılınıyor: ' + joinInput.value);
-    });
 }
 
-function ahmet(obje: HTMLElement, dir: number, start: number)
+function animation(obje: HTMLElement, dir: number, start: number)
 {
 	let x = 0;
 
 	function move(){
-		
-		x += dir * 10;
+		x += dir * 20;
 		obje.style.transform =  `translateX(${start + x}px)`;
-		if (x === 400 || x === -400)
+		if (x >= 400 || x <= -400)
 			return;
 		requestAnimationFrame(move)
 	}
 	move();
 }
 
+//! yenilendiği için ihtiyaç yok
+// function createTournamentSection(container: HTMLElement): void{
+// 	const div01 = document.createElement('div');
+// 	div01.id = 'tournament-div01';
+// 	div01.classList.add(
+// 		'flex',
+// 		'flex-col',
+// 		'justify-center',
+// 		'items-center',
+// 		'rounded-3xl',
+// 		'w-[30%]',
+// 		'h-[30%]',
+// 		'gap-6',
+// 	)
 
-function createTournamentSection(container: HTMLElement): void{
-	const div01 = document.createElement('div');
-	div01.id = 'tournament-div01';
-	div01.classList.add(
-		'flex',
-		'flex-col',
-		'justify-center',
-		'items-center',
-		'rounded-3xl',
-		'w-[30%]',
-		'h-[30%]',
-		'gap-6',
-	)
+// 	const title = document.createElement('h1');
+// 	title.textContent = exmp.getLang('tournament.first-page.title');
+// 	title.classList.add(
+// 		'text-6xl',
+// 		'font-bold',
+// 		'text-center',
+// 		'text-gray-900',
+// 	);
 
-	const title = document.createElement('h1');
-	title.textContent = exmp.getLang('tournament.first-page.title');
-	title.classList.add(
-		'text-6xl',
-		'font-bold',
-		'text-center',
-		'text-gray-900',
-	);
+// 	const p = document.createElement('p');
+// 	p.textContent = exmp.getLang('tournament.first-page.description');
+// 	p.classList.add(
+// 		'text-gray-900',
+// 		'text-xl',
+// 		'text-center',
+// 		'w-[80%]',
+// 	);
 
-	const p = document.createElement('p');
-	p.textContent = exmp.getLang('tournament.first-page.description');
-	p.classList.add(
-		'text-gray-900',
-		'text-xl',
-		'text-center',
-		'w-[80%]',
-	);
+// 	const form = document.createElement('form');
+// 	form.id = 'tournament-form';
+// 	form.classList.add(
+// 		'flex',
+// 		'flex-col',
+// 		'justify-center',
+// 		'items-center',
+// 		'gap-4',
+// 	);
 
-	const form = document.createElement('form');
-	form.id = 'tournament-form';
-	form.classList.add(
-		'flex',
-		'flex-col',
-		'justify-center',
-		'items-center',
-		'gap-4',
-	);
+// 	const input = document.createElement('input');
+// 	input.type = 'text';
+// 	input.placeholder = exmp.getLang('tournament.first-page.input-placeholder');
+// 	input.classList.add(
+// 		'border',
+// 		'border-gray-300',
+// 		'rounded-lg',
+// 		'px-4',
+// 		'py-2',
+// 		'w-[80%]',
+// 	);
 
-	const input = document.createElement('input');
-	input.type = 'text';
-	input.placeholder = exmp.getLang('tournament.first-page.input-placeholder');
-	input.classList.add(
-		'border',
-		'border-gray-300',
-		'rounded-lg',
-		'px-4',
-		'py-2',
-		'w-[80%]',
-	);
+// 	const buttonWrapper = document.createElement('div');
+// 	buttonWrapper.classList.add(
+// 		'flex',
+// 		'justify-center',
+// 		'items-center',
+// 		'flex-row',
+// 		'gap-4',
+// 	);
 
-	const buttonWrapper = document.createElement('div');
-	buttonWrapper.classList.add(
-		'flex',
-		'justify-center',
-		'items-center',
-		'flex-row',
-		'gap-4',
-	);
-
-	const button2 = document.createElement('button');
-	button2.textContent = exmp.getLang('tournament.first-page.join');
-	button2.classList.add(
-		'bg-blue-500',
-		'text-white',
-		'px-4',
-		'py-2',
-		'rounded-lg',
-		'hover:bg-blue-700',
-		'transition-colors',
-		'duration-300',
-	);
-	button2.setAttribute('data-action', 'join-room');
+// 	const button2 = document.createElement('button');
+// 	button2.textContent = exmp.getLang('tournament.first-page.join');
+// 	button2.classList.add(
+// 		'bg-blue-500',
+// 		'text-white',
+// 		'px-4',
+// 		'py-2',
+// 		'rounded-lg',
+// 		'hover:bg-blue-700',
+// 		'transition-colors',
+// 		'duration-300',
+// 	);
+// 	button2.setAttribute('data-action', 'join-room');
 
 
-	const button = document.createElement('button');
-	button.textContent = exmp.getLang('tournament.first-page.create');
-	button.classList.add(
-		'bg-blue-500',
-		'text-white',
-		'px-4',
-		'py-2',
-		'rounded-lg',
-		'hover:bg-blue-700',
-		'transition-colors',
-		'duration-300',
-	);
-	button.setAttribute('data-action', 'create-tournament');
-	// button.type = 'submit';
+// 	const button = document.createElement('button');
+// 	button.textContent = exmp.getLang('tournament.first-page.create');
+// 	button.classList.add(
+// 		'bg-blue-500',
+// 		'text-white',
+// 		'px-4',
+// 		'py-2',
+// 		'rounded-lg',
+// 		'hover:bg-blue-700',
+// 		'transition-colors',
+// 		'duration-300',
+// 	);
+// 	button.setAttribute('data-action', 'create-tournament');
+// 	// button.type = 'submit';
 
-	form.appendChild(input);
-	buttonWrapper.appendChild(button2);
-	buttonWrapper.appendChild(button);
-	form.appendChild(buttonWrapper);
+// 	form.appendChild(input);
+// 	buttonWrapper.appendChild(button2);
+// 	buttonWrapper.appendChild(button);
+// 	form.appendChild(buttonWrapper);
 
-	div01.appendChild(title);
-	div01.appendChild(p);
-	div01.appendChild(form);
-	container.appendChild(div01);
-}
+// 	div01.appendChild(title);
+// 	div01.appendChild(p);
+// 	div01.appendChild(form);
+// 	container.appendChild(div01);
+// }
 
 
 function ShowTournament(container: HTMLElement): void {
