@@ -1,6 +1,7 @@
 import { game_button } from '../components/buttons';
 import { exmp } from '../languageMeneger';
 import { game } from './play';
+
 // Recommended way, to include only the icons you need.
 
 
@@ -83,20 +84,20 @@ export class TournamentPage {
 		
 	}
 
-	private createTournament(contaier: HTMLElement): void {
+	private createTournament(container: HTMLElement): void {
 		const input = document.querySelector('#tournament-form input') as HTMLInputElement;
 		const tournamentId = input.value;
 		console.log(`Creating tournament with ID: ${tournamentId}`);
-		contaier.innerHTML = ''; // Clear the container
-		ShowTournament(contaier); // Re-render the tournament section
+		container.innerHTML = ''; // Clear the container
+		ShowTournament(container); // Re-render the tournament section
 	}
 
-	private joinRoom(contaier: HTMLElement): void {
+	private joinRoom(container: HTMLElement): void {
 		const input = document.querySelector('#tournament-form input') as HTMLInputElement;
 		const tournamentId = input.value;
 		console.log(`Joining room with ID: ${tournamentId}`);
-		contaier.innerHTML = ''; // Clear the container
-		ShowTournament(contaier); // Re-render the tournament section
+		container.innerHTML = ''; // Clear the container
+		ShowTournament(container); // Re-render the tournament section
 	}
 
 	private exitTournament(container: HTMLElement): void {
@@ -128,70 +129,106 @@ function renderTournament(container: HTMLElement) {
 	container.appendChild(div);
 }
 
-function hasnasln(container: HTMLElement)
-{
-	const wrapper = document.createElement('div');
-	wrapper.classList.add(
-		'w-[50%]',
-		'h-[50%]',
-		'bg-cyan-700',
-		'flex',
-		'flex-row',
-		'items-center',
-		'justify-center',
-		'relative',
-		'overflow-hidden'
-	)
+function hasnasln(container: HTMLElement) {
+    const wrapper = document.createElement('div');
+    wrapper.id = 'tournament-container';
+    wrapper.className = "relative bg-white rounded-[30px] shadow-lg w-[768px] max-w-full min-h-[480px] overflow-hidden transition-all-ease font-montserrat";
 
+
+    // turnuva oluşturma 
+    const createPanel = document.createElement('div');
+    createPanel.id = 'createPanel';
+    createPanel.className = "absolute top-0 right-0 w-1/2 h-full z-10 flex items-center justify-center transition-all-ease";
+    createPanel.innerHTML = `
+    <form class="bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center">
+        <h1 class="text-2xl font-bold mb-2">Turnuva Oluştur</h1>
+        <input type="text" placeholder="Turnuva Adı" class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none" id="createInput"/>
+        <button type="button" class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3" id="createBtn">Oluştur</button>
+    </form>
+    `;
+
+    // turnuvaya katılma paneli için
+    const joinPanel = document.createElement('div');
+    joinPanel.id = 'joinPanel';
+    joinPanel.className = "absolute top-0 left-0 w-1/2 h-full z-[1] flex items-center justify-center";
+    joinPanel.innerHTML = `
+    <form class="bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center">
+        <h1 class="text-2xl font-bold mb-2">Turnuvaya Katıl</h1>
+        <input type="text" placeholder="Turnuva Kodu" class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none" id="joinInput"/>
+        <button type="button" class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3" id="joinBtn">Katıl</button>
+    </form>
+    `;
+
+	function toggleWithCreate(container : HTMLElement) {
+		container.innerHTML = `
+		<div id="fatma1234" class="w-1/2 hidden flex flex-col items-center justify-center text-center px-6 text-white">
+          <h1 class="text-3xl font-bold">Turnuvaya Katıl</h1>
+          <p class="text-sm mt-4 mb-6">Daha önce oluşturduğun turnuvaya katılabilirsin.</p>
+          <button id="showJoin" class="bg-transparent border border-white text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded">Katıl Paneli</button>
+        </div>
+		`;
+
+	}
+
+	function toggleWithJoin(container : HTMLElement) {
+		container.innerHTML = `
+		 <div id="fatma123" class="w-1/2 flex flex-col items-center justify-center text-center px-6 text-white">
+          <h1 class="text-3xl font-bold">Yeni Turnuva</h1>
+          <p class="text-sm mt-4 mb-6"></p>
+          <button id="showCreate" class="bg-transparent border border-white text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded">Oluştur</button>
+        </div>
+		`;
+		
+	}
+    // panel değiştimek için bunalr
+    const toggleContainer = document.createElement('div');
+    toggleContainer.id = 'toggleContainer';
+    toggleContainer.className = "absolute top-0 left-1/2 w-1/2 h-full overflow-hidden z-[1000] transition-all-ease";
+   
+	const fatma = document.createElement('div');
+	fatma.id = 'fatma';
+	fatma.className = "toggle bg-gradient-to-r from-indigo-600 to-teal-500 h-full w-[200%] relative left-[-100%] transition-all-ease flex";
+	toggleContainer.appendChild(fatma);
+
+	toggleWithJoin(fatma);
+	toggleWithCreate(fatma);
+    wrapper.appendChild(createPanel);
+    wrapper.appendChild(joinPanel);
+    wrapper.appendChild(toggleContainer);
+    container.appendChild(wrapper);
+
+	const showJoinBtn = toggleContainer.querySelector('#showJoin') as HTMLButtonElement;
+    const showCreateBtn = toggleContainer.querySelector('#showCreate') as HTMLButtonElement;
+    const createBtn = createPanel.querySelector('#createBtn') as HTMLButtonElement;
+    const joinBtn = joinPanel.querySelector('#joinBtn') as HTMLButtonElement;
+    const createInput = createPanel.querySelector('#createInput') as HTMLInputElement;
+    const joinInput = joinPanel.querySelector('#joinInput') as HTMLInputElement;
+	const x = toggleContainer.querySelector('#fatma1234') as HTMLDivElement;
+	const y = toggleContainer.querySelector('#fatma123') as HTMLDivElement;
 	
-	const create = document.createElement('div');
-	const button = document.createElement('button');
-	button.classList.add(
-		'w-[50%]',
-		'h-[10%]',
-		'bg-red-100'
-	);
-	button.textContent= 'hasan';
-	button.click
+	
+    // animasyonnnnn ->>>>>>>>>>
+    showCreateBtn.addEventListener('click', () => {
+		ahmet(toggleContainer, -1, 0);
+		x.classList.remove('hidden'); //fatma1234
+		y.classList.add('hidden'); //fatma123
+    });
+	
+	
+	showJoinBtn.addEventListener('click', () => {
+		ahmet(toggleContainer, 1, -400);
+		x.classList.add('hidden'); //fatma1234
+		y.classList.remove('hidden'); //fatma123
+		
+	});
 
-	create.appendChild(button);
-	const join = document.createElement('div');
+    createBtn.addEventListener('click', () => {
+		alert('Turnuva oluşturuldu: ' + createInput.value);
+    });
 
-	create.classList.add(
-		'w-[50%]',
-		'h-[100%]',
-		'bg-cyan-200',
-	)
-
-	join.classList.add(
-		'w-[50%]',
-		'h-[100%]',
-		'bg-cyan-400',
-	)
-
-	wrapper.appendChild(create);
-	wrapper.appendChild(join);
-
-	const animation_cycle = document.createElement('div');
-	animation_cycle.classList.add(
-		'w-[50%]',
-		'h-[105%]',
-		'rounded-full',
-		'bg-red-500',
-		'absolute',
-		// 'top-0',
-		'left-0'
-	)
-
-	wrapper.appendChild(animation_cycle);
-	container.appendChild(wrapper);
-	ahmet(animation_cycle, 1, 0);
-
-
-	setTimeout(() => {
-		ahmet(animation_cycle, -1, 150);
-	}, 3000);
-
+    joinBtn.addEventListener('click', () => {
+		alert('Turnuvaya katılınıyor: ' + joinInput.value);
+    });
 }
 
 function ahmet(obje: HTMLElement, dir: number, start: number)
@@ -200,9 +237,9 @@ function ahmet(obje: HTMLElement, dir: number, start: number)
 
 	function move(){
 		
-		x += dir * 2;
+		x += dir * 10;
 		obje.style.transform =  `translateX(${start + x}px)`;
-		if (x === 150 || x === -150)
+		if (x === 400 || x === -400)
 			return;
 		requestAnimationFrame(move)
 	}
