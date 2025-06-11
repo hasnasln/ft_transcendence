@@ -91,20 +91,9 @@ export class HomePage implements IPages {
 			case 'exit':
 				this.handleExit();
 				break;
-			case 'facetint':
-				this.handleFacetintPage();
-				break;
 			default:
 				console.warn(`Unknown action: ${action}`);
 		}
-	}
-
-
-	handleFacetintPage(): void {
-		console.log('Facetint button clicked');
-		history.pushState({}, '', '/facetint');
-		window.dispatchEvent(new Event('popstate'));
-		this.destroy();
 	}
 
 	handlePlay(): void {
@@ -168,10 +157,6 @@ export class HomePage implements IPages {
 	}
 
 }
-
-// renderHome ve CreateChoiseButton fonksiyonları aynı kalacak
-
-
 
 export function renderHome(container: HTMLElement) {
 
@@ -269,7 +254,6 @@ for (let i = 0; i < positions.length; i++) {
 	CreateChoiseButton(choicesdiv, exmp.getLang('home.profile') , 'profile');
 	CreateChoiseButton(choicesdiv, exmp.getLang('home.tournament'), 'tournament'); 
 	CreateChoiseButton(choicesdiv, exmp.getLang('home.logout'), 'exit');
-	// CreateChoiseButton(choicesdiv, exmp.getLang('facetint'), 'facetint');
 
 	maindiv.appendChild(choicesdiv);
 	container.appendChild(maindiv);
