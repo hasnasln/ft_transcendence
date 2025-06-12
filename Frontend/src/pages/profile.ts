@@ -226,7 +226,7 @@ export class ProfileSettings{
 	getProfileSettings(): ISection[] {
 		return [
 			{name: exmp.getLang("profile-settings.username"), type: 'text', placeholder: exmp.getLang("profile-settings.username-placeholder"), action: 'nick-name'},
-			{name: exmp.getLang("profile-settings.pasword"), type: 'password', placeholder: exmp.getLang("profile-settings.name-placeholder"), action: 'pasword'},
+			{name: exmp.getLang("profile-settings.password"), type: 'password', placeholder: exmp.getLang("profile-settings.password-placeholder"), action: 'pasword'},
 			{name: exmp.getLang("profile-settings.email"), type: 'email', placeholder: exmp.getLang("profile-settings.email-placeholder"), action: 'email'},
 		]
 	}
@@ -568,7 +568,7 @@ function createProfileSettings(container: HTMLElement, settings: ISection[]) {
 		{
 			const eski_sifre = document.createElement('input');
 			eski_sifre.type = type;
-			eski_sifre.placeholder = placeholder + 'eski';
+			eski_sifre.placeholder = exmp.getLang("profile-settings.old-password-placeholder");
 			eski_sifre.id = action + '_eski';
 			eski_sifre.classList.add(
 				'border',

@@ -2,7 +2,6 @@ import type { IPages } from './IPages';
 import { Settings } from './settings';
 import { ProfileSettings } from './profile';
 import { exmp } from '../languageMeneger';
-import { creaters } from '../components/creaters';
 
 export class HomePage implements IPages {
 	private languageChangeHandler: (lang: string) => void;
@@ -249,11 +248,11 @@ for (let i = 0; i < positions.length; i++) {
 	'z-0'
 );
 
-	CreateChoiseButton(choicesdiv, exmp.getLang('home.play'), 'play');
-	CreateChoiseButton(choicesdiv, exmp.getLang('home.settings'), 'settings');
-	CreateChoiseButton(choicesdiv, exmp.getLang('home.profile') , 'profile');
-	CreateChoiseButton(choicesdiv, exmp.getLang('home.tournament'), 'tournament'); 
-	CreateChoiseButton(choicesdiv, exmp.getLang('home.logout'), 'exit');
+	CreateChoiseButton(choicesdiv, exmp.getLang('home.play-b'), 'play');
+	CreateChoiseButton(choicesdiv, exmp.getLang('home.settings-b'), 'settings');
+	CreateChoiseButton(choicesdiv, exmp.getLang('home.profile-b') , 'profile');
+	CreateChoiseButton(choicesdiv, exmp.getLang('home.tournament-b'), 'tournament'); 
+	CreateChoiseButton(choicesdiv, exmp.getLang('home.logout-b'), 'exit');
 
 	maindiv.appendChild(choicesdiv);
 	container.appendChild(maindiv);

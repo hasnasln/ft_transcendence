@@ -1,29 +1,28 @@
 {
-	"signin": {
-		"title": "Giriş Yap",
-		"register": "Kayıt Ol",
-		"email": "E-posta",
-		"password": "Şifre",
-		"login": "Giriş Yap"
+	"singin": {
+		"register-b": "Kayıt Ol",
+		"email-or-nickname-i": "E-posta",
+		"passwor-i": "Şifre",
+		"login-b": "Giriş Yap"
 	},
-	"signin-success": "Giriş başarılı! Yönlendiriliyorsunuz...",
-	"signin-errors": {
+	"singin-success": "Giriş başarılı! Yönlendiriliyorsunuz...",
+	"singin-errors": {
 		"required": {
-			"email": "E-posta gerekli",
+			"email": "E-posta veya Nickname gerekli",
 			"password": "Şifre gerekli"
 		},
-		"INVALID_CREDENTIALS": "Geçersiz e-posta veya şifre",
+		"INVALID_CREDENTIALS": "Geçersiz e-posta/nickname veya şifre",
 		"serverError": "Sunucu hatası, lütfen daha sonra tekrar deneyin"
 	},
 	"register": {
 		"title": "Kayıt Ol",
-		"signin": "Giriş Yap",
-		"name": "İsim",
-		"surname": "Soyisim",
-		"username": "Kullanıcı Adı",
-		"email": "E-posta",
-		"password": "Şifre",
-		"confirmPassword": "Şifreyi Onayla",
+		"singin-b": "Giriş Yap",
+		"name": "İsim Giriniz",
+		"surname": "Soyisim Giriniz",
+		"username": "Kullanıcı Adı Giriniz",
+		"email": "E-posta Giriniz",
+		"password": "Şifre Giriniz",
+		"confirmPassword": "Şifreyi Tekrar Giriniz",
 		"register": "Kayıt Ol"
 	},
 	"register-success": "Kayıt başarılı! Lütfen giriş yapın.",
@@ -60,26 +59,21 @@
 	},
 
 	"home":{
-		"play": "Şimdi Oyna",
-		"settings": "Ayarlar",
-		"profile": "Profil",
-		"tournament": "Turnuva",
-		"logout": "Çıkış Yap"
+		"play-b": "Şimdi Oyna",
+		"settings-b": "Ayarlar",
+		"profile-b": "Profil",
+		"tournament-b": "Turnuva",
+		"logout-b": "Çıkış Yap"
 	},
 	"settings": {
 		"title": "Ayarlar",
 		"ball-color": "Top Rengi",
-		"background-color": "Arka Plan Rengi",
-		"player-one-color": "1. Oyuncu Rengi",
-		"player-two-color": "2. Oyuncu Rengi",
 		"language-select": "Dil Seçimi",
 		"save-button": "Ayarları Kaydet"
 	},
 	"profile": {
 		"title": "Profil Ayarları",
-		"username": "Kullanıcı Adı",
-		"profile-settings": "Profil Ayarları",
-		"history": "Oyun Geçmişi"
+		"username": "Kullanıcı Adı"
 	},
 	"profile-settings": {
 		"username": "Kullanıcı Adı",
@@ -88,26 +82,46 @@
 		"email-placeholder": "Yeni E-posta",
 		"password": "Şifre",
 		"password-placeholder": "Yeni Şifre",
-		"confirmPassword": "Şifreyi Onayla",
-		"confirmPassword-placeholder": "Yeni Şifreyi Onayla",
+		"old-Password": "Eski Şifre",
+		"old-password-placeholder": "Eski Şifre",
 		"update": "Güncelle"
 	},
-	"tournament": {
-		"first-page": {
-			"title": "Turnuva",
-			"description": "Aşağıdaki kısma id girip katıl butonuna tıklarsanız oda arayacak, isim girip oluştur derseniz oda oluşturacak",
-			"input-placeholder": "Turnuva ID - Oda Adı",
-			"create": "Turnuva Oluştur",
-			"join": "Turnuvaya Katıl"
-		},
-		"second-page":{
-			"exit": "Turnuvadan Çık",
-			"tournament-id": "Turnuva ID",
-			"tournament-name": "Turnuva Adı",
-			"tournament-creater": "Turnuva Oluşturan",
-			"tournament-total-players": "Toplam Oyuncu",
-			"tournament-joined-players": "Katılan Oyuncular",
-			"play": "Oyna"
-		}
+	"tournament-first-page": {
+		"join-title": "Turnuvaya Katıl",
+		"join-placeholder": "Turnuva ID Giriniz",
+		"join-button": "Turnuvaya Katıl",
+		"create-title": "Turnuva Oluştur",
+		"create-placeholder": "Turnuva Adı Giriniz",
+		"create-button": "Turnuva Oluştur",
+		"m-title-for-showjoin": "Turnuva Oluştur",
+		"m-title-for-showcreate": "Turnuvaya Katıl",
+		"m-join-button": "->",
+		"m-create-button": "<-"
+	},
+	"tournament-second-page":{
+		"exit": "Turnuvadan Çık",
+		"tournament-id": "Turnuva ID",
+		"tournament-name": "Turnuva Adı",
+		"tournament-creater": "Turnuva Oluşturan",
+		"tournament-total-players": "Toplam Oyuncu",
+		"tournament-joined-players": "Katılan Oyuncular",
+		"play": "Oyna"
+	},
+	"game":{
+		"loding": "Oyun Sayfası Yükleniyor...",
+
+		"vs-compiter-b":"Bilgisayara Karşı Oyna",
+		"vs-compiter-difficulty-b-easy": "Kolay",
+		"vs-compiter-difficulty-b-medium": "Orta",
+		"vs-compiter-difficulty-b-hard": "Zor",
+
+		"find-reval-b": "Rakip Bul",
+		"find-reval-waiting": "Rakip Bekleniyor...",
+		
+		"local-game": "Yerel Oyun",
+		
+		"tournament": "Turnuva",
+
+		"stratt-game": "Oyunu Başlat"
 	}
 }

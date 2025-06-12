@@ -1,51 +1,123 @@
 {
 	"singin": {
-	  "title": "Se Connecter",
-	  "register": "S'inscrire",
-	  "email": "E-mail",
-	  "password": "Mot de passe",
-	  "login": "Connexion"
+		"register-b": "S'inscrire",
+		"email-or-nickname-i": "E-mail ou Pseudo",
+		"passwor-i": "Mot de passe",
+		"login-b": "Se connecter"
+	},
+	"singin-success": "Connexion réussie ! Redirection...",
+	"singin-errors": {
+		"required": {
+			"email": "E-mail ou Pseudo requis",
+			"password": "Mot de passe requis"
+		},
+		"INVALID_CREDENTIALS": "E-mail/pseudo ou mot de passe invalide",
+		"serverError": "Erreur serveur, veuillez réessayer plus tard"
 	},
 	"register": {
-	  "title": "S'inscrire",
-	  "singin": "Se Connecter",
-	  "name": "Prénom",
-	  "surname": "Nom",
-	  "username": "Nom d'utilisateur",
-	  "email": "E-mail",
-	  "password": "Mot de passe",
-	  "confirmPassword": "Confirmer le mot de passe",
-	  "register": "S'inscrire"
+		"title": "S'inscrire",
+		"singin-b": "Se connecter",
+		"name": "Entrez votre nom",
+		"surname": "Entrez votre prénom",
+		"username": "Entrez votre nom d'utilisateur",
+		"email": "Entrez votre e-mail",
+		"password": "Entrez votre mot de passe",
+		"confirmPassword": "Confirmez le mot de passe",
+		"register": "S'inscrire"
+	},
+	"register-success": "Inscription réussie ! Veuillez vous connecter.",
+	"register-errors": {
+		"required": {
+			"name": "Le nom est requis",
+			"surname": "Le prénom est requis",
+			"username": "Le nom d'utilisateur est requis",
+			"email": "L'e-mail est requis",
+			"password": "Le mot de passe est requis",
+			"confirmPassword": "La confirmation du mot de passe est requise"
+		},
+		"minlength": {
+			"name": "Le nom doit contenir au moins 3 caractères",
+			"surname": "Le prénom doit contenir au moins 3 caractères",
+			"username": "Le nom d'utilisateur doit contenir au moins 3 caractères",
+			"password": "Le mot de passe doit contenir au moins 6 caractères",
+			"confirmPassword": "La confirmation du mot de passe doit contenir au moins 6 caractères"
+		},
+		"maxlength": {
+			"username": "Le nom d'utilisateur doit contenir au plus 20 caractères",
+			"password": "Le mot de passe doit contenir au plus 20 caractères"
+		},
+		"invalidCharacters": {
+			"username": "Caractères invalides pour le nom d'utilisateur (a-zA-Z0-9_.)",
+			"email": "Format d'e-mail invalide"
+		},
+		"passwordMismatch": "Les mots de passe ne correspondent pas",
+		"exists": {
+			"username": "Ce nom d'utilisateur est déjà pris",
+			"email": "Cet e-mail est déjà enregistré"
+		},
+		"serverError": "Erreur serveur, veuillez réessayer plus tard"
 	},
 	"home": {
-	  "play": "Jouer Maintenant",
-	  "settings": "Paramètres",
-	  "profile": "Profil",
-	  "logout": "Déconnexion"
+		"play-b": "Jouer maintenant",
+		"settings-b": "Paramètres",
+		"profile-b": "Profil",
+		"tournament-b": "Tournoi",
+		"logout-b": "Déconnexion"
 	},
 	"settings": {
-	  "title": "Paramètres",
-	  "ball-color": "Couleur de la Balle",
-	  "background-color": "Couleur de Fond",
-	  "player-one-color": "Couleur Joueur 1",
-	  "player-two-color": "Couleur Joueur 2",
-	  "language-select": "Sélection de la Langue"
+		"title": "Paramètres",
+		"ball-color": "Couleur de la balle",
+		"language-select": "Sélection de la langue",
+		"save-button": "Enregistrer les paramètres"
 	},
 	"profile": {
-	  "title": "Paramètres du Profil",
-	  "username": "Nom d'utilisateur",
-	  "profile-settings": "Paramètres du Profil",
-	  "history": "Historique des Parties"
+		"title": "Paramètres de profil",
+		"username": "Nom d'utilisateur"
 	},
 	"profile-settings": {
-	  "username": "Nom d'utilisateur",
-	  "username-placeholder": "Nouveau nom d'utilisateur",
-	  "email": "E-mail",
-	  "email-placeholder": "Nouvel e-mail",
-	  "password": "Mot de passe",
-	  "password-placeholder": "Nouveau mot de passe",
-	  "confirmPassword": "Confirmer le mot de passe",
-	  "confirmPassword-placeholder": "Confirmer le nouveau mot de passe",
-	  "update": "Mettre à jour"
+		"username": "Nom d'utilisateur",
+		"username-placeholder": "Nouveau nom d'utilisateur",
+		"email": "E-mail",
+		"email-placeholder": "Nouvel e-mail",
+		"password": "Mot de passe",
+		"password-placeholder": "Nouveau mot de passe",
+		"confirmPassword": "Confirmer le mot de passe",
+		"confirmPassword-placeholder": "Confirmer le nouveau mot de passe",
+		"update": "Mettre à jour"
+	},
+	"tournament": {
+		"first-page": {
+			"join-title": "Rejoindre un tournoi",
+			"join-placeholder": "Entrez l'ID du tournoi",
+			"join-button": "Rejoindre le tournoi",
+			"create-title": "Créer un tournoi",
+			"create-placeholder": "Entrez le nom du tournoi",
+			"create-button": "Créer un tournoi",
+			"m-title-for-showjoin": "Créer un tournoi",
+			"m-title-for-showcreate": "Rejoindre un tournoi",
+			"m-join-button": "->",
+			"m-create-button": "<-"
+		},
+		"second-page": {
+			"exit": "Quitter le tournoi",
+			"tournament-id": "ID du tournoi",
+			"tournament-name": "Nom du tournoi",
+			"tournament-creater": "Créateur du tournoi",
+			"tournament-total-players": "Joueurs totaux",
+			"tournament-joined-players": "Joueurs inscrits",
+			"play": "Jouer"
+		}
+	},
+	"game": {
+		"loding": "Chargement de la page de jeu...",
+		"vs-compiter-b": "Jouer contre l'ordinateur",
+		"vs-compiter-difficulty-b-easy": "Facile",
+		"vs-compiter-difficulty-b-medium": "Moyen",
+		"vs-compiter-difficulty-b-hard": "Difficile",
+		"find-reval-b": "Trouver un adversaire",
+		"find-reval-waiting": "En attente d'un adversaire...",
+		"local-game": "Jeu local",
+		"tournament": "Tournoi",
+		"stratt-game": "Démarrer le jeu"
 	}
-  }
+}

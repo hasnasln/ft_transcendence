@@ -3,7 +3,10 @@ import { SinginPage } from './pages/singin';
 import { RegisterPage } from './pages/register';
 import { TournamentPage } from './pages/TournamentPage';
 import { PlayPage } from './pages/play-page';
-import {gameInstance } from './pages/play';
+import { gameInstance } from './pages/play';
+import { exmp } from './languageMeneger';
+import { loading } from './components/loading';
+
 
 export function router()
 {
@@ -50,16 +53,17 @@ export function router()
 			// 3 sanite bekle
 			if (info !== null && menu !== null)
 			{
-				info.textContent = 'Oyun sayfası yükleniyor ...';
-				info.classList.add('bg-blue-500');
 				info.classList.remove('hidden');
+				// info.textContent = exmp.getLang("game.loading");
+				info.classList.add('bg-gray-950');
+				loading(info);
 				
 				setTimeout(() => {
 					gameInstance.initGameSettings();
 					info.classList.add('hidden');
 					info.classList.remove('bg-blue-500');
 					menu.classList.remove('hidden');
-				}, 3000);
+				}, 2000);
 			}
 
 			break;

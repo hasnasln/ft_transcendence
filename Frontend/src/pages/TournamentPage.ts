@@ -142,9 +142,9 @@ function t_first_section(container: HTMLElement) {
 	createPanel.className = "absolute top-0 right-0 w-1/2 h-full z-1 flex items-center justify-center transition-all-ease";
 	createPanel.innerHTML = `
 	<form class="bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center">
-		<h1 class="text-2xl font-bold mb-2">${exmp.getLang('tournament.first-page.title')}</h1>
-		<input type="text" placeholder="Turnuva Adı" class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none" id="createInput"/>
-		<button type="button" class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3" id="createBtn">Oluştur</button>
+		<h1 class="text-2xl font-bold mb-2">${exmp.getLang('tournament-first-page.create-title')}</h1>
+		<input type="text" placeholder="${exmp.getLang('tournament-first-page.create-placeholder')}" class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none" id="createInput"/>
+		<button type="button" class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3" id="createBtn">${exmp.getLang('tournament-first-page.create-button')}</button>
 	</form>
 	`;
 
@@ -154,9 +154,9 @@ function t_first_section(container: HTMLElement) {
 	joinPanel.className = "absolute top-0 left-0 w-1/2 h-full z-[1] flex items-center justify-center";
 	joinPanel.innerHTML = `
 	<form class="bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center">
-		<h1 class="text-2xl font-bold mb-2">Turnuvaya Katıl</h1>
-		<input type="text" placeholder="Turnuva Kodu" class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none" id="joinInput"/>
-		<button type="button" class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3" id="joinBtn" >Katıl</button>
+		<h1 class="text-2xl font-bold mb-2">${exmp.getLang('tournament-first-page.join-title')}</h1>
+		<input type="text" placeholder="${exmp.getLang('tournament-first-page.join-placeholder')}" class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none" id="joinInput"/>
+		<button type="button" class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3" id="joinBtn" >${exmp.getLang('tournament-first-page.join-button')}</button>
 	</form>
 	`;
 
@@ -165,16 +165,16 @@ function t_first_section(container: HTMLElement) {
 
 		const div02 = document.createElement('div');
 		div02.id = 'fatma1234';
-		div02.className = "z-[100] w-1/2 flex flex-col items-center justify-center text-center px-6 text-white";
+		div02.className = "z-[100] w-full flex flex-col items-center justify-center gap-4 text-center px-6 text-white";
 		
 		const h2 = document.createElement('h1');
 		h2.className = "text-3xl font-bold";
-		h2.textContent = "Turnuvaya Katıl";
+		h2.textContent = exmp.getLang('tournament-first-page.m-title-for-showcreate');
 		
 		const button2 = document.createElement('button');
 		button2.id = 'showCreate';
 		button2.className = "bg-transparent border border-white text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded";
-		button2.textContent = "Oluştur";
+		button2.textContent = exmp.getLang('tournament-first-page.m-join-button');
 		
 		div02.appendChild(h2);
 		div02.appendChild(button2);
@@ -185,16 +185,16 @@ function t_first_section(container: HTMLElement) {
 		// container.innerHTML = ''; // Clear the container
 		const div01 = document.createElement('div');
 		div01.id = 'fatma123';
-		div01.className = "hidden z-[100] w-1/2 flex flex-col items-center justify-center text-center px-6 text-white";
+		div01.className = "hidden z-[100] w-full flex flex-col items-center justify-center gap-4 text-center px-6 text-white";
 
 		const h1 = document.createElement('h1');
 		h1.className = "text-3xl font-bold";
-		h1.textContent = "Turnuva Oluştur";
+		h1.textContent = exmp.getLang('tournament-first-page.m-title-for-showjoin');;
 
 		const button = document.createElement('button');
 		button.id = 'showJoin';
 		button.className = "bg-transparent border border-white text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded";
-		button.textContent = "Katıl Paneli";
+		button.textContent = exmp.getLang('tournament-first-page.m-create-button');
 		
 		div01.appendChild(h1);
 		div01.appendChild(button)
@@ -471,7 +471,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 
 	const p = document.createElement('p');
-	p.textContent = exmp.getLang('tournament.second-page.exit');
+	p.textContent = exmp.getLang('tournament-second-page.exit');
 
 	exit.appendChild(img02);
 	exit.appendChild(p);
@@ -489,7 +489,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 
 	const div02p1 = document.createElement('p');
-	div02p1.textContent = exmp.getLang('tournament.second-page.tournament-id');
+	div02p1.textContent = exmp.getLang('tournament-second-page.tournament-id');
 	div02p1.classList.add(
 		'text-gray-400',
 		'text-lg',
@@ -520,7 +520,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 
 	const div03p1 = document.createElement('p');
-	div03p1.textContent = exmp.getLang('tournament.second-page.tournament-creater');
+	div03p1.textContent = exmp.getLang('tournament-second-page.tournament-creater');
 	div03p1.classList.add(
 		'text-gray-400',
 		'text-lg',
@@ -551,7 +551,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 
 	const div04p1 = document.createElement('p');
-	div04p1.textContent = exmp.getLang('tournament.second-page.tournament-total-players');
+	div04p1.textContent = exmp.getLang('tournament-second-page.tournament-total-players');
 	div04p1.classList.add(
 		'text-gray-400',
 		'text-lg',
@@ -603,7 +603,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 	
 	const div11p1 = document.createElement('p');
-	div11p1.textContent = exmp.getLang('tournament.second-page.tournament-joined-players');
+	div11p1.textContent = exmp.getLang('tournament-second-page.tournament-joined-players');
 	div11p1.classList.add(
 		'text-2xl',
 		'font-bold',
@@ -677,7 +677,7 @@ function TournamentInformation(container: HTMLElement): void {
 		'items-center',
 		'w-full',
 	);
-	div13_b.textContent = exmp.getLang('tournament.second-page.play');
+	div13_b.textContent = exmp.getLang('tournament-second-page.play');
 
 
 	div13.appendChild(div13_b);

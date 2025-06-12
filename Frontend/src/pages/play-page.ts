@@ -1,4 +1,5 @@
 import { game_button } from "../components/buttons";
+import { exmp } from '../languageMeneger';
 
 /*
 Socor board ilk başta gizli olacak
@@ -141,7 +142,7 @@ function renderSetBoard(container: HTMLElement): void
 		const setboard0 = createDivAddId('set-title');
 
 		const setboard00 = createSpanAddId('setler');
-		setboard00.textContent = "SETLER";
+		setboard00.textContent = exmp.getLang("game.sets");
 		setboard00.classList.add(
 			'text-[1.3vw]'
 		);
@@ -213,10 +214,10 @@ function renderMenu(container: HTMLElement): HTMLElement
 			'hidden'
 		);
 		
-		const button1 = createButtonWithNameId('btn-vs-computer','VS Computer');
-		const button2 = createButtonWithNameId('btn-find-rival','Find a Rival');
-		const button3 = createButtonWithNameId('btn-local','Local Game');
-		const button4 = createButtonWithNameId('tournament','Tournament Game');
+		const button1 = createButtonWithNameId('btn-vs-computer', exmp.getLang("game.vs-compiter-b"));
+		const button2 = createButtonWithNameId('btn-find-rival', exmp.getLang("game.find-reval-b"));
+		const button3 = createButtonWithNameId('btn-local', exmp.getLang("game.local-game"));
+		const button4 = createButtonWithNameId('tournament', exmp.getLang("game.tournament"));
 
 		game_button(button1);
 		game_button(button2);
@@ -256,9 +257,9 @@ function renderDifficulty(container: HTMLElement): void
 			'hidden',
 		);
 
-		const button1 = createButtonWithNameId('', 'Easy');
-		const button2 = createButtonWithNameId('', 'medium');
-		const button3 = createButtonWithNameId('', 'hard');
+		const button1 = createButtonWithNameId('', exmp.getLang("game.vs-compiter-difficulty-b-easy"));
+		const button2 = createButtonWithNameId('', exmp.getLang("game.vs-compiter-difficulty-b-medium"));
+		const button3 = createButtonWithNameId('', exmp.getLang("game.vs-compiter-difficulty-b-hard"));
 
 		button1.setAttribute('data-level', 'easy');
 		button2.setAttribute('data-level', 'medium');
@@ -365,9 +366,9 @@ export class PlayPage
 			'hidden'
 		);
 
-		const start_Button = createButtonWithNameId('start-button', 'Maçı Başlat');		// id= start-button
-		const devambutton = createButtonWithNameId('resume-button', 'Maça Devam Et');		// id= start-button
-		const new_match = createButtonWithNameId('newmatch-button', 'Yeni Maça Başla');		// id= start-button
+		const start_Button = createButtonWithNameId('start-button', exmp.getLang("game.stratt-game"));		// id= start-button
+		const devambutton = createButtonWithNameId('resume-button', exmp.getLang("game.continue-game"));		// id= start-button
+		const new_match = createButtonWithNameId('newmatch-button', exmp.getLang("game.new-game"));		// id= start-button
 
 		[start_Button, devambutton, new_match].forEach(btn => {
     	btn.classList.add(	

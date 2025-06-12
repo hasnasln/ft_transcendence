@@ -197,7 +197,7 @@ export function renderSingin(container: HTMLElement): void {
 	const registerButton = document.createElement('button');
 	registerButton.setAttribute('data-action', 'register');
 
-	registerButton.textContent = exmp.getLang('singin.register');
+	registerButton.textContent = exmp.getLang('singin.register-b');
 	registerButton.classList.add(
 		'bg-blue-500',
 		'hover:bg-blue-700',
@@ -215,7 +215,7 @@ export function renderSingin(container: HTMLElement): void {
 	const nicNaneOrMailInput = document.createElement('input');
 	nicNaneOrMailInput.type = 'text';
 	nicNaneOrMailInput.id = 'nicname_or_mail_input';
-	nicNaneOrMailInput.placeholder = exmp.getLang('singin.email');
+	nicNaneOrMailInput.placeholder = exmp.getLang('singin.email-or-nickname-i');
 	nicNaneOrMailInput.classList.add(
 		'border',
 		'border-gray-300',
@@ -243,7 +243,7 @@ export function renderSingin(container: HTMLElement): void {
 	const passwordInput = document.createElement('input');
 	passwordInput.type = 'password';
 	passwordInput.id = 'password_input';
-	passwordInput.placeholder = exmp.getLang('singin.password');
+	passwordInput.placeholder = exmp.getLang('singin.passwor-i');
 	passwordInput.classList.add(
 		'border',
 		'border-gray-300',
@@ -275,7 +275,7 @@ export function renderSingin(container: HTMLElement): void {
 //#region Normal Giriş Yap butonu
 	const grisButton = document.createElement('button');
 	grisButton.setAttribute('data-action', 'singin');
-	grisButton.textContent = exmp.getLang('singin.login');
+	grisButton.textContent = exmp.getLang('singin.login-b');
 	grisButton.classList.add(
 		'bg-green-500',
 		'hover:bg-green-700',

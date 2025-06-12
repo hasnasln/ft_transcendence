@@ -1,51 +1,123 @@
 {
 	"singin": {
-	  "title": "Sign In",
-	  "register": "Register",
-	  "email": "Email",
-	  "password": "Password",
-	  "login": "Login"
+		"register-b": "Register",
+		"email-or-nickname-i": "Email or Nickname",
+		"passwor-i": "Password",
+		"login-b": "Login"
+	},
+	"singin-success": "Login successful! Redirecting...",
+	"singin-errors": {
+		"required": {
+			"email": "Email or Nickname is required",
+			"password": "Password is required"
+		},
+		"INVALID_CREDENTIALS": "Invalid email/nickname or password",
+		"serverError": "Server error, please try again later"
 	},
 	"register": {
-	  "title": "Register",
-	  "singin": "Sign In",
-	  "name": "Name",
-	  "surname": "Surname",
-	  "username": "Username",
-	  "email": "Email",
-	  "password": "Password",
-	  "confirmPassword": "Confirm Password",
-	  "register": "Register"
+		"title": "Register",
+		"singin-b": "Sign In",
+		"name": "Enter Name",
+		"surname": "Enter Surname",
+		"username": "Enter Username",
+		"email": "Enter Email",
+		"password": "Enter Password",
+		"confirmPassword": "Confirm Password",
+		"register": "Register"
+	},
+	"register-success": "Registration successful! Please log in.",
+	"register-errors": {
+		"required": {
+			"name": "Name is required",
+			"surname": "Surname is required",
+			"username": "Username is required",
+			"email": "Email is required",
+			"password": "Password is required",
+			"confirmPassword": "Confirm Password is required"
+		},
+		"minlength": {
+			"name": "Name must be at least 3 characters",
+			"surname": "Surname must be at least 3 characters",
+			"username": "Username must be at least 3 characters",
+			"password": "Password must be at least 6 characters",
+			"confirmPassword": "Confirm Password must be at least 6 characters"
+		},
+		"maxlength": {
+			"username": "Username must be at most 20 characters",
+			"password": "Password must be at most 20 characters"
+		},
+		"invalidCharacters": {
+			"username": "Invalid username characters (a-zA-Z0-9_.)",
+			"email": "Invalid email format"
+		},
+		"passwordMismatch": "Passwords do not match",
+		"exists": {
+			"username": "This username is already taken",
+			"email": "This email is already registered"
+		},
+		"serverError": "Server error, please try again later"
 	},
 	"home": {
-	  "play": "Play Now",
-	  "settings": "Settings",
-	  "profile": "Profile",
-	  "logout": "Logout"
+		"play-b": "Play Now",
+		"settings-b": "Settings",
+		"profile-b": "Profile",
+		"tournament-b": "Tournament",
+		"logout-b": "Logout"
 	},
 	"settings": {
-	  "title": "Settings",
-	  "ball-color": "Ball Color",
-	  "background-color": "Background Color",
-	  "player-one-color": "Player 1 Color",
-	  "player-two-color": "Player 2 Color",
-	  "language-select": "Language Selection"
+		"title": "Settings",
+		"ball-color": "Ball Color",
+		"language-select": "Language Selection",
+		"save-button": "Save Settings"
 	},
 	"profile": {
-	  "title": "Profile Settings",
-	  "username": "Username",
-	  "profile-settings": "Profile Settings",
-	  "history": "Game History"
+		"title": "Profile Settings",
+		"username": "Username"
 	},
 	"profile-settings": {
-	  "username": "Username",
-	  "username-placeholder": "New Username",
-	  "email": "Email",
-	  "email-placeholder": "New Email",
-	  "password": "Password",
-	  "password-placeholder": "New Password",
-	  "confirmPassword": "Confirm Password",
-	  "confirmPassword-placeholder": "Confirm New Password",
-	  "update": "Update"
+		"username": "Username",
+		"username-placeholder": "New Username",
+		"email": "Email",
+		"email-placeholder": "New Email",
+		"password": "Password",
+		"password-placeholder": "New Password",
+		"confirmPassword": "Confirm Password",
+		"confirmPassword-placeholder": "Confirm New Password",
+		"update": "Update"
+	},
+	"tournament": {
+		"first-page": {
+			"join-title": "Join Tournament",
+			"join-placeholder": "Enter Tournament ID",
+			"join-button": "Join Tournament",
+			"create-title": "Create Tournament",
+			"create-placeholder": "Enter Tournament Name",
+			"create-button": "Create Tournament",
+			"m-title-for-showjoin": "Create Tournament",
+			"m-title-for-showcreate": "Join Tournament",
+			"m-join-button": "->",
+			"m-create-button": "<-"
+		},
+		"second-page": {
+			"exit": "Exit Tournament",
+			"tournament-id": "Tournament ID",
+			"tournament-name": "Tournament Name",
+			"tournament-creater": "Tournament Creator",
+			"tournament-total-players": "Total Players",
+			"tournament-joined-players": "Joined Players",
+			"play": "Play"
+		}
+	},
+	"game": {
+		"loding": "Game Page Loading...",
+		"vs-compiter-b": "Play vs Computer",
+		"vs-compiter-difficulty-b-easy": "Easy",
+		"vs-compiter-difficulty-b-medium": "Medium",
+		"vs-compiter-difficulty-b-hard": "Hard",
+		"find-reval-b": "Find Opponent",
+		"find-reval-waiting": "Waiting for Opponent...",
+		"local-game": "Local Game",
+		"tournament": "Tournament",
+		"stratt-game": "Start Game"
 	}
-  }
+}
