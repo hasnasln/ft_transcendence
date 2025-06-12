@@ -233,7 +233,7 @@ export function renderRegister(container: HTMLElement) {
 	const singinButton = document.createElement('button');
 	singinButton.setAttribute('data-action', 'login');
 
-	singinButton.textContent = exmp.getLang('register.singin');
+	singinButton.textContent = exmp.getLang('register.singin-b');
 	singinButton.classList.add(
 		'bg-blue-500',
 		'hover:bg-blue-700',
