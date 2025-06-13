@@ -240,7 +240,7 @@ export class Game
         // Kontrol: Maç bitti mi?
         if (matchControl)
         {
-          this.matchOver = true; ///////////////////////////////////////////////////////////////////////////////// ??????????????????????????????????????????????????????????
+          this.matchOver = true;
           this.exportBallState();
           this.exportGameState();
         }
@@ -380,7 +380,7 @@ this.exportGameState();
             this.resumeGameLoop();
         });
 
-        this.leftInput.getSocket()!.on("disconnect", () => {this.matchOver = true;  console.log("GELDİ, EVET, sol"); return;}); //bu varsa alttakine gerek yok, (window.reoload olduğu sürece)
+        this.leftInput.getSocket()!.on("disconnect", () => {this.matchOver = true; return;}); //bu varsa alttakine gerek yok, (window.reoload olduğu sürece)
         this.leftInput.getSocket()!.on("reset-match", () => {return;});
       }
 
@@ -394,7 +394,7 @@ this.exportGameState();
             this.resumeGameLoop();
         });
 
-        this.rightInput.getSocket()!.on("disconnect", () => {this.matchOver = true; console.log("GELDİ, EVET, sağ"); return;}); //bu varsa alttakine gerek yok, (window.reoload olduğu sürece)
+        this.rightInput.getSocket()!.on("disconnect", () => {this.matchOver = true; return;}); //bu varsa alttakine gerek yok, (window.reoload olduğu sürece)
         this.rightInput.getSocket()!.on("reset-match", () => {return;});
       }
 

@@ -250,7 +250,7 @@ const tr  = {
 		"stratt-game": "Oyunu Başlat",
 		"continue-game": "Oyuna Devam Et",
 		"new-game": "Yeni Oyun Başlat",
-		"sets": "SETLER!",
+		"sets": "SETLER",
 	}
 }
 

@@ -1,9 +1,6 @@
 import { game_button } from "../components/buttons";
 import { exmp } from '../languageMeneger';
 
-/*
-Socor board ilk başta gizli olacak
-*/
 function renderScoreBoard(container: HTMLElement): void
 {
 	const ScoreBoard = document.createElement('div');
@@ -92,11 +89,7 @@ function createSpanAddId(id: string): HTMLElement
 	x.id = id;
 	return x;
 }
-/**
- * 
- * setboard ilk başta gizli 
- * 
- */
+
 function renderSetBoard(container: HTMLElement): void
 {
 	const setboard = createDivAddId('setboard');
@@ -369,8 +362,10 @@ export class PlayPage
 		const start_Button = createButtonWithNameId('start-button', exmp.getLang("game.stratt-game"));		// id= start-button
 		const devambutton = createButtonWithNameId('resume-button', exmp.getLang("game.continue-game"));		// id= start-button
 		const new_match = createButtonWithNameId('newmatch-button', exmp.getLang("game.new-game"));		// id= start-button
+		const turnToHomePage = createButtonWithNameId('turnHomePage-button', 'Ana sayfaya dön');
 
-		[start_Button, devambutton, new_match].forEach(btn => {
+
+		[start_Button, devambutton, new_match, turnToHomePage].forEach(btn => {
     	btn.classList.add(	
 			  	'absolute',
 				'left-1/2',
@@ -393,9 +388,10 @@ export class PlayPage
 			);
 		});
 
-		start_Button.classList.add('top-1/2');
-    	devambutton.classList.add('top-[40%]');
-    	new_match.classList.add('top-[70%]');
+		devambutton.classList.add('top-[45%]');
+		start_Button.classList.add('top-[45%]');
+    	new_match.classList.add('top-[60%]');
+		turnToHomePage.classList.add('top-[75%]');
 
 
 		renderScoreBoard(paly_div);
@@ -404,7 +400,7 @@ export class PlayPage
 		renderDifficulty(paly_div);
 
 
-		[start_Button, devambutton, new_match, set_toast, end_message, info].forEach(child => {
+		[start_Button, devambutton, new_match, turnToHomePage, set_toast, end_message, info].forEach(child => {
 		paly_div.appendChild(child);
 		})
 

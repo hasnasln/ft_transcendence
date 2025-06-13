@@ -65,4 +65,5 @@ export function showEndMessage(gameInfo: GameInfo) {
     gameInstance.startButton.classList.remove("hidden");
   }
   gameInstance.newmatchButton!.classList.remove("hidden");
+  gameInstance.turnToHomePage!.classList.remove("hidden");
 }

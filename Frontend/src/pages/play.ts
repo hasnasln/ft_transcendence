@@ -1,19 +1,19 @@
-import { createCamera, createPaddles, createGround, createWalls, createScene, createPredictedBall} from "./game-section/gameScene";
-import {Mesh, Engine, Scene} from "@babylonjs/core";
-import { startGameLoop} from "./game-section/gameLoop"
+import { createCamera, createPaddles, createGround, createWalls, createScene, createPredictedBall } from "./game-section/gameScene";
+import { Mesh, Engine, Scene, FreeCamera, Vector3 } from "@babylonjs/core";
+import { startGameLoop } from "./game-section/gameLoop"
 import { BallController } from "./game-section/ball";
 import { GameInfo, waitForGameInfoReady, waitForMatchReady, waitForRematchApproval } from "./game-section/network";
 import { createGame } from "./game-section/ui";
-
 
 /*********************************** */
 import { Socket } from "socket.io-client";
 
 // 🎮 WebSocket bağlantısı
-import {createSocket } from "./game-section/network";
+import { createSocket } from "./game-section/network";
+//import { FreeCamera } from "babylonjs";
 
 //tip tanımlama için sınıf dışarısında olmak lazım
-export	type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | null;
+export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | null;
 
 export interface GameStatus {
 	currentGameStarted: boolean;
@@ -21,34 +21,38 @@ export interface GameStatus {
 	level?: string;
 }
 
-export class game
-{
-	public	startButton: HTMLElement | null;
-	public	scoreBoard: HTMLElement | null;
-	public	setBoard: HTMLElement | null;
-	public	scoreTable: HTMLElement | null;
-	public	setTable: HTMLElement | null;
-	public	endMsg: HTMLElement | null;
-	public	socket: Socket | null;
-	public	newmatchButton: HTMLElement | null;;
-	public	info: HTMLElement | null;
+export class game {
+	public startButton: HTMLElement | null;
+	public scoreBoard: HTMLElement | null;
+	public setBoard: HTMLElement | null;
+	public scoreTable: HTMLElement | null;
+	public setTable: HTMLElement | null;
+	public endMsg: HTMLElement | null;
+	public socket: Socket | null;
+	public newmatchButton: HTMLElement | null;
+	public turnToHomePage: HTMLElement | null;
+	public info: HTMLElement | null;
 	public engine: Engine | undefined = undefined;
 	public scene: Scene | undefined = undefined;
 	public gameInfo: GameInfo | null = null;
 	public canvas: HTMLCanvasElement | null;
-	public groundSize: {width: number, height: number} | null;
+	public groundSize: { width: number, height: number } | null;
 	public ground: Mesh | null;
 	public paddle1: Mesh | null = null;
 	public paddle2: Mesh | null = null;
 	public ball: BallController | null = null;
-	public gameStatus : GameStatus = {
-		currentGameStarted: false,	
+	public gameStatus: GameStatus = {
+		currentGameStarted: false,
 		game_mode: null
 	};
 	public reMatch: boolean = false;
 
-	public constructor()
-	{
+	public constructor() {
+		this.resetGame();
+	}
+
+
+	public resetGame() {
 		this.startButton = null;
 		this.scoreBoard = null;
 		this.setBoard = null;
@@ -57,10 +61,11 @@ export class game
 		this.endMsg = null;
 		this.socket = null;
 		this.newmatchButton = null;
+		this.turnToHomePage = null;
 		this.info = null;
 		this.gameInfo = null;
 		this.canvas = null;
-		this.groundSize = {width: 0, height: 0};
+		this.groundSize = { width: 0, height: 0 };
 		this.engine = undefined;
 		this.scene = undefined;
 		this.ground = null;
@@ -68,7 +73,7 @@ export class game
 		this.paddle2 = null;
 		this.ball = null;
 		this.gameStatus = {
-			currentGameStarted: false,	
+			currentGameStarted: false,
 			game_mode: null
 		};
 	}
@@ -81,12 +86,13 @@ export class game
 		this.setTable = document.getElementById("set-table");
 		this.endMsg = document.getElementById("end-message");
 		this.socket = createSocket();
-		this.newmatchButton = document.getElementById("newmatch-button") as HTMLButtonElement;
+		this.newmatchButton = document.getElementById("newmatch-button");
+		this.turnToHomePage = document.getElementById("turnHomePage-button");
 		this.info = document.getElementById("info");
 
 		if (!this.startButton || !this.scoreBoard || !this.setBoard ||
 			!this.scoreTable || !this.setTable || !this.endMsg ||
-			!this.socket || !this.newmatchButton || !this.info) {
+			!this.socket || !this.newmatchButton || !this.turnToHomePage || !this.info) {
 			console.log("Bir veya daha fazla HTML elementi bulunamadı. Lütfen HTML dosyasını kontrol edin.");
 			return false;
 		} else {
@@ -94,131 +100,123 @@ export class game
 			console.log("Oyun sayfası hazırlanıyor.");
 
 
-			this.initializeGameSettings( async (status) => 
-								{
-									console.log(`status geldi, status = {${status.currentGameStarted}, ${status.game_mode}}`);
-									gameInstance.gameStatus = status;
-									gameInstance.socket!.emit("start", gameInstance.gameStatus);
-								
-									let rival : string;
-									if (gameInstance.gameStatus.game_mode === "remoteGame")
-									{
-										rival = await waitForMatchReady(gameInstance.socket!);
-										console.log(`${gameInstance.socket!.id} ${rival} maçı için HAZIR`);
-									}
-								
-									// Oyun başlatma butonuna tıklanınca:
-									gameInstance.startButton!.addEventListener("click", async () =>
-									{
-										console.log(`START A TIKLANDI, içeriği : ${gameInstance.startButton!.innerText}`);
-										gameInstance.startButton!.classList.add("hidden");
-										if (!gameInstance.endMsg)
-										{
-											const a = document.getElementById("end-message")!;
-											a.classList.add("hidden");
-										}
-										else 
-										{
-											gameInstance.endMsg.classList.add("hidden");
-										}
-								
-										 if (gameInstance.gameStatus.game_mode === "remoteGame")
-										gameInstance.info!.textContent = `${rival} bekleniyor ...`;
-										 else
-										gameInstance.info!.classList.add("hidden");
-										 gameInstance.newmatchButton!.classList.add("hidden");
-					
-										if (gameInstance.gameStatus.currentGameStarted)
-										{
-											gameInstance.reMatch = true;
-											gameInstance.cleanOldGame();
-										}
-										gameInstance.socket!.emit("ready", false);
-										if (gameInstance.gameStatus.game_mode === "remoteGame" && gameInstance.reMatch)
-										{
-											const approval = await waitForRematchApproval(gameInstance.socket!, rival);
-											if (approval)
-											gameInstance.socket!.emit("ready", true);
-											else
-											{
-											gameInstance.newmatchButton!.classList.remove("hidden");
-											return;
-											}
-										}
-										gameInstance.gameInfo = new GameInfo(gameInstance.gameStatus.game_mode);
-										await waitForGameInfoReady(gameInstance.gameInfo, gameInstance.socket!);
-										console.log(`${gameInstance.socket!.id} için VERİLER HAZIR`);
-											createGame(gameInstance.gameInfo);
-											gameInstance.startGame(gameInstance.gameInfo!); // oyun kurulumuna geç
-										});
-								});
+			this.initializeGameSettings(async (status) => {
+				console.log(`status geldi, status = {${status.currentGameStarted}, ${status.game_mode}}`);
+				this.gameStatus = status;
+				this.socket!.emit("start", this.gameStatus);
+
+				let rival: string;
+				if (this.gameStatus.game_mode === "remoteGame") {
+					rival = await waitForMatchReady(this.socket!);
+					console.log(`${this.socket!.id} ${rival} maçı için HAZIR`);
+				}
+
+				// Oyun başlatma butonuna tıklanınca:
+				this.startButton!.addEventListener("click", async () => {
+					console.log(`START A TIKLANDI, içeriği : ${this.startButton!.innerText}`);
+					this.startButton!.classList.add("hidden");
+					if (!this.endMsg) {
+						const a = document.getElementById("end-message")!;
+						a.classList.add("hidden");
+					}
+					else {
+						this.endMsg.classList.add("hidden");
+					}
+
+					if (this.gameStatus.game_mode === "remoteGame")
+						this.info!.textContent = `${rival} bekleniyor ...`;
+					else
+						this.info!.classList.add("hidden");
+					this.newmatchButton!.classList.add("hidden");
+					this.turnToHomePage!.classList.add("hidden");
+
+					if (this.gameStatus.currentGameStarted) {
+						this.reMatch = true;
+						this.cleanOldGame();
+					}
+					this.socket!.emit("ready", false);
+					if (this.gameStatus.game_mode === "remoteGame" && this.reMatch) {
+						const approval = await waitForRematchApproval(this.socket!, rival);
+						if (approval)
+							this.socket!.emit("ready", true);
+						else {
+							this.newmatchButton!.classList.remove("hidden");
+							this.turnToHomePage!.classList.add("hidden");
+							return;
+						}
+					}
+					this.gameInfo = new GameInfo(this.gameStatus.game_mode);
+					await waitForGameInfoReady(this.gameInfo, this.socket!);
+					console.log(`${this.socket!.id} için VERİLER HAZIR`);
+					createGame(this.gameInfo);
+					this.startGame(this.gameInfo!);				
+				});
+
+			});
 
 
 
 			return true;
 		}
-		
+
 	}
 
-	public initializeGameSettings(onModeSelected: (status: GameStatus) => void)
-	{
-		console.log(`initializeGame settings içindeyiz, gameStatus.currentGameStarted = ${this.gameStatus.currentGameStarted}`);
-		if(this.gameStatus.currentGameStarted) {
+	public initializeGameSettings(onModeSelected: (status: GameStatus) => void) {
+		if (this.gameStatus.currentGameStarted) {
 			onModeSelected(this.gameStatus);
 			return;
 		}
 
-		let status : {currentGameStarted: boolean, game_mode: GameMode, level?: string};
-		status = {currentGameStarted: false, game_mode: null};
+		let status: { currentGameStarted: boolean, game_mode: GameMode, level?: string };
+		status = { currentGameStarted: false, game_mode: null };
 
 		const btnVsComp = document.getElementById("btn-vs-computer")!;
 		const btnFindRival = document.getElementById("btn-find-rival")!;
 		const diffDiv = document.getElementById("difficulty")!;
 		const btnLocal = document.getElementById("btn-local")!;
-	
+
 		// 1) VS Computer’a basıldığında zorluk seçeneklerini göster
-		btnVsComp.addEventListener("click", () =>
-		{
+		btnVsComp.addEventListener("click", () => {
 			document.getElementById("menu")!.classList.add("hidden");
 			diffDiv.classList.remove("hidden");
 		});
-	
+
 		// 2) Zorluk seçildiğinde server’a emit et
 		diffDiv.querySelectorAll("button").forEach(btn => {
 			btn.addEventListener("click", () => {
-			const level = (btn as HTMLElement).dataset.level!;
-			//socket.emit("startWithAI", { level });
-			status.game_mode = 'vsAI';
-			status.level = level; 
-			diffDiv.classList.add("hidden"); 
-			this.startButton!.classList.remove("hidden");
-			onModeSelected(status);
+				const level = (btn as HTMLElement).dataset.level!;
+				//socket.emit("startWithAI", { level });
+				status.game_mode = 'vsAI';
+				status.level = level;
+				diffDiv.classList.add("hidden");
+				this.startButton!.classList.remove("hidden");
+				onModeSelected(status);
 			});
 		});
-	
+
 		// 3) Find Rival butonuna basıldığında normal matchmaking
 		btnFindRival.addEventListener("click", () => {
-			document.getElementById("menu")!.classList.add("hidden"); 
+			document.getElementById("menu")!.classList.add("hidden");
 			this.info!.textContent = "Online bir rakip için bekleniyor	...";
 			this.info!.classList.remove("hidden");
 			status.game_mode = 'remoteGame';
 			onModeSelected(status);
 		});
-		
+
 		// 4) local game e tıklanırsa 
-	
+
 		btnLocal.addEventListener("click", () => {
 			document.getElementById("menu")!.classList.add("hidden");
 			//socket.emit("localGame");
 			status.game_mode = 'localGame';
 			this.startButton!.classList.remove("hidden");
 			onModeSelected(status);
-		
+
 		});
 	}
 
-	public cleanOldGame()
-	{
+
+	public cleanOldGame() {
 		this.scene!.dispose();
 		this.engine!.dispose();
 
@@ -242,45 +240,36 @@ export class game
 		this.gameStatus.currentGameStarted = false;
 	}
 
-	public startGame(gameInfo: GameInfo){
-		
-		// 🎮 Canvas ve oyun motoru
-		const sceneSetup = createScene();
-		this.canvas = sceneSetup.canvas;
-		this.engine = sceneSetup.engine;
-		this.scene = sceneSetup.scene;
-	
-		// 🎮 Kamera & Işık
-		createCamera(this.scene);
-	
-	
-		// 🎮 Zemin
-		this.ground = createGround(this.scene, gameInfo).ground;
-		this.groundSize = createGround(this.scene, gameInfo).groundSize;
-	
-		// 🎮 Paddle'lar ve top
-		const paddles = createPaddles(this.scene, gameInfo);
-		this.paddle1 = paddles.paddle1;
-		this.paddle2 = paddles.paddle2;
-		
-		// 🎮 Top
-		this.ball = new BallController(this.scene, gameInfo);
-	
-	
-		// 🎮 Duvarlar
-		createWalls(this.scene);
-	
-	
-		const predictedBall = createPredictedBall(this.scene, this.groundSize.width/2);
-		//predictedBallRef = predictedBall;export function ayhan()
+	public async startGame(gameInfo: GameInfo)
 		{
-			// 🎮 Oyun motoru döngüsü
-			startGameLoop(this.engine, this.scene, gameInfo, predictedBall);
-		
-			this.canvas.focus();
-			console.log("gamestatus true oldu");
+			// 🎮 Canvas ve oyun motoru
+			const sceneSetup = createScene();
+			this.canvas = sceneSetup.canvas;
+			this.engine = sceneSetup.engine;
+			this.scene = sceneSetup.scene;
+
+			// 🎮 Kamera & Işık
+			createCamera(this.scene);
+
+			// 🎮 Zemin
+			this.ground = createGround(this.scene, gameInfo).ground;
+			this.groundSize = createGround(this.scene, gameInfo).groundSize;
+
+			// 🎮 Paddle'lar ve top
+			const paddles = createPaddles(this.scene, gameInfo);
+			this.paddle1 = paddles.paddle1;
+			this.paddle2 = paddles.paddle2;
+
+			// 🎮 Top
+			this.ball = new BallController(this.scene, gameInfo);
+
+			// 🎮 Duvarlar
+			createWalls(this.scene);
+
+			const predictedBall = createPredictedBall(this.scene!, this.groundSize!.width / 2);
+			startGameLoop(this.engine!, this.scene!, this.gameInfo!, predictedBall);
+			this.canvas!.focus();
 			this.gameStatus.currentGameStarted = true;
-		}
 	}
 }
 

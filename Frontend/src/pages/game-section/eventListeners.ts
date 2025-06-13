@@ -1,7 +1,6 @@
 import { gameInstance } from "../play";
 import { GameInfo } from "./network";
 
-
 export function initializeEventListeners(gameInfo: GameInfo)
 {
   if(gameInfo.mode === 'remoteGame' || gameInfo.mode === 'vsAI')
@@ -76,9 +75,7 @@ export function initializeEventListeners(gameInfo: GameInfo)
         });
     }
 
-
-  // ******************************************************************************************************************************************************************************
-  
+ 
 
   const resumeButton = document.getElementById("resume-button") as HTMLButtonElement;
  
@@ -95,12 +92,14 @@ export function initializeEventListeners(gameInfo: GameInfo)
         gameInstance.socket!.emit("pause-resume", {status: "pause"});
         // Duraklatıldığında "devam et" butonunu göster
         resumeButton.classList.remove("hidden");
-        gameInstance.newmatchButton!.classList.remove("hidden");;
+        gameInstance.newmatchButton!.classList.remove("hidden");
+        gameInstance.turnToHomePage!.classList.remove("hidden");
       } else {
         gameInstance.socket!.emit("pause-resume", {status: "resume"});
         // Devam edildiğinde butonu gizle
         resumeButton.classList.add("hidden");
          gameInstance.newmatchButton!.classList.add("hidden");
+         gameInstance.turnToHomePage!.classList.add("hidden");
       }
 
       }
@@ -113,6 +112,7 @@ export function initializeEventListeners(gameInfo: GameInfo)
       gameInstance.socket!.emit("pause-resume", {status: "resume"});
       resumeButton.classList.add("hidden");
        gameInstance.newmatchButton!.classList.add("hidden");
+       gameInstance.turnToHomePage!.classList.add("hidden");
     });
   }
 
@@ -122,6 +122,7 @@ export function initializeEventListeners(gameInfo: GameInfo)
     {console.log(`yeni maça başlaya tıklandı, içerik : ${ gameInstance.newmatchButton!.innerText}`);
     resumeButton.classList.add("hidden");
      gameInstance.newmatchButton!.classList.add("hidden");
+     gameInstance.turnToHomePage!.classList.add("hidden");
     if (gameInstance.startButton)
       gameInstance.startButton.classList.add("hidden");
     
@@ -129,19 +130,27 @@ export function initializeEventListeners(gameInfo: GameInfo)
         gameInstance.socket!.emit("reset-match");
     window.location.reload();
 
-    //document.getElementById("menu")!.classList.remove("hidden");
-    
-    //  endMsg.classList.add("hidden");
-    //     gameInstance.startButton.classList.add("hidden");
-    //     scoreBoard.style.display = "flex";
-    //     setBoard.style.display = "flex";
+    });
 
-        //  gameInfo.state!.matchOver = false;
-        //   gameInfo.state!.isPaused = false;
-        //   socket.emit("pause-resume", {state: gameInfo.state, status: "stable"});
-         
-          // updateScoreBoard(gameInfo);
-          // updateSetBoard(gameInfo);
+       gameInstance.turnToHomePage!.addEventListener("click", () =>
+    {
+     resumeButton.classList.add("hidden");
+     gameInstance.newmatchButton!.classList.add("hidden");
+     gameInstance.turnToHomePage!.classList.add("hidden");
+    if (gameInstance.startButton)
+      gameInstance.startButton.classList.add("hidden");
+    
+    if(!gameInfo.state?.matchOver)
+        gameInstance.socket!.emit("reset-match");
+    window.location.reload();
+    });
+    
+    window.addEventListener('popstate', (event) => {
+	  console.log('Geri tuşuna basıldı!');
+     if(!gameInfo.state?.matchOver)
+        gameInstance.socket!.emit("reset-match");
+      window.location.reload();
+	
     });
 }
 

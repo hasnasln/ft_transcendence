@@ -28,7 +28,7 @@ export function startGameLoop(engine: Engine, scene: Scene, gameInfo: GameInfo, 
         if (gameInfo.state?.isPaused) return;
      
         // Topu hareket ettir
-        gameInstance.ball!.ball.position = new Vector3(gameInfo.ballState?.bp!.x, gameInfo.ballState?.bp!.y, 0);
+        gameInstance.ball!.ball.position = new Vector3(gameInfo.ballState?.bp!.x, gameInfo.ballState?.bp!.y, -gameInfo.constants?.ballRadius!);
         gameInstance.ball!.velocity = new Vector3(gameInfo.ballState?.bv.x, gameInfo.ballState?.bv.y, 0);
         gameInstance.ball!.ball.position.addInPlace(gameInstance.ball!.velocity);
         // pedalları hareket ettir

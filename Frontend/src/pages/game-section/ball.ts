@@ -17,7 +17,7 @@ export class BallController
     ballMaterial.diffuseColor = new Color3(0.7, 0.7, 0.7);
     this.ball.material = ballMaterial;
 
-    this.velocity = new Vector3(gameInfo.ballState?.bv.x, gameInfo.ballState?.bv.y, 0);
-    this.position = new Vector3(gameInfo.ballState?.bp!.x, gameInfo.ballState?.bp!.y, 0);
+    this.velocity = new Vector3(gameInfo.ballState?.bv.x, gameInfo.ballState?.bv.y, -gameInfo.constants?.ballRadius!);
+    this.position = new Vector3(gameInfo.ballState?.bp!.x, gameInfo.ballState?.bp!.y, -gameInfo.constants?.ballRadius!);
   }
 }
