@@ -1,10 +1,10 @@
-import { createCamera, createPaddles, createGround, createWalls, createScene, createPredictedBall } from "./game-section/gameScene";
+import { createPaddles, createGround, createWalls, createScene, createPredictedBall } from "./game-section/gameScene";
 import { Mesh, Engine, Scene, FreeCamera, Vector3 } from "@babylonjs/core";
 import { startGameLoop } from "./game-section/gameLoop"
 import { BallController } from "./game-section/ball";
 import { GameInfo, waitForGameInfoReady, waitForMatchReady, waitForRematchApproval } from "./game-section/network";
 import { createGame } from "./game-section/ui";
-
+import { CameraController } from "./game-section/camera";
 /*********************************** */
 import { Socket } from "socket.io-client";
 
@@ -249,7 +249,7 @@ export class game {
 			this.scene = sceneSetup.scene;
 
 			// 🎮 Kamera & Işık
-			createCamera(this.scene);
+			new CameraController(this.scene);
 
 			// 🎮 Zemin
 			this.ground = createGround(this.scene, gameInfo).ground;

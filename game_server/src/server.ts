@@ -60,7 +60,7 @@ io.on("connection", socket =>
     console.log(`oyuncu players a kaydedildi, player.socket.id = ${player.socket.id}`);
 
     socket.on("start", (gameStatus : GameStatus) =>
-      {console.log(`status SERVER A geldi, status = {${gameStatus.currentGameStarted}, ${gameStatus.game_mode}}`);
+      {
         if (gameStatus.game_mode === "vsAI")
             startGameWithAI(player, gameStatus.level!, io);
         else if (gameStatus.game_mode === "localGame")
