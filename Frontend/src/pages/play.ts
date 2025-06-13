@@ -253,7 +253,7 @@ export class game {
 
 			// 🎮 Zemin
 			this.ground = createGround(this.scene, gameInfo).ground;
-			this.groundSize = createGround(this.scene, gameInfo).groundSize;
+			this.groundSize = createGround(this.scene, gameInfo).groundSize; 
 
 			// 🎮 Paddle'lar ve top
 			const paddles = createPaddles(this.scene, gameInfo);
