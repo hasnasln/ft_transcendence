@@ -5,18 +5,14 @@ import { Player } from "./matchmaking";
 
 export interface InputProvider
 {
-  /**
-   * Returns +1 for move up, -1 for move down, or 0 for no movement
-   */
+  //Returns +1 for move up, -1 for move down, or 0 for no movement
   getPaddleDelta(): number;
   getUsername(): string;
   getSocket?(): Socket;
   getPy?(): number;
 }
 
-/**
- * RemotePlayerInput listens to socket events for keydown/keyup
- */
+ //RemotePlayerInput listens to socket events for keydown/keyup
 export class RemotePlayerInput implements InputProvider
 {
   private delta = 0;
@@ -40,12 +36,17 @@ export class AIPlayerInput implements InputProvider
   private level: string = "medium";
   private lastDecisionTime = 0;
   private targetY = 0;
-  private timePassed = 0;
+  private refreshTime: number = 1500; //ms
 
   constructor(private readonly getGame: () => Game, private readonly getPaddle: () => Paddle, username: string, level: string)
   {
     this.username = username;
-    this.level = level; /////Bunu işleyeceğiz ******************************************************************************************************************************************
+    this.level = level;
+
+    if (level === 'easy')
+      this.refreshTime = 2000; //ms
+    else if (level === 'hard')
+      this.refreshTime = 1000; //ms
   }
 
   getPaddleDelta(): number
@@ -59,19 +60,17 @@ export class AIPlayerInput implements InputProvider
 
      const now = Date.now();
 
-    if (now - this.lastDecisionTime >= 1000) 
+    if (now - this.lastDecisionTime >= this.refreshTime) 
       {
         this.lastDecisionTime = now;
-        this.targetY = predictBallY(ball, groundWidth/2, paddle);
-        //this.timePassed = predictBallY(ball, groundWidth/2, paddle).timePassed;
+        this.targetY = predictBallY(ball, groundWidth/2, groundHeight/2);
       }
         
     const diff = this.targetY - paddle.position.y;
-    //const time = Math.min(this.timePassed, 60); 
-    //if(Math.abs(diff) < paddleSpeed)
-       // return 0;
-    //else
-        return diff > 0 ? Math.abs(diff)/10 : -Math.abs(diff)/10;
+    if(Math.abs(diff) < paddleSpeed)
+       return 0;
+    else
+        return diff > 0 ? 1 : -1;
   }
 
   getUsername() { return this.username; }

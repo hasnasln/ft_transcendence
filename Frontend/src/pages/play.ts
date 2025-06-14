@@ -185,7 +185,6 @@ export class game {
 		diffDiv.querySelectorAll("button").forEach(btn => {
 			btn.addEventListener("click", () => {
 				const level = (btn as HTMLElement).dataset.level!;
-				//socket.emit("startWithAI", { level });
 				status.game_mode = 'vsAI';
 				status.level = level;
 				diffDiv.classList.add("hidden");

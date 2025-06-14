@@ -1,7 +1,6 @@
 import { Server } from "socket.io";
 import { createServer } from "http";
 import {Player, addPlayerToQueue, removePlayerFromQueue, startGameWithAI, startLocalGame} from "./matchmaking";
-//import { Socket } from "socket.io";
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -51,7 +50,6 @@ const players = new Map<string, Player>();
 
 io.on("connection", socket =>
 {
-  console.log(`Bağlatı sağlandı: socket.id = ${socket.id}`);
   socket.once("username", ({ username }) =>
   {
    
@@ -61,6 +59,7 @@ io.on("connection", socket =>
 
     socket.on("start", (gameStatus : GameStatus) =>
       {
+        console.log(`gameStatus = {game_mode = ${gameStatus.game_mode}, level = ${gameStatus.level}}`);
         if (gameStatus.game_mode === "vsAI")
             startGameWithAI(player, gameStatus.level!, io);
         else if (gameStatus.game_mode === "localGame")

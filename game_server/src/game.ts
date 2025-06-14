@@ -205,7 +205,7 @@ export class Game
      setTimeout(() =>
     {
       const angle = lastScorer == 'leftPlayer' ? (Math.random()*2-1)*Math.PI/6 : Math.PI - (Math.random()*2-1)*Math.PI/6;
-      // 2 saniye sonra yeni rastgele bir hız ver
+    
       this.ball.velocity = {x: Math.cos(angle)*this.ball.firstSpeedFactor, y: Math.sin(angle)*this.ball.firstSpeedFactor};
       this.lastUpdatedTime = Date.now();
     }, 1000); // 1000ms = 1 saniye
@@ -451,7 +451,7 @@ const handlePaddleBounce: Middleware = (g, _dt) =>
       // Face hit
       if (Math.abs(relativeY) < yThreshold) {
         g.ball.velocity.x *= -1;
-        g.ball.velocity.y += relativeY * 0.03;
+        g.ball.velocity.y += relativeY * 0.05;
         if (g.ball.firstPedalHit++) {
           g.ball.speedIncreaseFactor = 1.2;
           g.ball.minimumSpeed = 0.25 * UNIT;
@@ -485,6 +485,9 @@ const enforceSpeedLimits: Middleware = (g, _dt) => {
     g.ball.velocity.x /= 1.02;
     g.ball.velocity.y /= 1.02;
   }
+  //Oyun zig-zag a dönmesin kontrolü
+  if (g.ball.velocity.x !== 0 && Math.abs(g.ball.velocity.y / g.ball.velocity.x) > 2)
+     g.ball.velocity.y /= 1.02;
   return true;
 };
 

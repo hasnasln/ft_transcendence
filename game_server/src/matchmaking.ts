@@ -1,16 +1,12 @@
 import { Socket } from "socket.io";
-import { Game, Paddle } from "./game"; // Oyunun mantığını yöneten sınıf
+import { Game, Paddle } from "./game"; 
 import { Server } from "socket.io";
 import { LocalPlayerInput, RemotePlayerInput, AIPlayerInput } from "./inputProviders";
-// import { request as unitRequest } from "undici";
-// import { FastifyRequest } from "fastify";
-
-let counter = 0;
 
 export interface Player
 {
 	socket: Socket;
-	username: string; // ya da id................................... 
+	username: string; 
 }
 
 const waitingPlayers = new Map<string, Player>();
@@ -118,7 +114,7 @@ function checkForMatch(io: Server)
 					console.log("Her iki socket de hazır!");
 					if (reMatch)
 						io.to(roomId).emit("rematch-ready");
-					if ((reMatchApproval1 === reMatchApproval2 && reMatch !== reMatchApproval1) || (reMatchApproval1 !== reMatchApproval2))  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					if ((reMatchApproval1 === reMatchApproval2 && reMatch !== reMatchApproval1) || (reMatchApproval1 !== reMatchApproval2))
 						return;
 					const game = new Game(leftInput, rightInput, io, roomId);
 					game.startGameLoop();
