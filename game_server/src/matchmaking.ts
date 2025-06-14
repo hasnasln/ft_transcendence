@@ -19,7 +19,6 @@ export function addPlayerToQueue(player: Player, io: Server)
 {
 	waitingPlayers.set(player.socket.id, player);
 	console.log(`oyuncu waitingP layers a kaydedildi, player.socket.id = ${player.socket.id}`);
-	console.log(`şu anda waitingPlayers size = ${waitingPlayers.size}`);
 	checkForMatch(io);
 }
 
@@ -49,7 +48,7 @@ export function removePlayerFromQueue(player: Player)
 
 			// Yeni bir oyun başlat
 	human.socket.on("ready", () => 
-	{console.log("vs AI modunda ready geldi");
+	{
 	const game = new Game(leftInput, rightInput, io, roomId);
 	getGame = () => game;
 	getPaddle = () => game.getPaddle2();
@@ -71,7 +70,6 @@ export function removePlayerFromQueue(player: Player)
 	player1.socket.on("ready", () =>
 	{
 	const game = new Game(leftInput, rightInput, io, roomId);
-	console.log(`serverda yeni oyun oluştu, roomId = ${roomId}___${++counter}`);
 	game.startGameLoop();
 	});
   }
@@ -87,7 +85,7 @@ function mapShift<K, V>(map: Map<K, V>): V | undefined {
 function checkForMatch(io: Server)
 {
 	while (waitingPlayers.size >= 2)
-	{console.log(`checkforMatch içine girdi.`);
+	{
 		const player1 = mapShift(waitingPlayers);
 		const player2 = mapShift(waitingPlayers);
 

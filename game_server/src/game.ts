@@ -1,7 +1,7 @@
 import { Server} from "socket.io";
 import { InputProvider } from "./inputProviders";
 
-const UNIT = 40; let counter = 0;
+const UNIT = 40;
 
 type Side = 'leftPlayer' | 'rightPlayer';
 
@@ -306,10 +306,6 @@ export class Game
      };
 
      this.io.to(this.roomId).emit("gameState", gameState);
-     console.log(`room a gönderilen gameState
-      matchOver: ${this.matchOver},
-      setOver: ${this.setOver},
-      isPaused: ${this.isPaused}`);
   }
 
 
@@ -331,12 +327,6 @@ export class Game
         };
 
         this.io.to(this.roomId).emit("ballUpdate", ballState);
-        // console.log(`room a gönderilen ballUpdate
-        //  bp: { x: ${this.ball.position.x / UNIT}, y : ${this.ball.position.y / UNIT}},
-        //  bv: {x: ${this.ball.velocity.x / UNIT}, y : ${this.ball.velocity.y /UNIT}},
-        //  points: ${this.points},
-        //  sets: ${this.sets},
-        //  usernames: {left: ${this.leftInput.getUsername()}, right: ${this.rightInput.getUsername()}}`);
   }
 
     public exportPaddleState()
@@ -348,14 +338,11 @@ export class Game
         }
 
         this.io.to(this.roomId).emit("paddleUpdate", paddleState);
-        // console.log(`room a gönderilen paddleUpdate
-        //  p1y: ${this.paddle1.position.y/UNIT},
-        //   p2y: ${this.paddle2.position.y/UNIT}`);
   }
 
 
   public startGameLoop()
-  {console.log(`startGameLoop a girildi: maç adı : ${this.roomId}__${++counter}`);
+  {
     this.exportGameConstants();
 
     this.matchOver = false;
@@ -363,17 +350,12 @@ export class Game
     this.isPaused = false;
 
 this.exportGameState();
-    
-//this.leftInput.getSocket()!.on("disconnect", () => {
-//     
-//     });
-    
 
 
      if (typeof this.leftInput.getSocket === 'function')
       {
         this.leftInput.getSocket()!.on("pause-resume", (data: {status: string}) =>
-        {console.log(`pause-resume emiti server a geldi: status = ${data.status}`);
+        {
         if (data.status === "pause" && !this.isPaused)
             this.pauseGameLoop();
         else if (data.status === "resume" && this.isPaused)
@@ -387,7 +369,7 @@ this.exportGameState();
       if (typeof this.rightInput.getSocket === 'function')
       {
         this.rightInput.getSocket()!.on("pause-resume", (data: {status: string}) =>
-        {console.log(`pause-resume emiti server a geldi: status = ${data.status}`);
+        {
         if (data.status === "pause" && !this.isPaused)
             this.pauseGameLoop();
         else if (data.status === "resume" && this.isPaused)
