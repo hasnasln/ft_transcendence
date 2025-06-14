@@ -64,7 +64,7 @@ export function router()
 					info.classList.add('hidden');
 					info.classList.remove('bg-blue-500');
 					menu.classList.remove('hidden');
-				}, 3000);
+				}, 2000);
 			}
 
 			break;

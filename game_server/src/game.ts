@@ -1,8 +1,6 @@
 import { Server} from "socket.io";
 import { InputProvider } from "./inputProviders";
 
-const UNIT = 40;
-
 type Side = 'leftPlayer' | 'rightPlayer';
 
 interface GameConstants
@@ -29,7 +27,6 @@ interface BallState
   points: { leftPlayer: number, rightPlayer: number };
   sets: { leftPlayer: number, rightPlayer: number };
   usernames: {left: string, right: string}
-  py: number;
 }
 
 interface PaddleState
@@ -44,7 +41,6 @@ interface Position
   y : number;
 }
 
-
 export interface Ball
 {
   readonly firstSpeedFactor: number;
@@ -58,15 +54,12 @@ export interface Ball
   velocity: Position;
 }
 
-
 export interface Paddle
 {
   readonly width: number;
   readonly height: number;
   position : Position;
 }
-
-
 
 
 export class Game
@@ -78,7 +71,8 @@ export class Game
   public ground: {width: number; height : number};
   public points: { leftPlayer: number, rightPlayer: number };
   public sets: { leftPlayer: number, rightPlayer: number };
-  public groundWidth = 20*UNIT;
+  public unitConversionFactor = 40;
+  public groundWidth = 20*this.unitConversionFactor;
   public matchOver = true;
   public setOver = true;
   public isPaused = true;
@@ -94,11 +88,11 @@ export class Game
   {
     this.ball = 
     {
-        firstSpeedFactor: 0.18*UNIT,
+        firstSpeedFactor: 0.18*this.unitConversionFactor,
         airResistanceFactor: 0.998,
-        minimumSpeed: 0.18*UNIT,
-        maximumSpeed: 0.4*UNIT,
-        radius: 0.25*UNIT,
+        minimumSpeed: 0.18*this.unitConversionFactor,
+        maximumSpeed: 0.4*this.unitConversionFactor,
+        radius: 0.25*this.unitConversionFactor,
         speedIncreaseFactor: 1.7,
         firstPedalHit: 0,
         position : { x:0 , y:0},
@@ -111,7 +105,7 @@ export class Game
       height: this.groundWidth*(152.5)/274,
     };
 
-    const w = 0.2*UNIT;
+    const w = 0.2*this.unitConversionFactor;
     this.paddle1 = 
     {
       width:w ,
@@ -123,14 +117,14 @@ export class Game
 
     this.paddle2 = 
     {
-      width:0.2*UNIT ,
+      width:0.2*this.unitConversionFactor ,
       height: this.ground.height*(0.3),
       position: {
         x : this.groundWidth/2 - this.paddle1.width,
         y : 0 }
     };
 
-    this.paddleSpeed = 0.2*UNIT;
+    this.paddleSpeed = 0.2*this.unitConversionFactor;
 
     this.points = { leftPlayer: 0, rightPlayer: 0 };
     this.sets = { leftPlayer: 0, rightPlayer: 0 };
@@ -217,8 +211,7 @@ export class Game
     if (this.matchOver || this.isPaused) return;
   
     this.points[winner]++;
-  
-  
+
     const p1 = this.points.leftPlayer;
     const p2 = this.points.rightPlayer;
   
@@ -251,8 +244,6 @@ export class Game
     }
   }
 
- 
-
   public pauseGameLoop()
   {
     if (!this.matchOver)
@@ -262,13 +253,6 @@ export class Game
       {
       clearInterval(this.interval);
       this.interval = undefined;
-      // if (this.matchOver)
-      // {
-      //   if (typeof this.leftInput.getSocket === 'function')
-      //       this.leftInput.getSocket().off;
-      //   if (typeof this.rightInput.getSocket === 'function')
-      //       this.rightInput.getSocket().off;
-      // }
     }
   }
 
@@ -286,11 +270,11 @@ export class Game
   {
      const gameConstants: GameConstants = 
      {
-       groundWidth: this.ground.width/UNIT,
-       groundHeight: this.ground.height/UNIT,
-       ballRadius: this.ball.radius/UNIT,
-       paddleWidth: this.paddle1.width/UNIT,
-       paddleHeight: this.paddle1.height/UNIT
+       groundWidth: this.ground.width/this.unitConversionFactor,
+       groundHeight: this.ground.height/this.unitConversionFactor,
+       ballRadius: this.ball.radius/this.unitConversionFactor,
+       paddleWidth: this.paddle1.width/this.unitConversionFactor,
+       paddleHeight: this.paddle1.height/this.unitConversionFactor
       };
 
       this.io.to(this.roomId).emit("gameConstants", gameConstants);
@@ -311,19 +295,13 @@ export class Game
 
    public exportBallState()
   {
-    let pyy = 0;
-      
-      if (typeof this.rightInput.getPy === 'function')
-       pyy = this.rightInput.getPy() / UNIT;
-  
        const ballState: BallState =
         {
-          bp: { x: this.ball.position.x / UNIT, y : this.ball.position.y / UNIT},
-          bv: {x: this.ball.velocity.x / UNIT, y : this.ball.velocity.y /UNIT},
+          bp: { x: this.ball.position.x / this.unitConversionFactor, y : this.ball.position.y / this.unitConversionFactor},
+          bv: {x: this.ball.velocity.x / this.unitConversionFactor, y : this.ball.velocity.y /this.unitConversionFactor},
           points: this.points,
           sets: this.sets,
-          usernames: {left: this.leftInput.getUsername(), right: this.rightInput.getUsername()},
-          py: pyy
+          usernames: {left: this.leftInput.getUsername(), right: this.rightInput.getUsername()}
         };
 
         this.io.to(this.roomId).emit("ballUpdate", ballState);
@@ -333,8 +311,8 @@ export class Game
   {
      const paddleState: PaddleState =
         {
-          p1y: this.paddle1.position.y/UNIT,
-          p2y: this.paddle2.position.y/UNIT
+          p1y: this.paddle1.position.y/this.unitConversionFactor,
+          p2y: this.paddle2.position.y/this.unitConversionFactor
         }
 
         this.io.to(this.roomId).emit("paddleUpdate", paddleState);
@@ -363,7 +341,7 @@ this.exportGameState();
         });
 
         this.leftInput.getSocket()!.on("disconnect", () => {this.matchOver = true; return;}); //bu varsa alttakine gerek yok, (window.reoload olduğu sürece)
-        this.leftInput.getSocket()!.on("reset-match", () => {return;});
+        this.leftInput.getSocket()!.on("reset-match", () => {this.matchOver = true; return;});
       }
 
       if (typeof this.rightInput.getSocket === 'function')
@@ -377,7 +355,7 @@ this.exportGameState();
         });
 
         this.rightInput.getSocket()!.on("disconnect", () => {this.matchOver = true; return;}); //bu varsa alttakine gerek yok, (window.reoload olduğu sürece)
-        this.rightInput.getSocket()!.on("reset-match", () => {return;});
+        this.rightInput.getSocket()!.on("reset-match", () => {this.matchOver = true; return;});
       }
 
 
@@ -412,7 +390,7 @@ const moveBall: Middleware = (g, dt) => {
 };
 
 const movePaddles: Middleware = (g, _dt) => {
-  const upperBound = g.ground.height / 2 - g.paddle1.height / 2 + 40;
+  const upperBound = g.ground.height / 2 - g.paddle1.height / 2 + (1.5 * g.paddle1.width);
   const d1 = g.leftInput.getPaddleDelta() * g.paddleSpeed;
   const d2 = g.rightInput.getPaddleDelta() * g.paddleSpeed;
   if (Math.abs(g.paddle1.position.y + d1) <= upperBound) g.paddle1.position.y += d1;
@@ -454,7 +432,7 @@ const handlePaddleBounce: Middleware = (g, _dt) =>
         g.ball.velocity.y += relativeY * 0.05;
         if (g.ball.firstPedalHit++) {
           g.ball.speedIncreaseFactor = 1.2;
-          g.ball.minimumSpeed = 0.25 * UNIT;
+          g.ball.minimumSpeed = 0.25 * g.unitConversionFactor;
         }
         g.ball.velocity.x *= g.ball.speedIncreaseFactor;
         g.ball.velocity.y *= g.ball.speedIncreaseFactor;
@@ -495,11 +473,11 @@ const enforceSpeedLimits: Middleware = (g, _dt) => {
 
 
 const handleScoring: Middleware = (g, _dt) => {
-  if (g.ball.position.x > g.ground.width / 2 + 5 * UNIT) {
+  if (g.ball.position.x > g.ground.width / 2 + 5 * g.unitConversionFactor) {
     g.scorePoint('leftPlayer');
     return false;
   }
-  if (g.ball.position.x < -g.ground.width / 2 - 5 * UNIT) {
+  if (g.ball.position.x < -g.ground.width / 2 - 5 * g.unitConversionFactor) {
     g.scorePoint('rightPlayer');
     return false;
   }

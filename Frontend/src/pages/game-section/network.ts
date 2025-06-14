@@ -1,14 +1,11 @@
 import { gameInstance, GameMode} from "../play";
 import { io, Socket } from "socket.io-client";
-//import { Socket } from "socket.io";
 
 export function createSocket(): Socket
 {
 // WebSocket bağlantısı oluşturuluyor
 const socket = io("http://localhost:3001");
-//const socket = io("http://127.0.0.1:3001");
 
-//ilk önce kullanıcı adını yolla //Şimdilik socket.id !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 socket.on("connect", () => {
   console.log("Socket connected with ID:", socket.id);
   socket.emit("username", { username: "Ayhan" });
@@ -21,12 +18,6 @@ socket.on("connect", () => {
 
   return socket;
 }
-
-
-// OYUN SEÇENEKLERİNİ PAYLAŞ //gameConstants, gameState, ballUpdate, paddleUpdate *****************************************************
-
-
-// OYUN BİLGİLERİNİ AL //gameConstants, gameState, ballUpdate, paddleUpdate *****************************************************
 
 
 interface GameConstants {

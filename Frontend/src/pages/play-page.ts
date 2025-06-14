@@ -8,7 +8,7 @@ function renderScoreBoard(container: HTMLElement): void
 		ScoreBoard.classList.add(
 				// Konumlandırma
 			'absolute',
-			'top-[4%]',
+			'top-[3%]',
 			'left-1/2',
 			'-translate-x-1/2',
 
@@ -95,7 +95,7 @@ function renderSetBoard(container: HTMLElement): void
 	const setboard = createDivAddId('setboard');
 		setboard.classList.add(
 			'absolute',
-			'bottom-[4%]',
+			'bottom-[3%]',
 			'left-1/2',
 			'transform',
 			'-translate-x-1/2',

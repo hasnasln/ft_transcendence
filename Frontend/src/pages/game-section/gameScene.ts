@@ -1,4 +1,4 @@
-import {Scene, MeshBuilder, Color3, Mesh, StandardMaterial, Engine} from "@babylonjs/core";
+import {Scene, MeshBuilder, Color3, Mesh, StandardMaterial, Engine, Color4} from "@babylonjs/core";
 import { gameInstance } from "../play";
 import { GameInfo } from "./network";
 
@@ -26,6 +26,11 @@ export function createGround(scene: Scene, gameInfo: GameInfo)
   const groundMaterial = new StandardMaterial("groundMaterial", scene);
   groundMaterial.diffuseColor = new Color3(0.1, 0.1, 0.1); // Koyu gri
   ground.material = groundMaterial;
+
+       // Kenar çizgilerini etkinleştir ve renklendir
+    ground.enableEdgesRendering();
+    ground.edgesWidth = 2;
+    ground.edgesColor = new Color4(0.6, 0.6, 0.6, 1); 
 
   return {ground, groundSize};
 }
@@ -58,15 +63,22 @@ export function createPaddles(scene: Scene, gameInfo: GameInfo)
   paddle2Material.emissiveColor = new Color3(0.5, 0, 0);
   paddle2.material = paddle2Material;
 
+    // Kenar çizgilerini etkinleştir ve renklendir
+  [paddle1, paddle2].forEach(p => {
+    p.enableEdgesRendering();
+    p.edgesWidth = 2;
+    p.edgesColor = new Color4(0.6, 0.6, 0.6, 1); 
+  });
+
   return { paddle1, paddle2};
 }
 
 
 
 // 🎮 Duvarlar
-export function createWalls(scene: Scene) 
+export function createWalls(scene: Scene, gameInfo: GameInfo) 
 {
-  const wallSize = { width: gameInstance.groundSize!.width, height: 0.3, depth: 1 };
+  const wallSize = { width: gameInstance.groundSize!.width, height: 1.5 * gameInfo.constants?.paddleWidth!, depth: 1 };
 
   const bottomWall = MeshBuilder.CreateBox("bottomWall", wallSize, scene);
   bottomWall.position.x = 0;  // Ortalanmış
@@ -85,24 +97,11 @@ export function createWalls(scene: Scene)
   const topWallMaterial = bottomWallMaterial.clone("topWallMaterial");
   topWall.material = topWallMaterial;
 
-  // return { bottomWall, topWall };
-}
-
-
-export function createPredictedBall(scene: Scene, paddleX: number)
-{
-  const predictedBallSize = { width: 3, height: 0.2, depth: 0.5 };
-
-  const predictedBall = MeshBuilder.CreateBox("predictedBall", predictedBallSize, scene);
-  predictedBall.position.x = paddleX + 1.5; 
-  predictedBall.position.y = 0;
-  predictedBall.position.z = -predictedBallSize.depth;
-
-  const predictedBallMaterial = new StandardMaterial("predictedBallMaterial", scene);
-  predictedBallMaterial.diffuseColor = new Color3(0, 0, 0.7);
-  predictedBallMaterial.emissiveColor = new Color3(0, 0, 0.5);
-  predictedBall.material =  predictedBallMaterial;
-
-  return predictedBall;
+      // Kenar çizgilerini etkinleştir ve renklendir
+  [bottomWall, topWall].forEach(p => {
+    p.enableEdgesRendering();
+    p.edgesWidth = 2;
+    p.edgesColor = new Color4(0.6, 0.6, 0.6, 1); 
+  });
 
 }

@@ -1,4 +1,4 @@
-import { createPaddles, createGround, createWalls, createScene, createPredictedBall } from "./game-section/gameScene";
+import { createPaddles, createGround, createWalls, createScene } from "./game-section/gameScene";
 import { Mesh, Engine, Scene, FreeCamera, Vector3 } from "@babylonjs/core";
 import { startGameLoop } from "./game-section/gameLoop"
 import { BallController } from "./game-section/ball";
@@ -21,7 +21,8 @@ export interface GameStatus {
 	level?: string;
 }
 
-export class game {
+export class game
+{
 	public startButton: HTMLElement | null;
 	public scoreBoard: HTMLElement | null;
 	public setBoard: HTMLElement | null;
@@ -149,7 +150,7 @@ export class game {
 					await waitForGameInfoReady(this.gameInfo, this.socket!);
 					console.log(`${this.socket!.id} için VERİLER HAZIR`);
 					createGame(this.gameInfo);
-					this.startGame(this.gameInfo!);				
+					this.startGame();				
 				});
 
 			});
@@ -239,7 +240,7 @@ export class game {
 		this.gameStatus.currentGameStarted = false;
 	}
 
-	public async startGame(gameInfo: GameInfo)
+	public async startGame()
 		{
 			// 🎮 Canvas ve oyun motoru
 			const sceneSetup = createScene();
@@ -251,22 +252,21 @@ export class game {
 			new CameraController(this.scene);
 
 			// 🎮 Zemin
-			this.ground = createGround(this.scene, gameInfo).ground;
-			this.groundSize = createGround(this.scene, gameInfo).groundSize; 
+			this.ground = createGround(this.scene, this.gameInfo!).ground;
+			this.groundSize = createGround(this.scene, this.gameInfo!).groundSize; 
 
 			// 🎮 Paddle'lar ve top
-			const paddles = createPaddles(this.scene, gameInfo);
+			const paddles = createPaddles(this.scene, this.gameInfo!);
 			this.paddle1 = paddles.paddle1;
 			this.paddle2 = paddles.paddle2;
 
 			// 🎮 Top
-			this.ball = new BallController(this.scene, gameInfo);
+			this.ball = new BallController(this.scene, this.gameInfo!);
 
 			// 🎮 Duvarlar
-			createWalls(this.scene);
+			createWalls(this.scene, this.gameInfo!);
 
-			const predictedBall = createPredictedBall(this.scene!, this.groundSize!.width / 2);
-			startGameLoop(this.engine!, this.scene!, this.gameInfo!, predictedBall);
+			startGameLoop(this.engine!, this.scene!, this.gameInfo!);
 			this.canvas!.focus();
 			this.gameStatus.currentGameStarted = true;
 	}

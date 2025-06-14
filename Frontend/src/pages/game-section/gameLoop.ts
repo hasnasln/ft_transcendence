@@ -3,7 +3,7 @@ import {startNextSet, updateScoreBoard, updateSetBoard, showEndMessage } from ".
 import { GameInfo } from "./network";
 import { gameInstance } from "../play";
 
-export function startGameLoop(engine: Engine, scene: Scene, gameInfo: GameInfo, predictedBall: Mesh ): void
+export function startGameLoop(engine: Engine, scene: Scene, gameInfo: GameInfo): void
 {
     engine.runRenderLoop(() =>
       {
@@ -35,8 +35,6 @@ export function startGameLoop(engine: Engine, scene: Scene, gameInfo: GameInfo, 
         gameInstance.paddle1!.position.y = gameInfo.paddle?.p1y!;
         gameInstance.paddle2!.position.y = gameInfo.paddle?.p2y!;
 
-
-        predictedBall.position.y = gameInfo.ballState?.py!;
 
         //skor ve set güncellemesi
         updateScoreBoard(gameInfo);
