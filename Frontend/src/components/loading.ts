@@ -14,3 +14,16 @@ export function loading(container: HTMLElement){
 	container.appendChild(div1);
 }
 
+export function loadingWithMessage(container: HTMLElement, message: string){
+	const div1 = document.createElement('div');
+	loading(div1);
+	const div2 = document.createElement('div');
+	div2.id = 'loading-message';
+	div2.className = "text-red-300 text-lg mt-4";
+	if (window.innerWidth < 640) {
+		div2.textContent = message;
+	}
+	container.appendChild(div1);
+	container.appendChild(div2);
+}
+

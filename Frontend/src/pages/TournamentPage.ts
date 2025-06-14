@@ -238,7 +238,7 @@ function t_first_section(container: HTMLElement) {
 	});
 
 	showJoinBtn.addEventListener('click', () => {
-		animation(toggleContainer, -1, 400);
+		animation(toggleContainer, -1, toggleContainer.offsetWidth);
 		const y = document.getElementById('fatma1234') as HTMLElement;
 		y.classList.remove('hidden');
 		const x = document.getElementById('fatma123') as HTMLElement;
@@ -254,7 +254,7 @@ function animation(obje: HTMLElement, dir: number, start: number)
 	function move(){
 		x += dir * 20;
 		obje.style.transform =  `translateX(${start + x}px)`;
-		if (x >= 400 || x <= -400)
+		if (x >= obje.offsetWidth || x <= -obje.offsetWidth)
 			return;
 		requestAnimationFrame(move)
 	}
@@ -376,12 +376,14 @@ function ShowTournament(container: HTMLElement): void {
 		'justify-start',
 		'items-center',
 		'rounded-3xl',
-		'w-[90%]',
-		'h-[90%]',
+		'w-[1200px]',
+		'h-[900px]',
 		'bg-gray-300',
 		'p-6',
 		'gap-4',
-		'overflow-y-auto'
+		'overflow-y-auto',
+		'overflow-x-auto',
+		'scrollbar',
 	);
 	TournamentInformation(div02);
 	
@@ -401,8 +403,10 @@ function TournamentInformation(container: HTMLElement): void {
 		'bg-gray-900',
 		'rounded-lg',
 		'p-4',
-		'w-[80%]',
-		'h-[40%]'
+		'w-[640px]',
+		'h-[350px]',
+		'lg:w-[950px]',
+		'lg:h-[500px]',
 	);
 
 	const div01 = document.createElement('div');
@@ -423,6 +427,7 @@ function TournamentInformation(container: HTMLElement): void {
 		'justify-center',
 		'items-center',
 		'gap-4',
+		'p-1',
 	);
 
 	const img = document.createElement('img');
@@ -586,8 +591,10 @@ function TournamentInformation(container: HTMLElement): void {
 		'rounded-lg',
 		'p-4',
 		'gap-4',
-		'w-[80%]',
-		'h-[60%]'
+		'w-[640px]',
+		'h-[400px]',
+		'lg:w-[950px]',
+		'lg:h-[600px]',
 	);
 
 	const div11 = document.createElement('div');

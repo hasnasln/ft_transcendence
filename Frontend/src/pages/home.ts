@@ -228,10 +228,14 @@ for (let i = 0; i < positions.length; i++) {
 	profiles[i].avatar
   );
   card.classList.add(...positions[i].split(' '));
+  if(window.innerWidth <= 970 || window.innerHeight <= 701) {
+	card.classList.add('hidden'); // ilk yüklemede Ekran boyutu küçükse kartları gizle
+  }
   maindiv.appendChild(card);
 }
 
 	const choicesdiv = document.createElement('div');
+	choicesdiv.id = 'choicesdiv';
 	choicesdiv.classList.add(
 	'flex',
 	'flex-col',
@@ -247,6 +251,11 @@ for (let i = 0; i < positions.length; i++) {
 	'top-[55%]',
 	'z-0'
 );
+
+	//! ilk yüklemede ekran boyutuna göre butonların konumu ayarlandı
+	if (window.innerWidth <= 970 || window.innerHeight <= 701) {
+	choicesdiv.classList.remove('top-[55%]');
+	}
 
 	CreateChoiseButton(choicesdiv, exmp.getLang('home.play-b'), 'play');
 	CreateChoiseButton(choicesdiv, exmp.getLang('home.settings-b'), 'settings');

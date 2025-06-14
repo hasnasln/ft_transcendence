@@ -5,7 +5,7 @@ import { TournamentPage } from './pages/TournamentPage';
 import { PlayPage } from './pages/play-page';
 import { gameInstance } from './pages/play';
 import { exmp } from './languageMeneger';
-import { loading } from './components/loading';
+import { loading, loadingWithMessage } from './components/loading';
 
 
 export function router()
@@ -29,9 +29,10 @@ export function router()
 	contentContainer.id = 'content-container';
 	contentContainer.classList.add(
 		'relative',
-		'w-full',
+		'w-[100vw]',
 		'h-[100vh]',
 		'bg-gray-300',
+		'overflow-hidden' // overflow hidden yaparak scroll barı kaldırdık
 	)
 	contentContainer.id = 'content-container';
 	switch (path) {
@@ -56,14 +57,14 @@ export function router()
 				info.classList.remove('hidden');
 				// info.textContent = exmp.getLang("game.loading");
 				info.classList.add('bg-gray-950');
-				loading(info);
+				loadingWithMessage(info, 'Lütfen Telefonu Yatay Tutunuz');
 				
 				setTimeout(() => {
 					gameInstance.initGameSettings();
 					info.classList.add('hidden');
 					info.classList.remove('bg-blue-500');
 					menu.classList.remove('hidden');
-				}, 1000);
+				}, 3000);
 			}
 
 			break;

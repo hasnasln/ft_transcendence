@@ -169,8 +169,10 @@ export function renderRegister(container: HTMLElement) {
 		`shadow-lg`,
 		'bg-white',
 		`px-4`,
-		'w-[50%]',
-		'h-[60%]',
+		'w-[95%]',
+		'h-[85%]',
+		'lg:w-[50%]',
+		'lg:h-[70%]',
 		'rounded-3xl',
 		'border-2',
 		'border-gray-800',
@@ -287,7 +289,7 @@ formContainer.appendChild(singsinginButtonDiv);
 		'font-bold',
 		'py-2',
 		'px-4',
-		'w-[25%]',
+		'w-1/3',
 		'rounded-lg',
 	);
 	buttonDiv.appendChild(grisButton);

@@ -1,5 +1,6 @@
 import './style.css';
 import { router } from './router';
+import { checkPageWidth } from './components/responsive-helper';
 
 const app = document.getElementById('app') as HTMLElement;
 
@@ -28,3 +29,5 @@ if (app){
 window.addEventListener('popstate', () => {
 	router();
 });
+
+window.addEventListener('resize', checkPageWidth);
