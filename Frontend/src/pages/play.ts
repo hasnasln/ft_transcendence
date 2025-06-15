@@ -10,9 +10,7 @@ import { Socket } from "socket.io-client";
 
 // 🎮 WebSocket bağlantısı
 import { createSocket } from "./game-section/network";
-//import { FreeCamera } from "babylonjs";
 
-//tip tanımlama için sınıf dışarısında olmak lazım
 export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | null;
 
 export interface GameStatus {
@@ -33,20 +31,21 @@ export class game
 	public newmatchButton: HTMLElement | null;
 	public turnToHomePage: HTMLElement | null;
 	public info: HTMLElement | null;
-	public engine: Engine | undefined = undefined;
-	public scene: Scene | undefined = undefined;
-	public gameInfo: GameInfo | null = null;
+	public engine: Engine | undefined;
+	public scene: Scene | undefined;
+	public gameInfo: GameInfo | null;
 	public canvas: HTMLCanvasElement | null;
 	public groundSize: { width: number, height: number } | null;
 	public ground: Mesh | null;
-	public paddle1: Mesh | null = null;
-	public paddle2: Mesh | null = null;
-	public ball: BallController | null = null;
+	public paddle1: Mesh | null;
+	public paddle2: Mesh | null;
+	public ball: BallController | null;
 	public gameStatus: GameStatus = {
 		currentGameStarted: false,
 		game_mode: null
 	};
 	public reMatch: boolean = false;
+	public username: string | null;
 
 	public constructor() {
 		this.resetGame();
@@ -77,19 +76,33 @@ export class game
 			currentGameStarted: false,
 			game_mode: null
 		};
+		this.username = null;
 	}
 
-	public initGameSettings(): boolean {
+	public async initGameSettings(username: string): Promise<boolean> {
 		this.startButton = document.getElementById("start-button");
 		this.scoreBoard = document.getElementById("scoreboard");
 		this.setBoard = document.getElementById("setboard");
 		this.scoreTable = document.getElementById("score-table");
 		this.setTable = document.getElementById("set-table");
 		this.endMsg = document.getElementById("end-message");
-		this.socket = createSocket();
 		this.newmatchButton = document.getElementById("newmatch-button");
 		this.turnToHomePage = document.getElementById("turnHomePage-button");
 		this.info = document.getElementById("info");
+
+		try {
+			this.socket = await createSocket();
+		} catch (err: any) {
+			alert("Oturum süreniz dolmuş olabilir. Lütfen tekrar giriş yapınız.");
+
+			// Kullanıcıyı login sayfasına yönlendir
+			history.replaceState({}, '', '/signin');
+			window.dispatchEvent(new PopStateEvent('popstate'));
+			return false; // initGameSettings başarısız
+		}
+
+		this.username = username;
+
 
 		if (!this.startButton || !this.scoreBoard || !this.setBoard ||
 			!this.scoreTable || !this.setTable || !this.endMsg ||
@@ -108,7 +121,7 @@ export class game
 
 				let rival: string;
 				if (this.gameStatus.game_mode === "remoteGame") {
-					rival = await waitForMatchReady(this.socket!);
+					rival = await waitForMatchReady(this.socket!, this.username!);
 					console.log(`${this.socket!.id} ${rival} maçı için HAZIR`);
 				}
 

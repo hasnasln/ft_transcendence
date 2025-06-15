@@ -14,18 +14,19 @@ const waitingPlayers = new Map<string, Player>();
 
 export function addPlayerToQueue(player: Player, io: Server)
 {
-	waitingPlayers.set(player.socket.id, player);
-	console.log(`oyuncu waitingP layers a kaydedildi, player.socket.id = ${player.socket.id}`);
+	waitingPlayers.set(player.username, player);
+	console.log(`oyuncu waitingP layers a kaydedildi, player.username= ${player.username}, waitingPlayers.size = ${waitingPlayers.size}`);
+	waitingPlayers.forEach((item) => console.log(`player: ${item.username}, `));
 	checkForRemoteMatch(io);
 }
 
 export function removePlayerFromQueue(player: Player)
 {
-	 const checkPlayer = waitingPlayers.get(player.socket.id);
+	 const checkPlayer = waitingPlayers.get(player.username);
   if (typeof(checkPlayer) === 'undefined') {
     return;
   }
-	waitingPlayers.delete(player.socket.id);
+	waitingPlayers.delete(player.username);
 }
   
 
@@ -61,7 +62,7 @@ export function removePlayerFromQueue(player: Player)
 	const rightInput = new LocalPlayerInput(player1, "right");
 
 
-	const roomId = `game_${player1.socket.id}_vs_friend`;
+	const roomId = `game_${player1.username}_vs_friend`;
 	player1.socket.join(roomId);
 	
 	player1.socket.on("ready", () =>
@@ -88,12 +89,11 @@ function checkForRemoteMatch(io: Server)
 
 		if (player1 && player2)
 		{
-			const roomId = `game_${player1.socket.id}_${player2.socket.id}`;
+			const roomId = `game_${player1.username}_${player2.username}`;
 			player1.socket.join(roomId);
 			player2.socket.join(roomId);
 
-			const matchPlayers = {left: {username: player1.username, socketId: player1.socket.id}, 
-			right: {username: player2.username, socketId: player2.socket.id}};
+			const matchPlayers = {left: player1.username, right: player2.username};
 
 			io.to(roomId).emit("match-ready", matchPlayers);
 
@@ -183,7 +183,7 @@ function checkForRemoteMatch(io: Server)
 
 // 		if (player1 && player2)
 // 		{
-// 			const roomId = `game_${player1.socket.id}_${player2.socket.id}`;
+// 			const roomId = `game_${player.username}_${player2.socket.id}`;
 // 			player1.socket.join(roomId);
 // 			player2.socket.join(roomId);
 
