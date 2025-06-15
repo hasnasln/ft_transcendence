@@ -40,6 +40,30 @@ export interface IPlayerOnlineData {
 
 }
 
+
+//EKLEME ///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+import { generateDevToken } from '../tokenUtils';
+
+
+
+const USERS_KEY = 'DEV_USERS_LIST';
+
+function loadUsers(): any[] {
+  const raw = localStorage.getItem(USERS_KEY);
+  return raw ? JSON.parse(raw) : [];
+}
+
+function saveUsers(users: any[]) {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+//EKLEME ///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 export class APIManager
 {
 	private static instance: APIManager;
@@ -50,10 +74,10 @@ export class APIManager
 	private uuid: string;
 
 
-	private constructor(baseUrl: string, url_altarnetive: string, token: string | null = null) {
+	private constructor(baseUrl: string, url_altarnetive: string) {
 		this.baseUrl = baseUrl;
 		this.url_altarnative = url_altarnetive;
-		this.token = token;
+		this.token = localStorage.getItem('token');
 	}
 
 	public static getInstance(baseUrl: string, url_altarnetive: string): APIManager {
@@ -67,7 +91,7 @@ export class APIManager
 		this.token = token;
 	}
 
-	private getToken(): string | null {
+	public getToken(): string | null {
 		return this.token;
 	}
 
@@ -96,49 +120,95 @@ export class APIManager
 	}
 
 
-	public async login(username: string, password: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = {success: false, message: '', data: null};
-		this.active_pass = password;
-		try{
-			const response = await this.myFetch(`${this.baseUrl}/login`, HTTPMethod.POST, {
-				'Content-Type': 'application/json',
-			}, JSON.stringify({ username, password }));
+	// public async login(username: string, password: string): Promise<IApiResponseWrapper> {
+	// 	const result: IApiResponseWrapper = {success: false, message: '', data: null};
+	// 	this.active_pass = password;
+	// 	try{
+	// 		const response = await this.myFetch(`${this.baseUrl}/login`, HTTPMethod.POST, {
+	// 			'Content-Type': 'application/json',
+	// 		}, JSON.stringify({ username, password }));
 			
-			if (!response.ok){ 
-				result.success = false;
-				if (response.status === 401){
-					result.message = 'INVALID_CREDENTIALS';
-					return result;
-				}
-			}
-			const data = await response.json();
-			if (data.token) {
-				result.success = true;
-				result.data = data;
-				result.message = 'Login successful';
-				// console.log("Login data:", data);
-				this.setToken(data.token);
-				//! uuid kısmı konuşulacak
-				this.uuid = data.uuid;
-				localStorage.setItem('token', data.token);
-				console.log("Token set:", this.getToken());
-				// console.log("data.uzer -----> "	+ JSON.stringify(data.user));
-				localStorage.setItem('user', JSON.stringify(data.user));
-				// const x = localStorage.getItem('user');
-				// const y = JSON.parse(x || '{}');
-				// console.log("localStorage user name:", y.name);
-				// await exmp.setLanguage(data.user.language); // Set language from user data // burada beklemek sorunumuzu çözdü
-			} else {
-				result.success = false;
-				result.message = 'Token not found in response';
-				return result;
-			}
-			return result;
-		} catch (error) {
-			// console.error('Error in login:', error);
-			throw error;
-		}
-	}
+	// 		if (!response.ok){ 
+	// 			result.success = false;
+	// 			if (response.status === 401){
+	// 				result.message = 'INVALID_CREDENTIALS';
+	// 				return result;
+	// 			}
+	// 		}
+	// 		const data = await response.json();
+	// 		if (data.token) {
+	// 			result.success = true;
+	// 			result.data = data;
+	// 			result.message = 'Login successful';
+	// 			// console.log("Login data:", data);
+	// 			this.setToken(data.token);
+	// 			//! uuid kısmı konuşulacak
+	// 			this.uuid = data.uuid;
+	// 			localStorage.setItem('token', data.token);
+	// 			console.log("Token set:", this.getToken());
+	// 			// console.log("data.uzer -----> "	+ JSON.stringify(data.user));
+	// 			localStorage.setItem('user', JSON.stringify(data.user));
+	// 			// const x = localStorage.getItem('user');
+	// 			// const y = JSON.parse(x || '{}');
+	// 			// console.log("localStorage user name:", y.name);
+	// 			// await exmp.setLanguage(data.user.language); // Set language from user data // burada beklemek sorunumuzu çözdü
+	// 		} else {
+	// 			result.success = false;
+	// 			result.message = 'Token not found in response';
+	// 			return result;
+	// 		}
+	// 		return result;
+	// 	} catch (error) {
+	// 		// console.error('Error in login:', error);
+	// 		throw error;
+	// 	}
+	// }
+
+
+
+
+//EKLEME //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+public async login(usernameOrEmail: string, password: string): Promise<IApiResponseWrapper> {
+  const users = loadUsers();
+  const user = users.find(u =>
+    (u.username === usernameOrEmail || u.email === usernameOrEmail) &&
+    u.password === password
+  );
+
+  if (!user) {
+    return { success: false, message: 'INVALID_CREDENTIALS', data: null };
+  }
+
+  // Başarılıysa payload oluştur (iat/exp eklenmesi jose içinden de yapılabilir, 
+  // burada örnek olarak sizin verdiğiniz üzere manuel ekliyoruz)
+  const now = Math.floor(Date.now() / 1000);
+  const payload = {
+    user: { uuid: user.uuid, username: user.username },
+    iat: now,
+    exp: now + 5 * 60 * 60   // 5 saat sonra
+  };
+  // jose ile JWT üretimi (async)
+  const token = await generateDevToken(payload);
+
+  // Token'ı APIManager ve localStorage'a kaydet
+  this.setToken(token);
+  localStorage.setItem('token', token);
+
+  return {
+    success: true,
+    message: 'Login successful',
+    data: { token, user }
+  };
+}
+
+
+
+//EKLEME //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 	/*
 	!logout kısmında dil özelliğini setleyebilirz ? bakacağım
@@ -224,33 +294,89 @@ export class APIManager
 		}
 	}
 
-	public async register(registerData: IApiRegister): Promise<IApiResponseWrapper> {
-		const result : IApiResponseWrapper = {success: false, message: '', data: null};
-		try{
-			const response = await this.myFetch(`${this.baseUrl}/register`, HTTPMethod.POST, {
-				'Content-Type': 'application/json',
-			}, JSON.stringify(registerData));
+	// public async register(registerData: IApiRegister): Promise<IApiResponseWrapper> {
+	// 	const result : IApiResponseWrapper = {success: false, message: '', data: null};
+	// 	try{
+	// 		const response = await this.myFetch(`${this.baseUrl}/register`, HTTPMethod.POST, {
+	// 			'Content-Type': 'application/json',
+	// 		}, JSON.stringify(registerData));
 			
-			if (!response.ok){
-				result.success = false;
-				// diğer hatalar alt alta dizilecek
-				if (response.status === 409)
-					result.message = 'Username or email already exists';
-				return result;
-			}
-			result.success = true;
-			const data = await response.json();
-			if (!data)
-			{
-				console.log("hasan");
-			}
-			result.data = data;
-			return result;
-		} catch (error) {
-			console.error('Error in register:', error);
-			throw error;
-		}
-	}
+	// 		if (!response.ok){
+	// 			result.success = false;
+	// 			// diğer hatalar alt alta dizilecek
+	// 			if (response.status === 409)
+	// 				result.message = 'Username or email already exists';
+	// 			return result;
+	// 		}
+	// 		result.success = true;
+	// 		const data = await response.json();
+	// 		if (!data)
+	// 		{
+	// 			console.log("hasan");
+	// 		}
+	// 		result.data = data;
+	// 		return result;
+	// 	} catch (error) {
+	// 		console.error('Error in register:', error);
+	// 		throw error;
+	// 	}
+	// }
+
+
+//EKLEME //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+public async register(registerData: IApiRegister): Promise<IApiResponseWrapper> {
+  const users = loadUsers();
+
+  // Aynı kullanıcı var mı kontrol et
+  if (users.some(u => u.username === registerData.username || u.email === registerData.email)) {
+    return { success: false, message: 'Username or email already exists', data: null };
+  }
+
+  // Yeni kullanıcı objesi
+  const newUser = {
+    uuid: crypto.randomUUID(),    // tarayıcıda UUID üretmek için
+    username: registerData.username!,
+    email: registerData.email!,
+    password: registerData.password!,  // Geliştirmede sorun değil
+    name: (registerData as any).name || '',
+    surname: (registerData as any).surname || ''
+  };
+  users.push(newUser);
+  saveUsers(users);
+
+  // Başarılıysa payload oluştur
+  const now = Math.floor(Date.now() / 1000);
+  const payload = {
+    user: { uuid: newUser.uuid, username: newUser.username },
+    iat: now,
+    exp: now + 30 * 24 * 60 * 60  // 30 gün sonra
+  };
+
+  // jose ile JWT üretimi (async)
+  const token = await generateDevToken(payload);
+
+  // Token’ı APIManager ve localStorage’a kaydet
+  this.setToken(token);
+  localStorage.setItem('token', token);
+
+  return {
+    success: true,
+    message: 'Dev user registered',
+    data: { token, user: newUser }
+  };
+}
+
+
+
+
+//EKLEME //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
 	/*
 	@param name: string -> name of the item to be updated

@@ -6,9 +6,10 @@ import { PlayPage } from './pages/play-page';
 import { gameInstance } from './pages/play';
 import { exmp } from './languageMeneger';
 import { loading, loadingWithMessage } from './components/loading';
+import { checkCurrentUser } from './tokenUtils';
 
 
-export function router()
+export async function router()
 {
 	const app = document.getElementById('app') as HTMLElement;
 	if (!app) {
@@ -49,6 +50,11 @@ export function router()
 			registerPage.render(contentContainer);
 			break;
 		case '/play':
+			const currentUser = await checkCurrentUser();
+			if (currentUser)
+				console.log(`${currentUser.username} oyun sayfasına hoş geldin`);
+			else
+				console.log(`Çok yanlış geldin kankss... !`)
 			const playPage = new PlayPage();
 			const {info, menu} = playPage.render(contentContainer);
 			// 3 sanite bekle
