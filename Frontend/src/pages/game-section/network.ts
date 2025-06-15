@@ -8,7 +8,7 @@ const socket = io("http://localhost:3001");
 
 socket.on("connect", () => {
   console.log("Socket connected with ID:", socket.id);
-  socket.emit("username", { username: "Ayhan" });
+  socket.emit("username", { username: Math.random() < 0.5 ? "Ayhan1" : "Ayhan2"});
 });
 
 //ilerde böyle olacak:
@@ -19,6 +19,7 @@ socket.on("connect", () => {
   return socket;
 }
 
+type Side = 'leftPlayer' | 'rightPlayer'
 
 interface GameConstants {
   groundWidth: number;
@@ -32,6 +33,7 @@ interface GameState {
   matchOver: boolean;
   setOver: boolean;
   isPaused: boolean;
+  inCompleteWinner?: Side;
 }
 
 
@@ -101,10 +103,10 @@ export function waitForMatchReady(socket: Socket): Promise<string>
 {
    return new Promise((resolve) =>
     {
-    	socket.on("match-ready", (matchPlayers : {left: string, right: string}) =>
+    	socket.on("match-ready", (matchPlayers : {left: {username: string, socketId: string}, 
+			right: {username: string, socketId: string}}) =>
         {console.log("match-ready emiti geldi");
-          //const rival = matchPlayers.left.socket.id === socket.id ? matchPlayers.right.username : matchPlayers.left.username;
-          let rival = matchPlayers.right;
+          const rival = matchPlayers.left.socketId === socket.id ? matchPlayers.right.username : matchPlayers.left.username;
           gameInstance.info!.textContent = `${rival} ile eşleştin`;
           gameInstance.startButton!.innerHTML = `${rival} ile oyna !`;
           gameInstance.startButton!.classList.remove("hidden");
@@ -169,7 +171,8 @@ export function waitForGameInfoReady(gameInfo: GameInfo, socket: Socket): Promis
       console.log(`client e gameState geldi:
       matchOver: ${state.matchOver},
       setOver: ${state.setOver},
-      isPaused: ${state.isPaused}`);
+      isPaused: ${state.isPaused},
+      inCompletWinner: ${state.inCompleteWinner}`);
       if (state.matchOver)
         console.log(`matchOver TRUE geldi..........`);
 			gameInfo.setState(state);

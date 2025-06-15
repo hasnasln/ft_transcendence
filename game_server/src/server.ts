@@ -43,7 +43,7 @@ httpServer.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
 
-type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament';
+export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament';
 interface GameStatus {currentGameStarted: boolean; game_mode: GameMode, level?: string};
 
 const players = new Map<string, Player>();
@@ -55,15 +55,15 @@ io.on("connection", socket =>
    
     const player: Player = { socket, username };
     players.set(socket.id, player);
-    console.log(`oyuncu players a kaydedildi, player.socket.id = ${player.socket.id}`);
+    console.log(`oyuncu players a kaydedildi, player.socket.id = ${player.socket.id}  username = ${player.username}`);
 
     socket.on("start", (gameStatus : GameStatus) =>
       {
         console.log(`gameStatus = {game_mode = ${gameStatus.game_mode}, level = ${gameStatus.level}}`);
         if (gameStatus.game_mode === "vsAI")
-            startGameWithAI(player, gameStatus.level!, io);
+            startGameWithAI(player, gameStatus.level!, io, 'vsAI');
         else if (gameStatus.game_mode === "localGame")
-            startLocalGame(player, io);
+            startLocalGame(player, io, 'localGame');
         else if (gameStatus.game_mode === "remoteGame")
             addPlayerToQueue(player, io);
           //EKLEMEEE ////////////////////////////////////////////////////////

@@ -1,5 +1,6 @@
 import { Server} from "socket.io";
 import { InputProvider } from "./inputProviders";
+import { GameMode } from "./server";
 
 type Side = 'leftPlayer' | 'rightPlayer';
 
@@ -17,6 +18,7 @@ interface GameState
   matchOver: boolean;
   setOver: boolean;
   isPaused: boolean;
+  inCompleteWinner?: Side;
 }
 
 
@@ -77,15 +79,16 @@ export class Game
   public setOver = true;
   public isPaused = true;
   public lastUpdatedTime: number | undefined = undefined; /* ms */
-
+  public gameMode: GameMode;
   public roomId: string;
   public io: Server;
   public interval!: NodeJS.Timeout | undefined;
 
 
 
-  constructor( public leftInput: InputProvider, public rightInput: InputProvider, io: Server, roomId: string)
+  constructor( public leftInput: InputProvider, public rightInput: InputProvider, io: Server, roomId: string, gameMode: GameMode)
   {
+    this.gameMode = gameMode;
     this.ball = 
     {
         firstSpeedFactor: 0.18*this.unitConversionFactor,
@@ -216,7 +219,7 @@ export class Game
     const p2 = this.points.rightPlayer;
   
     // Kontrol: Set bitti mi?
-    if ((p1 >= 11 || p2 >= 11) && Math.abs(p1 - p2) >= 2)
+    if ((p1 >= 3 || p2 >= 3) && Math.abs(p1 - p2) >= 2)
       {
           if (p1 > p2) {
           this.sets.leftPlayer++;
@@ -280,13 +283,14 @@ export class Game
       this.io.to(this.roomId).emit("gameConstants", gameConstants);
   }
 
-  public exportGameState()
+  public exportGameState(inCompleteWinner?: Side)
   {
        const gameState : GameState = 
     {
       matchOver: this.matchOver,
       setOver: this.setOver,
       isPaused: this.isPaused,
+      inCompleteWinner: inCompleteWinner
      };
 
      this.io.to(this.roomId).emit("gameState", gameState);
@@ -306,6 +310,16 @@ export class Game
 
         this.io.to(this.roomId).emit("ballUpdate", ballState);
   }
+
+   public handleDisconnect(inCompleteWinner: Side)
+   {
+    this.matchOver = true;
+    if (this.gameMode === 'remoteGame' || this.gameMode === 'tournament')
+        this.exportGameState(inCompleteWinner);
+    else
+        this.exportGameState();
+   }
+
 
     public exportPaddleState()
   {
@@ -327,39 +341,31 @@ export class Game
     this.setOver = false;
     this.isPaused = false;
 
-this.exportGameState();
+  this.exportGameState();
 
+    const sides = [{socket: typeof this.leftInput.getSocket === 'function' ? this.leftInput.getSocket()! : null, opponent: 'rightPlayer' as Side},
+      {socket: typeof this.rightInput.getSocket === 'function' ? this.rightInput.getSocket()! : null, opponent: 'leftPlayer' as Side}];
 
-     if (typeof this.leftInput.getSocket === 'function')
-      {
-        this.leftInput.getSocket()!.on("pause-resume", (data: {status: string}) =>
+      const disconnectEvents = ["disconnect", "reset-match"];
+
+      sides.forEach(({ socket, opponent }) =>
         {
-        if (data.status === "pause" && !this.isPaused)
-            this.pauseGameLoop();
-        else if (data.status === "resume" && this.isPaused)
-            this.resumeGameLoop();
+          if (socket)
+          {
+              socket.on("pause-resume", (data: {status: string}) =>
+              {
+                if (data.status === "pause" && !this.isPaused)
+                    this.pauseGameLoop();
+                else if (data.status === "resume" && this.isPaused)
+                    this.resumeGameLoop();
+              });
+
+              disconnectEvents.forEach(evt => socket.on(evt, () => {this.handleDisconnect(opponent); return;} ));
+          }
         });
 
-        this.leftInput.getSocket()!.on("disconnect", () => {this.matchOver = true; return;}); //bu varsa alttakine gerek yok, (window.reoload olduğu sürece)
-        this.leftInput.getSocket()!.on("reset-match", () => {this.matchOver = true; return;});
-      }
 
-      if (typeof this.rightInput.getSocket === 'function')
-      {
-        this.rightInput.getSocket()!.on("pause-resume", (data: {status: string}) =>
-        {
-        if (data.status === "pause" && !this.isPaused)
-            this.pauseGameLoop();
-        else if (data.status === "resume" && this.isPaused)
-            this.resumeGameLoop();
-        });
-
-        this.rightInput.getSocket()!.on("disconnect", () => {this.matchOver = true; return;}); //bu varsa alttakine gerek yok, (window.reoload olduğu sürece)
-        this.rightInput.getSocket()!.on("reset-match", () => {this.matchOver = true; return;});
-      }
-
-
-     if(this.isPaused === false)
+    if(this.isPaused === false)
        {
          Math.random() <= 0.5  ? this.resetBall('leftPlayer') : this.resetBall('rightPlayer');
        }

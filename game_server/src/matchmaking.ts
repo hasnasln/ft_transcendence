@@ -2,6 +2,7 @@ import { Socket } from "socket.io";
 import { Game, Paddle } from "./game"; 
 import { Server } from "socket.io";
 import { LocalPlayerInput, RemotePlayerInput, AIPlayerInput } from "./inputProviders";
+import { GameMode } from "./server";
 
 export interface Player
 {
@@ -15,7 +16,7 @@ export function addPlayerToQueue(player: Player, io: Server)
 {
 	waitingPlayers.set(player.socket.id, player);
 	console.log(`oyuncu waitingP layers a kaydedildi, player.socket.id = ${player.socket.id}`);
-	checkForMatch(io);
+	checkForRemoteMatch(io);
 }
 
 export function removePlayerFromQueue(player: Player)
@@ -29,7 +30,7 @@ export function removePlayerFromQueue(player: Player)
   
 
 
-  export function startGameWithAI(human: Player, level: string, io: Server)
+  export function startGameWithAI(human: Player, level: string, io: Server, gameMode: GameMode)
   {
 	const roomId = `game_${human.socket.id}_vs_AI_${level}`;
 	human.socket.join(roomId);
@@ -45,7 +46,7 @@ export function removePlayerFromQueue(player: Player)
 			// Yeni bir oyun başlat
 	human.socket.on("ready", () => 
 	{
-	const game = new Game(leftInput, rightInput, io, roomId);
+	const game = new Game(leftInput, rightInput, io, roomId, gameMode);
 	getGame = () => game;
 	getPaddle = () => game.getPaddle2();
 	game.startGameLoop();
@@ -54,7 +55,7 @@ export function removePlayerFromQueue(player: Player)
 
 
 
-  export function startLocalGame(player1: Player, io: Server)
+  export function startLocalGame(player1: Player, io: Server, gameMode: GameMode)
   {
 	const leftInput = new LocalPlayerInput(player1, "left");
 	const rightInput = new LocalPlayerInput(player1, "right");
@@ -65,7 +66,7 @@ export function removePlayerFromQueue(player: Player)
 	
 	player1.socket.on("ready", () =>
 	{
-	const game = new Game(leftInput, rightInput, io, roomId);
+	const game = new Game(leftInput, rightInput, io, roomId, gameMode);
 	game.startGameLoop();
 	});
   }
@@ -78,7 +79,7 @@ function mapShift<K, V>(map: Map<K, V>): V | undefined {
   return val;
 }
 
-function checkForMatch(io: Server)
+function checkForRemoteMatch(io: Server)
 {
 	while (waitingPlayers.size >= 2)
 	{
@@ -91,7 +92,8 @@ function checkForMatch(io: Server)
 			player1.socket.join(roomId);
 			player2.socket.join(roomId);
 
-			const matchPlayers = {left: player1.username, right: player2.username};
+			const matchPlayers = {left: {username: player1.username, socketId: player1.socket.id}, 
+			right: {username: player2.username, socketId: player2.socket.id}};
 
 			io.to(roomId).emit("match-ready", matchPlayers);
 
@@ -116,7 +118,7 @@ function checkForMatch(io: Server)
 						io.to(roomId).emit("rematch-ready");
 					if ((reMatchApproval1 === reMatchApproval2 && reMatch !== reMatchApproval1) || (reMatchApproval1 !== reMatchApproval2))
 						return;
-					const game = new Game(leftInput, rightInput, io, roomId);
+					const game = new Game(leftInput, rightInput, io, roomId, 'remoteGame');
 					game.startGameLoop();
 					reMatch = true;
 					reMatchApproval1 = false;

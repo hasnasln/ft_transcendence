@@ -55,10 +55,16 @@ export async function startNextSet(gameInfo: GameInfo)
 }
 
 
-export function showEndMessage(gameInfo: GameInfo) {
-  const winnerName = gameInfo.ballState!.points.leftPlayer > gameInfo.ballState!.points.rightPlayer ? gameInfo.ballState?.usernames.left : gameInfo.ballState?.usernames.right;
+export function showEndMessage(gameInfo: GameInfo)
+{
+  let winnerName = gameInfo.ballState!.points.leftPlayer > gameInfo.ballState!.points.rightPlayer ? gameInfo.ballState?.usernames.left : gameInfo.ballState?.usernames.right;
   console.log(`showEndMsg fonksiyonuna geldik, gameInfo.state?.matchOver = ${gameInfo.state?.matchOver}`);
   gameInstance.endMsg!.textContent = `${winnerName} maçı kazandı !`;
+  if (gameInfo.state?.inCompleteWinner !== undefined)
+    {
+      winnerName = gameInfo.state?.inCompleteWinner === 'leftPlayer' ? gameInfo.ballState?.usernames.left : gameInfo.ballState?.usernames.right;
+      gameInstance.endMsg!.textContent = `Rakibin bağlantısı kesildi. ${winnerName} maçı kazandı!`;
+    }
   gameInstance.endMsg!.classList.remove("hidden");
   if (gameInstance.startButton) {
     gameInstance.startButton.textContent = "Aynı Maçı Tekrar Oyna";
