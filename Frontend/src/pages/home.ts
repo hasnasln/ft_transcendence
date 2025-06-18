@@ -267,50 +267,48 @@ for (let i = 0; i < positions.length; i++) {
 }
 
 function createProfileCard(
-
   name: string,
   linkedin: string,
   github: string,
   avatar: string
 ): HTMLElement {
-	const div = document.createElement('div');
-	div.innerHTML = `
-
+  const div = document.createElement('div');
+  div.innerHTML = `
 <div
   class="profile-card w-[300px] rounded-md shadow-xl overflow-hidden bg-white flex flex-col items-center justify-center gap-3 transition-all duration-300 group"
 >
-  <div
-	class="avatar w-full pt-5 flex items-center justify-center flex-col gap-1"
-  >
-	<div class="img_container w-full flex items-center justify-center relative z-40">
-	<img src="${avatar}" alt="${name}" class="size-36 z-40 border-4 border-[#96215F] rounded-full object-cover group-hover:border-8 group-hover:transition-all group-hover:duration-300 transition-all duration-300" />
-	</div>
+  <div class="avatar w-full pt-5 flex items-center justify-center flex-col gap-1">
+    <div class="img_container w-full flex items-center justify-center relative z-40">
+      <img src="${avatar}" alt="${name}" class="size-36 z-40 border-4 border-[#96215F] rounded-full object-cover group-hover:border-8 group-hover:transition-all group-hover:duration-300 transition-all duration-300" />
+    </div>
   </div>
   <div class="headings *:text-center *:leading-4">
-	<p class="text-xl font-serif font-semibold text-[#434955]">${name}</p>  </div>
-  <div class="w-full items-center justify-center flex">
-	<ul
-	class="flex flex-col items-start gap-2 *:inline-flex *:gap-2 *:items-center *:justify-center *:border-b-[1.5px] *:border-b-stone-700 *:border-dotted *:text-xs *:font-semibold *:text-[#434955] pb-3"    >
-	  <li>
-		<svg class="fill-stone-700 group-hover:fill-[#58b0e0]" height="15" width="15" viewBox="0 0 24 24">
-		  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 10.268h-3v-4.604c0-1.099-.021-2.513-1.532-2.513-1.532 0-1.768 1.197-1.768 2.434v4.683h-3v-9h2.881v1.233h.041c.401-.761 1.379-1.563 2.841-1.563 3.039 0 3.6 2.001 3.6 4.599v4.731z"/>
-		</svg>
-		<a href="${linkedin}" target="_blank" class="hover:underline break-all max-w-[230px]">
-		${linkedin.replace('https://www.', '').replace('linkedin.com/in/', 'linkedin.com/in/')}
-		</a>
-	  <li>
-		<svg class="fill-stone-700 group-hover:fill-[#58b0e0]" height="15" width="15" viewBox="0 0 24 24">
-		  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.084-.729.084-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.834 2.809 1.304 3.495.997.108-.775.418-1.305.762-1.605-2.665-.305-5.466-1.334-5.466-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.301 1.23a11.52 11.52 0 013.003-.404c1.018.005 2.045.138 3.003.404 2.291-1.553 3.297-1.23 3.297-1.23.653 1.653.242 2.873.118 3.176.77.84 1.235 1.91 1.235 3.221 0 4.609-2.803 5.624-5.475 5.921.43.371.823 1.102.823 2.222v3.293c0 .322.218.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
-		</svg>
-		<a href="${github}" target="_blank" class="hover:underline">${github.replace('https://','')}</a>      </li>
-	</ul>
+    <p class="text-xl font-serif font-semibold text-[#434955]">${name}</p>
   </div>
-  <hr
-	  class="w-full group-hover:h-5 h-3 bg-[#96215F] group-hover:transition-all group-hover:duration-300 transition-all duration-300"
-
+  <div class="w-full items-center justify-center flex">
+    <ul class="flex flex-col items-start gap-2 *:inline-flex *:gap-2 *:items-center *:justify-center *:border-b-[1.5px] *:border-b-stone-700 *:border-dotted *:text-xs *:font-semibold *:text-[#434955] pb-3">
+      <li>
+        <svg class="fill-stone-700 group-hover:fill-[#58b0e0]" height="15" width="15" viewBox="0 0 24 24">
+          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 10.268h-3v-4.604c0-1.099-.021-2.513-1.532-2.513-1.532 0-1.768 1.197-1.768 2.434v4.683h-3v-9h2.881v1.233h.041c.401-.761 1.379-1.563 2.841-1.563 3.039 0 3.6 2.001 3.6 4.599v4.731z"/>
+        </svg>
+        <a href="${linkedin}" target="_blank" rel="noopener noreferrer" class="hover:underline break-all max-w-[230px]">
+          ${linkedin.replace('https://www.', '').replace('linkedin.com/in/', 'linkedin.com/in/')}
+        </a>
+      </li>
+      <li>
+        <svg class="fill-stone-700 group-hover:fill-[#58b0e0]" height="15" width="15" viewBox="0 0 24 24">
+          <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.084-.729.084-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.834 2.809 1.304 3.495.997.108-.775.418-1.305.762-1.605-2.665-.305-5.466-1.334-5.466-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.301 1.23a11.52 11.52 0 013.003-.404c1.018.005 2.045.138 3.003.404 2.291-1.553 3.297-1.23 3.297-1.23.653 1.653.242 2.873.118 3.176.77.84 1.235 1.91 1.235 3.221 0 4.609-2.803 5.624-5.475 5.921.43.371.823 1.102.823 2.222v3.293c0 .322.218.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+        </svg>
+        <a href="${github}" target="_blank" rel="noopener noreferrer" class="hover:underline">
+          ${github.replace('https://','')}
+        </a>
+      </li>
+    </ul>
+  </div>
+  <hr class="w-full group-hover:h-5 h-3 bg-[#96215F] group-hover:transition-all group-hover:duration-300 transition-all duration-300" />
 </div>
-	`.trim();
-	return div.firstElementChild as HTMLElement;
+  `.trim();
+  return div.firstElementChild as HTMLElement;
 }
 
 function CreateChoiseButton(container: HTMLElement, text: string, action: string = 'play') {
