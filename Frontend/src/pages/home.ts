@@ -283,7 +283,7 @@ function createProfileCard(
 	class="avatar w-full pt-5 flex items-center justify-center flex-col gap-1"
   >
 	<div class="img_container w-full flex items-center justify-center relative z-40">
-	<img src="${avatar}" alt="${name}" class="size-36 z-40 border-4 border-white rounded-full object-cover group-hover:border-8 group-hover:transition-all group-hover:duration-300 transition-all duration-300" />
+	<img src="${avatar}" alt="${name}" class="size-36 z-40 border-4 border-[#96215F] rounded-full object-cover group-hover:border-8 group-hover:transition-all group-hover:duration-300 transition-all duration-300" />
 	</div>
   </div>
   <div class="headings *:text-center *:leading-4">
@@ -306,7 +306,7 @@ function createProfileCard(
 	</ul>
   </div>
   <hr
-	  class="w-full group-hover:h-5 h-3 bg-[#1a237e] group-hover:transition-all group-hover:duration-300 transition-all duration-300"
+	  class="w-full group-hover:h-5 h-3 bg-[#96215F] group-hover:transition-all group-hover:duration-300 transition-all duration-300"
 
 </div>
 	`.trim();
