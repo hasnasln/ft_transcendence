@@ -172,10 +172,9 @@ export function renderHome(container: HTMLElement) {
 	'top-0',
 	'left-0',
 	'z-0',
-	'bg-gradient-to-br',
-	'from-[#ece9e2]',
-	'via-[#e0dbd1]',
-	'to-[#cfc8bb]',
+	'bg-gradient-to-r',
+	'from-indigo-600',
+	'to-teal-500',
 );
 
 	const profiles = [
