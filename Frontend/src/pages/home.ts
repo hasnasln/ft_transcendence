@@ -182,32 +182,32 @@ export function renderHome(container: HTMLElement) {
 	name: "AYHAN COŞGUN",
 	linkedin: "https://www.linkedin.com/in/ayhan-coşgun-8324392b9",
 	github: "https://github.com/AyhanCosgun",
-	avatar : "creaters/ayhan.png"
+	avatar : "creaters/acosgun.jpg"
   },
   {
 	name: "HAMZA COŞKUN",
 	linkedin: "https://www.linkedin.com/in/hamza-cskn",
 	github: "https://github.com/hamza-cskn",
-	avatar : "creaters/hamza.png"
+	avatar : "creaters/hcoskun.jpg"
   },
   {
 	name: "BATUHAN KAS",
 	linkedin: "https://www.linkedin.com/in/batuhan-kaş-545689254",
 	github: "https://github.com/BatuhanKas",
-	avatar : "creaters/batuhan.png"
+	avatar : "creaters/bkas.jpg"
 
   },
   {
 	name: "HASAN ASLAN",
 	linkedin: "https://www.linkedin.com/in/hasan-aslan-",
 	github: "https://github.com/hasnasln",
-	avatar : "creaters/hasan.png"
+	avatar : "creaters/haslan.jpg"
   },
   {
 	name: "FATMANUR ÇETİNTAŞ",
 	linkedin: "https://www.linkedin.com/in/fatmanurcetintas",
 	github: "https://github.com/facetint",
-	avatar : "creaters/fatma.png"
+	avatar : "creaters/facetint.jpg"
   }
 ];
 
