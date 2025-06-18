@@ -142,6 +142,7 @@ export function initializeEventListeners(gameInfo: GameInfo)
     
     if(!gameInfo.state?.matchOver)
         gameInstance.socket!.emit("reset-match");
+    window.history.pushState({}, '', '/');
     window.location.reload();
     });
     

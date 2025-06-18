@@ -148,7 +148,6 @@ export function renderSettings(container: HTMLElement): void
 		COLORS.yellow,
 		COLORS.magenta,
 		COLORS.cyan,
-		COLORS.black
 	], selectedTopColor);
 
 	
@@ -193,6 +192,7 @@ export function renderSettings(container: HTMLElement): void
             await exmp.setLanguage(selectedLanguage);
         }
         console.log(selectedTopColor);
+		localStorage.setItem('ballColor', selectedTopColor.value);
 
         const settings :IApiSetSettings = {
             ball_color: selectedTopColor.value,

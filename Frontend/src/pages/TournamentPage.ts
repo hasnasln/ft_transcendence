@@ -1,4 +1,3 @@
-import { game_button } from '../components/buttons';
 import { exmp } from '../languageMeneger';
 import { game } from './play';
 
@@ -52,10 +51,16 @@ export class TournamentPage {
 				case 'refresh':
 					this.handeleRefresh();
 					break;
+				case 'start-tournament':
+					this.hedleStartTournament();
 				default:
 					break;
 			}
 		});
+	}
+
+	private hedleStartTournament(): void {
+		console.log('Starting tournament');
 	}
 
 	private handeleRefresh(): void {
@@ -130,6 +135,58 @@ function renderTournament(container: HTMLElement) {
 	container.appendChild(div);
 }
 
+function joinorcreate(container: HTMLElement, id: string, key: string, title: string, placeholder: string) {
+	const panel = document.createElement('div');
+	panel.id = id;
+	panel.className = "absolute top-0 w-1/2 h-full z-[1] flex items-center justify-center"
+	if (id === 'createPanel')
+		panel.classList.add('right-0');
+	else
+		panel.classList.add('left-0');
+
+	const form = document.createElement('form');
+	form.className = "bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center"
+
+	const h1 = document.createElement('h1');
+	h1.className = "text-2xl font-bold mb-2";
+	h1.textContent = title;
+
+	const input = document.createElement('input');
+	input.type = 'text';
+	input.className = "bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none";
+	input.id = key + 'Input';
+	input.placeholder = placeholder;
+
+	const button = document.createElement('button');
+	button.type = 'button';
+	button.className = "bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3";
+	button.id = key + 'Btn';
+	button.textContent = exmp.getLang(title);
+
+	const showError = document.createElement('div');
+	showError.id = key + '_error_message';
+	showError.classList.add(
+		'flex',
+		'justify-center',
+		'items-center',
+		'text-red-500',
+		'text-sm',
+		'font-bold',
+		'mt-2',
+		'w-[60%]',
+		'bg-red-100',
+	);
+	showError.style.height = '1.5rem';
+	showError.style.visibility = 'hidden'; // Initially hidden
+
+	form.appendChild(h1);
+	form.appendChild(input);
+	form.appendChild(showError);
+	form.appendChild(button);
+	panel.appendChild(form);
+	container.appendChild(panel);
+}
+
 function t_first_section(container: HTMLElement) {
 	const wrapper = document.createElement('div');
 	wrapper.id = 'tournament-container';
@@ -139,7 +196,7 @@ function t_first_section(container: HTMLElement) {
 	// turnuva oluşturma 
 	const createPanel = document.createElement('div');
 	createPanel.id = 'createPanel';
-	createPanel.className = "absolute top-0 right-0 w-1/2 h-full z-1 flex items-center justify-center transition-all-ease";
+	createPanel.className = "absolute top-0 right-0 w-1/2 h-full z-[1] flex items-center justify-center";
 	createPanel.innerHTML = `
 	<form class="bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center">
 		<h1 class="text-2xl font-bold mb-2">${exmp.getLang('tournament-first-page.create-title')}</h1>
@@ -214,8 +271,10 @@ function t_first_section(container: HTMLElement) {
 	toggleWithCreate(fatma); // turnuva oluşturma paneli gizli olacak
 	
 	toggleContainer.appendChild(fatma);
-	wrapper.appendChild(createPanel);
-	wrapper.appendChild(joinPanel);
+	joinorcreate(wrapper, 'createPanel', 'create', exmp.getLang('tournament-first-page.create-title'), exmp.getLang('tournament-first-page.create-placeholder'));
+	// wrapper.appendChild(createPanel);
+	// wrapper.appendChild(joinPanel);
+	joinorcreate(wrapper, 'joinPanel', 'join', exmp.getLang('tournament-first-page.join-title'), exmp.getLang('tournament-first-page.join-placeholder'));
 	wrapper.appendChild(toggleContainer);
 	container.appendChild(wrapper);
 
@@ -574,7 +633,32 @@ function TournamentInformation(container: HTMLElement): void {
 	div04.appendChild(div04p1);
 	div04.appendChild(div04p2);
 	
+	//! yönetici olana başlat butonu ekle
+	/* Başlat button */
+	const sButton = document.createElement('div');
+	sButton.id = 'start-button';
+	sButton.classList.add(
+		'flex',
+		'justify-center',
+		'items-center',
+		'bg-green-500',
+		'text-white',
+		'px-4',
+		'py-2',
+		'rounded-lg',
+		'hover:bg-green-700',
+		'transition-colors',
+		'duration-300',
+	);
+	sButton.textContent = 'BASLAT';
+	sButton.setAttribute('data-action', 'start-tournament');
+
+	
 	div01.appendChild(div001);
+	// !yöneti ci mi ? --> şimdilik full ture olarak devam ediyorum bacend gelince bakılacak
+	if (true) {
+		div01.appendChild(sButton); // Başlat butonunu ekle
+	}
 	div01.appendChild(exit);
 	tournament01.appendChild(div01);
 	tournament01.appendChild(div02);
@@ -593,7 +677,7 @@ function TournamentInformation(container: HTMLElement): void {
 		'gap-4',
 		'w-[640px]',
 		'h-[400px]',
-		'lg:w-[950px]',
+		'lg:w-[980px]',
 		'lg:h-[600px]',
 	);
 
@@ -635,7 +719,7 @@ function TournamentInformation(container: HTMLElement): void {
 	div12.classList.add(
 		'flex',
 		'flex-col',
-		'items-start',         // sola hizalı kartlar daha profesyonel görünür
+		'items-center',         // sola hizalı kartlar daha profesyonel görünür
 		'justify-start',
 		'w-full',
 		'h-full',
@@ -721,12 +805,12 @@ function listPlayers(container: HTMLElement): void {
 		playerDiv.classList.add(
 			'flex',
 			'flex-row',
-			'justify-between',
+			'justify-center',
 			'items-center',
 			'bg-gray-700',
 			'rounded-lg',
 			'p-4',
-			'w-[97%]',
+			'w-[84%]',
 			'h-[15%]',
 			'm-2',
 			'shadow-lg',
@@ -743,16 +827,8 @@ function listPlayers(container: HTMLElement): void {
 			'text-lg',
 			'font-bold',
 		);
-		const playerScore = document.createElement('p');
-		playerScore.textContent = player.score.toString();
-		playerScore.classList.add(
-			'text-white',
-			'text-lg',
-			'font-bold',
-		);
 
 		playerDiv.appendChild(playerName);
-		playerDiv.appendChild(playerScore);
 		container.appendChild(playerDiv);
 });
 }

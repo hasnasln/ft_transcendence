@@ -10,6 +10,7 @@ import { Socket } from "socket.io-client";
 
 // 🎮 WebSocket bağlantısı
 import { createSocket } from "./game-section/network";
+import { moveButton } from "../components/mov-button";
 
 export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | null;
 
@@ -163,6 +164,10 @@ export class game
 					await waitForGameInfoReady(this.gameInfo, this.socket!);
 					console.log(`${this.socket!.id} için VERİLER HAZIR`);
 					createGame(this.gameInfo);
+					moveButton(document.getElementById("game-wrapper")!, 'left');	// id= game-wrapper
+					if (this.gameStatus.game_mode === "localGame") {
+						moveButton(document.getElementById("game-wrapper")!, 'right');	// id= game-wrapper
+					}
 					this.startGame();				
 				});
 
