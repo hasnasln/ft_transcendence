@@ -315,68 +315,54 @@ function createProfileCard(
 }
 
 function CreateChoiseButton(container: HTMLElement, text: string, action: string = 'play') {
-	const button = document.createElement('button');
-	button.setAttribute('data-action', action);
-	button.type = 'button';
-	button.className = [
-		'cursor-pointer',
-		'text-white',
-		'font-bold',
-		'relative',
-		'text-xl',
-		'w-[13em]',
-		'h-[6em]',
-		'text-center',
-		'bg-gradient-to-r',
-		'from-[#2563eb]',
-		'from-10%',
-		'via-[#3b82f6]',
-		'via-30%',
-		'to-[#60a5fa]',
-		'to-90%',
-		'bg-[length:400%]',
-		'rounded-[40px]',
-		'z-10',
-		'border-2', 
-		'border-[#1a237e]',   
-		'hover:brightness-150',
-		'hover:-translate-y-[2px]',
-		'hover:border-b-[8px]',
-		'active:border-b-[3px]',
-		'active:brightness-90',
-		'active:translate-y-[3px]',
-		'transition-all',
-		'duration-300',
-		'my-2'
-	].join(' ');
+    const button = document.createElement('button');
+    button.setAttribute('data-action', action);
+    button.type = 'button';
+    button.className = [
+        'cursor-pointer',
+        'text-white',
+        'font-bold',
+        'relative',
+        'text-xl',
+        'w-[13em]',
+        'h-[6em]',
+        'text-center',
+        'bg-[#164169]',
+        'rounded-[40px]',
+        'z-10',
+        'border-2', 
+        'border-[#161869]',   
+        'hover:brightness-125',
+        'hover:-translate-y-[2px]',
+        'hover:border-b-[8px]',
+        'active:border-b-[3px]',
+        'active:brightness-90',
+        'active:translate-y-[3px]',
+        'transition-all',
+        'duration-300',
+        'my-2'
+    ].join(' ');
 
-	const before = document.createElement('span');
-	before.setAttribute('aria-hidden', 'true');
-	before.className = [
-		'pointer-events-none',
-		'absolute',
-		'-top-[8px]',
-		'-bottom-[8px]',
-		'-left-[8px]',
-		'-right-[8px]',
-		'bg-gradient-to-r',
-		'from-violet-500',
-		'from-10%',
-		'via-sky-500',
-		'via-30%',
-		'to-pink-500',
-		'bg-[length:400%]',
-		'-z-10',
-		'rounded-[45px]',
-		'blur-xl',
-		'opacity-70',
-		'transition-all',
-		'ease-in-out',
-		'duration-1000',
-		'hover:bg-[length:10%]'
-	].join(' ');
+    const before = document.createElement('span');
+    before.setAttribute('aria-hidden', 'true');
+    before.className = [
+        'pointer-events-none',
+        'absolute',
+        '-top-[8px]',
+        '-bottom-[8px]',
+        '-left-[8px]',
+        '-right-[8px]',
+        'bg-[#161869]',
+        '-z-10',
+        'rounded-[45px]',
+        'blur-xl',
+        'opacity-40',
+        'transition-all',
+        'ease-in-out',
+        'duration-1000'
+    ].join(' ');
 
-	button.textContent = text;
-	button.appendChild(before);
-	container.appendChild(button);
+    button.textContent = text;
+    button.appendChild(before);
+    container.appendChild(button);
 }
