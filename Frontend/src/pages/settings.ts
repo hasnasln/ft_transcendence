@@ -1,15 +1,17 @@
 import { IApiSetSettings, _apiManager } from "../api/APIManeger";
 import { exmp } from "../languageMeneger";
 import { close_Button } from "../components/buttons";
-const COLORS = {
-    blue:    '#0000ff',
-    green:   '#00ff00',
-    cyan:    '#00ffff',
-    lime:    '#ffff00',
-    red:     '#ff0000',
-    pink:    '#ff00ff',
-    purple:  '#6b21a8'
-};
+// const COLORS = {
+//     blue:    '#0000ff',
+//     green:   '#00ff00',
+//     cyan:    '#00ffff',
+//     lime:    '#ffff00',
+//     red:     '#ff0000',
+//     pink:    '#ff00ff',
+//     purple:  '#6b21a8',
+// 	rose: 	 '#881337',
+// 	orange:  '#ea580c',
+// };
 
 
 export class Settings {
