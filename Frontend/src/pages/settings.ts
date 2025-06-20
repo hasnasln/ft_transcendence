@@ -177,18 +177,25 @@ export function renderSettings(container: HTMLElement): void
 		'justify-center',
 		'gap-8',
 		'm-2',
+		'mt-6',
 	);
 	const gameSettingsButton = document.createElement('button');
 	gameSettingsButton.textContent = exmp.getLang("settings.save-button");
-	gameSettingsButton.classList.add(
-		'bg-blue-500',
-		'text-white',
-		'font-bold',
-		'py-2',
-		'px-4',
-		'rounded-lg',
-		'hover:bg-blue-700',
-	);
+	gameSettingsButton.className = `
+		hover:brightness-1 hover:animate-pulse font-bold py-3 px-4 rounded-full
+		bg-gradient-to-r from-blue-700 to-pink-600 text-white
+		border-2 border-black transition duration-300 ease-in-out
+		shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80
+	`.replace(/\s+/g, ' ');	
+	// gameSettingsButton.classList.add(
+	// 	'bg-blue-500',
+	// 	'text-white',
+	// 	'font-bold',
+	// 	'py-2',
+	// 	'px-4',
+	// 	'rounded-lg',
+	// 	'hover:bg-blue-700',
+	// );
 	
 	gameSettingsButtonContainer.appendChild(gameSettingsButton);
 	gameSettingsContainer.appendChild(gameSettingsButtonContainer); // ayarları kaydet butonu eklendi
@@ -311,18 +318,23 @@ function createLanguageDropdown(
     langs: string[],
     onChange: (lang: string) => void
 ) {
-   	const langFlags: { [key: string]: string } = {
-		"tr": "🇹🇷",
-		"en": "🇺🇸",
-		"fr": "🇫🇷",
-};
+    const langFlags: { [key: string]: string } = {
+        "tr": "🇹🇷",
+        "en": "🇺🇸",
+        "fr": "🇫🇷",
+    };
 
     const wrapper = document.createElement('div');
-    wrapper.className = "relative mb-4 flex justify-start";
+    wrapper.className = "flex flex-col items-start w-[80%] m-2 mt-6";
+
+    const label = document.createElement('label');
+    label.textContent = exmp.getLang("settings.language-select");
+    label.className = "text-lg text-gray-800 mb-2";
+    wrapper.appendChild(label);
 
     const dropdownBtn = document.createElement('button');
     dropdownBtn.type = "button";
-    dropdownBtn.className = "inline-flex items-center font-medium justify-center px-4 py-2 text-sm text-gray-900 dark:text-white rounded-lg cursor-pointer bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 border border-gray-300";
+    dropdownBtn.className = "inline-flex font-medium justify-center px-4 py-2 text-sm text-gray-900 dark:text-white rounded-lg cursor-pointer bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 border border-gray-300";
     dropdownBtn.innerHTML = `
         <span class="me-2">${langFlags[selectedLanguage] || "🌐"}</span>
         <span class="me-2">${selectedLanguage}</span>
@@ -373,5 +385,6 @@ function createLanguageDropdown(
 
     wrapper.appendChild(dropdownBtn);
     wrapper.appendChild(dropdownMenu);
+
     container.appendChild(wrapper);
 }
