@@ -2,14 +2,14 @@ import { IApiSetSettings, _apiManager } from "../api/APIManeger";
 import { exmp } from "../languageMeneger";
 import { close_Button } from "../components/buttons";
 const COLORS = {
-	red: '#ff0000',
-	green: '#00ff00',
-	blue: '#0000ff',
-	yellow: '#ffff00',
-	magenta: '#ff00ff',
-	cyan: '#00ffff',
-	black: '#000000'
-}
+    blue:    '#0000ff',
+    green:   '#00ff00',
+    cyan:    '#00ffff',
+    lime:    '#ffff00',
+    red:     '#ff0000',
+    pink:    '#ff00ff',
+    purple:  '#6b21a8'
+};
 
 
 export class Settings {
@@ -85,7 +85,7 @@ export function renderSettings(container: HTMLElement): void
 		'sm:w-[65%]',
 		'md:w-[50%]',
 		'lg:w-[30%]',
-		'bg-blue-500',
+		'bg-[#96215F]',
 		'rounded-r-3xl',
 		'top-0',
 		'left-0',
@@ -141,20 +141,33 @@ export function renderSettings(container: HTMLElement): void
 
 
 	// Top rengi
-	createColorPalette(exmp.getLang("settings.ball-color"), gameSettingsContainer, [
-		COLORS.red,
-		COLORS.green,
-		COLORS.blue,
-		COLORS.yellow,
-		COLORS.magenta,
-		COLORS.cyan,
-	], selectedTopColor);
+	createColorPalette(
+    exmp.getLang("settings.ball-color"),
+    gameSettingsContainer,
+    [
+        '#0000ff', // Blue
+        '#00ff00', // Green
+        '#00ffff', // Cyan
+        '#ffff00', // Lime
+        '#ff0000', // Red
+        '#ff00ff', // Pink
+        '#6b21a8', // Purple
+		'#881337', // Rose
+		'#ea580c', // Orange
+    ],
+    selectedTopColor
+);
 
 	
-	createLanguageSelector(gameSettingsContainer, selectedLanguage, exmp.getLanguageChoises(),
-	(lang: string ) => {selectedLanguage = lang; }
-	);
-
+	// createLanguageSelector(gameSettingsContainer, selectedLanguage, exmp.getLanguageChoises(),
+	// (lang: string ) => {selectedLanguage = lang; }
+	// );
+	createLanguageDropdown(
+    gameSettingsContainer,
+    selectedLanguage,
+    exmp.getLanguageChoises(),
+    (lang: string) => { selectedLanguage = lang; }
+);
 	// Gönder Butonu
 	const gameSettingsButtonContainer = document.createElement('div');
 	gameSettingsButtonContainer.classList.add(
@@ -203,73 +216,162 @@ export function renderSettings(container: HTMLElement): void
 }
 
 function createColorPalette(title: string, container: HTMLElement, colorList: string[], selectedColor: { value: string }) {
-	const wrapper = document.createElement('div');
-	wrapper.classList.add('flex', 'flex-col', 'items-start', 'w-[80%]', 'm-2');
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('flex', 'flex-col', 'items-start', 'w-[80%]', 'm-2');
 
-	const label = document.createElement('label');
-	label.textContent = `${title}:`;
-	label.classList.add('text-lg', 'text-gray-800', 'mb-2');
-	wrapper.appendChild(label);
+    const label = document.createElement('label');
+    label.textContent = `${title}:`;
+    label.classList.add('text-lg', 'text-gray-800', 'mb-2');
+    wrapper.appendChild(label);
 
-	const colorContainer = document.createElement('div');
-	colorContainer.classList.add('flex', 'flex-wrap', 'gap-2');
+    const colorContainer = document.createElement('div');
+    colorContainer.classList.add('flex', 'flex-wrap', 'gap-2');
 
-	colorList.forEach((color) => {
-		const colorBox = document.createElement('div');
-		colorBox.classList.add('w-8', 'h-8', 'rounded', 'cursor-pointer', 'border-4', 'border-transparent');
-		colorBox.style.backgroundColor = color;
-		colorBox.setAttribute('data-action', 'color');
-		if (color == selectedColor.value) {
-			colorBox.classList.remove('border-transparent');
-			colorBox.classList.add('border-black');
-		}
+    const colorButtonClasses: { [key: string]: string } = {
+        '#ff0000': 'text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2',
+        '#00ff00': 'text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2',
+        '#0000ff': 'text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2',
+        '#ffff00': 'text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 shadow-lg shadow-lime-500/50 dark:shadow-lg dark:shadow-lime-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2',
+        '#ff00ff': 'text-white bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2',
+        '#00ffff': 'text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2',
+        '#6b21a8': 'text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2',
+		'#881337': 'text-white bg-gradient-to-r from-rose-700 via-rose-800 to-rose-900 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-rose-300 dark:focus:ring-rose-800 shadow-lg shadow-rose-500/50 dark:shadow-lg dark:shadow-rose-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2',
+		'#ea580c': 'text-white bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 shadow-lg shadow-orange-500/50 dark:shadow-lg dark:shadow-orange-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2',
 
-		colorBox.addEventListener('click', () => {
-			selectedColor.value = color;
-			
-			// Tüm kutuların border'ını sıfırla
-			colorContainer.querySelectorAll('div').forEach((box) => {
-				box.classList.remove('border-black');
-				box.classList.add('border-transparent');
-			});
+    };
 
-			// Seçilen kutuya border ekle
-			colorBox.classList.remove('border-transparent');
-			colorBox.classList.add('border-black');
-		});
-   		colorContainer.appendChild(colorBox);
-	});
-	wrapper.appendChild(colorContainer);
-	container.appendChild(wrapper);
+    const colorNames: { [key: string]: string } = {
+        '#ff0000': 'Red',
+        '#00ff00': 'Green',
+        '#0000ff': 'Blue',
+        '#ffff00': 'Lime',
+        '#ff00ff': 'Pink',
+        '#00ffff': 'Cyan',
+        '#ea580c': 'Orange',
+        '#6b21a8': 'Purple',
+		'#881337': 'Rose',
+    };
+
+    colorList.forEach((color) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = colorButtonClasses[color] || '';
+        btn.textContent = colorNames[color] || color;
+        if (color === selectedColor.value) {
+            btn.classList.add('ring-4', 'ring-black');
+        }
+        btn.addEventListener('click', () => {
+            selectedColor.value = color;
+            // Tüm butonlardan seçili class'ı kaldır
+            colorContainer.querySelectorAll('button').forEach(b => b.classList.remove('ring-4', 'ring-black'));
+            // Seçili butona class ekle
+            btn.classList.add('ring-4', 'ring-black');
+        });
+        colorContainer.appendChild(btn);
+    });
+
+    wrapper.appendChild(colorContainer);
+    container.appendChild(wrapper);
 }
 
-function createLanguageSelector(container: HTMLElement, selectedLanguage: string, langs: string[], onChange: (lang: string) => void ) {
-	const wrapper = document.createElement('div');
-	wrapper.classList.add('flex', 'flex-col', 'w-[80%]', 'm-2');
+// function createLanguageSelector(container: HTMLElement, selectedLanguage: string, langs: string[], onChange: (lang: string) => void ) {
+// 	const wrapper = document.createElement('div');
+// 	wrapper.classList.add('flex', 'flex-col', 'w-[80%]', 'm-2');
 
-	console.log("selectedLanguage: " + selectedLanguage);
-	const label = document.createElement('label');
-	label.textContent = exmp.getLang("settings.language-select");
-	label.classList.add('text-lg', 'text-gray-800', 'mb-1');
-	wrapper.appendChild(label);
+// 	console.log("selectedLanguage: " + selectedLanguage);
+// 	const label = document.createElement('label');
+// 	label.textContent = exmp.getLang("settings.language-select");
+// 	label.classList.add('text-lg', 'text-gray-800', 'mb-1');
+// 	wrapper.appendChild(label);
 
-	const select = document.createElement('select');
-	select.value = selectedLanguage;
-	select.classList.add('w-[50%]','border', 'border-gray-300', 'rounded-lg', 'px-2', 'py-1', 'text-gray-800');
+// 	const select = document.createElement('select');
+// 	select.value = selectedLanguage;
+// 	select.classList.add('w-[50%]','border', 'border-gray-300', 'rounded-lg', 'px-2', 'py-1', 'text-gray-800');
 
-	langs.forEach(lang => {
-		const option = document.createElement('option');
-		option.value = lang;
-		option.textContent = lang;
-		if (lang == selectedLanguage) { option.selected = true; }
-		select.appendChild(option);
-	});
+// 	langs.forEach(lang => {
+// 		const option = document.createElement('option');
+// 		option.value = lang;
+// 		option.textContent = lang;
+// 		if (lang == selectedLanguage) { option.selected = true; }
+// 		select.appendChild(option);
+// 	});
 
-	select.addEventListener('change', () => {
-		selectedLanguage = select.value;
-		onChange(selectedLanguage);
-	});
+// 	select.addEventListener('change', () => {
+// 		selectedLanguage = select.value;
+// 		onChange(selectedLanguage);
+// 	});
 
-	wrapper.appendChild(select);
-	container.appendChild(wrapper);
+// 	wrapper.appendChild(select);
+// 	container.appendChild(wrapper);
+// }
+
+function createLanguageDropdown(
+    container: HTMLElement,
+    selectedLanguage: string,
+    langs: string[],
+    onChange: (lang: string) => void
+) {
+   	const langFlags: { [key: string]: string } = {
+		"tr": "🇹🇷",
+		"en": "🇺🇸",
+		"fr": "🇫🇷",
+};
+
+    const wrapper = document.createElement('div');
+    wrapper.className = "relative mb-4 flex justify-start";
+
+    const dropdownBtn = document.createElement('button');
+    dropdownBtn.type = "button";
+    dropdownBtn.className = "inline-flex items-center font-medium justify-center px-4 py-2 text-sm text-gray-900 dark:text-white rounded-lg cursor-pointer bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 border border-gray-300";
+    dropdownBtn.innerHTML = `
+        <span class="me-2">${langFlags[selectedLanguage] || "🌐"}</span>
+        <span class="me-2">${selectedLanguage}</span>
+        <svg class="w-2.5 h-2.5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+    `;
+
+    const dropdownMenu = document.createElement('div');
+    dropdownMenu.className = "z-50 hidden absolute left-0 mt-2 w-full bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700";
+    dropdownMenu.style.minWidth = "150px";
+
+    const ul = document.createElement('ul');
+    ul.className = "py-2 font-medium";
+    ul.role = "menu";
+
+    langs.forEach(lang => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = "#";
+        a.className = "flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white";
+        a.role = "menuitem";
+        a.innerHTML = `<span>${langFlags[lang] || "🌐"}</span><span>${lang}</span>`;
+        if (lang === selectedLanguage) {
+            a.classList.add("font-bold", "text-blue-700");
+        }
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            dropdownMenu.classList.add('hidden');
+            dropdownBtn.innerHTML = `
+                <span class="me-2">${langFlags[lang] || "🌐"}</span>
+                <span class="me-2">${lang}</span>
+                <svg class="w-2.5 h-2.5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            `;
+            onChange(lang);
+        });
+        li.appendChild(a);
+        ul.appendChild(li);
+    });
+    dropdownMenu.appendChild(ul);
+
+    dropdownBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', () => {
+        dropdownMenu.classList.add('hidden');
+    });
+
+    wrapper.appendChild(dropdownBtn);
+    wrapper.appendChild(dropdownMenu);
+    container.appendChild(wrapper);
 }
