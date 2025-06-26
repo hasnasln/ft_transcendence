@@ -122,6 +122,8 @@ export class APIManager
 				this.uuid = data.uuid;
 				localStorage.setItem('token', data.token);
 				console.log("Token set:", this.getToken());
+				console.log("xx:", data.user.avatar);
+				localStorage.setItem('avatar', data.user.avatar || '');
 				// console.log("data.uzer -----> "	+ JSON.stringify(data.user));
 				localStorage.setItem('user', JSON.stringify(data.user));
 				// const x = localStorage.getItem('user');
@@ -211,7 +213,7 @@ export class APIManager
 			localStorage.setItem('surname', data.user.surname);
 			localStorage.setItem('username', data.user.username);
 			localStorage.setItem('email', data.user.email);
-			localStorage.setItem('prfilePicture', data.user.avatar);
+			localStorage.setItem('avatar', data.user.avatar);
 			console.log("name:", localStorage.getItem('name'));
 			console.log("surname:", localStorage.getItem('surname'));
 			console.log("username:", localStorage.getItem('username'));

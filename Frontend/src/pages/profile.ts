@@ -312,7 +312,7 @@ function renderProfile(container: HTMLElement) {
 	const imageContainer = document.createElement('div');
 	const profileImage = document.createElement('img');
 	console.log("Avatar: " + localStorage.getItem('avatar'));
-	profileImage.src = 'ICONS/' + localStorage.getItem('avatar')!;
+	profileImage.src = localStorage.getItem('avatar')!;
 	profileImage.alt = 'Profile Image';
 	profileImage.classList.add(
 		'rounded-full',
