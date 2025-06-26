@@ -46,8 +46,8 @@ export class APIManager
 	private baseUrl: string;
 	private url_altarnative: string;
 	private token: string | null;
-	private active_pass: string;
-	private uuid: string;
+	private active_pass: string | null = null; // aktif pass tutulacak
+	private uuid: string | null = null; // uuid tutulacak, register ve login sonrası gelecek
 
 
 	private constructor(baseUrl: string, url_altarnetive: string, token: string | null = null) {
@@ -73,7 +73,7 @@ export class APIManager
 
 	public getActivePass(): string
 	{
-		return this.active_pass;
+		return this.active_pass!;
 	}
 
 	private myFetch(url: string, method: string, headers: HeadersInit, body?: BodyInit): Promise<Response> {
@@ -264,7 +264,7 @@ export class APIManager
 			username: '',
 			email: '',
 			password: '',
-			uuid: this.uuid
+			uuid: this.uuid!
 		}
 		if (name === 'password')
 			x.password = data;

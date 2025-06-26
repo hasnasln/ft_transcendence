@@ -2,7 +2,7 @@
  * close button 
  */
 
-export function close_Button(button: HTMLElement, side): void{
+export function close_Button(button: HTMLElement, side: string): void{
 	button.classList.add(
 		'absolute',
 		'top-4',

@@ -22,31 +22,31 @@ export interface GameStatus {
 
 export class game
 {
-	public startButton: HTMLElement | null;
-	public scoreBoard: HTMLElement | null;
-	public setBoard: HTMLElement | null;
-	public scoreTable: HTMLElement | null;
-	public setTable: HTMLElement | null;
-	public endMsg: HTMLElement | null;
-	public socket: Socket | null;
-	public newmatchButton: HTMLElement | null;
-	public turnToHomePage: HTMLElement | null;
-	public info: HTMLElement | null;
+	public startButton: HTMLElement | null = null;
+	public scoreBoard: HTMLElement | null = null;
+	public setBoard: HTMLElement | null = null;
+	public scoreTable: HTMLElement | null = null;
+	public setTable: HTMLElement | null = null;
+	public endMsg: HTMLElement | null = null;
+	public socket: Socket | null = null;
+	public newmatchButton: HTMLElement | null = null;
+	public turnToHomePage: HTMLElement | null = null;
+	public info: HTMLElement | null = null;
 	public engine: Engine | undefined;
 	public scene: Scene | undefined;
-	public gameInfo: GameInfo | null;
-	public canvas: HTMLCanvasElement | null;
-	public groundSize: { width: number, height: number } | null;
-	public ground: Mesh | null;
-	public paddle1: Mesh | null;
-	public paddle2: Mesh | null;
-	public ball: BallController | null;
+	public gameInfo: GameInfo | null = null;
+	public canvas: HTMLCanvasElement | null = null;
+	public groundSize: { width: number, height: number } | null = null;
+	public ground: Mesh | null = null;
+	public paddle1: Mesh | null = null;
+	public paddle2: Mesh | null = null;
+	public ball: BallController | null = null;
 	public gameStatus: GameStatus = {
 		currentGameStarted: false,
 		game_mode: null
 	};
 	public reMatch: boolean = false;
-	public username: string | null;
+	public username: string | null = null;
 
 	public constructor() {
 		this.resetGame();
