@@ -102,7 +102,7 @@ app.post('/api/update/password', (req, res) => {
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   console.log(`Kullanıcı Adı: ${username}, Şifre: ${password}`);
-  if (username === '1' && password === '1') {
+  if (username === '5' && password === '5') {
 	res.json({ status: 'giriş başarılı', token: '1234567890', user: user });
   } else if (username === '2' && password === '2') {
     res.json({ status: 'giriş başarılı', token: '0987654321', user: user2 });

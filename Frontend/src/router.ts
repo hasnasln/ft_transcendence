@@ -6,10 +6,9 @@ import { PlayPage } from './pages/play-page';
 import { gameInstance } from './pages/play';
 import { exmp } from './languageMeneger';
 import { loading, loadingWithMessage } from './components/loading';
-import { checkCurrentUser } from './tokenUtils';
 
 
-export async function router()
+export function router()
 {
 	const app = document.getElementById('app') as HTMLElement;
 	if (!app) {
@@ -50,11 +49,6 @@ export async function router()
 			registerPage.render(contentContainer);
 			break;
 		case '/play':
-			const currentUser = await checkCurrentUser();
-			if (currentUser)
-				console.log(`${currentUser.username} oyun sayfasına hoş geldin`);
-			else
-				console.log(`Çok yanlış geldin kankss... !`)
 			const playPage = new PlayPage();
 			const {info, menu} = playPage.render(contentContainer);
 			// 3 sanite bekle
@@ -66,7 +60,7 @@ export async function router()
 				loadingWithMessage(info, 'Lütfen Telefonu Yatay Tutunuz');
 				
 				setTimeout(() => {
-					gameInstance.initGameSettings(currentUser!.username);
+					gameInstance.initGameSettings();
 					info.classList.add('hidden');
 					info.classList.remove('bg-blue-500');
 					menu.classList.remove('hidden');

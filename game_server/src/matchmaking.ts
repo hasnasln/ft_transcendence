@@ -14,19 +14,18 @@ const waitingPlayers = new Map<string, Player>();
 
 export function addPlayerToQueue(player: Player, io: Server)
 {
-	waitingPlayers.set(player.username, player);
-	console.log(`oyuncu waitingP layers a kaydedildi, player.username= ${player.username}, waitingPlayers.size = ${waitingPlayers.size}`);
-	waitingPlayers.forEach((item) => console.log(`player: ${item.username}, `));
+	waitingPlayers.set(player.socket.id, player);
+	console.log(`oyuncu waitingP layers a kaydedildi, player.socket.id = ${player.socket.id}`);
 	checkForRemoteMatch(io);
 }
 
 export function removePlayerFromQueue(player: Player)
 {
-	 const checkPlayer = waitingPlayers.get(player.username);
+	const checkPlayer = waitingPlayers.get(player.socket.id);
   if (typeof(checkPlayer) === 'undefined') {
     return;
   }
-	waitingPlayers.delete(player.username);
+	waitingPlayers.delete(player.socket.id);
 }
   
 
@@ -62,7 +61,7 @@ export function removePlayerFromQueue(player: Player)
 	const rightInput = new LocalPlayerInput(player1, "right");
 
 
-	const roomId = `game_${player1.username}_vs_friend`;
+	const roomId = `game_${player1.socket.id}_vs_friend`;
 	player1.socket.join(roomId);
 	
 	player1.socket.on("ready", () =>
@@ -89,7 +88,7 @@ function checkForRemoteMatch(io: Server)
 
 		if (player1 && player2)
 		{
-			const roomId = `game_${player1.username}_${player2.username}`;
+			const roomId = `game_${player1.socket.id}_${player2.socket.id}`;
 			player1.socket.join(roomId);
 			player2.socket.join(roomId);
 

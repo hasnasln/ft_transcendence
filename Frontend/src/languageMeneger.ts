@@ -1,12 +1,12 @@
 const en = {
-    "singin": {
+    "signin": {
         "register-b": "Register",
         "email-or-nickname-i": "Email or Nickname",
         "passwor-i": "Password",
         "login-b": "Login"
     },
-    "singin-success": "Login successful! Redirecting...",
-    "singin-errors": {
+    "signin-success": "Login successful! Redirecting...",
+    "signin-errors": {
         "required": {
             "email": "Email or Nickname is required",
             "password": "Password is required"
@@ -16,7 +16,7 @@ const en = {
     },
     "register": {
         "title": "Register",
-        "singin-b": "Sign In",
+        "signin-b": "Sign In",
         "name": "Enter Name",
         "surname": "Enter Surname",
         "username": "Enter Username",

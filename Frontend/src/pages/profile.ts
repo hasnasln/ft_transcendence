@@ -11,29 +11,24 @@ interface ISection {
 
 
 export class ProfileSettings{
-	private name: string;
-	private surname: string;
-	private nickname: string;
+	private username: string;
 	private email: string;
 	private password: string;
 
 
 	constructor() { //! constructor da istek atıp bu değişkellere yazılması gerekn değerleri yazıp buradandevam edebilirz
-		this.name = '';
-		this.surname = '';
-		this.nickname = '';
+		this.username = '';
 		this.email = '';
 		this.password = '';
-		if (!(localStorage.getItem('name') 
-			&& localStorage.getItem('surname') 
-			&& localStorage.getItem('nickname') 
+		if (!(localStorage.getItem('username') 
 			&& localStorage.getItem('email') 
 			&& localStorage.getItem('password'))) {
-				_apiManager.getME()
+				console.error('Register sayfası için ihtiyaç duyulanlar local strogada bulunamadı.');
+				console.log( "username :" + localStorage.getItem('username'));
+				console.log( "email :" + localStorage.getItem('email'));
+				console.log( "password :" + localStorage.getItem('password'));
 			}
-		this.name = localStorage.getItem('name') || '';
-		this.surname = localStorage.getItem('surname') || '';
-		this.nickname = localStorage.getItem('nickname') || '';
+		this.username = localStorage.getItem('username') || '';
 		this.email = localStorage.getItem('email') || '';
 		this.password = localStorage.getItem('password') || '';
 	}
@@ -84,8 +79,6 @@ export class ProfileSettings{
 		});
 	}
 
-	public static getname(): string { return this.name; }
-
 	private hendle_password(action: string)
 	{
 		const eski_sifre = document.querySelector('#' + action + '_eski') as HTMLInputElement;
@@ -95,7 +88,7 @@ export class ProfileSettings{
 		if (!new_pass)
 			console.log('new pas bulunamadı');
 
-		if (_apiManager.getActivePass() === eski_sifre.value)
+		if (localStorage.getItem('password') === eski_sifre.value)
 		{
 			_apiManager.updateSomething('password', new_pass.value);
 		}
@@ -135,9 +128,9 @@ export class ProfileSettings{
 			}
 		}
 		if (input && x === 'nick-name') {
-			this.nickname = input.value;
-			// console.log(x + ": ", this.nickname);
-			await _apiManager.updateSomething('nickname', input.value);
+			this.username = input.value;
+			// console.log(x + ": ", this.username);
+			await _apiManager.updateSomething('username', input.value);
 		} else if (input && x === 'email') {
 			this.email = input.value;
 			await _apiManager.updateSomething('email', this.email);
@@ -169,7 +162,7 @@ export class ProfileSettings{
 	// 		}else {
 	// 			const secondPart = document.getElementById('second_part');
 	// 			if (secondPart){
-	// 				// createHistory(this.nickname, this.getHistory(), secondPart);
+	// 				// createHistory(this.username, this.getHistory(), secondPart);
 	// 			}
 	// 		}
 	// 	}
@@ -233,8 +226,6 @@ export class ProfileSettings{
 }
 
 function renderProfile(container: HTMLElement) {
-	const user = localStorage.getItem('user');
-	const userData = user ? JSON.parse(user) : null;
 
 	const wrapper = document.createElement('div');
 	wrapper.id = 'profile_main';
@@ -320,7 +311,8 @@ function renderProfile(container: HTMLElement) {
 
 	const imageContainer = document.createElement('div');
 	const profileImage = document.createElement('img');
-	profileImage.src = userData.avatar;
+	console.log("Avatar: " + localStorage.getItem('avatar'));
+	profileImage.src = 'ICONS/' + localStorage.getItem('avatar')!;
 	profileImage.alt = 'Profile Image';
 	profileImage.classList.add(
 		'rounded-full',
@@ -333,7 +325,7 @@ function renderProfile(container: HTMLElement) {
 
 	const nameContainer = document.createElement('div');
 	const name = document.createElement('h2');
-	name.textContent = "--> " + userData.name + " <--" || "Local strogadan çekilen user.data da isim bulunamadı."; // bu kısımda kullanıcı adını dinamik olarak alabiliriz
+	name.textContent = "--> " + localStorage.getItem('username') + " <--" || "Local strogadan çekilen user.data da isim bulunamadı."; // bu kısımda kullanıcı adını dinamik olarak alabiliriz
 	name.classList.add(
 		'text-xl',
 		'font-bold',

@@ -187,44 +187,72 @@ function createButtonWithNameId(id: string, Name: string): HTMLElement {
 
 function renderMenu(container: HTMLElement): HTMLElement
 {
-	const  menudiv = createDivAddId('menu');
-		menudiv.classList.add(
-			'absolute',
-			'top-1/2',
-			'left-1/2',
-			'-translate-x-1/2',
-			'-translate-y-1/2',
-			'w-[50%]',
-			'h-[60%]',
-			'bg-gray-300',
-			'rounded-3xl',
-			'flex',
-			'flex-col',
-			'justify-center',
-			'items-center',
-			'gap-4',
-			'z-10',
-			'hidden'
-		);
-		
-		const button1 = createButtonWithNameId('btn-vs-computer', exmp.getLang("game.vs-compiter-b"));
-		const button2 = createButtonWithNameId('btn-find-rival', exmp.getLang("game.find-reval-b"));
-		const button3 = createButtonWithNameId('btn-local', exmp.getLang("game.local-game"));
-		const button4 = createButtonWithNameId('tournament', exmp.getLang("game.tournament"));
+    const menudiv = createDivAddId('menu');
+    menudiv.classList.add(
+        'absolute',
+        'top-1/2',
+        'left-1/2',
+        '-translate-x-1/2',
+        '-translate-y-1/2',
+        'w-[60%]',
+        'h-[70%]',
+        'bg-black',
+        'rounded-3xl',
+        'flex',
+        'flex-col',
+        'justify-center',
+        'items-center',
+        'gap-8', // butonlar arası boşluk
+        'z-10',
+        'hidden'
+    );
 
-		game_button(button1);
-		game_button(button2);
-		game_button(button3);
-		game_button(button4);
+    const buttonData = [
+        { id: 'btn-vs-computer', text: exmp.getLang("game.vs-compiter-b") },
+        { id: 'btn-find-rival', text: exmp.getLang("game.find-reval-b") },
+        { id: 'btn-local', text: exmp.getLang("game.local-game") },
+        { id: 'tournament', text: exmp.getLang("game.tournament") }
+    ];
 
-		menudiv.appendChild(button1);
-		menudiv.appendChild(button2);
-		menudiv.appendChild(button3);
-		menudiv.appendChild(button4);
+    buttonData.forEach(({ id, text }) => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = "relative group";
+
+        const outerDiv = document.createElement('div');
+		outerDiv.className = "relative w-[28rem] h-16 opacity-90 overflow-hidden rounded-2xl bg-black z-10";
+        // Animasyonlu gradient çizgi
+        const animDiv = document.createElement('div');
+        animDiv.className = "absolute z-10 -translate-x-44 group-hover:translate-x-[30rem] ease-in transition-all duration-700 h-full w-44 bg-gradient-to-r from-gray-500 to-white/10 opacity-30 -skew-x-12";
+
+        // Butonun kendisi
+        const btnWrapper = document.createElement('div');
+        btnWrapper.className = "absolute flex items-center justify-center text-white z-[1] opacity-90 rounded-2xl inset-0.5 bg-black";
+
+        const button = document.createElement('button');
+        button.id = id;
+		button.className = "input font-semibold text-2xl h-full opacity-90 w-full px-20 py-4 rounded-2xl bg-black";
+		button.textContent = text;
+
+        btnWrapper.appendChild(button);
+
+        // Alt animasyonlu blur gradient
+        const blurDiv = document.createElement('div');
+        blurDiv.className = "absolute duration-1000 group-hover:animate-spin w-full h-[100px] bg-gradient-to-r from-green-500 to-yellow-500 blur-[30px]";
+
+        // Hepsini sırayla ekle
+        outerDiv.appendChild(animDiv);
+        outerDiv.appendChild(btnWrapper);
+        outerDiv.appendChild(blurDiv);
+        groupDiv.appendChild(outerDiv);
+        menudiv.appendChild(groupDiv);
+    });
 
 		container.appendChild(menudiv);
+		container.appendChild(menudiv);
 
-		return menudiv;
+    container.appendChild(menudiv);
+
+    return menudiv;
 }
 
 

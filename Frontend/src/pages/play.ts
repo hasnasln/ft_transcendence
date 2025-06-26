@@ -80,29 +80,17 @@ export class game
 		this.username = null;
 	}
 
-	public async initGameSettings(username: string): Promise<boolean> {
+	public initGameSettings(): boolean {
 		this.startButton = document.getElementById("start-button");
 		this.scoreBoard = document.getElementById("scoreboard");
 		this.setBoard = document.getElementById("setboard");
 		this.scoreTable = document.getElementById("score-table");
 		this.setTable = document.getElementById("set-table");
 		this.endMsg = document.getElementById("end-message");
+		this.socket = createSocket();
 		this.newmatchButton = document.getElementById("newmatch-button");
 		this.turnToHomePage = document.getElementById("turnHomePage-button");
 		this.info = document.getElementById("info");
-
-		try {
-			this.socket = await createSocket();
-		} catch (err: any) {
-			alert("Oturum süreniz dolmuş olabilir. Lütfen tekrar giriş yapınız.");
-
-			// Kullanıcıyı login sayfasına yönlendir
-			history.replaceState({}, '', '/signin');
-			window.dispatchEvent(new PopStateEvent('popstate'));
-			return false; // initGameSettings başarısız
-		}
-
-		this.username = username;
 
 
 		if (!this.startButton || !this.scoreBoard || !this.setBoard ||
@@ -122,7 +110,7 @@ export class game
 
 				let rival: string;
 				if (this.gameStatus.game_mode === "remoteGame") {
-					rival = await waitForMatchReady(this.socket!, this.username!);
+					rival = await waitForMatchReady(this.socket!);
 					console.log(`${this.socket!.id} ${rival} maçı için HAZIR`);
 				}
 

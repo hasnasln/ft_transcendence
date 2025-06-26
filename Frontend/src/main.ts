@@ -1,28 +1,30 @@
 import './style.css';
 import { router } from './router';
 import { checkPageWidth } from './components/responsive-helper';
-import { checkCurrentUser } from './tokenUtils';
 
 const app = document.getElementById('app') as HTMLElement;
 
-async function initApp()
-{
-  // Sayfa yüklenince hemen token’ı ve payload’u doğrula:
-  const currentUser = await checkCurrentUser();
 
-//const isloggedIn = localStorage.getItem('token');
-//console.log("isloggedIn:", isloggedIn);
+// interface User {Add commentMore actions
+// 	name: string
+// 	mail: string
+// }
 
-	if (app)
-	{
-		if (!currentUser) 
-			window.history.pushState({}, '', '/singin');
-		router();
-		// Popstate event listener'ını ekleyelim
-	}
+// class FakeApi {Add commentMore actions
+// 	getUser(name: string): User {
+// 		return {name: "ahmet", mail: "mustafa@gmail.com"}
+// 	}
+	
+// }
+const isloggedIn = localStorage.getItem('token');
+
+console.log("isloggedIn:", isloggedIn);
+if (app){
+	if (!isloggedIn) 
+		window.history.pushState({}, '', '/singin');
+	router();
+	// Popstate event listener'ını ekleyelim
 }
-
-initApp();
 
 window.addEventListener('popstate', () => {
 	router();

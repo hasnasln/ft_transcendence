@@ -1,37 +1,20 @@
 import { gameInstance, GameMode} from "../play";
 import { io, Socket } from "socket.io-client";
-import { _apiManager } from '../../api/APIManeger';
-import { verifyDevToken } from '../../tokenUtils'; // mock verify fonksiyonunuzun yolu
 
-
-export async function createSocket(): Promise<Socket>
+export function createSocket(): Socket
 {
-  // 1) Token’ı alın
-  const token = _apiManager.getToken();
-  if (!token) {
-    throw new Error('Token bulunamadı. Lütfen giriş yapın.');
-  }
-
-  // (Opsiyonel) client-side’da da kısmi bir doğrulama yapmak isterseniz:
-  const payload = await verifyDevToken(token);
-  if (!payload) {
-    throw new Error('Token geçersiz veya süresi dolmuş.');
-  }
-
-  // 2) Socket.IO bağlantısını auth ile oluşturun
-  const socket = io('http://localhost:3001', {
-    auth: { token }
+  // WebSocket bağlantısı oluşturuluyor
+  const socket = io("http://localhost:3001");
+  
+  socket.on("connect", () => {
+    console.log("Socket connected with ID:", socket.id);
+    socket.emit("username", { username: Math.random() < 0.5 ? "Ayhan1" : "Ayhan2"});
   });
 
-  socket.on('connect', () => {
-    console.log('Socket connected with ID:', socket.id);
-
-  });
-
-  socket.on('connect_error', (err) => {
-    console.error('Socket connection error:', err.message);
-    // Örneğin token geçersizse server 401 dönebilir, burada logout ve redirect yapabilirsiniz
-  });
+  //ilerde böyle olacak:Add commentMore actions
+// export const socket = io("http://localhost:3001", {
+//   auth: { userId: myUserId }
+// });
 
   return socket;
 }
@@ -116,14 +99,14 @@ export class GameInfo
 //   username: string;
 // }
 
-
-export function waitForMatchReady(socket: Socket, username: string): Promise<string>
+export function waitForMatchReady(socket: Socket): Promise<string>
 {
    return new Promise((resolve) =>
     {
-    	socket.on("match-ready", (matchPlayers : {left: string, right: string}) =>
+      socket.on("match-ready", (matchPlayers : {left: {username: string, socketId: string},
+        right: {username: string, socketId: string}}) =>
         {console.log("match-ready emiti geldi");
-          const rival = matchPlayers.left === username ? matchPlayers.right : matchPlayers.left;
+        const rival = matchPlayers.left.socketId === socket.id ? matchPlayers.right.username : matchPlayers.left.username;
           gameInstance.info!.textContent = `${rival} ile eşleştin`;
           gameInstance.startButton!.innerHTML = `${rival} ile oyna !`;
           gameInstance.startButton!.classList.remove("hidden");
