@@ -63,31 +63,19 @@ export class RegisterPage implements IPages {
 		// Implement register logic here
 		// burada kayıt olma isteği atılacak
 		// ve kullanıcıya yönlendirme yapılacak
-		const name = this.getInputValue("name");
-		const surname = this.getInputValue("surname");
 		const username = this.getInputValue("username");
 		const email = this.getInputValue("email");
 		const password = this.getInputValue("password");
 		const repeatPassword = this.getInputValue("repeat_password");
-		// console.log('name: ', name);
-		// console.log('surname: ', surname);
-		// console.log('username: ', username);
-		// console.log('email: ', email);
-		// console.log('password: ', password);
-		// console.log('repeatPassword: ', repeatPassword);
-		if (!name|| !surname || !username || !email || !password || !repeatPassword) {
-			if (!name) this.showError(exmp.getLang('register-errors.required.name'));
-			else if (!surname) this.showError(exmp.getLang('register-errors.required.surname'));
-			else if (!username) this.showError(exmp.getLang('register-errors.required.username'));
+		if (!username || !email || !password || !repeatPassword) {
+			if (!username) this.showError(exmp.getLang('register-errors.required.username'));
 			else if (!email) this.showError(exmp.getLang('register-errors.required.email'));
 			else if (!password) this.showError(exmp.getLang('register-errors.required.password'));
 			else if (!repeatPassword) this.showError(exmp.getLang('register-errors.required.confirmPassword')); 
 			return;
 		} 
-		else if (name.length < 3 || surname.length < 3 || username.length < 3 || password.length < 6) {
-			if (name.length < 3) this.showError(exmp.getLang('register-errors.minlength.name'));
-			else if (surname.length < 3) this.showError(exmp.getLang('register-errors.minlength.surname'));
-			else if (username.length < 3) this.showError(exmp.getLang('register-errors.minlength.username'));
+		else if (username.length < 3 || password.length < 6) {
+			if (username.length < 3) this.showError(exmp.getLang('register-errors.minlength.username'));
 			else if (password.length < 6) this.showError(exmp.getLang('register-errors.minlength.password'));
 			return;
 		} else if (username.length > 20 || password.length > 20) {
@@ -113,8 +101,6 @@ export class RegisterPage implements IPages {
 		// }
 		const x: IApiRegister = 
 		{
-			// name : name,
-			// surname : surname,
 			username : username,
 			email : email,
 			password : password,
@@ -253,8 +239,6 @@ export function renderRegister(container: HTMLElement) {
 
 formContainer.appendChild(singsinginButtonDiv);
 //#region İnput alanları
-	createInput("name", exmp.getLang("register.name"), 'text', formContainer);
-	createInput("surname", exmp.getLang("register.surname"), 'text', formContainer);
 	createInput("username", exmp.getLang("register.username"), 'text', formContainer);
 	createInput("email", exmp.getLang("register.email"), 'email', formContainer);
 	createInput("password", exmp.getLang("register.password"), 'password', formContainer);

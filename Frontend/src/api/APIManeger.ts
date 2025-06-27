@@ -88,6 +88,8 @@ export class APIManager
 			if (body) {
 				options.body = body;
 			}
+			console.log("Fetch URL:", url);
+			console.log("Fetch Options:", options);
 			return fetch(url, options)
 		} catch (error) {
 			console.error('Error in fetch:', error);
@@ -96,13 +98,14 @@ export class APIManager
 	}
 
 
-	public async login(username: string, password: string): Promise<IApiResponseWrapper> {
+	public async login(email: string, password: string): Promise<IApiResponseWrapper> {
 		const result: IApiResponseWrapper = {success: false, message: '', data: null};
 		this.active_pass = password;
+		localStorage.setItem('password', password);
 		try{
 			const response = await this.myFetch(`${this.baseUrl}/login`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
-			}, JSON.stringify({ username, password }));
+			}, JSON.stringify({ "email": email, "password": password }));
 			
 			if (!response.ok){ 
 				result.success = false;
@@ -116,20 +119,15 @@ export class APIManager
 				result.success = true;
 				result.data = data;
 				result.message = 'Login successful';
-				// console.log("Login data:", data);
+				console.log("Login data:", data);
 				this.setToken(data.token);
-				//! uuid kısmı konuşulacak
 				this.uuid = data.uuid;
-				localStorage.setItem('token', data.token);
 				console.log("Token set:", this.getToken());
-				console.log("xx:", data.user.avatar);
-				localStorage.setItem('avatar', data.user.avatar || '');
-				// console.log("data.uzer -----> "	+ JSON.stringify(data.user));
-				localStorage.setItem('user', JSON.stringify(data.user));
-				// const x = localStorage.getItem('user');
-				// const y = JSON.parse(x || '{}');
-				// console.log("localStorage user name:", y.name);
-				// await exmp.setLanguage(data.user.language); // Set language from user data // burada beklemek sorunumuzu çözdü
+				localStorage.setItem('token', data.token);
+				localStorage.setItem('username', data.username);
+				localStorage.setItem('uuid', data.uuid);
+				localStorage.setItem('email', data.email);
+				localStorage.setItem('avatar', data.uuid.at(-1) + '.png'); // Example avatar logic, can be customized
 			} else {
 				result.success = false;
 				result.message = 'Token not found in response';
@@ -228,6 +226,7 @@ export class APIManager
 
 	public async register(registerData: IApiRegister): Promise<IApiResponseWrapper> {
 		const result : IApiResponseWrapper = {success: false, message: '', data: null};
+		console.log("Register data:", registerData);
 		try{
 			const response = await this.myFetch(`${this.baseUrl}/register`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
@@ -249,7 +248,7 @@ export class APIManager
 			result.data = data;
 			return result;
 		} catch (error) {
-			console.error('Error in register:', error);
+			// console.error('Error in register:', error);
 			throw error;
 		}
 	}
@@ -261,19 +260,21 @@ export class APIManager
 	public async updateSomething(name: string, data: string){
 		//! nul olmayan güncellencek - bos olmayan 
 		const x: IApiRegister = {
-			username: '',
-			email: '',
-			password: '',
-			uuid: this.uuid!
+			username: localStorage.getItem('username') || '',
+			email: localStorage.getItem('email') || '',
+			password: localStorage.getItem('password') || '',
+			uuid: this.uuid || '',
 		}
+		console.log(x);
 		if (name === 'password')
 			x.password = data;
 		else if (name === 'email')
 			x.email = data;
-		else if (name === 'nickname')
+		else if (name === 'username')
 			x.username = data;
+		console.log("Update data:", x);
 		try{
-			const response = await this.myFetch(`${this.baseUrl}/update/${name}`, HTTPMethod.POST, {
+			const response = await this.myFetch(`${this.baseUrl}/${this.uuid}`, HTTPMethod.PUT, {
 				'Content-Type': 'application/json',
 			}, JSON.stringify(x));
 
@@ -284,6 +285,12 @@ export class APIManager
 			const dataResponse = await response.json();
 			if (dataResponse.token) {
 				this.setToken(dataResponse.token);
+				this.uuid = dataResponse.uuid;
+				localStorage.setItem('token', dataResponse.token);
+				localStorage.setItem('uuid', JSON.stringify(dataResponse.uuid));
+				localStorage.setItem('username', JSON.stringify(dataResponse.username));
+				localStorage.setItem('email', dataResponse.email);
+				localStorage.setItem('avatar', dataResponse.uuid.at(-1) + '.png'); // Example avatar logic, can be customized
 			} else {
 				throw new Error('Token not found in response');
 			}
@@ -432,4 +439,4 @@ export class APIManager
 }
 
 
-export const _apiManager = APIManager.getInstance('http://localhost:3000/api', 'hasan.com');
+export const _apiManager = APIManager.getInstance('http://auth.transendence.com/api/auth', 'hasan.com');
