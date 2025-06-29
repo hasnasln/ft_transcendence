@@ -87,85 +87,83 @@ export class game
 		this.scoreTable = document.getElementById("score-table");
 		this.setTable = document.getElementById("set-table");
 		this.endMsg = document.getElementById("end-message");
-		this.socket = createSocket();
 		this.newmatchButton = document.getElementById("newmatch-button");
 		this.turnToHomePage = document.getElementById("turnHomePage-button");
 		this.info = document.getElementById("info");
 
+		console.log("connecting to socket.io server...");
+		const onSocketConnection = () => {
+			if (!this.startButton || !this.scoreBoard || !this.setBoard ||
+				!this.scoreTable || !this.setTable || !this.endMsg ||
+				!this.socket || !this.newmatchButton || !this.turnToHomePage || !this.info) {
+				console.log("Bir veya daha fazla HTML elementi bulunamadı. Lütfen HTML dosyasını kontrol edin.");
+				return false;
+			} else {
+				console.log("Tüm HTML elementleri başarıyla yüklendi.");
+				console.log("Oyun sayfası hazırlanıyor.");
 
-		if (!this.startButton || !this.scoreBoard || !this.setBoard ||
-			!this.scoreTable || !this.setTable || !this.endMsg ||
-			!this.socket || !this.newmatchButton || !this.turnToHomePage || !this.info) {
-			console.log("Bir veya daha fazla HTML elementi bulunamadı. Lütfen HTML dosyasını kontrol edin.");
-			return false;
-		} else {
-			console.log("Tüm HTML elementleri başarıyla yüklendi.");
-			console.log("Oyun sayfası hazırlanıyor.");
 
+				this.initializeGameSettings(async (status) => {
+					console.log("connected to socket.io server");
+					console.log(`status geldi, status = {${status.currentGameStarted}, ${status.game_mode}}`);
+					this.gameStatus = status;
+					this.socket!.emit("start", this.gameStatus);
 
-			this.initializeGameSettings(async (status) => {
-				console.log(`status geldi, status = {${status.currentGameStarted}, ${status.game_mode}}`);
-				this.gameStatus = status;
-				this.socket!.emit("start", this.gameStatus);
-
-				let rival: string;
-				if (this.gameStatus.game_mode === "remoteGame") {
-					rival = await waitForMatchReady(this.socket!);
-					console.log(`${this.socket!.id} ${rival} maçı için HAZIR`);
-				}
-
-				// Oyun başlatma butonuna tıklanınca:
-				this.startButton!.addEventListener("click", async () => {
-					console.log(`START A TIKLANDI, içeriği : ${this.startButton!.innerText}`);
-					this.startButton!.classList.add("hidden");
-					if (!this.endMsg) {
-						const a = document.getElementById("end-message")!;
-						a.classList.add("hidden");
-					}
-					else {
-						this.endMsg.classList.add("hidden");
+					let rival: string;
+					if (this.gameStatus.game_mode === "remoteGame") {
+						rival = await waitForMatchReady(this.socket!);
+						console.log(`${this.socket!.id} ${rival} maçı için HAZIR`);
 					}
 
-					if (this.gameStatus.game_mode === "remoteGame")
-						this.info!.textContent = `${rival} bekleniyor ...`;
-					else
-						this.info!.classList.add("hidden");
-					this.newmatchButton!.classList.add("hidden");
-					this.turnToHomePage!.classList.add("hidden");
-
-					if (this.gameStatus.currentGameStarted) {
-						this.reMatch = true;
-						this.cleanOldGame();
-					}
-					this.socket!.emit("ready", false);
-					if (this.gameStatus.game_mode === "remoteGame" && this.reMatch) {
-						const approval = await waitForRematchApproval(this.socket!, rival);
-						if (approval)
-							this.socket!.emit("ready", true);
-						else {
-							this.newmatchButton!.classList.remove("hidden");
-							this.turnToHomePage!.classList.add("hidden");
-							return;
+					// Oyun başlatma butonuna tıklanınca:
+					this.startButton!.addEventListener("click", async () => {
+						console.log(`START A TIKLANDI, içeriği : ${this.startButton!.innerText}`);
+						this.startButton!.classList.add("hidden");
+						if (!this.endMsg) {
+							const a = document.getElementById("end-message")!;
+							a.classList.add("hidden");
 						}
-					}
-					this.gameInfo = new GameInfo(this.gameStatus.game_mode);
-					await waitForGameInfoReady(this.gameInfo, this.socket!);
-					console.log(`${this.socket!.id} için VERİLER HAZIR`);
-					createGame(this.gameInfo);
-					moveButton(document.getElementById("game-wrapper")!, 'left');	// id= game-wrapper
-					if (this.gameStatus.game_mode === "localGame") {
-						moveButton(document.getElementById("game-wrapper")!, 'right');	// id= game-wrapper
-					}
-					this.startGame();				
+						else {
+							this.endMsg.classList.add("hidden");
+						}
+
+						if (this.gameStatus.game_mode === "remoteGame")
+							this.info!.textContent = `${rival} bekleniyor ...`;
+						else
+							this.info!.classList.add("hidden");
+						this.newmatchButton!.classList.add("hidden");
+						this.turnToHomePage!.classList.add("hidden");
+
+						if (this.gameStatus.currentGameStarted) {
+							this.reMatch = true;
+							this.cleanOldGame();
+						}
+						this.socket!.emit("ready", false);
+						if (this.gameStatus.game_mode === "remoteGame" && this.reMatch) {
+							const approval = await waitForRematchApproval(this.socket!, rival);
+							if (approval)
+								this.socket!.emit("ready", true);
+							else {
+								this.newmatchButton!.classList.remove("hidden");
+								this.turnToHomePage!.classList.add("hidden");
+								return;
+							}
+						}
+						this.gameInfo = new GameInfo(this.gameStatus.game_mode);
+						await waitForGameInfoReady(this.gameInfo, this.socket!);
+						console.log(`${this.socket!.id} için VERİLER HAZIR`);
+						createGame(this.gameInfo);
+						moveButton(document.getElementById("game-wrapper")!, 'left');	// id= game-wrapper
+						if (this.gameStatus.game_mode === "localGame") {
+							moveButton(document.getElementById("game-wrapper")!, 'right');	// id= game-wrapper
+						}
+						this.startGame();				
+					});
 				});
-
-			});
-
-
-
-			return true;
+			}
 		}
-
+		this.socket = createSocket(onSocketConnection);
+		return true;
 	}
 
 	public initializeGameSettings(onModeSelected: (status: GameStatus) => void) {

@@ -1,7 +1,7 @@
 import { gameInstance, GameMode} from "../play";
 import { io, Socket } from "socket.io-client";
 
-export function createSocket(): Socket
+export function createSocket(after: any): Socket
 {
   // WebSocket bağlantısı oluşturuluyor
   const socket = io("http://localhost:3001");
@@ -9,6 +9,7 @@ export function createSocket(): Socket
   socket.on("connect", () => {
     console.log("Socket connected with ID:", socket.id);
     socket.emit("username", { username: Math.random() < 0.5 ? "Ayhan1" : "Ayhan2"});
+    after();
   });
 
   //ilerde böyle olacak:Add commentMore actions
