@@ -1,14 +1,27 @@
 import { exmp } from '../languageMeneger';
 import { game } from './play';
+import { _apiManager } from '../api/APIManeger';
+import { ITournament } from '../api/types';
 
 // Recommended way, to include only the icons you need.
 
 
 export class TournamentPage {
 	// private  currentLanguage: string; // Mevcut dili saklamak için
+	private data: ITournament; // Tournament data, initially null
+	private status : boolean = false;
+
 
 
 	constructor() {
+		this.data = 
+		{
+			id: -1,
+			code: '',
+			name: '',
+			admin_id: '',
+			users: [],
+		} // Initialize with undefined
 		// this.currentLanguage = exmp.getLanguage();
 	}
 
@@ -59,25 +72,35 @@ export class TournamentPage {
 		});
 	}
 
-	private hedleStartTournament(): void {
+	private async hedleStartTournament(): Promise<void> {
 		console.log('Starting tournament');
+		const response = await _apiManager.startTournament(this.data.code);
+		if (response.success === true)
+		{
+			this.status = true;
+			this.handeleRefresh();
+		}
+		console.log(response.data);
 	}
 
-	private handeleRefresh(): void {
+	private async handeleRefresh(): Promise<void> {
 		console.log('Refreshing player list');
 		const x = document.getElementById('list-player');
 		if (x) {
 			console.log('Refreshing player list2');
 			x.innerHTML = ''; // Clear the existing list
+			const response = await _apiManager.getTournament(this.data.code);
+			this.data.users = response.data.participants; // Update the tournament data with the new participants
+			if (response.data.tournament_start)
+				this.status = true; // Set status to true if the tournament has started
 			// sadece 3 saniye bekle
 			//! burada refleş işleminden dönen değerler kontorl edlip ona göre buton gözükme işlemi olacak
 			//! şimdilik ilk refleşten sonra direk gözükür durumda.
 			setTimeout(() => {
 				// 3 saniye sonra listeyi güncelle
 				// this.updatePlayerList(x);
-				listPlayers(x); // Re-render the player list
-				let status = true;
-				if (status)
+				listPlayers(x, this.data); // Re-render the player list
+				if (this.status )
 				{
 					const playButton = document.getElementById('play-button');
 					if (playButton) {
@@ -86,30 +109,77 @@ export class TournamentPage {
 				}
 			}, 1000);
 		}
-		
 	}
 
-	private createTournament(container: HTMLElement): void {
+	private async createTournament(container: HTMLElement): Promise<void> {
 		console.log('Creating tournament');
 		const input = document.querySelector('#createInput') as HTMLInputElement;
-		const tournamentId = input.value;
-		console.log(`Creating tournament with ID: ${tournamentId}`);
+		console.log('Turnuva ismi: ', input.value);
+
+		const response = await _apiManager.createTournament(input.value);
+		if (response.success === false) {
+			alert('Tournament created successfully!');
+			return;
+		}
+		const tdata: ITournament = {
+			id: response.data.id,
+			code: response.data.code,
+			name: response.data.name,
+			admin_id: response.data.admin_id,
+			users: response.data.participants
+		}
+		this.data = tdata; // Store the created tournament data
+		console.log('-_-_-_-_-_-_-_->>Tournament created:', tdata);
 		container.innerHTML = ''; // Clear the container
-		ShowTournament(container); // Re-render the tournament section
+		ShowTournament(container, tdata); // Re-render the tournament section
 	}
 
-	private joinRoom(container: HTMLElement): void {
+	private async joinRoom(container: HTMLElement): Promise<void> {
 		const input = document.querySelector('#joinInput') as HTMLInputElement;
 		const tournamentId = input.value;
+
+		let response = await _apiManager.playerJoinTournament(input.value);
+		if (response.success === false) {
+			alert('Tournament created not successfully!');
+			return;
+		} else {
+			response = await _apiManager.getTournament(tournamentId);
+			if (response.success == false)
+				alert("ikinci istekde sıkıntı çıktı")
+		}
+		const tdata: ITournament = {
+			id: response.data.id,
+			code: response.data.code,
+			name: response.data.name,
+			admin_id: response.data.admin_id,
+			users: response.data.participants
+		}
+		this.data = tdata; // Store the created tournament data
 		console.log(`Joining room with ID: ${tournamentId}`);
 		container.innerHTML = ''; // Clear the container
-		ShowTournament(container); // Re-render the tournament section
+		ShowTournament(container, tdata); // Re-render the tournament section
 	}
 
-	private exitTournament(container: HTMLElement): void {
-		console.log('Exiting tournament');
-		container.innerHTML = ''; // Clear the container
-		t_first_section(container); // Re-render the tournament section
+	private async exitTournament(container: HTMLElement): Promise<void> {
+		if (this.data.admin_id === localStorage.getItem('uuid'))
+		{
+			const response = await _apiManager.deleteTournament(this.data.code);
+			console.log(response.message);
+			console.log("Oda yöneticisi tıkladı");
+			console.log('turnuva siliniyor');
+		}
+		else
+		{
+			const response = await _apiManager.playerLeaveTournament(this.data.code);
+			console.log(response.message);
+			console.log("user tıkladı");
+			console.log('Exiting tournament');
+		}
+		if(true)
+		{
+			container.innerHTML = ''; // Clear the container
+			t_first_section(container); // Re-render the tournament section
+		}
 	}
 }
 
@@ -162,6 +232,7 @@ function joinorcreate(container: HTMLElement, id: string, key: string, title: st
 	button.className = "bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3";
 	button.id = key + 'Btn';
 	button.textContent = exmp.getLang(title);
+	button.setAttribute('data-action', key === 'create' ? 'create-tournament' : 'join-room');
 
 	const showError = document.createElement('div');
 	showError.id = key + '_error_message';
@@ -193,29 +264,29 @@ function t_first_section(container: HTMLElement) {
 	wrapper.className = "relative bg-white rounded-[30px] shadow-lg w-[768px] max-w-full min-h-[480px] overflow-hidden transition-all-ease font-montserrat";
 
 
-	// turnuva oluşturma 
-	const createPanel = document.createElement('div');
-	createPanel.id = 'createPanel';
-	createPanel.className = "absolute top-0 right-0 w-1/2 h-full z-[1] flex items-center justify-center";
-	createPanel.innerHTML = `
-	<form class="bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center">
-		<h1 class="text-2xl font-bold mb-2">${exmp.getLang('tournament-first-page.create-title')}</h1>
-		<input type="text" placeholder="${exmp.getLang('tournament-first-page.create-placeholder')}" class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none" id="createInput"/>
-		<button type="button" class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3" id="createBtn">${exmp.getLang('tournament-first-page.create-button')}</button>
-	</form>
-	`;
+	// // turnuva oluşturma 
+	// // const createPanel = document.createElement('div');
+	// // createPanel.id = 'createPanel';
+	// // createPanel.className = "absolute top-0 right-0 w-1/2 h-full z-[1] flex items-center justify-center";
+	// // createPanel.innerHTML = `
+	// // <form class="bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center">
+	// // 	<h1 class="text-2xl font-bold mb-2">${exmp.getLang('tournament-first-page.create-title')}</h1>
+	// // 	<input type="text" placeholder="${exmp.getLang('tournament-first-page.create-placeholder')}" class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none" id="createInput"/>
+	// // 	<button type="button" class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3" id="createBtn">${exmp.getLang('tournament-first-page.create-button')}</button>
+	// // </form>
+	// // `;
 
-	// turnuvaya katılma paneli için
-	const joinPanel = document.createElement('div');
-	joinPanel.id = 'joinPanel';
-	joinPanel.className = "absolute top-0 left-0 w-1/2 h-full z-[1] flex items-center justify-center";
-	joinPanel.innerHTML = `
-	<form class="bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center">
-		<h1 class="text-2xl font-bold mb-2">${exmp.getLang('tournament-first-page.join-title')}</h1>
-		<input type="text" placeholder="${exmp.getLang('tournament-first-page.join-placeholder')}" class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none" id="joinInput"/>
-		<button type="button" class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3" id="joinBtn" >${exmp.getLang('tournament-first-page.join-button')}</button>
-	</form>
-	`;
+	// // turnuvaya katılma paneli için
+	// // const joinPanel = document.createElement('div');
+	// // joinPanel.id = 'joinPanel';
+	// // joinPanel.className = "absolute top-0 left-0 w-1/2 h-full z-[1] flex items-center justify-center";
+	// // joinPanel.innerHTML = `
+	// // <form class="bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center">
+	// // 	<h1 class="text-2xl font-bold mb-2">${exmp.getLang('tournament-first-page.join-title')}</h1>
+	// // 	<input type="text" placeholder="${exmp.getLang('tournament-first-page.join-placeholder')}" class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none" id="joinInput"/>
+	// // 	<button type="button" class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3" id="joinBtn" >${exmp.getLang('tournament-first-page.join-button')}</button>
+	// // </form>
+	// // `;
 
 	function toggleWithJoin(container : HTMLElement) { // join panelini göster
 		container.innerHTML = ''; // Clear the container
@@ -271,9 +342,10 @@ function t_first_section(container: HTMLElement) {
 	toggleWithCreate(fatma); // turnuva oluşturma paneli gizli olacak
 	
 	toggleContainer.appendChild(fatma);
+	
 	joinorcreate(wrapper, 'createPanel', 'create', exmp.getLang('tournament-first-page.create-title'), exmp.getLang('tournament-first-page.create-placeholder'));
-	// wrapper.appendChild(createPanel);
-	// wrapper.appendChild(joinPanel);
+	// // wrapper.appendChild(createPanel);
+	// // wrapper.appendChild(joinPanel);
 	joinorcreate(wrapper, 'joinPanel', 'join', exmp.getLang('tournament-first-page.join-title'), exmp.getLang('tournament-first-page.join-placeholder'));
 	wrapper.appendChild(toggleContainer);
 	container.appendChild(wrapper);
@@ -282,10 +354,10 @@ function t_first_section(container: HTMLElement) {
 	const showJoinBtn = toggleContainer.querySelector('#showJoin') as HTMLButtonElement;
 	
 	// bunlar zaten var
-	const createBtn = createPanel.querySelector('#createBtn') as HTMLButtonElement;
-	const joinBtn = joinPanel.querySelector('#joinBtn') as HTMLButtonElement;
-	createBtn.setAttribute('data-action', 'create-tournament');
-	joinBtn.setAttribute('data-action', 'join-room');
+	// const createBtn = createPanel.querySelector('#createBtn') as HTMLButtonElement;
+	// const joinBtn = joinPanel.querySelector('#joinBtn') as HTMLButtonElement;
+	// createBtn.setAttribute('data-action', 'create-tournament');
+	// joinBtn.setAttribute('data-action', 'join-room');
 
 	// animasyonnnnn ->>>>>>>>>>
 	showCreateBtn.addEventListener('click', () => {
@@ -303,7 +375,6 @@ function t_first_section(container: HTMLElement) {
 		const x = document.getElementById('fatma123') as HTMLElement;
 		x.classList.add('hidden');
 	});
-
 }
 
 function animation(obje: HTMLElement, dir: number, start: number)
@@ -426,7 +497,7 @@ function animation(obje: HTMLElement, dir: number, start: number)
 // }
 
 
-function ShowTournament(container: HTMLElement): void {
+function ShowTournament(container: HTMLElement, tdata: ITournament): void {
 	const div02 = document.createElement('div');
 	div02.id = 'tournament-div02';
 	div02.classList.add(
@@ -444,14 +515,14 @@ function ShowTournament(container: HTMLElement): void {
 		'overflow-x-auto',
 		'scrollbar',
 	);
-	TournamentInformation(div02);
+	TournamentInformation(div02, tdata);
 	
 	container.appendChild(div02);
 
 }
 
 
-function TournamentInformation(container: HTMLElement): void {
+function TournamentInformation(container: HTMLElement, tdata:ITournament): void {
 
 	const tournament01 = document.createElement('div');
 	tournament01.classList.add(
@@ -497,7 +568,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 
 	const title = document.createElement('h1');
-	title.textContent = 'ft_trancendence';
+	title.textContent = tdata.name;
 	title.classList.add(
 		'text-2xl',
 		'font-bold',
@@ -561,7 +632,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 
 	const div02p2 = document.createElement('p');
-	div02p2.textContent = '6510236541';
+	div02p2.textContent = tdata.code;
 	div02p2.classList.add(
 		'text-white',
 		'text-lg',
@@ -592,7 +663,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 
 	const div03p2 = document.createElement('p');
-	div03p2.textContent = 'Ahmet Yılmaz';
+	div03p2.textContent = tdata.users[0].username; //! bu kısım oda yöneticisi olmayanlarda bakılacak
 	div03p2.classList.add(
 		'text-white',
 		'text-lg',
@@ -656,7 +727,7 @@ function TournamentInformation(container: HTMLElement): void {
 	
 	div01.appendChild(div001);
 	// !yöneti ci mi ? --> şimdilik full ture olarak devam ediyorum bacend gelince bakılacak
-	if (true) {
+	if (tdata.admin_id === localStorage.getItem('uuid')) {
 		div01.appendChild(sButton); // Başlat butonunu ekle
 	}
 	div01.appendChild(exit);
@@ -738,7 +809,7 @@ function TournamentInformation(container: HTMLElement): void {
 	);
 
 	//! oyuncuları listele fonksiyonu
-	listPlayers(div12);
+	listPlayers(div12, tdata);
 
 
 	const div13 = document.createElement('div');
@@ -788,17 +859,8 @@ function TournamentInformation(container: HTMLElement): void {
 
 
 
-function listPlayers(container: HTMLElement): void {
-	const players = [
-		{ name: 'Ahmet', score: 100 },
-		{ name: 'Mehmet', score: 200 },
-		{ name: 'Ayşe', score: 150 },
-		{ name: 'Fatma', score: 120 },
-		{ name: 'Ahmet', score: 100 },
-		{ name: 'Mehmet', score: 200 },
-		{ name: 'Ayşe', score: 150 },
-		{ name: 'Fatma', score: 120 },
-	];
+function listPlayers(container: HTMLElement, tdata: ITournament): void {
+	const players = tdata.users 
 
 	players.forEach(player => {
 		const playerDiv = document.createElement('div');
@@ -821,7 +883,7 @@ function listPlayers(container: HTMLElement): void {
 			'hover:scale-[1.02]',
 		);
 		const playerName = document.createElement('p');
-		playerName.textContent = player.name;
+		playerName.textContent = player.username; // Oyuncu ismi
 		playerName.classList.add(
 			'text-white',
 			'text-lg',

@@ -44,7 +44,7 @@ export class APIManager
 {
 	private static instance: APIManager;
 	private baseUrl: string;
-	private url_altarnative: string;
+	private t_url: string;
 	private token: string | null;
 	private active_pass: string | null = null; // aktif pass tutulacak
 	private uuid: string | null = null; // uuid tutulacak, register ve login sonrası gelecek
@@ -52,8 +52,12 @@ export class APIManager
 
 	private constructor(baseUrl: string, url_altarnetive: string, token: string | null = null) {
 		this.baseUrl = baseUrl;
-		this.url_altarnative = url_altarnetive;
-		this.token = token;
+		this.t_url = url_altarnetive;
+		if (token === null) {
+			this.token = localStorage.getItem('token') || null; // token localStorage'dan alınacak
+		} else {
+			this.token = token;
+		}
 	}
 
 	public static getInstance(baseUrl: string, url_altarnetive: string): APIManager {
@@ -194,7 +198,6 @@ export class APIManager
 			console.error('Error in settings:', error);
 			throw error;
 		}
-
 	}
 
 	public async getME(): Promise<any> {
@@ -301,142 +304,193 @@ export class APIManager
 		}
 	}
 
-	public async createTournament(tournamentData: IApiTournament): Promise<any> {
-		try{
-			const response = await this.myFetch(`${this.baseUrl}/tournament`, HTTPMethod.POST, {
-				'Content-Type': 'application/json',
-			}, JSON.stringify(tournamentData));
 
+	//*********************************Turnuva Kısmı************************************/
+	public async createTournament(name: string): Promise<IApiResponseWrapper> {
+		const result: IApiResponseWrapper = {success: false, message: '', data: null};
+		try{
+			const response = await this.myFetch(`${this.t_url}`, HTTPMethod.POST, {
+				'Content-Type': 'application/json',
+			}, JSON.stringify({name: name}));
+			console.log("--------------------Create Tournament response:", response);
 			if (!response.ok){
 				throw new Error('Create Tournament failed');
 			}
 			const data = await response.json();
-			return data;
+			if (!data)
+				console.log("data yok");
+			console.log("Create Tournament data:", data);
+			console.log("1");
+			result.success = true;
+			result.message = data.message || 'Mesaj kısmı boşta';
+			console.log("2");
+			result.data = data.data || null;
+			return result;
 		} catch (error) {
-			console.error('Error in createTournament:', error);
+			console.error('create içerisnde eror var:' + error);
 			throw error;
 		}
 	}
 	
-	public async deleteTournament(tournamentId: string): Promise<any> {
+	public async deleteTournament(tournamentId: string): Promise<IApiResponseWrapper> {
+		const result: IApiResponseWrapper = {success: false, message: '', data: null};
 		try{
-			const response = await this.myFetch(`${this.baseUrl}/tournament/${tournamentId}`, HTTPMethod.DELETE, {
-				'Content-Type': 'application/json',
+			const response = await this.myFetch(`${this.t_url}/${tournamentId}`, HTTPMethod.DELETE, {
 			});
 
-			if (!response.ok){
-				throw new Error('Delete Tournament failed');
+			if (!response.ok) {
+				const errorText = await response.text(); // daha açıklayıcı hata
+				throw new Error(`Delete Tournament failed: ${errorText}`);
 			}
 			const data = await response.json();
-			return data;
+			result.success = true;
+			result.message = data.message;
+			return result;
 		} catch (error) {
 			console.error('Error in deleteTournament:', error);
 			throw error;
 		}
 	}
 
-	public async playerJoinTournament(tournamentId: string): Promise<any> {
+	public async playerJoinTournament(tournamentId: string): Promise<IApiResponseWrapper> {
+		const result: IApiResponseWrapper = {success: false, message: '', data: null};
 		try{
-			const response = await this.myFetch(`${this.baseUrl}/tournament/${tournamentId}`, HTTPMethod.POST, {
-				'Content-Type': 'application/json',
+			const response = await this.myFetch(`${this.t_url}/${tournamentId}/join`, HTTPMethod.POST, {
 			});
 
-			if (!response.ok){
-				throw new Error('Join Tournament failed');
+			if (!response.ok) {
+				const errorText = await response.text(); // daha açıklayıcı hata
+				throw new Error(`Delete Tournament failed: ${errorText}`);
 			}
 			const data = await response.json();
-			return data;
+			result.success = true;
+			result.message = data.message;
+			result.data = data.data;
+			return result;
 		} catch (error) {
 			console.error('Error in playerJoinTournament:', error);
 			throw error;
 		}
 	}
 	
-	public async playerLeaveTournament(tournamentId: string): Promise<any> {
+	public async playerLeaveTournament(tournamentCode: string): Promise<IApiResponseWrapper> {
+		const result: IApiResponseWrapper = {success: false, message: '', data: null};
 		try{
-			const response = await this.myFetch(`${this.baseUrl}/tournament/${tournamentId}`, HTTPMethod.DELETE, {
-				'Content-Type': 'application/json',
+			const response = await this.myFetch(`${this.t_url}/${tournamentCode}/leave`, HTTPMethod.POST, {
+
 			});
 
 			if (!response.ok){
 				throw new Error('Leave Tournament failed');
 			}
 			const data = await response.json();
-			return data;
+			result.success = true;
+			result.message = data.message;
+			result.data = data.data;
+			return result;
 		} catch (error) {
 			console.error('Error in playerLeaveTournament:', error);
 			throw error;
 		}
 	}
 
-	public async getTournament(tournamentId: string): Promise<any> {
+	public async getTournament(tournamentCode: string): Promise<IApiResponseWrapper> {
+		const result: IApiResponseWrapper = {success: false, message: '', data: null};
 		try{
-			const response = await this.myFetch(`${this.baseUrl}/tournament/${tournamentId}`, HTTPMethod.GET, {
+			const response = await this.myFetch(`${this.t_url}/${tournamentCode}`, HTTPMethod.GET, {
 				'Content-Type': 'application/json',
 			});
-
-			if (!response.ok){
-				throw new Error('Get Tournament failed');
+			if (!response.ok)
+			{
+				console.log("getmedi");
 			}
 			const data = await response.json();
-			return data;
+			console.log("gelen:", data);
+			result.success = true;
+			result.message = data.message;
+			result.data = data.data;
+			return result;
 		} catch (error) {
 			console.error('Error in getTournament:', error);
 			throw error;
 		}
 	}
 
-	public async playOnlineGame(): Promise<any> {
+	public async startTournament(tournamentId: string): Promise<IApiResponseWrapper> {
+		const result: IApiResponseWrapper = {success: false, message: '', data: null};
 		try{
-			const response = await this.myFetch(`${this.baseUrl}/play`, HTTPMethod.POST, {
-				'Content-Type': 'application/json',
-			});
-
-			if (!response.ok){
-				throw new Error('Play Online Game failed');
+			const response = await this.myFetch(`${this.t_url}/${tournamentId}/start`, HTTPMethod.POST,
+				{
+				},
+			)
+			if (!response.ok) {
+				const errorText = await response.text(); // daha açıklayıcı hata
+				throw new Error(`Delete Tournament failed: ${errorText}`);
 			}
-			const data = await response.json();
-			return data;
-		} catch (error) {
-			console.error('Error in playOnlineGame:', error);
+			const data = await response.json()
+			result.success = true;
+			result.message = data.message;
+			return result
+		}catch (error){
+			console.error('Error in playerJoinTournament:', error);
 			throw error;
 		}
 	}
+//#region  Şimdilik Grekesiz Kodlar
 
-	public async playWithAI(): Promise<any> {
-		try{
-			const response = await this.myFetch(`${this.baseUrl}/play/ai`, HTTPMethod.POST, {
-				'Content-Type': 'application/json',
-			});
+	// // public async playOnlineGame(): Promise<any> {
+	// // 	try{
+	// // 		const response = await this.myFetch(`${this.baseUrl}/play`, HTTPMethod.POST, {
+	// // 			'Content-Type': 'application/json',
+	// // 		});
 
-			if (!response.ok){
-				throw new Error('Play with AI failed');
-			}
-			const data = await response.json();
-			return data;
-		} catch (error) {
-			console.error('Error in playWithAI:', error);
-			throw error;
-		}
-	}
+	// // 		if (!response.ok){
+	// // 			throw new Error('Play Online Game failed');
+	// // 		}
+	// // 		const data = await response.json();
+	// // 		return data;
+	// // 	} catch (error) {
+	// // 		console.error('Error in playOnlineGame:', error);
+	// // 		throw error;
+	// // 	}
+	// // }
 
-	public async exitGame(): Promise<any> {
-		try{
-			const response = await this.myFetch(`${this.baseUrl}/play`, HTTPMethod.DELETE, {
-				'Content-Type': 'application/json',
-			});
+	// // public async playWithAI(): Promise<any> {
+	// // 	try{
+	// // 		const response = await this.myFetch(`${this.baseUrl}/play/ai`, HTTPMethod.POST, {
+	// // 			'Content-Type': 'application/json',
+	// // 		});
 
-			if (!response.ok){
-				throw new Error('Exit  Game failed');
-			}
-			const data = await response.json();
-			return data;
-		} catch (error) {
-			console.error('Error in exitGame:', error);
-			throw error;
-		}
-	}
+	// // 		if (!response.ok){
+	// // 			throw new Error('Play with AI failed');
+	// // 		}
+	// // 		const data = await response.json();
+	// // 		return data;
+	// // 	} catch (error) {
+	// // 		console.error('Error in playWithAI:', error);
+	// // 		throw error;
+	// // 	}
+	// // }
+
+	// // public async exitGame(): Promise<any> {
+	// // 	try{
+	// // 		const response = await this.myFetch(`${this.baseUrl}/play`, HTTPMethod.DELETE, {
+	// // 			'Content-Type': 'application/json',
+	// // 		});
+
+	// // 		if (!response.ok){
+	// // 			throw new Error('Exit  Game failed');
+	// // 		}
+	// // 		const data = await response.json();
+	// // 		return data;
+	// // 	} catch (error) {
+	// // 		console.error('Error in exitGame:', error);
+	// // 		throw error;
+	// // 	}
+	// // }
+
+//#endregion
 }
 
 
-export const _apiManager = APIManager.getInstance('http://auth.transendence.com/api/auth', 'hasan.com');
+export const _apiManager = APIManager.getInstance('http://auth.transendence.com/api/auth', 'http://tournament.transendence.com/api/tournament');

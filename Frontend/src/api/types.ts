@@ -151,5 +151,18 @@ export interface ILogoutRequest {
 
 //! token hederda olacğı için istek içerisinden tokenlar silinecek
 
+interface ITournamentUser {
+	user_id: string;
+	username: string;
+}
+
+export interface ITournament{
+	id: number;
+	code: string; // Tournament code
+	name: string; // Tournament name
+	admin_id: string; // Admin user ID
+	users: ITournamentUser[]; // Users in the tournament
+}
+
 
 
