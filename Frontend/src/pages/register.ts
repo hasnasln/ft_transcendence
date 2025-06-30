@@ -8,11 +8,9 @@ export class RegisterPage implements IPages {
 
     constructor() {
         this.languageChangeHandler = (lang: string) => {
-            const container = document.getElementById('register_main');
-            if (container) {
-                container.innerHTML = '';
-                renderRegister(container);
-            }
+            console.log(`Language changed to: ${lang}`);
+            // Language change is handled by page reload in dropdown
+            // No need to re-render here to avoid infinite loops
         };
     }
 
@@ -22,113 +20,19 @@ export class RegisterPage implements IPages {
 			return;
 		}
 		exmp.addLanguageChangeListener(this.languageChangeHandler);
-		renderRegister(container);
-		requestAnimationFrame(() => {
-			this.init();
+		exmp.waitForLoad().then(() => {
+			renderRegister(container);
 		});
 	}
 
 	destroy(): void {
 		exmp.removeLanguageChangeListener(this.languageChangeHandler);
-		document.getElementById("register_main")?.removeEventListener('click', this.mainClikHandler);
 	}
 
-	init(): void {
-		document.getElementById("register_main")?.addEventListener('click', this.mainClikHandler);
-	}
-
-	private mainClikHandler = (event: MouseEvent) => {
-		const target = event.target as HTMLElement;
-			const action = target.getAttribute('data-action');
-
-			if (!action) return;
-			switch (action) {
-				case 'register':
-					this.handleRegister();
-					break;
-				case 'login':
-					this.handleLogin();
-					break;
-				default:
-					console.warn(`Unknown action: ${action}`);
-			}
-	}
-
-	private showError(message: string): void {
-		const errorDiv = document.getElementById('error-message');
-		if (errorDiv) {
-			errorDiv.textContent = message;
-			errorDiv.style.visibility = 'visible';
-		} else {
-			console.error('Error message div not found');
-		}
-	}
-
-	private getInputValue(id: string): string | null {
-		const input = document.getElementById(id) as HTMLInputElement | null;
-		return input ? input.value.trim() : null;
-	}
-
-	async handleRegister(): Promise	<void> {
-		const username = this.getInputValue("username");
-		const email = this.getInputValue("email");
-		const password = this.getInputValue("password");
-		const repeatPassword = this.getInputValue("repeat_password");
-		
-		if (!username || !email || !password || !repeatPassword) {
-			if (!username) this.showError(exmp.getLang('register-errors.required.username'));
-			else if (!email) this.showError(exmp.getLang('register-errors.required.email'));
-			else if (!password) this.showError(exmp.getLang('register-errors.required.password'));
-			else if (!repeatPassword) this.showError(exmp.getLang('register-errors.required.confirmPassword')); 
-			return;
-		} 
-		
-		if (username.length < 3 || password.length < 6) {
-			if (username.length < 3) this.showError(exmp.getLang('register-errors.minlength.username'));
-			else if (password.length < 6) this.showError(exmp.getLang('register-errors.minlength.password'));
-			return;
-		}
-		
-		if (username.length > 20 || password.length > 20) {
-			if (username.length > 20) this.showError(exmp.getLang('register-errors.maxlength.username'));
-			else if (password.length > 20) this.showError(exmp.getLang('register-errors.maxlength.password'));
-			return;
-		}
-		
-		if (!/^[a-zA-Z0-9_.]+@[a-zA-Z0-9_.]+\.[a-zA-Z]{2,}$/.test(email)) {
-			this.showError(exmp.getLang('register-errors.invalidCharacters.email'));
-			return;
-		}
-		
-		if (!/^[a-zA-Z0-9_.]+$/.test(username)) {
-			this.showError(exmp.getLang('register-errors.invalidCharacters.username'));
-			return;
-		}
-		
-		if (password !== repeatPassword) {
-			this.showError(exmp.getLang('register-errors.passwordMismatch'));
-			return;
-		}
-
-		const registerData: IApiRegister = { username, email, password };
-		
-		try{
-			const response = await _apiManager.register(registerData);
-			if (!response.success) {
-				this.showError(response.message || exmp.getLang('register.registerFailed'));
-				return;
-			}
-			history.pushState(null, '', '/singin');
-			window.dispatchEvent(new PopStateEvent('popstate'));
-		} catch (error: any) {
-			console.error('Error during registration:', error);
-		}
-	}
-
-	handleLogin(): void {
-		history.pushState(null, '', '/singin');
-		window.dispatchEvent(new PopStateEvent('popstate'));
-	}
+    handleLogin(): void {
+        history.pushState(null, '', '/singin');
+        window.dispatchEvent(new PopStateEvent('popstate'));
+    }
 }
 
 export function renderRegister(container: HTMLElement): void {
@@ -326,13 +230,39 @@ export function renderRegister(container: HTMLElement): void {
             width: 100%;
         }
         .error-premium {
-            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
-            color: white;
-            padding: 12px 16px;
+            background: rgba(239, 68, 68, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-left: 4px solid #ef4444;
             border-radius: 12px;
-            font-weight: 600;
-            box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 16px 20px 16px 50px;
+            color: #dc2626;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: 
+                0 8px 32px rgba(239, 68, 68, 0.1),
+                0 4px 16px rgba(0, 0, 0, 0.05);
+            position: relative;
+            animation: slideInFromTop 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        @keyframes slideInFromTop {
+            0% { 
+                opacity: 0; 
+                transform: translateY(-20px) scale(0.95); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+        .error-premium::before {
+            content: '⚠';
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #ef4444;
         }
         `;
         document.head.appendChild(style);
@@ -353,6 +283,7 @@ export function renderRegister(container: HTMLElement): void {
     registerForm.id = "register-form";
     registerForm.className = "flex flex-col space-y-8";
     registerForm.autocomplete = "off";
+    registerForm.noValidate = true;
 
     const registerTitle = document.createElement("h2");
     registerTitle.className = "text-4xl font-extrabold text-center mb-8 title-gradient";
@@ -362,28 +293,24 @@ export function renderRegister(container: HTMLElement): void {
     regUsername.type = "text";
     regUsername.id = "username";
     regUsername.placeholder = exmp.getLang("register.username") || "Username";
-    regUsername.required = true;
     regUsername.className = "input-premium w-full";
 
     const regEmail = document.createElement("input");
-    regEmail.type = "email";
+    regEmail.type = "text";
     regEmail.id = "email";
     regEmail.placeholder = exmp.getLang("register.email") || "Email";
-    regEmail.required = true;
     regEmail.className = "input-premium w-full";
 
     const regPassword = document.createElement("input");
     regPassword.type = "password";
     regPassword.id = "password";
     regPassword.placeholder = exmp.getLang("register.password") || "Şifre";
-    regPassword.required = true;
     regPassword.className = "input-premium w-full";
 
     const regRepeat = document.createElement("input");
     regRepeat.type = "password";
     regRepeat.id = "repeat_password";
     regRepeat.placeholder = exmp.getLang("register.confirmPassword") || "Şifre Tekrar";
-    regRepeat.required = true;
     regRepeat.className = "input-premium w-full";
 
     const errorDiv = document.createElement("div");
@@ -423,5 +350,81 @@ export function renderRegister(container: HTMLElement): void {
     showLoginBtn.onclick = () => {
         history.pushState({}, '', '/singin');
         window.dispatchEvent(new Event('popstate'));
+    };
+
+    registerForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const username = (regUsername.value || "").trim();
+        const email = (regEmail.value || "").trim();
+        const password = (regPassword.value || "").trim();
+        const repeatPassword = (regRepeat.value || "").trim();
+        
+        if (!username || !email || !password || !repeatPassword) {
+            if (!username) errorDiv.textContent = exmp.getLang('register-errors.required.username');
+            else if (!email) errorDiv.textContent = exmp.getLang('register-errors.required.email');
+            else if (!password) errorDiv.textContent = exmp.getLang('register-errors.required.password');
+            else if (!repeatPassword) errorDiv.textContent = exmp.getLang('register-errors.required.confirmPassword');
+            errorDiv.style.visibility = "visible";
+            return;
+        }
+        
+        if (username.length < 3 || password.length < 6) {
+            if (username.length < 3) errorDiv.textContent = exmp.getLang('register-errors.minlength.username');
+            else if (password.length < 6) errorDiv.textContent = exmp.getLang('register-errors.minlength.password');
+            errorDiv.style.visibility = "visible";
+            return;
+        }
+        
+        if (username.length > 20 || password.length > 20) {
+            if (username.length > 20) errorDiv.textContent = exmp.getLang('register-errors.maxlength.username');
+            else if (password.length > 20) errorDiv.textContent = exmp.getLang('register-errors.maxlength.password');
+            errorDiv.style.visibility = "visible";
+            return;
+        }
+        
+        const isValidEmail = (email: string): boolean => {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        };
+        
+        if (!isValidEmail(email)) {
+            errorDiv.textContent = exmp.getLang('register-errors.invalidCharacters.email');
+            errorDiv.style.visibility = "visible";
+            return;
+        }
+        
+        if (!/^[a-zA-Z0-9_.]+$/.test(username)) {
+            errorDiv.textContent = exmp.getLang('register-errors.invalidCharacters.username');
+            errorDiv.style.visibility = "visible";
+            return;
+        }
+        
+        if (password !== repeatPassword) {
+            errorDiv.textContent = exmp.getLang('register-errors.passwordMismatch');
+            errorDiv.style.visibility = "visible";
+            return;
+        }
+
+        const registerData: IApiRegister = { username, email, password };
+        
+        try {
+            const response = await _apiManager.register(registerData);
+            if (!response.success) {
+                const errorKey = response.message || 'registerFailed';
+                const errorMessage = exmp.getLang(`register-errors.${errorKey}`) || 
+                                   exmp.getLang('register-errors.registerFailed');
+                errorDiv.textContent = errorMessage;
+                errorDiv.style.visibility = "visible";
+                return;
+            }
+            
+            errorDiv.style.visibility = "hidden";
+            history.pushState(null, '', '/singin');
+            window.dispatchEvent(new PopStateEvent('popstate'));
+        } catch (error: any) {
+            errorDiv.textContent = exmp.getLang('register-errors.networkError');
+            errorDiv.style.visibility = "visible";
+            console.error('Registration error:', error);
+        }
     };
 }
