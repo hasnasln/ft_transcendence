@@ -3,7 +3,8 @@
 		"register-b": "Kayıt Ol",
 		"email-or-nickname-i": "E-posta",
 		"passwor-i": "Şifre",
-		"login-b": "Giriş Yap"
+		"login-b": "Giriş Yap",
+		"no-account": "Hesabınız yok mu?"
 	},
 	"singin-success": "Giriş başarılı! Yönlendiriliyorsunuz...",
 	"singin-errors": {
@@ -29,17 +30,6 @@
 		"confirm-password-placeholder": "Şifrenizi tekrar giriniz",
 		"have-account": "Zaten hesabınız var mı?",
 		"signin-link": "Buradan giriş yapın"
-	},
-	"signin": {
-		"register-b": "Kayıt Ol",
-		"email-or-nickname-i": "E-posta",
-		"passwor-i": "Şifre",
-		"login-b": "Giriş Yap",
-		"email-placeholder": "E-posta adresinizi giriniz",
-		"password-placeholder": "Şifrenizi girin",
-		"no-account": "Hesabınız yok mu?",
-		"register-link": "Hesap oluştur",
-		"welcome": "Tekrar Hoşgeldiniz",
 	},
 	"register-success": "Kayıt başarılı! Lütfen giriş yapın.",
 	"register-errors": {

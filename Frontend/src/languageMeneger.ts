@@ -1,9 +1,10 @@
 const en = {
-    "signin": {
+    "singin": {
         "register-b": "Register",
         "email-or-nickname-i": "Email or Nickname",
         "passwor-i": "Password",
-        "login-b": "Login"
+        "login-b": "Login",
+		"no-account": "Don't have an account?"
     },
     "signin-success": "Login successful! Redirecting...",
     "signin-errors": {
@@ -156,7 +157,8 @@ const tr  = {
 		"register-b": "Kayıt Ol",
 		"email-or-nickname-i": "E-posta",
 		"passwor-i": "Şifre",
-		"login-b": "Giriş Yap"
+		"login-b": "Giriş Yap",
+		"no-account": "Hesabınız yok mu?"
 	},
 	"singin-success": "Giriş başarılı! Yönlendiriliyorsunuz...",
 	"singin-errors": {
@@ -316,7 +318,8 @@ const fr = {
         "register-b": "S'inscrire",
         "email-or-nickname-i": "E-mail ou Pseudo",
         "passwor-i": "Mot de passe",
-        "login-b": "Se connecter"
+        "login-b": "Se connecter",
+		"no-account": "Vous n'avez pas de compte ?"
     },
     "singin-success": "Connexion réussie ! Redirection...",
     "singin-errors": {
