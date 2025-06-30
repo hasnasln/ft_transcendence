@@ -6,14 +6,17 @@ const en = {
         "login-b": "Login",
 		"no-account": "Don't have an account?"
     },
-    "signin-success": "Login successful! Redirecting...",
-    "signin-errors": {
+    "singin-success": "Login successful! Redirecting...",
+    "singin-errors": {
         "required": {
             "email": "Email or Nickname is required",
             "password": "Password is required"
         },
+        "invalid": {
+            "email": "Invalid email format"
+        },
         "INVALID_CREDENTIALS": "Invalid email/nickname or password",
-        "serverError": "Server error, please try again later"
+        "networkError": "Network connection error, please check your internet connection"
     },
     "register": {
         "title": "Register",
@@ -56,7 +59,8 @@ const en = {
             "username": "This username is already taken",
             "email": "This email is already registered"
         },
-        "serverError": "Server error, please try again later"
+        "registerFailed": "Registration failed",
+        "networkError": "Network connection error, please check your internet connection"
     },
     "home": {
         "play-b": "Play Now",
@@ -166,8 +170,11 @@ const tr  = {
 			"email": "E-posta veya Nickname gerekli",
 			"password": "Şifre gerekli"
 		},
+		"invalid": {
+			"email": "Geçersiz e-posta formatı"
+		},
 		"INVALID_CREDENTIALS": "Geçersiz e-posta/nickname veya şifre",
-		"serverError": "Sunucu hatası, lütfen daha sonra tekrar deneyin"
+		"networkError": "Ağ bağlantı hatası, internet bağlantınızı kontrol edin"
 	},
 	"register": {
 		"title": "Kayıt Ol",
@@ -210,7 +217,12 @@ const tr  = {
 			"username": "Bu kullanıcı adı zaten alınmış",
 			"email": "Bu e-posta zaten kayıtlı"
 		},
-		"serverError": "Sunucu hatası, lütfen daha sonra tekrar deneyin"
+		"USERNAME_ALREADY_EXISTS": "Bu kullanıcı adı zaten alınmış",
+		"EMAIL_ALREADY_EXISTS": "Bu e-posta zaten kayıtlı",
+		"WEAK_PASSWORD": "Şifre çok zayıf, daha güçlü bir şifre seçin",
+		"registerFailed": "Kayıt işlemi başarısız",
+		"serverError": "Sunucu hatası, lütfen daha sonra tekrar deneyin",
+		"networkError": "Ağ bağlantı hatası, internet bağlantınızı kontrol edin"
 	},
 
 	"home":{
@@ -327,8 +339,11 @@ const fr = {
             "email": "E-mail ou Pseudo requis",
             "password": "Mot de passe requis"
         },
+        "invalid": {
+            "email": "Format d'e-mail invalide"
+        },
         "INVALID_CREDENTIALS": "E-mail/pseudo ou mot de passe invalide",
-        "serverError": "Erreur serveur, veuillez réessayer plus tard"
+        "networkError": "Erreur de connexion réseau, vérifiez votre connexion internet"
     },
     "register": {
         "title": "S'inscrire",
@@ -371,7 +386,12 @@ const fr = {
             "username": "Ce nom d'utilisateur est déjà pris",
             "email": "Cet e-mail est déjà enregistré"
         },
-        "serverError": "Erreur serveur, veuillez réessayer plus tard"
+        "USERNAME_ALREADY_EXISTS": "Ce nom d'utilisateur est déjà pris",
+        "EMAIL_ALREADY_EXISTS": "Cet e-mail est déjà enregistré",
+        "WEAK_PASSWORD": "Le mot de passe est trop faible, choisissez un mot de passe plus fort",
+        "registerFailed": "Échec de l'inscription",
+        "serverError": "Erreur serveur, veuillez réessayer plus tard",
+        "networkError": "Erreur de connexion réseau, vérifiez votre connexion internet"
     },
     "home": {
         "play-b": "Jouer maintenant",

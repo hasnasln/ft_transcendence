@@ -4,55 +4,35 @@
 		"email-or-nickname-i": "E-mail ou Pseudo",
 		"passwor-i": "Mot de passe",
 		"login-b": "Se connecter",
-		"email-placeholder": "Entrez votre adresse e-mail",
-		"password-placeholder": "Entrez votre mot de passe",
-		"no-account": "Vous n'avez pas de compte?",
-		"register-link": "Créer un compte",
-		"welcome": "Bon retour",
+		"no-account": "Vous n'avez pas de compte?"
 	},
-	"singin-success": "Connexion réussie ! Redirection...",
 	"singin-errors": {
 		"required": {
 			"email": "E-mail ou Pseudo requis",
 			"password": "Mot de passe requis"
 		},
+		"invalid": {
+			"email": "Format d'e-mail invalide"
+		},
 		"INVALID_CREDENTIALS": "E-mail/pseudo ou mot de passe invalide",
-		"serverError": "Erreur serveur, veuillez réessayer plus tard"
+		"networkError": "Erreur de connexion réseau, vérifiez votre connexion internet"
 	},
 	"register": {
-		"title": "S'inscrire",
-		"singin-b": "Se connecter",
-		"name": "Entrez votre nom",
-		"surname": "Entrez votre prénom",
 		"username": "Entrez votre nom d'utilisateur",
 		"email": "Entrez votre e-mail",
 		"password": "Entrez votre mot de passe",
-		"confirmPassword": "Confirmez le mot de passe",
-		"register": "S'inscrire",
-		"username-placeholder": "Choisissez un nom d'utilisateur",
-		"email-placeholder": "Entrez votre adresse e-mail",
-		"password-placeholder": "Créez un mot de passe",
-		"confirm-password": "Confirmez le mot de passe",
-		"confirm-password-placeholder": "Répétez votre mot de passe",
-		"have-account": "Vous avez déjà un compte?",
-		"signin-link": "Connectez-vous ici"
+		"confirmPassword": "Confirmez le mot de passe"
 	},
-	"register-success": "Inscription réussie ! Veuillez vous connecter.",
 	"register-errors": {
 		"required": {
-			"name": "Le nom est requis",
-			"surname": "Le prénom est requis",
 			"username": "Le nom d'utilisateur est requis",
 			"email": "L'e-mail est requis",
 			"password": "Le mot de passe est requis",
 			"confirmPassword": "La confirmation du mot de passe est requise"
 		},
 		"minlength": {
-			"name": "Le nom doit contenir au moins 3 caractères",
-			"surname": "Le prénom doit contenir au moins 3 caractères",
 			"username": "Le nom d'utilisateur doit contenir au moins 3 caractères",
-			"password": "Le mot de passe doit contenir au moins 6 caractères",
-			"confirmPassword": "La confirmation du mot de passe doit contenir au moins 6 caractères"
+			"password": "Le mot de passe doit contenir au moins 6 caractères"
 		},
 		"maxlength": {
 			"username": "Le nom d'utilisateur doit contenir au plus 20 caractères",
@@ -63,11 +43,8 @@
 			"email": "Format d'e-mail invalide"
 		},
 		"passwordMismatch": "Les mots de passe ne correspondent pas",
-		"exists": {
-			"username": "Ce nom d'utilisateur est déjà pris",
-			"email": "Cet e-mail est déjà enregistré"
-		},
-		"serverError": "Erreur serveur, veuillez réessayer plus tard"
+		"registerFailed": "Échec de l'inscription",
+		"networkError": "Erreur de connexion réseau, vérifiez votre connexion internet"
 	},
 	"home": {
 		"play-b": "Jouer maintenant",
@@ -83,27 +60,14 @@
 		"save-button": "Enregistrer les paramètres",
 		"saving": "Enregistrement..."
 	},
-	"colors": {
-		"red": "Rouge",
-		"green": "Vert",
-		"blue": "Bleu",
-		"yellow": "Jaune",
-		"pink": "Rose",
-		"cyan": "Cyan",
-		"orange": "Orange",
-		"purple": "Violet",
-		"rose": "Rose foncé"
-	},
 	"profile": {
-		"title": "Paramètres de profil",
-		"username": "Nom d'utilisateur"
+		"title": "Paramètres de profil"
 	},
 	"profile-avatar-change-hint": "Cliquez pour changer d'avatar",
 	"profile-avatar-select-title": "Sélectionner un avatar",
 	"profile-avatar-select-subtitle": "Choisissez votre avatar préféré",
 	"profile-avatar-cancel": "Annuler",
 	"profile-avatar-success": "Avatar changé avec succès!",
-	"profile-info-title": "Informations de profil",
 	"profile-info-settings-title": "Paramètres de profil",
 	"profile-info-settings-subtitle": "Mettez à jour vos informations de compte",
 	"profile-settings": {
@@ -113,8 +77,7 @@
 		"email-placeholder": "Nouvel e-mail",
 		"password": "Mot de passe",
 		"password-placeholder": "Nouveau mot de passe",
-		"confirmPassword": "Confirmer le mot de passe",
-		"confirmPassword-placeholder": "Confirmer le nouveau mot de passe",
+		"old-password-placeholder": "Ancien mot de passe",
 		"update": "Mettre à jour"
 	},
 	"toast": {

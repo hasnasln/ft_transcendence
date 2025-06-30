@@ -6,14 +6,16 @@
 		"login-b": "Giriş Yap",
 		"no-account": "Hesabınız yok mu?"
 	},
-	"singin-success": "Giriş başarılı! Yönlendiriliyorsunuz...",
 	"singin-errors": {
 		"required": {
 			"email": "E-posta veya Nickname gerekli",
 			"password": "Şifre gerekli"
 		},
+		"invalid": {
+			"email": "Geçersiz e-posta formatı"
+		},
 		"INVALID_CREDENTIALS": "Geçersiz e-posta/nickname veya şifre",
-		"serverError": "Sunucu hatası, lütfen daha sonra tekrar deneyin"
+		"networkError": "Ağ bağlantı hatası, internet bağlantınızı kontrol edin"
 	},
 	"register": {
 		"title": "Kayıt Ol",
@@ -61,7 +63,12 @@
 			"username": "Bu kullanıcı adı zaten alınmış",
 			"email": "Bu e-posta zaten kayıtlı"
 		},
-		"serverError": "Sunucu hatası, lütfen daha sonra tekrar deneyin"
+		"USERNAME_ALREADY_EXISTS": "Bu kullanıcı adı zaten alınmış",
+		"EMAIL_ALREADY_EXISTS": "Bu e-posta zaten kayıtlı",
+		"WEAK_PASSWORD": "Şifre çok zayıf, daha güçlü bir şifre seçin",
+		"registerFailed": "Kayıt işlemi başarısız",
+		"serverError": "Sunucu hatası, lütfen daha sonra tekrar deneyin",
+		"networkError": "Ağ bağlantı hatası, internet bağlantınızı kontrol edin"
 	},
 
 	"home":{

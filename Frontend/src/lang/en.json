@@ -4,60 +4,35 @@
 		"email-or-nickname-i": "Email or Nickname",
 		"passwor-i": "Password",
 		"login-b": "Login",
-		"email-placeholder": "Enter your email address",
-		"password-placeholder": "Enter your password",
-		"remember": "Remember me",
-		"forgot-password": "Forgot password?",
-		"no-account": "Don't have an account?",
-		"register-link": "Create account",
-		"welcome": "Welcome Back",
-		"subtitle": "Sign in to your account to continue"
+		"no-account": "Don't have an account?"
 	},
-	"singin-success": "Login successful! Redirecting...",
 	"singin-errors": {
 		"required": {
 			"email": "Email or Nickname is required",
 			"password": "Password is required"
 		},
+		"invalid": {
+			"email": "Invalid email format"
+		},
 		"INVALID_CREDENTIALS": "Invalid email/nickname or password",
-		"serverError": "Server error, please try again later"
+		"networkError": "Network connection error, please check your internet connection"
 	},
 	"register": {
-		"title": "Register",
-		"singin-b": "Sign In",
-		"name": "Enter Name",
-		"surname": "Enter Surname",
 		"username": "Enter Username",
 		"email": "Enter Email",
 		"password": "Enter Password",
-		"confirmPassword": "Confirm Password",
-		"register": "Register",
-		"username-placeholder": "Choose a username",
-		"email-placeholder": "Enter your email address",
-		"password-placeholder": "Create a password",
-		"confirm-password": "Confirm Password",
-		"confirm-password-placeholder": "Repeat your password",
-		"agree-terms": "I agree with the",
-		"terms-conditions": "terms and conditions",
-		"have-account": "Already have an account?",
-		"signin-link": "Sign in here"
+		"confirmPassword": "Confirm Password"
 	},
-	"register-success": "Registration successful! Please log in.",
 	"register-errors": {
 		"required": {
-			"name": "Name is required",
-			"surname": "Surname is required",
 			"username": "Username is required",
 			"email": "Email is required",
 			"password": "Password is required",
 			"confirmPassword": "Confirm Password is required"
 		},
 		"minlength": {
-			"name": "Name must be at least 3 characters",
-			"surname": "Surname must be at least 3 characters",
 			"username": "Username must be at least 3 characters",
-			"password": "Password must be at least 6 characters",
-			"confirmPassword": "Confirm Password must be at least 6 characters"
+			"password": "Password must be at least 6 characters"
 		},
 		"maxlength": {
 			"username": "Username must be at most 20 characters",
@@ -72,7 +47,11 @@
 			"username": "This username is already taken",
 			"email": "This email is already registered"
 		},
-		"serverError": "Server error, please try again later"
+		"USERNAME_ALREADY_EXISTS": "This username is already taken",
+		"EMAIL_ALREADY_EXISTS": "This email is already registered",
+		"WEAK_PASSWORD": "Password is too weak, choose a stronger password",
+		"registerFailed": "Registration failed",
+		"networkError": "Network connection error, please check your internet connection"
 	},
 	"home": {
 		"play-b": "Play Now",
@@ -88,20 +67,8 @@
 		"save-button": "Save Settings",
 		"saving": "Saving..."
 	},
-	"colors": {
-		"red": "Red",
-		"green": "Green",
-		"blue": "Blue",
-		"yellow": "Yellow",
-		"pink": "Pink",
-		"cyan": "Cyan",
-		"orange": "Orange",
-		"purple": "Purple",
-		"rose": "Rose"
-	},
 	"profile": {
-		"title": "Profile Settings",
-		"username": "Username"
+		"title": "Profile Settings"
 	},
 	"profile-avatar-change-hint": "Click to change avatar",
 	"profile-avatar-select-title": "Select Avatar",
@@ -117,10 +84,7 @@
 		"email": "Email",
 		"email-placeholder": "New Email",
 		"password": "Password",
-		"password-placeholder": "New Password",
-		"confirmPassword": "Confirm Password",
-		"confirmPassword-placeholder": "Confirm New Password",
-		"update": "Update"
+		"password-placeholder": "New Password"
 	},
 	"toast": {
 		"success": {
