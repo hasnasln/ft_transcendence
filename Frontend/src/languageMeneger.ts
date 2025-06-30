@@ -74,6 +74,13 @@ const en = {
         "title": "Profile Settings",
         "username": "Username"
     },
+	"profile-avatar-change-hint": "Click to change avatar",
+    "profile-avatar-select-title": "Select Avatar",
+    "profile-avatar-select-subtitle": "Choose your favorite avatar",
+    "profile-avatar-cancel": "Cancel",
+    "profile-avatar-success": "Avatar changed successfully!",
+    "profile-info-title": "Profile Information",
+    "profile-info-settings-title": "Profile Settings",
     "profile-settings": {
         "username": "Username",
         "username-placeholder": "New Username",
@@ -120,6 +127,27 @@ const en = {
         "continue-game": "Continue Game",
         "new-game": "Start New Game",
         "sets": "SETS!"
+    },
+	toast: {
+        success: {
+            "username-updated": "Username updated successfully! ✨",
+            "email-updated": "Email updated successfully! 📧",
+            "password-updated": "Password updated successfully! 🔒"
+        },
+        error: {
+            "field-required": "Please enter a value!",
+            "old-password-field-missing": "Old password field not found!",
+            "new-password-field-missing": "New password field not found!",
+            "old-password-required": "Please enter your old password!",
+            "new-password-required": "Please enter your new password!",
+            "password-min-length": "New password must be at least 3 characters!",
+            "old-password-incorrect": "Old password is incorrect!",
+            "username-update-failed": "Username could not be updated!",
+            "email-update-failed": "Email could not be updated!",
+            "password-update-failed": "Password could not be updated!",
+            "update-error": "An error occurred during update!",
+            "password-update-error": "An error occurred while updating password!"
+        }
     }
 }
 
@@ -200,6 +228,13 @@ const tr  = {
 		"title": "Profil Ayarları",
 		"username": "Kullanıcı Adı"
 	},
+	"profile-avatar-change-hint": "Avatarı değiştirmek için tıklayın",
+	"profile-avatar-select-title": "Avatar Seçin",
+	"profile-avatar-select-subtitle": "Favori avatarınızı seçin",
+	"profile-avatar-cancel": "İptal",
+	"profile-avatar-success": "Avatar başarıyla değiştirildi!",
+	"profile-info-title": "Profil Bilgileri",
+	"profile-info-settings-title": "Profil Ayarları",
 	"profile-settings": {
 		"username": "Kullanıcı Adı",
 		"username-placeholder": "Yeni Kullanıcı Adı",
@@ -251,6 +286,27 @@ const tr  = {
 		"continue-game": "Oyuna Devam Et",
 		"new-game": "Yeni Oyun Başlat",
 		"sets": "SETLER",
+	},
+	"toast": {
+		"success": {
+			"username-updated": "Kullanıcı adı başarıyla güncellendi! ✨",
+			"email-updated": "Email başarıyla güncellendi! 📧",
+			"password-updated": "Şifre başarıyla güncellendi! 🔒"
+		},
+		"error": {
+			"field-required": "Lütfen bir değer girin!",
+			"old-password-field-missing": "Eski şifre alanı bulunamadı!",
+			"new-password-field-missing": "Yeni şifre alanı bulunamadı!",
+			"old-password-required": "Lütfen eski şifrenizi girin!",
+			"new-password-required": "Lütfen yeni şifrenizi girin!",
+			"password-min-length": "Yeni şifre en az 3 karakter olmalıdır!",
+			"old-password-incorrect": "Eski şifre hatalı!",
+			"username-update-failed": "Kullanıcı adı güncellenemedi!",
+			"email-update-failed": "Email güncellenemedi!",
+			"password-update-failed": "Şifre güncellenemedi!",
+			"update-error": "Güncelleme sırasında hata oluştu!",
+			"password-update-error": "Şifre güncelleme sırasında hata oluştu!"
+		}
 	}
 }
 
@@ -331,16 +387,23 @@ const fr = {
         "title": "Paramètres de profil",
         "username": "Nom d'utilisateur"
     },
+	"profile-avatar-change-hint": "Cliquez pour changer d'avatar",
+    "profile-avatar-select-title": "Sélectionner un avatar",
+    "profile-avatar-select-subtitle": "Choisissez votre avatar préféré",
+    "profile-avatar-cancel": "Annuler",
+    "profile-avatar-success": "Avatar changé avec succès!",
+    "profile-info-title": "Informations de profil",
+    "profile-info-settings-title": "Paramètres de profil",
     "profile-settings": {
-        "username": "Nom d'utilisateur",
-        "username-placeholder": "Nouveau nom d'utilisateur",
-        "email": "E-mail",
-        "email-placeholder": "Nouvel e-mail",
-        "password": "Mot de passe",
-        "password-placeholder": "Nouveau mot de passe",
+        username: "Nom d'utilisateur",
+        usernamePlaceholder: "Nouveau nom d'utilisateur",
+        email: "E-mail",
+        emailPlaceholder: "Nouvel e-mail",
+        password: "Mot de passe",
+        passwordPlaceholder: "Nouveau mot de passe",
         "old-Password": "Ancien mot de passe",
         "old-password-placeholder": "Ancien mot de passe",
-        "update": "Mettre à jour"
+        update: "Mettre à jour"
     },
     "tournament-first-page": {
         "join-title": "Rejoindre un tournoi",
@@ -377,6 +440,27 @@ const fr = {
         "continue-game": "Continuer le jeu",
         "new-game": "Démarrer une nouvelle partie",
         "sets": "MANCHES !"
+    },
+	toast: {
+        success: {
+            "username-updated": "Nom d'utilisateur mis à jour avec succès ! ✨",
+            "email-updated": "E-mail mis à jour avec succès ! 📧",
+            "password-updated": "Mot de passe mis à jour avec succès ! 🔒"
+        },
+        error: {
+            "field-required": "Veuillez saisir une valeur !",
+            "old-password-field-missing": "Champ de l'ancien mot de passe introuvable !",
+            "new-password-field-missing": "Champ du nouveau mot de passe introuvable !",
+            "old-password-required": "Veuillez saisir votre ancien mot de passe !",
+            "new-password-required": "Veuillez saisir votre nouveau mot de passe !",
+            "password-min-length": "Le nouveau mot de passe doit contenir au moins 3 caractères !",
+            "old-password-incorrect": "L'ancien mot de passe est incorrect !",
+            "username-update-failed": "Le nom d'utilisateur n'a pas pu être mis à jour !",
+            "email-update-failed": "L'e-mail n'a pas pu être mis à jour !",
+            "password-update-failed": "Le mot de passe n'a pas pu être mis à jour !",
+            "update-error": "Une erreur s'est produite lors de la mise à jour !",
+            "password-update-error": "Une erreur s'est produite lors de la mise à jour du mot de passe !"
+        }
     }
 }
 

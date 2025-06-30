@@ -3,7 +3,15 @@
 		"register-b": "Register",
 		"email-or-nickname-i": "Email or Nickname",
 		"passwor-i": "Password",
-		"login-b": "Login"
+		"login-b": "Login",
+		"email-placeholder": "Enter your email address",
+		"password-placeholder": "Enter your password",
+		"remember": "Remember me",
+		"forgot-password": "Forgot password?",
+		"no-account": "Don't have an account?",
+		"register-link": "Create account",
+		"welcome": "Welcome Back",
+		"subtitle": "Sign in to your account to continue"
 	},
 	"singin-success": "Login successful! Redirecting...",
 	"singin-errors": {
@@ -23,7 +31,16 @@
 		"email": "Enter Email",
 		"password": "Enter Password",
 		"confirmPassword": "Confirm Password",
-		"register": "Register"
+		"register": "Register",
+		"username-placeholder": "Choose a username",
+		"email-placeholder": "Enter your email address",
+		"password-placeholder": "Create a password",
+		"confirm-password": "Confirm Password",
+		"confirm-password-placeholder": "Repeat your password",
+		"agree-terms": "I agree with the",
+		"terms-conditions": "terms and conditions",
+		"have-account": "Already have an account?",
+		"signin-link": "Sign in here"
 	},
 	"register-success": "Registration successful! Please log in.",
 	"register-errors": {
@@ -68,12 +85,32 @@
 		"title": "Settings",
 		"ball-color": "Ball Color",
 		"language-select": "Language Selection",
-		"save-button": "Save Settings"
+		"save-button": "Save Settings",
+		"saving": "Saving..."
+	},
+	"colors": {
+		"red": "Red",
+		"green": "Green",
+		"blue": "Blue",
+		"yellow": "Yellow",
+		"pink": "Pink",
+		"cyan": "Cyan",
+		"orange": "Orange",
+		"purple": "Purple",
+		"rose": "Rose"
 	},
 	"profile": {
 		"title": "Profile Settings",
 		"username": "Username"
 	},
+	"profile-avatar-change-hint": "Click to change avatar",
+	"profile-avatar-select-title": "Select Avatar",
+	"profile-avatar-select-subtitle": "Choose your favorite avatar",
+	"profile-avatar-cancel": "Cancel",
+	"profile-avatar-success": "Avatar changed successfully!",
+	"profile-info-title": "Profile Information",
+	"profile-info-settings-title": "Profile Settings",
+	"profile-info-settings-subtitle": "Update your account information",
 	"profile-settings": {
 		"username": "Username",
 		"username-placeholder": "New Username",
@@ -84,6 +121,27 @@
 		"confirmPassword": "Confirm Password",
 		"confirmPassword-placeholder": "Confirm New Password",
 		"update": "Update"
+	},
+	"toast": {
+		"success": {
+			"username-updated": "Username updated successfully! ✨",
+			"email-updated": "Email updated successfully! 📧",
+			"password-updated": "Password updated successfully! 🔒"
+		},
+		"error": {
+			"field-required": "Please enter a value!",
+			"old-password-field-missing": "Old password field not found!",
+			"new-password-field-missing": "New password field not found!",
+			"old-password-required": "Please enter your old password!",
+			"new-password-required": "Please enter your new password!",
+			"password-min-length": "New password must be at least 3 characters!",
+			"old-password-incorrect": "Old password is incorrect!",
+			"username-update-failed": "Username could not be updated!",
+			"email-update-failed": "Email could not be updated!",
+			"password-update-failed": "Password could not be updated!",
+			"update-error": "An error occurred during update!",
+			"password-update-error": "An error occurred while updating password!"
+		}
 	},
 	"tournament": {
 		"first-page": {

@@ -17,13 +17,29 @@
 	"register": {
 		"title": "Kayıt Ol",
 		"singin-b": "Giriş Yap",
-		"name": "İsim Giriniz",
-		"surname": "Soyisim Giriniz",
 		"username": "Kullanıcı Adı Giriniz",
 		"email": "E-posta Giriniz",
 		"password": "Şifre Giriniz",
 		"confirmPassword": "Şifreyi Tekrar Giriniz",
-		"register": "Kayıt Ol"
+		"register": "Kayıt Ol",
+		"username-placeholder": "Kullanıcı adı seçiniz",
+		"email-placeholder": "E-posta adresinizi giriniz",
+		"password-placeholder": "Şifre oluşturunuz",
+		"confirm-password": "Şifreyi tekrar giriniz",
+		"confirm-password-placeholder": "Şifrenizi tekrar giriniz",
+		"have-account": "Zaten hesabınız var mı?",
+		"signin-link": "Buradan giriş yapın"
+	},
+	"signin": {
+		"register-b": "Kayıt Ol",
+		"email-or-nickname-i": "E-posta",
+		"passwor-i": "Şifre",
+		"login-b": "Giriş Yap",
+		"email-placeholder": "E-posta adresinizi giriniz",
+		"password-placeholder": "Şifrenizi girin",
+		"no-account": "Hesabınız yok mu?",
+		"register-link": "Hesap oluştur",
+		"welcome": "Tekrar Hoşgeldiniz",
 	},
 	"register-success": "Kayıt başarılı! Lütfen giriş yapın.",
 	"register-errors": {
@@ -69,12 +85,32 @@
 		"title": "Ayarlar",
 		"ball-color": "Top Rengi",
 		"language-select": "Dil Seçimi",
-		"save-button": "Ayarları Kaydet"
+		"save-button": "Ayarları Kaydet",
+		"saving": "Kaydediliyor..."
+	},
+	"colors": {
+		"red": "Kırmızı",
+		"green": "Yeşil",
+		"blue": "Mavi",
+		"yellow": "Sarı",
+		"pink": "Pembe",
+		"cyan": "Cyan",
+		"orange": "Turuncu",
+		"purple": "Mor",
+		"rose": "Gül Kurusu"
 	},
 	"profile": {
 		"title": "Profil Ayarları",
 		"username": "Kullanıcı Adı"
 	},
+	"profile-avatar-change-hint": "Avatarı değiştirmek için tıklayın",
+	"profile-avatar-select-title": "Avatar Seçin",
+	"profile-avatar-select-subtitle": "Favori avatarınızı seçin",
+	"profile-avatar-cancel": "İptal",
+	"profile-avatar-success": "Avatar başarıyla değiştirildi!",
+	"profile-info-title": "Profil Bilgileri",
+	"profile-info-settings-title": "Profil Ayarları",
+	"profile-info-settings-subtitle": "Hesap bilgilerinizi güncelleyin",
 	"profile-settings": {
 		"username": "Kullanıcı Adı",
 		"username-placeholder": "Yeni Kullanıcı Adı",
@@ -85,6 +121,27 @@
 		"old-Password": "Eski Şifre",
 		"old-password-placeholder": "Eski Şifre",
 		"update": "Güncelle"
+	},
+	"toast": {
+		"success": {
+			"username-updated": "Kullanıcı adı başarıyla güncellendi! ✨",
+			"email-updated": "Email başarıyla güncellendi! 📧",
+			"password-updated": "Şifre başarıyla güncellendi! 🔒"
+		},
+		"error": {
+			"field-required": "Lütfen bir değer girin!",
+			"old-password-field-missing": "Eski şifre alanı bulunamadı!",
+			"new-password-field-missing": "Yeni şifre alanı bulunamadı!",
+			"old-password-required": "Lütfen eski şifrenizi girin!",
+			"new-password-required": "Lütfen yeni şifrenizi girin!",
+			"password-min-length": "Yeni şifre en az 3 karakter olmalıdır!",
+			"old-password-incorrect": "Eski şifre hatalı!",
+			"username-update-failed": "Kullanıcı adı güncellenemedi!",
+			"email-update-failed": "Email güncellenemedi!",
+			"password-update-failed": "Şifre güncellenemedi!",
+			"update-error": "Güncelleme sırasında hata oluştu!",
+			"password-update-error": "Şifre güncelleme sırasında hata oluştu!"
+		}
 	},
 	"tournament-first-page": {
 		"join-title": "Turnuvaya Katıl",

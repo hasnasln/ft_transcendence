@@ -3,7 +3,12 @@
 		"register-b": "S'inscrire",
 		"email-or-nickname-i": "E-mail ou Pseudo",
 		"passwor-i": "Mot de passe",
-		"login-b": "Se connecter"
+		"login-b": "Se connecter",
+		"email-placeholder": "Entrez votre adresse e-mail",
+		"password-placeholder": "Entrez votre mot de passe",
+		"no-account": "Vous n'avez pas de compte?",
+		"register-link": "Créer un compte",
+		"welcome": "Bon retour",
 	},
 	"singin-success": "Connexion réussie ! Redirection...",
 	"singin-errors": {
@@ -23,7 +28,14 @@
 		"email": "Entrez votre e-mail",
 		"password": "Entrez votre mot de passe",
 		"confirmPassword": "Confirmez le mot de passe",
-		"register": "S'inscrire"
+		"register": "S'inscrire",
+		"username-placeholder": "Choisissez un nom d'utilisateur",
+		"email-placeholder": "Entrez votre adresse e-mail",
+		"password-placeholder": "Créez un mot de passe",
+		"confirm-password": "Confirmez le mot de passe",
+		"confirm-password-placeholder": "Répétez votre mot de passe",
+		"have-account": "Vous avez déjà un compte?",
+		"signin-link": "Connectez-vous ici"
 	},
 	"register-success": "Inscription réussie ! Veuillez vous connecter.",
 	"register-errors": {
@@ -68,12 +80,32 @@
 		"title": "Paramètres",
 		"ball-color": "Couleur de la balle",
 		"language-select": "Sélection de la langue",
-		"save-button": "Enregistrer les paramètres"
+		"save-button": "Enregistrer les paramètres",
+		"saving": "Enregistrement..."
+	},
+	"colors": {
+		"red": "Rouge",
+		"green": "Vert",
+		"blue": "Bleu",
+		"yellow": "Jaune",
+		"pink": "Rose",
+		"cyan": "Cyan",
+		"orange": "Orange",
+		"purple": "Violet",
+		"rose": "Rose foncé"
 	},
 	"profile": {
 		"title": "Paramètres de profil",
 		"username": "Nom d'utilisateur"
 	},
+	"profile-avatar-change-hint": "Cliquez pour changer d'avatar",
+	"profile-avatar-select-title": "Sélectionner un avatar",
+	"profile-avatar-select-subtitle": "Choisissez votre avatar préféré",
+	"profile-avatar-cancel": "Annuler",
+	"profile-avatar-success": "Avatar changé avec succès!",
+	"profile-info-title": "Informations de profil",
+	"profile-info-settings-title": "Paramètres de profil",
+	"profile-info-settings-subtitle": "Mettez à jour vos informations de compte",
 	"profile-settings": {
 		"username": "Nom d'utilisateur",
 		"username-placeholder": "Nouveau nom d'utilisateur",
@@ -84,6 +116,27 @@
 		"confirmPassword": "Confirmer le mot de passe",
 		"confirmPassword-placeholder": "Confirmer le nouveau mot de passe",
 		"update": "Mettre à jour"
+	},
+	"toast": {
+		"success": {
+			"username-updated": "Nom d'utilisateur mis à jour avec succès ! ✨",
+			"email-updated": "E-mail mis à jour avec succès ! 📧",
+			"password-updated": "Mot de passe mis à jour avec succès ! 🔒"
+		},
+		"error": {
+			"field-required": "Veuillez saisir une valeur !",
+			"old-password-field-missing": "Champ de l'ancien mot de passe introuvable !",
+			"new-password-field-missing": "Champ du nouveau mot de passe introuvable !",
+			"old-password-required": "Veuillez saisir votre ancien mot de passe !",
+			"new-password-required": "Veuillez saisir votre nouveau mot de passe !",
+			"password-min-length": "Le nouveau mot de passe doit contenir au moins 3 caractères !",
+			"old-password-incorrect": "L'ancien mot de passe est incorrect !",
+			"username-update-failed": "Le nom d'utilisateur n'a pas pu être mis à jour !",
+			"email-update-failed": "L'e-mail n'a pas pu être mis à jour !",
+			"password-update-failed": "Le mot de passe n'a pas pu être mis à jour !",
+			"update-error": "Une erreur s'est produite lors de la mise à jour !",
+			"password-update-error": "Une erreur s'est produite lors de la mise à jour du mot de passe !"
+		}
 	},
 	"tournament": {
 		"first-page": {
