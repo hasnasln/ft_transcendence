@@ -4,11 +4,24 @@ import {_apiManager } from "../api/APIManeger";
 import type { IApiRegister } from "../api/APIManeger";
 
 export class RegisterPage implements IPages {
+    private languageChangeHandler: (lang: string) => void;
+
+    constructor() {
+        this.languageChangeHandler = (lang: string) => {
+            const container = document.getElementById('register_main');
+            if (container) {
+                container.innerHTML = '';
+                renderRegister(container);
+            }
+        };
+    }
+
 	render(container: HTMLElement): void {
 		if (!container) {
 			console.error('Container not found');
 			return;
 		}
+		exmp.addLanguageChangeListener(this.languageChangeHandler);
 		renderRegister(container);
 		requestAnimationFrame(() => {
 			this.init();
@@ -16,7 +29,7 @@ export class RegisterPage implements IPages {
 	}
 
 	destroy(): void {
-		// Implement destroy logic if needed
+		exmp.removeLanguageChangeListener(this.languageChangeHandler);
 		document.getElementById("register_main")?.removeEventListener('click', this.mainClikHandler); // sayfa değişince eventleri temizler
 	}
 
@@ -60,9 +73,6 @@ export class RegisterPage implements IPages {
 
 	async handleRegister(): Promise	<void> {
 		console.log('Register button clicked');
-		// Implement register logic here
-		// burada kayıt olma isteği atılacak
-		// ve kullanıcıya yönlendirme yapılacak
 		const username = this.getInputValue("username");
 		const email = this.getInputValue("email");
 		const password = this.getInputValue("password");
@@ -92,13 +102,6 @@ export class RegisterPage implements IPages {
 			this.showError(exmp.getLang('register-errors.passwordMismatch'));
 			return;
 		}
-		// else {
-		// 	console.log('name: ', name);
-		// 	console.log('surname: ', surname);
-		// 	console.log('username: ', username);
-		// 	console.log('email: ', email);
-		// 	console.log('password: ', password);
-		// }
 		const x: IApiRegister = 
 		{
 			username : username,
@@ -112,7 +115,6 @@ export class RegisterPage implements IPages {
 				this.showError(response.message || exmp.getLang('register.registerFailed'));
 				return;
 			}
-			// console.log('Registration successful:', response.data);
 			history.pushState(null, '', '/singin');
 			window.dispatchEvent(new PopStateEvent('popstate'));
 		} catch (error: any) {
@@ -121,7 +123,6 @@ export class RegisterPage implements IPages {
 	}
 
 	handleLogin(): void {
-		// burada login sayfasına yönlendirme yapılacak
 		console.log('Login button clicked');
 		history.pushState(null, '', '/singin');
 		window.dispatchEvent(new PopStateEvent('popstate'));
@@ -137,170 +138,119 @@ export class RegisterPage implements IPages {
 	}
 }
 
-export function renderRegister(container: HTMLElement) {
+export function renderRegister(container: HTMLElement): void {
+    if (!document.getElementById("custom-register-style")) {
+        const style = document.createElement("style");
+        style.id = "custom-register-style";
+        style.textContent = `
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation-name: fadeIn;
+            animation-duration: 0.8s;
+            animation-timing-function: ease-out;
+            animation-fill-mode: forwards;
+        }
+        .bg-animated-gradient {
+            background: linear-gradient(90deg, #8b5cf6, #6366f1, #ec4899);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        `;
+        document.head.appendChild(style);
+    }
 
-	container.classList.add(
-		`flex`,
-		`flex-col`,
-		`items-center`,
-		`justify-center`,
-		`h-[100vh]`,
-		'w-full`',
-		"bg-gray-300",
-	);
-	const formContainer = document.createElement('div');
-	formContainer.id = 'register_main';
-	formContainer.classList.add(
-		`bg-`,
-		`shadow-lg`,
-		'bg-white',
-		`px-4`,
-		'w-[95%]',
-		'h-[85%]',
-		'lg:w-[50%]',
-		'lg:h-[70%]',
-		'rounded-3xl',
-		'border-2',
-		'border-gray-800',
-		'relative',
-		'flex',
-		'flex-col',
-		'items-center',
-		'justify-center',
-		'gap-4'
-	);
+    const mainBg = document.createElement("div");
+    mainBg.className = "min-h-screen flex items-center justify-center bg-animated-gradient";
 
-	const singsinginButtonDiv = document.createElement('div'); // en baştaki giriş ve kayıt ol butonları için
-	singsinginButtonDiv.classList.add(
-		'flex',
-		'flex-row',
-		'justify-center',
-		'items-center',
-		'w-full',
-		// 'bg-red-200',
-	);
-	const NicNameOrMaildiv = document.createElement('div');
-	NicNameOrMaildiv.classList.add(
-		'flex',
-		'flex-col',
-		'justify-center',
-		'items-center',
-		'w-full',
-		// 'bg-green-200',
-	);
-	const passworddiv = document.createElement('div');
-	passworddiv.classList.add(
-		'flex',
-		'flex-col',
-		'justify-center',
-		'items-center',
-		'w-full',
-		// 'bg-blue-200',
-	);
-	const singinWithGogleDiv = document.createElement('div');
-	singinWithGogleDiv.classList.add(
-		'flex',
-		'flex-col',
-		'justify-center',
-		'items-center',
-		'w-full',
-		// 'bg-purple-200',
-	);
-	const buttonDiv = document.createElement('div');
-	buttonDiv.classList.add(
-		'flex',
-		'flex-row',
-		'justify-center',
-		'items-center',
-		'w-full',
-		// 'bg-yellow-200',
-	);
+    const main = document.createElement("main");
+    main.id = "register_main";
+    main.className = "bg-white bg-opacity-90 backdrop-blur-md p-8 rounded-xl shadow-2xl max-w-md w-full relative";
 
-//#region Giriş Butonlar kısmı
-	// Giriş ve Kayıt Ol butonları
-	const singinButton = document.createElement('button');
-	singinButton.setAttribute('data-action', 'login');
+    const sectionRegister = document.createElement("section");
+    sectionRegister.id = "section-register";
+    sectionRegister.className = "animate-fadeIn";
 
-	singinButton.textContent = exmp.getLang('register.singin-b');
-	singinButton.classList.add(
-		'bg-blue-500',
-		'hover:bg-blue-700',
-		'text-white',
-		'font-bold',
-		'py-2',
-		'px-4',
-		'w-1/3',
-		'border-gray-800',
-		'rounded-3xl',
-	);
-	singsinginButtonDiv.appendChild(singinButton);
-	singsinginButtonDiv.appendChild(singinButton);
-//#endregion
+    const registerForm = document.createElement("form");
+    registerForm.id = "register-form";
+    registerForm.className = "flex flex-col space-y-6";
+    registerForm.autocomplete = "off";
 
-formContainer.appendChild(singsinginButtonDiv);
-//#region İnput alanları
-	createInput("username", exmp.getLang("register.username"), 'text', formContainer);
-	createInput("email", exmp.getLang("register.email"), 'email', formContainer);
-	createInput("password", exmp.getLang("register.password"), 'password', formContainer);
-	createInput("repeat_password", exmp.getLang("register.confirmPassword"), 'password', formContainer);
-//#endregion
+    const registerTitle = document.createElement("h2");
+    registerTitle.className = "text-3xl font-extrabold text-center text-gray-900";
+    registerTitle.textContent = exmp.getLang("singin.register-b") || "Kayıt Ol";
 
- //! burada hata kısmını yazdırmak için bir p oluşturacağım
-	const errorDiv = document.createElement('div');
-	errorDiv.classList.add(
-		'border-gray-300',
-		'rounded-lg',
-		'px-4',
-		'py-2',
-		'w-[70%]',
-		'text-red-500',
-		'text-sm',
-		'font-bold',
-	);
-	errorDiv.id = 'error-message';
-	errorDiv.style.height = '1.5rem'; // Set a fixed height for the error message div
-	errorDiv.style.visibility = 'hidden'; // Initially hidden
-	formContainer.appendChild(errorDiv);
+    const regUsername = document.createElement("input");
+    regUsername.type = "text";
+    regUsername.id = "username";
+    regUsername.placeholder = exmp.getLang("register.username") || "Username";
+    regUsername.required = true;
+    regUsername.className = "shadow-sm bg-gray-50 border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out focus:shadow-lg focus:scale-[1.02]";
 
-//#region Giriş Butonları
-	const grisButton = document.createElement('button');
-	grisButton.setAttribute('data-action', 'register');
-	grisButton.textContent = exmp.getLang("register.register");
-	grisButton.classList.add(
-		'bg-green-500',
-		'hover:bg-green-700',
-		'text-white',
-		'font-bold',
-		'py-2',
-		'px-4',
-		'w-1/3',
-		'rounded-lg',
-	);
-	buttonDiv.appendChild(grisButton);
-//#endregion
+    const regEmail = document.createElement("input");
+    regEmail.type = "email";
+    regEmail.id = "email";
+    regEmail.placeholder = exmp.getLang("register.email") || "Email";
+    regEmail.required = true;
+    regEmail.className = regUsername.className;
 
-	formContainer.appendChild(buttonDiv);
-	container.appendChild(formContainer);
-}
+    const regPassword = document.createElement("input");
+    regPassword.type = "password";
+    regPassword.id = "password";
+    regPassword.placeholder = exmp.getLang("register.password") || "Şifre";
+    regPassword.required = true;
+    regPassword.className = regUsername.className;
 
-/*
-@param id : string -> id of the input
-@param placeholder : string -> placeholder of the input
-@param type : string -> type of the input
-@param container : HTMLElement -> container of the input
-*/
-function createInput(id: string, placeholder: string, type: string, container: HTMLElement) {
-	const input = document.createElement('input');
-	input.type = type;
-	input.placeholder = placeholder;
-	input.id = id;
-	input.classList.add(
-		'border',
-		'border-gray-300',
-		'rounded-lg',
-		'px-4',
-		'py-2',
-		'w-[70%]',
-	);
-	container.appendChild(input);
+    const regRepeat = document.createElement("input");
+    regRepeat.type = "password";
+    regRepeat.id = "repeat_password";
+    regRepeat.placeholder = exmp.getLang("register.confirmPassword") || "Şifre Tekrar";
+    regRepeat.required = true;
+    regRepeat.className = regUsername.className;
+
+    const errorDiv = document.createElement("div");
+    errorDiv.id = "error-message";
+    errorDiv.className = "text-red-500 text-sm font-bold mt-2 w-full";
+    errorDiv.style.visibility = "hidden";
+    errorDiv.style.height = "1.5rem";
+
+    const registerButton = document.createElement("button");
+    registerButton.type = "submit";
+    registerButton.className = "bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 active:bg-indigo-800 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition transform hover:scale-105";
+    registerButton.textContent = exmp.getLang("singin.register-b") || "Kayıt Ol";
+
+    const registerFooter = document.createElement("p");
+    registerFooter.className = "text-center text-gray-700";
+    registerFooter.innerHTML = `
+        <button id="show-login" type="button" class="text-indigo-600 hover:underline font-semibold">
+            ${exmp.getLang("singin.login-b") || "Giriş Yap"}
+        </button>
+    `;
+
+    registerForm.appendChild(registerTitle);
+    registerForm.appendChild(regUsername);
+    registerForm.appendChild(regEmail);
+    registerForm.appendChild(regPassword);
+    registerForm.appendChild(regRepeat);
+    registerForm.appendChild(errorDiv);
+    registerForm.appendChild(registerButton);
+    registerForm.appendChild(registerFooter);
+    sectionRegister.appendChild(registerForm);
+
+    main.appendChild(sectionRegister);
+    mainBg.appendChild(main);
+    container.appendChild(mainBg);
+
+    const showLoginBtn = registerFooter.querySelector("#show-login") as HTMLButtonElement;
+    showLoginBtn.onclick = () => {
+        history.pushState({}, '', '/singin');
+        window.dispatchEvent(new Event('popstate'));
+    };
 }
