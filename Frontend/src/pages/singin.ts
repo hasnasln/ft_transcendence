@@ -2,421 +2,299 @@ import type { IPages } from "./IPages";
 import { exmp } from "../languageMeneger";
 import { _apiManager } from "../api/APIManeger";
 
-
 export class SinginPage implements IPages {
+    private languageChangeHandler: (lang: string) => void;
 
-	private languageChangeHandler: (lang: string) => void;
+    constructor() {
+        this.languageChangeHandler = (lang: string) => {
+            console.log(`Language changed to: ${lang}`);
+            const container = document.getElementById('asd123');
+            if (container) {
+                container.innerHTML = '';
+                renderSingin(container);
+            }
+        }
+    }
 
-	constructor() {
-		this.languageChangeHandler = (lang: string) => {
-			console.log("SiningPage -> languageChangeHandler calisti.");
-			console.log(`Language changed to: ${lang}`);
-			const container = document.getElementById('asd123');
-			if (container) {
-				container.innerHTML = ''; // Clear the container
-				renderSingin(container);
-			}
-		}
-	}
+    render(container: HTMLElement): void {
+        if (!container) {
+            console.error('Container not found');
+            return;
+        }
+        exmp.addLanguageChangeListener(this.languageChangeHandler);
+        exmp.waitForLoad().then(() => {
+            renderSingin(container);
+            requestAnimationFrame(() => {
+                this.init();
+            });
+        });
+    }
 
-	render(container: HTMLElement): void {
-		if (!container) {
-			console.error('Container not found');
-			return;
-		}
+    destroy(): void {
+        exmp.removeLanguageChangeListener(this.languageChangeHandler);
+        document.body.innerHTML = '';
+    }
 
-		exmp.addLanguageChangeListener(this.languageChangeHandler);
-		
-		exmp.waitForLoad().then(() => {
-			renderSingin(container);
-			//! hom sayfasındaki sorun burada da var bakalım nasıl ilerleyeceğiz
-			requestAnimationFrame(() => {
-				this.init();
-			});
-		});
-	}
+    init(): void {
+        const x = document.getElementById('asd123');
+        if (!x) return;
+        x.addEventListener('click', (event) => {
+            const target = event.target as HTMLElement;
+            const action = target.getAttribute('data-action');
+            if (!action) return;
+            switch (action) {
+                case 'register':
+                    this.handleRegister();
+                    break;
+                case 'singin':
+                    this.handleLogin();
+                    break;
+                default:
+                    console.warn(`Unknown action: ${action}`);
+            }
+        });
+    }
 
-	destroy(): void {
-		// Implement destroy logic if needed
-		exmp.removeLanguageChangeListener(this.languageChangeHandler);
-		document.body.innerHTML = '';
-	}
+    handleRegister(): void {
+        history.pushState({}, '', '/register');
+        window.dispatchEvent(new Event('popstate'));
+    }
 
-	init(): void {
-		const x = document.getElementById('asd123');
-		if (!x)
-			return;
-		x.addEventListener('click', (event) => {
-			const target = event.target as HTMLElement;
-			const action = target.getAttribute('data-action');
+    private showError(message: string): void {
+        const errorMessage = document.getElementById('error_message');
+        if (!errorMessage) return;
+        errorMessage.style.visibility = 'visible';
+        errorMessage.textContent = message;
+    }
 
-			if (!action) return;
+    private getInputValue(id: string): string {
+        const input = document.getElementById(id) as HTMLInputElement;
+        return input ? input.value.trim() : '';
+    }
 
-			switch (action) {
-				case 'register':
-					this.handleRegister();
-					break;
-				case 'singin':
-					this.handleLogin();
-					break;
-				default:
-					console.warn(`Unknown action: ${action}`);
-			}
-		})
-	}
-
-	handleRegister(): void {
-		console.log('Register button clicked');
-		history.pushState({}, '', '/register');
-		window.dispatchEvent(new Event('popstate'));
-	}
-
-	private showError(message: string): void {
-		const errorMessage = document.getElementById('error_message');
-		if (!errorMessage) return;
-		errorMessage.style.visibility = 'visible';
-		errorMessage.textContent = message;
-	}
-
-	private getInputValue(id: string): string {
-		const input = document.getElementById(id) as HTMLInputElement;
-		const value = input ? input.value.trim() : '';
-		return value;
-	}
-
-	async handleLogin(): Promise<void> {
-		const nicnameOrMail = this.getInputValue('nicname_or_mail_input');
-		const passwordValue = this.getInputValue('password_input');
-		if (!nicnameOrMail || !passwordValue) {
-			if (!nicnameOrMail)this.showError(exmp.getLang('singin-errors.required.email'));
-			else if (!passwordValue)this.showError(exmp.getLang('singin-errors.required.password'));
-			return;
-		}
-		try{
-			const response = await _apiManager.login(nicnameOrMail, passwordValue);
-			if (!response.success) {
-				this.showError(exmp.getLang("singin-errors." + response.message || 'Mesaj bulunamadı'));
-				return;
-			}
-			history.pushState({}, '', '/');
-			window.dispatchEvent(new Event('popstate'));
-		} catch (error: any)
-		{
-			// throw new Error(`Login failed: ${error.message}`);
-		}
-	}
+    async handleLogin(): Promise<void> {
+        const nicnameOrMail = this.getInputValue('nicname_or_mail_input');
+        const passwordValue = this.getInputValue('password_input');
+        if (!nicnameOrMail || !passwordValue) {
+            if (!nicnameOrMail) this.showError(exmp.getLang('singin-errors.required.email'));
+            else if (!passwordValue) this.showError(exmp.getLang('singin-errors.required.password'));
+            return;
+        }
+        try {
+            const response = await _apiManager.login(nicnameOrMail, passwordValue);
+            if (!response.success) {
+                this.showError(exmp.getLang("singin-errors." + (response.message || 'Mesaj bulunamadı')));
+                return;
+            }
+            history.pushState({}, '', '/');
+            window.dispatchEvent(new Event('popstate'));
+        } catch (error: any) {
+            // Optionally handle error
+        }
+    }
 }
-
-
 
 export function renderSingin(container: HTMLElement): void {
+    if (!document.getElementById("custom-signin-style")) {
+        const style = document.createElement("style");
+        style.id = "custom-signin-style";
+        style.textContent = `
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation-name: fadeIn;
+            animation-duration: 0.8s;
+            animation-timing-function: ease-out;
+            animation-fill-mode: forwards;
+        }
+        .bg-animated-gradient {
+            background: linear-gradient(90deg, #8b5cf6, #6366f1, #ec4899);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        `;
+        document.head.appendChild(style);
+    }
 
-	const siginMain = document.createElement('div');
-	siginMain.id = 'asd123';
-	siginMain.classList.add(
-		`absolute`,
-		`flex`,
-		`flex-col`,
-		`items-center`,
-		`justify-center`,
-		`h-[100vh]`,
-		'w-full',
-		'bg-gray-300'
-	);
+    // Ana arka plan
+    const mainBg = document.createElement("div");
+    mainBg.className = "min-h-screen flex items-center justify-center bg-animated-gradient";
 
-	const formContainer = document.createElement('div');
-	formContainer.classList.add(
-		`bg-`,
-		`shadow-lg`,
-		'bg-white',
-		`px-4`,
-		'w-[95%]',
-		'h-[60%]',
-		'lg:w-[50%]',
-		'lg:h-[50%]',
-		'rounded-3xl',
-		'border-2',
-		'border-gray-800',
-		'relative',
-		'flex',
-		'flex-col',
-		'items-center',
-		'justify-center',
-		'gap-4'
-	);
+    const main = document.createElement("main");
+    main.className = "bg-white bg-opacity-90 backdrop-blur-md p-8 rounded-xl shadow-2xl max-w-md w-full relative";
 
-	createLangSelect(formContainer, ['tr', 'en', 'fr']);
+    addFlagLangDropdown(main);
 
-	const singRegisterbuttonDiv = document.createElement('div'); // en baştaki giriş ve kayıt ol butonları için
-	singRegisterbuttonDiv.classList.add(
-		'flex',
-		'flex-row',
-		'justify-center',
-		'items-center',
-		'w-full',
-		// 'bg-red-200',
-	);
-	const NicNameOrMaildiv = document.createElement('div');
-	NicNameOrMaildiv.classList.add(
-		'flex',
-		'flex-col',
-		'justify-center',
-		'items-center',
-		'w-full',
-		// 'bg-green-200',
-	);
-	const passworddiv = document.createElement('div');
-	passworddiv.classList.add(
-		'flex',
-		'flex-col',
-		'justify-center',
-		'items-center',
-		'w-full',
-		// 'bg-blue-200',
-	);
-	const singinWithGogleDiv = document.createElement('div');
-	singinWithGogleDiv.classList.add(
-		'flex',
-		'flex-col',
-		'justify-center',
-		'items-center',
-		'w-full',
-		// 'bg-purple-200',
-	);
-	const buttonDiv = document.createElement('div');
-	buttonDiv.classList.add(
-		'flex',
-		'flex-row',
-		'justify-center',
-		'items-center',
-		'w-full',
-		// 'bg-yellow-200',
-	);
+    const sectionLogin = document.createElement("section");
+    sectionLogin.id = "section-login";
+    sectionLogin.className = "animate-fadeIn";
 
-//#region Giriş Butonlar kısmı
-	//Kayıt Ol butonu
+    const loginForm = document.createElement("form");
+    loginForm.id = "login-form";
+    loginForm.className = "flex flex-col space-y-6";
+    loginForm.autocomplete = "off";
 
-	const registerButton = document.createElement('button');
-	registerButton.setAttribute('data-action', 'register');
+    const loginTitle = document.createElement("h2");
+    loginTitle.className = "text-3xl font-extrabold text-center text-gray-900";
+    loginTitle.textContent = exmp.getLang("singin.login-b") || "Giriş Yap";
 
-	registerButton.textContent = exmp.getLang('singin.register-b');
-	registerButton.classList.add(
-		'bg-blue-500',
-		'hover:bg-blue-700',
-		'text-white',
-		'font-bold',
-		'py-2',
-		'px-4',
-		'w-1/3',
-		'rounded-3xl',
-	);
-	singRegisterbuttonDiv.appendChild(registerButton);
-//#endregion
-	
-//#region İnput alanları
-	const nicNaneOrMailInput = document.createElement('input');
-	nicNaneOrMailInput.type = 'text';
-	nicNaneOrMailInput.id = 'nicname_or_mail_input';
-	nicNaneOrMailInput.placeholder = exmp.getLang('singin.email-or-nickname-i');
-	nicNaneOrMailInput.classList.add(
-		'border',
-		'border-gray-300',
-		'rounded-lg',
-		'px-4',
-		'py-2',
-		'w-[70%]',
-	);
-	NicNameOrMaildiv.appendChild(nicNaneOrMailInput);
+    const loginInput = document.createElement("input");
+    loginInput.type = "text";
+    loginInput.id = "nicname_or_mail_input";
+    loginInput.placeholder = exmp.getLang("singin.email-or-nickname-i") || "Kullanıcı adı veya Email";
+    loginInput.required = true;
+    loginInput.className = "shadow-sm bg-gray-50 border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out focus:shadow-lg focus:scale-[1.02]";
 
-	const showError = document.createElement('div');
-	showError.id = 'error_message';
-	showError.classList.add(
-		'text-red-500',
-		'text-sm',
-		'font-bold',
-		'mt-2',
-		'w-[60%]',
-	);
-	showError.style.height = '1.5rem';
-	showError.style.visibility = 'hidden';
+    const passwordInput = document.createElement("input");
+    passwordInput.type = "password";
+    passwordInput.id = "password_input";
+    passwordInput.placeholder = exmp.getLang("singin.passwor-i") || "Şifre";
+    passwordInput.required = true;
+    passwordInput.className = "shadow-sm bg-gray-50 border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out focus:shadow-lg focus:scale-[1.02]";
 
+    const errorDiv = document.createElement("div");
+    errorDiv.id = "error_message";
+    errorDiv.className = "text-red-500 text-sm font-bold mt-2 w-full";
+    errorDiv.style.visibility = "hidden";
+    errorDiv.style.height = "1.5rem";
 
+    const loginButton = document.createElement("button");
+    loginButton.type = "submit";
+    loginButton.className = "bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 active:bg-indigo-800 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition transform hover:scale-105";
+    loginButton.textContent = exmp.getLang("singin.login-b") || "Giriş Yap";
 
-	const passwordInput = document.createElement('input');
-	passwordInput.type = 'password';
-	passwordInput.id = 'password_input';
-	passwordInput.placeholder = exmp.getLang('singin.passwor-i');
-	passwordInput.classList.add(
-		'border',
-		'border-gray-300',
-		'rounded-lg',
-		'px-4',
-		'py-2',
-		'w-[70%]',
-	);
-	passworddiv.appendChild(passwordInput);
-//#endregion
+    const loginFooter = document.createElement("p");
+    loginFooter.className = "text-center text-gray-700";
+    loginFooter.innerHTML = `${exmp.getLang("singin.no-account") || "Hesabınız yok mu?"}
+    <button id="show-register" type="button" class="text-indigo-600 hover:underline font-semibold">${exmp.getLang("singin.register-b") || "Kayıt Ol"}</button>`;
 
-//#region GOOGLE ile Giriş Yap butonu
-	// const singinWithGoogleButton = document.createElement('button');
-	// singinWithGoogleButton.setAttribute('data-action', 'singin-with-google');
-	// singinWithGoogleButton.textContent = 'Google ile Giriş Yap';
-	// singinWithGoogleButton.classList.add(
-	// 	'bg-red-500',
-	// 	'hover:bg-red-700',
-	// 	'text-white',
-	// 	'font-bold',
-	// 	'py-2',
-	// 	'px-4',
-	// 	'w-[50%]',
-	// 	'rounded-lg',
-	// );
-	// singinWithGogleDiv.appendChild(singinWithGoogleButton);
-//#endregion
+    loginForm.appendChild(loginTitle);
+    loginForm.appendChild(loginInput);
+    loginForm.appendChild(passwordInput);
+    loginForm.appendChild(errorDiv);
+    loginForm.appendChild(loginButton);
+    loginForm.appendChild(loginFooter);
+    sectionLogin.appendChild(loginForm);
 
-//#region Normal Giriş Yap butonu
-	const grisButton = document.createElement('button');
-	grisButton.setAttribute('data-action', 'singin');
-	grisButton.textContent = exmp.getLang('singin.login-b');
-	grisButton.classList.add(
-		'bg-green-500',
-		'hover:bg-green-700',
-		'text-white',
-		'font-bold',
-		'py-2',
-		'px-4',
-		'w-1/3',
-		'rounded-lg',
-	);
-	buttonDiv.appendChild(grisButton);
-//#endregion
+    main.appendChild(sectionLogin);
+    mainBg.appendChild(main);
+    container.appendChild(mainBg);
 
-	formContainer.appendChild(singRegisterbuttonDiv);
-	formContainer.appendChild(NicNameOrMaildiv);
-	formContainer.appendChild(passworddiv);
-	// formContainer.appendChild(singinWithGogleDiv);
-	formContainer.appendChild(showError);
-	formContainer.appendChild(buttonDiv);
-	siginMain.appendChild(formContainer);
-	container.appendChild(siginMain);
+    const showRegisterBtn = loginFooter.querySelector("#show-register") as HTMLButtonElement;
+    showRegisterBtn.onclick = () => {
+        history.pushState({}, '', '/register');
+        window.dispatchEvent(new Event('popstate'));
+    };
+
+    loginForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const nicnameOrMail = (loginInput.value || "").trim();
+        const passwordValue = (passwordInput.value || "").trim();
+        if (!nicnameOrMail || !passwordValue) {
+            errorDiv.textContent = !nicnameOrMail
+                ? exmp.getLang('singin-errors.required.email')
+                : exmp.getLang('singin-errors.required.password');
+            errorDiv.style.visibility = "visible";
+            return;
+        }
+        try {
+            const response = await _apiManager.login(nicnameOrMail, passwordValue);
+            if (!response.success) {
+                errorDiv.textContent = exmp.getLang("singin-errors." + (response.message || 'Mesaj bulunamadı'));
+                errorDiv.style.visibility = "visible";
+                return;
+            }
+            errorDiv.style.visibility = "hidden";
+            history.pushState({}, '', '/');
+            window.dispatchEvent(new Event('popstate'));
+        } catch (error: any) {
+            errorDiv.textContent = exmp.getLang("singin-errors.INVALID_CREDENTIALS");
+            errorDiv.style.visibility = "visible";
+        }
+    };
 }
 
+function getFlag(lang: string) {
+    switch (lang) {
+        case "tr": return "🇹🇷";
+        case "en": return "🇬🇧";
+        case "fr": return "🇫🇷";
+        default: return "🏳️";
+    }
+}
 
+function addFlagLangDropdown(container: HTMLElement)
+{
+    const oldBtn = container.querySelector('#langDropdownBtn');
+    const oldMenu = container.querySelector('#langDropdownMenu');
+    if (oldBtn) 
+        oldBtn.remove();
+    if (oldMenu)
+        oldMenu.remove();
 
-/*
-Verilen divin sol üst köşesinde olacak şekilde çıkacak
-verilen string dizi içerisindeki dil seçeneklerini gösterecek.
-*/
-function createLangSelect(container: HTMLElement ,langs: string[]): void {
-	const div = document.createElement('div'); // ana div
-	div.id = 'lang_select';
-	div.setAttribute('data-action', 'lang_select');
-	div.textContent = exmp.getLanguage();
-	div.classList.add(
-		'absolute',
-		'top-4',
-		'right-4',
-		'flex',
-		'items-center',
-		'justify-center',
-		'w-[120px]',
-		'h-[40px]',
-		'z-10',
-		'rounded-3xl',
-		'bg-gray-200',
-		'shadow-lg',
-		'hover:shadow-xl',
-		'hover:bg-gray-300',
-		'hover:cursor-pointer',
-	);
+    const currentLang = exmp.getLanguage();
+    const currentFlag = getFlag(currentLang);
 
-	const options_div = document.createElement('div'); // seçeneklerin olduğu div
-	options_div.classList.add(
-		'absolute',
-		'top-16',
-		'right-4',
-		'flex',
-		'flex-col',
-		'justify-center',
-		'items-center',
-		'bg-gray-200',
-		'gap-2',
-		'rounded-3xl',
-		'overflow-hidden',
-		'shadow-lg',
-		'hidden',
-	);
+    const btn = document.createElement("button");
+    btn.id = "langDropdownBtn";
+    btn.type = "button";
+    btn.className = "absolute top-4 right-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center z-50";
+    btn.innerHTML = `
+        <span id="selectedLangFlag" class="mr-2">${currentFlag}</span>
+        <span id="selectedLangText">${currentLang}</span>
+        <svg class="w-2.5 h-2.5 ml-3" aria-hidden="true" fill="none" viewBox="0 0 10 6">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+        </svg>
+    `;
 
-	langs.forEach(lang => {
-		if(lang === div.textContent) return;
-		const option = document.createElement('div');
-		option.classList.add(
-			'flex',
-			'justify-center',
-			'items-center',
-			'h-[40px]',
-			'w-[120px]',
-			'bg-gray-300',
-			'hover:bg-gray-400',
-			'hover:cursor-pointer',
-		);
-		option.setAttribute('data-action', 'lang_select');
-		option.setAttribute('data-lang', lang);
-		option.textContent = lang;
-		options_div.appendChild(option);
-	})
+    const menu = document.createElement("div");
+    menu.id = "langDropdownMenu";
+	menu.className = "z-50 hidden absolute top-0 left-full ml-2 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44";
+    menu.innerHTML = `
+	<ul class="py-2 text-sm text-gray-700" aria-labelledby="langDropdownBtn">
+		<li>
+		<a href="#" data-lang="tr" class="flex items-center px-4 py-2 hover:bg-gray-100"><span class="mr-2">🇹🇷</span> tr</a>
+		</li>
+		<li>
+		<a href="#" data-lang="en" class="flex items-center px-4 py-2 hover:bg-gray-100"><span class="mr-2">🇬🇧</span> en</a>
+		</li>
+		<li>
+		<a href="#" data-lang="fr" class="flex items-center px-4 py-2 hover:bg-gray-100"><span class="mr-2">🇫🇷</span> fr</a>
+		</li>
+	</ul>
+`;
 
-	container.appendChild(options_div);
-	container.appendChild(div);
+    container.appendChild(btn);
+    container.appendChild(menu);
 
-	let isInside = false;
+    btn.addEventListener('click', () => {
+        menu.classList.toggle('hidden');
+    });
+    document.addEventListener('click', (e) => {
+        if (!btn.contains(e.target as Node) && !menu.contains(e.target as Node)) {
+            menu.classList.add('hidden');
+        }
+    });
 
-	const showPopup = () => {
-		options_div.classList.remove('hidden');
-	}
-
-	const hidePopup = () => {
-		if (!isInside)
-			options_div.classList.add('hidden');
-	}
-
-	div.addEventListener('mouseenter', () => {
-		isInside = true;
-		showPopup();
-	})
-
-	div.addEventListener('mouseleave', () => {
-		isInside = false;
-		setTimeout(hidePopup, 200);
-	})
-
-	options_div.addEventListener('mouseenter', () => {
-		isInside = true;
-	});
-
-	options_div.addEventListener('mouseleave', () => {
-		isInside = false;
-		setTimeout(hidePopup, 200);
-	});
-	
-	options_div.addEventListener('click', async (event) => {
-		// daha öncesinde işlenen ve tıklandığında data-action a göre işlem yapan bir event varsa
-		// çıkabilecek sorunlar için, diğer eventlerin işlenmesini engellemek için stopPropagation kullanıyoruz
-		// bir alt satırı yorum satırına alırsan, sınıf içerisinde tanımlanana tıklama eventinden aynı veriyi alıp
-		// caselaer içerisinde yorumluyor ve doğru case i göremediği için bilinmeyene düşüp erar vermesine neden oluyor
-		// consolda görülen eror mesajının nedeni sator -> 71 deki console.warm.
-		event.stopPropagation();
-		const target = event.target as HTMLElement;
-		const action = target.getAttribute('data-action');
-		const lang = target.getAttribute('data-lang');
-
-		if (action === 'lang_select' && lang) {
-			console.log(`Selected language: ${lang}`);
-			// burada dil değişimi yapılacak
-			isInside = false;
-			hidePopup();
-			// sayfa yeniden yükle
-			await exmp.setLanguage(lang);
-		}
-	});
+    menu.querySelectorAll('a[data-lang]').forEach(item => {
+        item.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const lang = item.getAttribute('data-lang');
+            const flag = item.querySelector('span')?.textContent || '';
+            const text = (item as HTMLElement).innerText.replace(flag, '').trim();
+            (document.getElementById('selectedLangFlag') as HTMLElement).textContent = flag;
+            (document.getElementById('selectedLangText') as HTMLElement).textContent = text;
+            menu.classList.add('hidden');
+            await exmp.setLanguage(lang!);
+            // SPA router ile mevcut route'u yeniden yükle
+            window.dispatchEvent(new Event('popstate'));
+        });
+    });
 }
