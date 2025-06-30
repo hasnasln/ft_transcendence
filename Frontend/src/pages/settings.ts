@@ -6,6 +6,17 @@ export class Settings {
 	private selectedColor = '#3b82f6';
 	private selectedLanguage = 'tr';
 	private closeHandler: ((e: Event) => void) | null = null;
+	private languageChangeHandler: (lang: string) => void;
+
+	constructor() {
+		this.languageChangeHandler = (lang: string) => {
+			const container = document.getElementById('settings_main')?.parentElement;
+			if (container) {
+				container.innerHTML = '';
+				this.render(container);
+			}
+		};
+	}
 
 	async render(container: HTMLElement): Promise<void> {
 		if (!container) {
@@ -905,6 +916,7 @@ export class Settings {
 	}
 
 	destroy(): void {
+		exmp.removeLanguageChangeListener(this.languageChangeHandler);
 		this.close();
 	}
 }
