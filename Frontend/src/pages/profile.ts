@@ -1,6 +1,25 @@
-import { IApiRegister, _apiManager } from '../api/APIManeger';
+import { _apiManager } from '../api/APIManeger';
 import { exmp } from '../languageMeneger';
-import { close_Button } from '../components/buttons';
+
+const AVAILABLE_AVATARS = [
+	'bear.png', 'cat.png', 'chick.png', 'duck.png', 'koala.png',
+	'lion.png', 'meerkat.png', 'panda.png', 'penguin.png', 'rabbit.png'
+];
+
+const TIMING = {
+	INIT_DELAY: 100,
+	INIT_RETRY_DELAY: 200,
+	CLOSE_ANIMATION: 400,
+	PROFILE_REFRESH_DELAY: 500,
+	TOAST_DURATION: 4000,
+	MODAL_ANIMATION: 300,
+	NOTIFICATION_DISPLAY: 3000
+};
+
+const VALIDATION = {
+	MIN_PASSWORD_LENGTH: 3,
+	MAX_TRAVERSAL_ATTEMPTS: 10
+};
 
 interface ISection {
 	name: string;
@@ -33,7 +52,7 @@ export class ProfileSettings {
 		renderProfile(container);
 		
 		if (!this.isInitialized) {
-			setTimeout(() => this.init(), 100);
+			setTimeout(() => this.init(), TIMING.INIT_DELAY);
 		}
 	}
 
@@ -44,7 +63,7 @@ export class ProfileSettings {
 		if (!profileSettingsContainer) {
 			setTimeout(() => {
 				if (!this.isInitialized) this.init();
-			}, 200);
+			}, TIMING.INIT_RETRY_DELAY);
 			return;
 		}
 
@@ -58,17 +77,7 @@ export class ProfileSettings {
 		document.addEventListener('languageChanged', () => this.updateLanguage());
 
 		const clickHandler = (event: Event) => {
-			const target = event.target as HTMLElement;
-			let actionElement = target;
-			let action = actionElement.getAttribute('data-action');
-			
-			let attempts = 0;
-			while (!action && actionElement.parentElement && attempts < 10) {
-				actionElement = actionElement.parentElement;
-				action = actionElement.getAttribute('data-action');
-				attempts++;
-			}
-			
+			const action = this.findActionFromEvent(event);
 			if (action) {
 				event.preventDefault();
 				event.stopPropagation();
@@ -82,16 +91,7 @@ export class ProfileSettings {
 			const target = event.target as HTMLElement;
 			if (!target.closest('#profile_main')) return;
 			
-			let actionElement = target;
-			let action = actionElement.getAttribute('data-action');
-			
-			let attempts = 0;
-			while (!action && actionElement.parentElement && attempts < 10) {
-				actionElement = actionElement.parentElement;
-				action = actionElement.getAttribute('data-action');
-				attempts++;
-			}
-			
+			const action = this.findActionFromEvent(event);
 			if (action) {
 				event.preventDefault();
 				event.stopPropagation();
@@ -101,6 +101,21 @@ export class ProfileSettings {
 		
 		document.body.addEventListener('click', bodyClickHandler.bind(this));
 		ProfileSettings.globalEventListenerAdded = true;
+	}
+
+	private findActionFromEvent(event: Event): string | null {
+		const target = event.target as HTMLElement;
+		let actionElement = target;
+		let action = actionElement.getAttribute('data-action');
+		
+		let attempts = 0;
+		while (!action && actionElement.parentElement && attempts < VALIDATION.MAX_TRAVERSAL_ATTEMPTS) {
+			actionElement = actionElement.parentElement;
+			action = actionElement.getAttribute('data-action');
+			attempts++;
+		}
+		
+		return action;
 	}
 	
 	private handleAction(action: string): void {
@@ -152,7 +167,7 @@ export class ProfileSettings {
 			return;
 		}
 		
-		if (newPassword.length < 3) {
+		if (newPassword.length < VALIDATION.MIN_PASSWORD_LENGTH) {
 			ToastNotification.show(exmp.getLang("toast.error.password-min-length"), 'error');
 			return;
 		}
@@ -196,7 +211,7 @@ export class ProfileSettings {
 			
 			setTimeout(() => {
 				profileMain.remove();
-			}, 400);
+			}, TIMING.CLOSE_ANIMATION);
 		}
 	}
 
@@ -223,7 +238,7 @@ export class ProfileSettings {
 					localStorage.setItem('username', value);
 					this.updateUsernameInUI(value);
 					input.value = '';
-					setTimeout(() => this.refreshProfileInfo(), 500);
+					setTimeout(() => this.refreshProfileInfo(), TIMING.PROFILE_REFRESH_DELAY);
 					ToastNotification.show(exmp.getLang("toast.success.username-updated"), 'success');
 				} else {
 					ToastNotification.show(exmp.getLang("toast.error.username-update-failed"), 'error');
@@ -237,7 +252,7 @@ export class ProfileSettings {
 					localStorage.setItem('email', value);
 					this.updateEmailInUI(value);
 					input.value = '';
-					setTimeout(() => this.refreshProfileInfo(), 500);
+					setTimeout(() => this.refreshProfileInfo(), TIMING.PROFILE_REFRESH_DELAY);
 					ToastNotification.show(exmp.getLang("toast.success.email-updated"), 'success');
 				} else {
 					ToastNotification.show(exmp.getLang("toast.error.email-update-failed"), 'error');
@@ -428,118 +443,6 @@ function renderProfile(container: HTMLElement) {
 	});
 }
 
-
-//#region  eski22
-// function createHistory(player: string, historyl: history[], container: HTMLElement) 
-// {
-// 	const historyContainer = document.createElement('div');
-// 	historyContainer.id = 'history-container';
-// 	historyContainer.classList.add(
-// 		'flex',
-// 		'flex-col',
-// 		'items-start',         // sola hizalı kartlar daha profesyonel görünür
-// 		'justify-start',
-// 		'w-full',
-// 		'h-full',
-// 		'overflow-y-auto',
-// 		'overflow-x-hidden',
-// 		'gap-4',               // kartlar arası boşluk daha belirgin
-// 		'p-4',                 // iç boşluk
-// 		'rounded-2xl',         // yuvarlatılmış köşeler
-// 		'bg-cyan-500',            // arka plan beyaz
-// 		'shadow-inner',        // iç gölge efekti
-// 		'scrollbar',                // scrollbar'ı etkinleştir
-// 		'scrollbar-thumb-blue-600',
-// 		'scrollbar-track-blue-200',
-// 		'hover:scrollbar-thumb-blue-800',
-// 		'rounded-md',
-// 		'max-h-[90%]'          // taşma olmaması için maksimum yükseklik
-// 	);
-// 	historyl.forEach((game) => {
-// 		createHistoryCard(player, game, historyContainer);
-// 	});
-// 	container.appendChild(historyContainer);
-// }
-
-
-
-// // history de her bir kartı oluşturmak için fonksiyon
-// function createHistoryCard(player: string, history: history, container: HTMLElement) {
-// 	const card = document.createElement('div');
-// 	card.classList.add(
-// 		'flex',
-// 		'flex-col',
-// 		'items-start',
-// 		'justify-start',
-// 		'p-4',
-// 		'rounded-2xl',
-// 		'w-[95%]',
-// 		'shadow-lg',
-// 		'transition-transform',
-// 		'hover:scale-[1.02]',
-// 		'hover:shadow-2xl',
-// 		'text-white',
-// 		'mb-4'
-// 	);
-
-// 	if (history.winner === 'Berabere') {
-// 		card.classList.add('bg-yellow-500');
-// 	} else if (player === history.winner) {
-// 		card.classList.add('bg-green-500');
-// 	} else {
-// 		card.classList.add('bg-red-500');
-// 	}
-
-// 	const date = document.createElement('h3');
-// 	date.textContent = `📅 ${history.date}`;
-// 	date.classList.add(
-// 		'text-sm',
-// 		'font-semibold',
-// 		'mb-2',
-// 		'text-white'
-// 	);
-
-// 	const match = document.createElement('div');
-// 	match.classList.add(
-// 		'flex',
-// 		'flex-row',
-// 		'items-center',
-// 		'justify-between',
-// 		'w-full',
-// 		'text-lg',
-// 		'font-bold',
-// 	);
-
-// 	const player1 = document.createElement('span');
-// 	player1.textContent = `${history.player1} : ${history.player1Score}`;
-
-// 	const vs = document.createElement('span');
-// 	vs.textContent = history.winner === 'Berabere' ? '🤝' : 'VS';
-
-// 	const player2 = document.createElement('span');
-// 	player2.textContent = `${history.player2Score} : ${history.player2}`;
-
-// 	match.appendChild(player1);
-// 	match.appendChild(vs);
-// 	match.appendChild(player2);
-
-// 	const result = document.createElement('p');
-// 	result.textContent = history.winner === 'Berabere'
-// 		? 'Sonuç: Berabere'
-// 		: `Kazanan: ${history.winner}`;
-// 	result.classList.add(
-// 		'text-sm',
-// 		'mt-2',
-// 		'italic'
-// 	);
-
-// 	card.appendChild(date);
-// 	card.appendChild(match);
-// 	card.appendChild(result);
-// 	container.appendChild(card);
-// }
-//#endregion
-
 function createProfileSettings(container: HTMLElement, settings: ISection[]) {
 	const profileSettingsContainer = document.createElement('div');
 	profileSettingsContainer.id = 'profile-settings-container';
@@ -570,7 +473,6 @@ function createProfileSettings(container: HTMLElement, settings: ISection[]) {
 			group-hover:text-gray-900 transition-colors duration-300
 		`.replace(/\s+/g, ' ').trim();
 
-		// Password için eski şifre inputu
 		if (type === 'password') {
 			const oldPasswordInput = document.createElement('input');
 			oldPasswordInput.type = 'password';
@@ -658,7 +560,6 @@ function createProfileHeader(): HTMLElement {
 		absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10
 	`.replace(/\s+/g, ' ').trim();
 
-	// Close button
 	const closeBtn = document.createElement('button');
 	closeBtn.setAttribute('data-action', 'close');
 	closeBtn.className = `
@@ -702,7 +603,6 @@ function createProfileContent(): HTMLElement {
 	const contentWrapper = document.createElement('div');
 	contentWrapper.className = 'flex-1 overflow-y-auto overflow-x-visible custom-scrollbar-profile';
 	
-	// Add custom scrollbar styles
 	const style = document.createElement('style');
 	style.textContent = `
 		.custom-scrollbar-profile::-webkit-scrollbar {
@@ -947,28 +847,15 @@ function createProfileSettingsSection(): HTMLElement {
 	return section;
 }
 
-function getRandomAvatar(): string {
-	const avatars = [
-		'bear.png', 'cat.png', 'chick.png', 'duck.png', 'koala.png',
-		'lion.png', 'meerkat.png', 'panda.png', 'penguin.png', 'rabbit.png'
-	];
-	const randomIndex = Math.floor(Math.random() * avatars.length);
-	return avatars[randomIndex];
-}
-
 function getUserBasedAvatar(username: string): string {
-	const avatars = [
-		'bear.png', 'cat.png', 'chick.png', 'duck.png', 'koala.png',
-		'lion.png', 'meerkat.png', 'panda.png', 'penguin.png', 'rabbit.png'
-	];
 	let hash = 0;
 	for (let i = 0; i < username.length; i++) {
 		const char = username.charCodeAt(i);
 		hash = ((hash << 5) - hash) + char;
 		hash = hash & hash;
 	}
-	const index = Math.abs(hash) % avatars.length;
-	return avatars[index];
+	const index = Math.abs(hash) % AVAILABLE_AVATARS.length;
+	return AVAILABLE_AVATARS[index];
 }
 
 function showAvatarSelector(currentImageElement: HTMLImageElement): void {
@@ -1005,12 +892,7 @@ function showAvatarSelector(currentImageElement: HTMLImageElement): void {
 	const avatarGrid = document.createElement('div');
 	avatarGrid.className = 'grid grid-cols-5 gap-3 mb-6';
 	
-	const avatars = [
-		'bear.png', 'cat.png', 'chick.png', 'duck.png', 'koala.png',
-		'lion.png', 'meerkat.png', 'panda.png', 'penguin.png', 'rabbit.png'
-	];
-	
-	avatars.forEach((avatar) => {
+	AVAILABLE_AVATARS.forEach((avatar) => {
 		const avatarButton = document.createElement('button');
 		avatarButton.className = `
 			w-16 h-16 rounded-full overflow-hidden border-2 border-gray-300
@@ -1076,7 +958,7 @@ function closeModal(modal: HTMLElement): void {
 	
 	setTimeout(() => {
 		modal.remove();
-	}, 300);
+	}, TIMING.MODAL_ANIMATION);
 }
 
 function showAvatarChangeSuccess(): void {
@@ -1099,8 +981,8 @@ function showAvatarChangeSuccess(): void {
 		notification.style.transform = 'translateX(full)';
 		setTimeout(() => {
 			notification.remove();
-		}, 300);
-	}, 3000);
+		}, TIMING.MODAL_ANIMATION);
+	}, TIMING.NOTIFICATION_DISPLAY);
 }
 
 class ToastNotification {
@@ -1118,7 +1000,7 @@ class ToastNotification {
 		return this.container;
 	}
 
-	static show(message: string, type: 'success' | 'error' | 'info' = 'success', duration: number = 4000): void {
+	static show(message: string, type: 'success' | 'error' | 'info' = 'success', duration: number = TIMING.TOAST_DURATION): void {
 		const container = this.createContainer();
 		
 		const toast = document.createElement('div');
@@ -1230,11 +1112,10 @@ class ToastNotification {
 				this.container.remove();
 				this.container = null;
 			}
-		}, 500);
+		}, TIMING.MODAL_ANIMATION);
 	}
 }
 
-// Custom CSS for toast notifications
 const toastStyles = document.createElement('style');
 toastStyles.textContent = `
 	@keyframes toast-slide-in {
