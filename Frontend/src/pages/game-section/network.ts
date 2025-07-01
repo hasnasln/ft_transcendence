@@ -13,7 +13,7 @@ export  function createSocket(after: any): Socket
 
 
     // 2) Socket.IO bağlantısını auth ile oluşturun
-    const socket = io('http://localhost:3001', {
+    const socket = io('http://game.transendence.com', {
       auth: { token }
     });
 
