@@ -145,19 +145,18 @@ function checkForRemoteMatch(io: Server)
 	}
 }
 
-// EKLEMEE /////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+const tournamentPlayers = new Map<string, Player>();   ////// kaldırılabilir
 
-// const tournamentPlayers = new Map<string, Player>();
-
-// export function addPlayerToTournamentQueue(player: Player, io: Server)
-// {
-// 	tournamentPlayers.set(player.username, player);
-// 	console.log(`oyuncu tournamentPlayers a kaydedildi, player.username = ${player.username}`);
-// 	console.log(`şu anda tournamentPlayers size = ${tournamentPlayers.size}`);
-// 	//checkForTournamentMatch(player,io);
-// }
+export function addPlayerToTournamentQueue(player: Player, io: Server, tournamentCode: string)
+{
+	
+	tournamentPlayers.set(player.username, player);
+	console.log(`oyuncu tournamentPlayers a kaydedildi, player.username = ${player.username}`);
+	console.log(`şu anda tournamentPlayers size = ${tournamentPlayers.size}`);
+	//checkForTournamentMatch(player,io);
+}
 
 // export async function sendRequest(request: FastifyRequest) {
 // 	const responseData = await unitRequest('http://localhost:8081/api/auth/validate', {

@@ -41,7 +41,7 @@ export function createGround(scene: Scene, gameInfo: GameInfo)
 export function createPaddles(scene: Scene, gameInfo: GameInfo)
 {
   const wi = gameInfo.constants?.paddleWidth!;
-  const paddleSize = { width: wi, height: gameInstance.groundSize!.height*(0.3), depth: 0.5 };
+  const paddleSize = { width: wi, height: gameInstance.groundSize!.height*(0.3), depth: 0.75 };
   const paddle1 = MeshBuilder.CreateBox("paddle1", paddleSize, scene);
   paddle1.position.x = -gameInstance.groundSize!.width/2 + paddleSize.width;
   paddle1.position.y = gameInfo.paddle?.p1y!;

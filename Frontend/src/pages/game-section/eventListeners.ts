@@ -132,18 +132,21 @@ export function initializeEventListeners(gameInfo: GameInfo)
 
     });
 
-       gameInstance.turnToHomePage!.addEventListener("click", () =>
+    gameInstance.turnToHomePage!.addEventListener("click", () =>
     {
-     resumeButton.classList.add("hidden");
-     gameInstance.newmatchButton!.classList.add("hidden");
-     gameInstance.turnToHomePage!.classList.add("hidden");
-    if (gameInstance.startButton)
-      gameInstance.startButton.classList.add("hidden");
-    
-    if(!gameInfo.state?.matchOver)
-        gameInstance.socket!.emit("reset-match");
-    window.history.pushState({}, '', '/');
-    window.location.reload();
+      resumeButton.classList.add("hidden");
+      gameInstance.newmatchButton!.classList.add("hidden");
+      gameInstance.turnToHomePage!.classList.add("hidden");
+      if (gameInstance.startButton)
+        gameInstance.startButton.classList.add("hidden");
+      
+      if(!gameInfo.state?.matchOver)
+          gameInstance.socket!.emit("reset-match");
+      if (gameInfo.mode === 'tournament')
+        window.history.pushState({}, '', '/tournament'); ///////////////////////////////////////////// Burası değişecek ! /////////////////////////////////////////
+      else
+        window.history.pushState({}, '', '/');
+      window.location.reload();
     });
     
     window.addEventListener('popstate', (event) => {

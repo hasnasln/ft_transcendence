@@ -66,10 +66,18 @@ export function showEndMessage(gameInfo: GameInfo)
       gameInstance.endMsg!.textContent = `Rakibin bağlantısı kesildi. ${winnerName} maçı kazandı!`;
     }
   gameInstance.endMsg!.classList.remove("hidden");
-  if (gameInstance.startButton) {
-    gameInstance.startButton.textContent = "Aynı Maçı Tekrar Oyna";
-    gameInstance.startButton.classList.remove("hidden");
+  if (gameInfo.mode === 'tournament')
+  {
+    gameInstance.turnToHomePage!.textContent = "Turnuva sayfasına Dön";
+    gameInstance.turnToHomePage!.classList.remove("hidden");
   }
-  gameInstance.newmatchButton!.classList.remove("hidden");
-  gameInstance.turnToHomePage!.classList.remove("hidden");
+  else
+  {
+    if (gameInstance.startButton) {
+      gameInstance.startButton.textContent = "Aynı Maçı Tekrar Oyna";
+      gameInstance.startButton.classList.remove("hidden");
+    }
+    gameInstance.newmatchButton!.classList.remove("hidden");
+    gameInstance.turnToHomePage!.classList.remove("hidden");
+  }
 }

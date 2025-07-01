@@ -1,6 +1,8 @@
 import { game_button } from "../components/buttons";
 import { exmp } from '../languageMeneger';
 
+
+
 function renderScoreBoard(container: HTMLElement): void
 {
 	const ScoreBoard = document.createElement('div');

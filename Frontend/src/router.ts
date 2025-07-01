@@ -60,7 +60,7 @@ export function router()
 				loadingWithMessage(info, 'Lütfen Telefonu Yatay Tutunuz');
 				
 				setTimeout(() => {
-					gameInstance.initGameSettings();
+					gameInstance.initGameSettings(false);
 					info.classList.add('hidden');
 					info.classList.remove('bg-blue-500');
 					menu.classList.remove('hidden');

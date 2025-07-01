@@ -1,23 +1,34 @@
 import { gameInstance, GameMode} from "../play";
 import { io, Socket } from "socket.io-client";
+import { _apiManager } from '../../api/APIManeger';
 
-export function createSocket(after: any): Socket
+
+export  function createSocket(after: any): Socket
 {
-  // WebSocket bağlantısı oluşturuluyor
-  const socket = io("http://localhost:3001");
-  
-  socket.on("connect", () => {
-    console.log("Socket connected with ID:", socket.id);
-    socket.emit("username", { username: Math.random() < 0.5 ? "Ayhan1" : "Ayhan2"});
-    after();
-  });
+    // 1) Token’ı alın
+    const token = _apiManager.getToken();
+    if (!token) {
+      throw new Error('Token bulunamadı. Lütfen giriş yapın.');
+    }
 
-  //ilerde böyle olacak:Add commentMore actions
-// export const socket = io("http://localhost:3001", {
-//   auth: { userId: myUserId }
-// });
 
-  return socket;
+    // 2) Socket.IO bağlantısını auth ile oluşturun
+    const socket = io('http://localhost:3001', {
+      auth: { token }
+    });
+
+    socket.on('connect', () => {
+      console.log('Socket connected with ID:', socket.id);
+      after();
+
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('Socket connection error:', err.message);
+      // Örneğin token geçersizse server 401 dönebilir, burada logout ve redirect yapabilirsiniz
+    });
+
+    return socket;
 }
 
 
@@ -100,18 +111,21 @@ export class GameInfo
 //   username: string;
 // }
 
-export function waitForMatchReady(socket: Socket): Promise<string>
+export function waitForMatchReady(socket: Socket, tournamentMode: boolean): Promise<string>
 {
    return new Promise((resolve) =>
     {
       socket.on("match-ready", (matchPlayers : {left: {username: string, socketId: string},
         right: {username: string, socketId: string}}) =>
         {console.log("match-ready emiti geldi");
-        const rival = matchPlayers.left.socketId === socket.id ? matchPlayers.right.username : matchPlayers.left.username;
-          gameInstance.info!.textContent = `${rival} ile eşleştin`;
-          gameInstance.startButton!.innerHTML = `${rival} ile oyna !`;
+          //const rival = matchPlayers.left.socketId === socket.id ? matchPlayers.right.username : matchPlayers.left.username; // unique olan bişeye göre ayarlanacak !!!
+          // if (tournamentMode)
+          //   gameInstance.info!.textContent = `Sıradaki maç :  round : ????  vs ${rival}`;
+          // else
+            gameInstance.info!.textContent = `biriyle ile eşleştin`;
+          gameInstance.startButton!.innerHTML = `biriyle maçını oyna !`;
           gameInstance.startButton!.classList.remove("hidden");
-           resolve(rival);
+          resolve("anan");
         });
     });
 }

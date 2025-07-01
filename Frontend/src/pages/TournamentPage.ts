@@ -1,12 +1,15 @@
 import { exmp } from '../languageMeneger';
-import { game } from './play';
+import { gameInstance } from './play';
 import { _apiManager } from '../api/APIManeger';
 import { ITournament } from '../api/types';
+import { loadingWithMessage } from '../components/loading';
+import { PlayPage } from './play-page';
 
 // Recommended way, to include only the icons you need.
 
 
-export class TournamentPage {
+export class TournamentPage
+{
 	// private  currentLanguage: string; // Mevcut dili saklamak için
 	private data: ITournament; // Tournament data, initially null
 	private status : boolean = false;
@@ -66,6 +69,10 @@ export class TournamentPage {
 					break;
 				case 'start-tournament':
 					this.hedleStartTournament();
+					break;
+				case 'play-game':
+					this.handlePlay();
+					break;
 				default:
 					break;
 			}
@@ -181,7 +188,37 @@ export class TournamentPage {
 			t_first_section(container); // Re-render the tournament section
 		}
 	}
+
+
+	private handlePlay()
+	{ 
+		const tournamentDiv = document.getElementById("tournament-main");
+		if (!tournamentDiv)
+			console.log(`turnuva divi yok`);
+		else
+		{
+			tournamentDiv.innerHTML = '';
+			const playPage = new PlayPage();
+			const {info, menu} = playPage.render(tournamentDiv);
+			// 3 sanite bekle
+			if (info !== null && menu !== null)
+			{
+				info.classList.remove('hidden');
+				// info.textContent = exmp.getLang("game.loading");
+				info.classList.add('bg-gray-950');
+				loadingWithMessage(info, 'Lütfen Telefonu Yatay Tutunuz');
+							
+				setTimeout(() => {
+					gameInstance.initGameSettings(true, this.data.code);
+					info.classList.add('hidden');
+					info.classList.remove('bg-blue-500');
+				}, 2000);
+			}
+		}
+	}
 }
+
+
 
 function renderTournament(container: HTMLElement) {
 	const div = document.createElement('div');
@@ -829,6 +866,8 @@ function TournamentInformation(container: HTMLElement, tdata:ITournament): void 
 		'duration-300',
 		'hover:cursor-pointer',
 	);
+
+	div13.setAttribute('data-action', 'play-game');
 
 	div13.style.visibility = 'hidden'; // başlangıçta görünmez
 
