@@ -3,7 +3,7 @@ import { GameInfo } from "./network";
 
 export function initializeEventListeners(gameInfo: GameInfo)
 {
-  if(gameInfo.mode === 'remoteGame' || gameInfo.mode === 'vsAI')
+  if(gameInfo.mode === 'remoteGame' || gameInfo.mode === 'vsAI' || gameInfo.mode === 'tournament')
     {
       window.addEventListener("keydown", (event) =>
         {
@@ -79,7 +79,7 @@ export function initializeEventListeners(gameInfo: GameInfo)
 
   const resumeButton = document.getElementById("resume-button") as HTMLButtonElement;
  
-  if(gameInfo.mode !== 'remoteGame')
+  if(gameInfo.mode !== 'remoteGame' && gameInfo.mode !== 'tournament')
   {
     document.addEventListener("keydown", (event) =>
     {

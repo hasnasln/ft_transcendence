@@ -92,7 +92,8 @@ function checkForRemoteMatch(io: Server)
 			player1.socket.join(roomId);
 			player2.socket.join(roomId);
 
-			const matchPlayers = {left: player1.username, right: player2.username};
+			const matchPlayers = {left: {socketId: player1.socket.id, username: player1.username}, right: {socketId: player2.socket.id, username: player2.username}};
+			console.log(`matchPlayers.left.username = ${matchPlayers.left.username}   matchPlayers.right.username = ${matchPlayers.right.username}`);
 
 			io.to(roomId).emit("match-ready", matchPlayers);
 

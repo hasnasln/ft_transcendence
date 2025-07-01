@@ -12,12 +12,6 @@ export interface User {
 }
 
 
-// Geliştirme amaçlı gizli anahtar (prod ortamında sunucuda saklanmalı)
-const JWT_SECRET = 'DUMMY_SECRET_KEY_FOR_DEV_ONLY';
-// TextEncoder ile Uint8Array olarak tutulacak anahtar
-const secretKey = new TextEncoder().encode(JWT_SECRET);
-
-
 const httpServer = createServer();
 const io = new Server(httpServer, {
   cors: { origin: "*" },
@@ -42,8 +36,6 @@ io.use(async (socket, next) => {
     return next(new Error("Authentication error: token missing"));
   }
 
-  console.log(`game server a gelen token = ${token}`);
-
   try {
     const response = await myFetch('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined , token);
 
@@ -57,11 +49,13 @@ io.use(async (socket, next) => {
     const data = await response.json();
 
     console.log(data.data);
-    console.log("uuid" + data.data.uuid);
-    console.log("username" + data.data.username);
+    console.log("uuid " + data.data.uuid);
+    console.log("username " + data.data.username);
   
-   const hasnasln : User = {uuid: data.data.uuid, username: data.data.username};
-  (socket as any).user = hasnasln;
+   const user : User = {uuid: data.data.uuid, username: data.data.username};
+   console.log(`user.username = ${user.username}`);
+  (socket as any).user = user;
+  console.log(`(socket as any).user.username = ${(socket as any).user.username}`);
 
     next();
   }
@@ -75,6 +69,7 @@ io.use(async (socket, next) => {
 io.on("connection", socket =>
 {
   const username = (socket as any).user.username;
+  console.log(`username = ${username}`);
   const player: Player = { socket, username };
   players.set(username, player);
 

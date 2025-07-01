@@ -1,4 +1,4 @@
-import { gameInstance, GameMode} from "../play";
+import { gameInstance, GameMode, game} from "../play";
 import { io, Socket } from "socket.io-client";
 import { _apiManager } from '../../api/APIManeger';
 
@@ -111,21 +111,20 @@ export class GameInfo
 //   username: string;
 // }
 
-export function waitForMatchReady(socket: Socket, tournamentMode: boolean): Promise<string>
+export function waitForMatchReady(socket: Socket, tournamentMode: boolean, gameInstance: game): Promise<string>
 {
    return new Promise((resolve) =>
     {
-      socket.on("match-ready", (matchPlayers : {left: {username: string, socketId: string},
-        right: {username: string, socketId: string}}) =>
-        {console.log("match-ready emiti geldi");
-          //const rival = matchPlayers.left.socketId === socket.id ? matchPlayers.right.username : matchPlayers.left.username; // unique olan bişeye göre ayarlanacak !!!
-          // if (tournamentMode)
-          //   gameInstance.info!.textContent = `Sıradaki maç :  round : ????  vs ${rival}`;
-          // else
-            gameInstance.info!.textContent = `biriyle ile eşleştin`;
-          gameInstance.startButton!.innerHTML = `biriyle maçını oyna !`;
+      socket.on("match-ready", (matchPlayers : {left: {socketId: string, username: string}, right: {socketId: string, username: string}}) =>
+        {console.log(`match-ready emiti geldi: matchPlayers.left.username = ${matchPlayers.left.username},  matchPlayers.right.username = ${matchPlayers.right.username}`);
+          const rival = matchPlayers.left.socketId === socket.id ? matchPlayers.right.username : matchPlayers.left.username;
+          if (tournamentMode)
+            gameInstance.info!.textContent = `Sıradaki maç :  round : ????  vs ${rival}`;
+          else
+            gameInstance.info!.textContent = `${rival} ile eşleştin`;
+          gameInstance.startButton!.innerHTML = `${rival} maçını oyna !`;
           gameInstance.startButton!.classList.remove("hidden");
-          resolve("anan");
+          resolve(rival);
         });
     });
 }

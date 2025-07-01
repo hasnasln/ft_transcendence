@@ -41,7 +41,7 @@ export function createGround(scene: Scene, gameInfo: GameInfo)
 export function createPaddles(scene: Scene, gameInfo: GameInfo)
 {
   const wi = gameInfo.constants?.paddleWidth!;
-  const paddleSize = { width: wi, height: gameInstance.groundSize!.height*(0.3), depth: 0.75 };
+  const paddleSize = { width: wi, height: gameInstance.groundSize!.height*(0.3), depth: 0.6 };
   const paddle1 = MeshBuilder.CreateBox("paddle1", paddleSize, scene);
   paddle1.position.x = -gameInstance.groundSize!.width/2 + paddleSize.width;
   paddle1.position.y = gameInfo.paddle?.p1y!;
@@ -67,7 +67,7 @@ export function createPaddles(scene: Scene, gameInfo: GameInfo)
   [paddle1, paddle2].forEach(p => {
     p.enableEdgesRendering();
     p.edgesWidth = 2;
-    p.edgesColor = new Color4(0.6, 0.6, 0.6, 1); 
+    p.edgesColor = new Color4(0.7, 0.7, 0.7, 1); 
   });
 
   return { paddle1, paddle2};
@@ -101,7 +101,7 @@ export function createWalls(scene: Scene, gameInfo: GameInfo)
   [bottomWall, topWall].forEach(p => {
     p.enableEdgesRendering();
     p.edgesWidth = 2;
-    p.edgesColor = new Color4(0.6, 0.6, 0.6, 1); 
+    p.edgesColor = new Color4(0.7, 0.7, 0.7, 1); 
   });
 
 }

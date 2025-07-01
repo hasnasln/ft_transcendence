@@ -119,15 +119,14 @@ export class game
 					this.initializeGameSettings(async (status) =>
 						{
 							console.log("connected to socket.io server");
-							// console.log(`status geldi, status = {${status.currentGameStarted}, ${status.game_mode}}`);
-							console.log(`tournamentMode = ${tournamentMode}`);
-							
+						    console.log(`status geldi, status = {${status.currentGameStarted}, ${status.game_mode}, ${status.level}, ${status.tournamentCode}}`);
+							this.gameStatus = status;
 							this.socket!.emit("start", this.gameStatus);
 
 							let rival: string;
 							if (this.gameStatus.game_mode === "remoteGame" || this.gameStatus.game_mode === 'tournament')
 							{
-								rival = await waitForMatchReady(this.socket!, tournamentMode);
+								rival = await waitForMatchReady(this.socket!, tournamentMode, this);
 								console.log(`${this.socket!.id} ${rival} maçı için HAZIR`);
 							}
 
@@ -145,7 +144,9 @@ export class game
 										this.endMsg.classList.add("hidden");
 
 									if (this.gameStatus.game_mode === "remoteGame"  || this.gameStatus.game_mode === "tournament")
-										this.info!.textContent = `${rival} bekleniyor ...`;
+										{
+											console.log(`İÇERDEYUK`);
+											this.info!.textContent = `${rival} bekleniyor ...`;}
 									else
 										this.info!.classList.add("hidden");
 
@@ -190,9 +191,11 @@ export class game
 	}
 
 	public initializeGameSettings(onModeSelected: (status: GameStatus) => void)
-	{
+	{ 
 		if (this.tournamentMode)
 		{
+			this.info!.textContent = "Turnuva rakibi için bekleniyor	...";
+			this.info!.classList.remove("hidden");
 			this.gameStatus = { currentGameStarted: false, game_mode: 'tournament', tournamentCode : this.tournamentCode };
 			onModeSelected(this.gameStatus);
 			return;

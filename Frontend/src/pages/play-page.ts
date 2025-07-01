@@ -212,8 +212,7 @@ function renderMenu(container: HTMLElement): HTMLElement
     const buttonData = [
         { id: 'btn-vs-computer', text: exmp.getLang("game.vs-compiter-b") },
         { id: 'btn-find-rival', text: exmp.getLang("game.find-reval-b") },
-        { id: 'btn-local', text: exmp.getLang("game.local-game") },
-        { id: 'tournament', text: exmp.getLang("game.tournament") }
+        { id: 'btn-local', text: exmp.getLang("game.local-game") }
     ];
 
     buttonData.forEach(({ id, text }) => {
