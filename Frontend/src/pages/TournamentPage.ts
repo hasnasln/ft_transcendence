@@ -14,8 +14,6 @@ export class TournamentPage
 	private data: ITournament; // Tournament data, initially null
 	private status : boolean = false;
 
-
-
 	constructor() {
 		this.data = 
 		{

@@ -9,6 +9,7 @@ export interface InputProvider
   getPaddleDelta(): number;
   getUsername(): string;
   getSocket?(): Socket;
+  getUuid(): string;
 }
 
  //RemotePlayerInput listens to socket events for keydown/keyup
@@ -26,6 +27,7 @@ export class RemotePlayerInput implements InputProvider
   getPaddleDelta() { return this.delta; }
   getUsername() { return this.player.username; }
    getSocket() { return this.player.socket;}
+   getUuid() { return this.player.uuid;}
 }
 
 
@@ -73,6 +75,7 @@ export class AIPlayerInput implements InputProvider
   }
 
   getUsername() { return this.username; }
+  getUuid() { return('');}
 }
 
 
@@ -107,4 +110,5 @@ export class LocalPlayerInput implements InputProvider
       return ("friend");
   }
   getSocket() { return this.player.socket;}
+  getUuid() { return this.player.uuid;}
 }

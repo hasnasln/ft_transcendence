@@ -394,7 +394,7 @@ export class APIManager
 		}
 	}
 
-	public async getTournament(tournamentCode: string): Promise<IApiResponseWrapper> {
+	 public async getTournament(tournamentCode: string): Promise<IApiResponseWrapper> {
 		const result: IApiResponseWrapper = {success: false, message: '', data: null};
 		try{
 			const response = await this.myFetch(`${this.t_url}/${tournamentCode}`, HTTPMethod.GET, {

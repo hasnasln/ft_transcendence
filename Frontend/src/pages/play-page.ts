@@ -46,6 +46,92 @@ function renderScoreBoard(container: HTMLElement): void
 			'z-10'
 		);
 
+
+		const roundDiv = document.createElement('div');
+		roundDiv.id = 'roundDiv';
+		roundDiv.classList.add(
+				// Konumlandırma
+			'absolute',
+			'top-[5%]',
+			'left-[67%]',
+			'-translate-x-1/2',
+
+			// Görünmez başlangıç
+			'hidden',
+
+			// Flex ayarları
+			'flex',
+			'justify-center',
+			'items-center',
+
+			// Padding
+			'px-[1.5vw]',
+			'py-[0.3vw]',
+
+			// Arka plan (özel gradient)
+			'bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)]',
+
+			// Kenarlıklar
+			'border-2',
+			'border-[#555]',
+			'rounded-[12px]',
+
+			// Gölge (özel box-shadow)
+			'shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)]',
+
+			// Yazı tipi, boyutu ve rengi
+			'font-sans',
+			'text-[1.2vw]',
+			'text-[#eee]',
+
+			// Z-index
+			'z-10'
+		);
+
+
+		const tournamentIdDiv = document.createElement('div');
+		tournamentIdDiv.id = 'tournamentIdDiv';
+		tournamentIdDiv.classList.add(
+				// Konumlandırma
+			'absolute',
+			'top-[5%]',
+			'left-[30%]',
+			'-translate-x-1/2',
+
+			// Görünmez başlangıç
+			'hidden',
+
+			// Flex ayarları
+			'flex',
+			'justify-center',
+			'items-center',
+
+			// Padding
+			'px-[1.5vw]',
+			'py-[0.3vw]',
+
+			// Arka plan (özel gradient)
+			'bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)]',
+
+			// Kenarlıklar
+			'border-2',
+			'border-[#555]',
+			'rounded-[12px]',
+
+			// Gölge (özel box-shadow)
+			'shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)]',
+
+			// Yazı tipi, boyutu ve rengi
+			'font-sans',
+			'text-[1vw]',
+			'text-[#eee]',
+
+			// Z-index
+			'z-10'
+		);
+
+
+
 		const span01 = document.createElement('span');
 		span01.id = 'blue-team';
 		span01.textContent = 'P1';
@@ -72,7 +158,26 @@ function renderScoreBoard(container: HTMLElement): void
 		ScoreBoard.appendChild(span03);
 		ScoreBoard.appendChild(span02);
 
+		const span04 = document.createElement('span');
+		span04.id = 'roundNo';
+		span04.textContent = 'Round : 1';
+		span04.classList.add(
+			'text-blue-500'
+		);
+
+		const span05 = document.createElement('span');
+		span05.id = 'tournamentCode';
+		span05.textContent = 'Turnuva ID : ';
+		span05.classList.add(
+			'text-blue-500'
+		);
+
+		roundDiv.appendChild(span04);
+		tournamentIdDiv.appendChild(span05);
+
 		container.appendChild(ScoreBoard);
+		container.appendChild(roundDiv);
+		container.appendChild(tournamentIdDiv);
 
 }
 
@@ -212,7 +317,8 @@ function renderMenu(container: HTMLElement): HTMLElement
     const buttonData = [
         { id: 'btn-vs-computer', text: exmp.getLang("game.vs-compiter-b") },
         { id: 'btn-find-rival', text: exmp.getLang("game.find-reval-b") },
-        { id: 'btn-local', text: exmp.getLang("game.local-game") }
+        { id: 'btn-local', text: exmp.getLang("game.local-game") },
+		{ id: 'tournament', text: exmp.getLang("game.tournament") }
     ];
 
     buttonData.forEach(({ id, text }) => {

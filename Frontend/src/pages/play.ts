@@ -1,16 +1,14 @@
 import { createPaddles, createGround, createWalls, createScene } from "./game-section/gameScene";
-import { Mesh, Engine, Scene, FreeCamera, Vector3 } from "@babylonjs/core";
+import { Mesh, Engine, Scene} from "@babylonjs/core";
 import { startGameLoop } from "./game-section/gameLoop"
 import { BallController } from "./game-section/ball";
 import { GameInfo, waitForGameInfoReady, waitForMatchReady, waitForRematchApproval } from "./game-section/network";
 import { createGame } from "./game-section/ui";
 import { CameraController } from "./game-section/camera";
-/*********************************** */
 import { Socket } from "socket.io-client";
-
-// 🎮 WebSocket bağlantısı
 import { createSocket } from "./game-section/network";
 import { moveButton } from "../components/mov-button";
+
 
 export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament' | null;
 
@@ -18,15 +16,22 @@ export interface GameStatus {
 	currentGameStarted: boolean;
 	game_mode: GameMode;
 	level?: string;
-	tournamentCode?: string
+	tournamentCode?: string;
+	tournamentName?: string;
+	roundNo?: number;
+	finalMatch?: boolean
 }
 
 export class game
 {
 	public startButton: HTMLElement | null = null;
 	public scoreBoard: HTMLElement | null = null;
+	public roundDiv: HTMLElement | null = null;
+	public tournamentIdDiv: HTMLElement | null = null;
 	public setBoard: HTMLElement | null = null;
 	public scoreTable: HTMLElement | null = null;
+	public roundNoTable: HTMLElement | null = null;
+	public tournamentIDTable: HTMLElement | null = null;
 	public setTable: HTMLElement | null = null;
 	public endMsg: HTMLElement | null = null;
 	public socket: Socket | null = null;
@@ -44,7 +49,8 @@ export class game
 	public ball: BallController | null = null;
 	public gameStatus: GameStatus = {
 		currentGameStarted: false,
-		game_mode: null
+		game_mode: null,
+		finalMatch: false
 	};
 	public reMatch: boolean = false;
 	public username: string | null = null;
@@ -61,6 +67,10 @@ export class game
 		this.scoreBoard = null;
 		this.setBoard = null;
 		this.scoreTable = null;
+		this.roundNoTable = null;
+		this.tournamentIDTable = null;
+		this.roundDiv = null;
+		this.tournamentIdDiv=null;
 		this.setTable = null;
 		this.endMsg = null;
 		this.socket = null;
@@ -78,7 +88,8 @@ export class game
 		this.ball = null;
 		this.gameStatus = {
 			currentGameStarted: false,
-			game_mode: null
+			game_mode: null,
+			finalMatch : false
 		};
 		this.username = null;
 	}
@@ -86,14 +97,18 @@ export class game
 	public initGameSettings(tournamentMode: boolean, tournamentCode?: string ): boolean
 	{
 		this.tournamentMode = tournamentMode;
-		if (tournamentCode)
+		if (tournamentCode !== undefined)
 			this.tournamentCode = tournamentCode;
 		//this.cleanOldGame();       ????????????????????????????????????????????????????????????????????
 		this.resetGame();
 		this.startButton = document.getElementById("start-button");
 		this.scoreBoard = document.getElementById("scoreboard");
+		this.roundDiv = document.getElementById("roundDiv");
+		this.tournamentIdDiv = document.getElementById("tournamentIdDiv");
 		this.setBoard = document.getElementById("setboard");
 		this.scoreTable = document.getElementById("score-table");
+		this.roundNoTable = document.getElementById("roundNo");
+		this.tournamentIDTable = document.getElementById("tournamentCode");
 		this.setTable = document.getElementById("set-table");
 		this.endMsg = document.getElementById("end-message");
 		this.newmatchButton = document.getElementById("newmatch-button");
@@ -103,8 +118,8 @@ export class game
 		console.log("connecting to socket.io server...");
 		const onSocketConnection = () =>
 			{
-				if (!this.startButton || !this.scoreBoard || !this.setBoard ||
-						!this.scoreTable || !this.setTable || !this.endMsg ||
+				if (!this.startButton || !this.scoreBoard || !this.roundDiv || !this.tournamentIdDiv || !this.setBoard ||
+						!this.scoreTable || !this.roundNoTable || !this.tournamentIDTable || !this.setTable || !this.endMsg || 
 					!this.socket || !this.newmatchButton || !this.turnToHomePage || !this.info)
 				{
 					console.log("Bir veya daha fazla HTML elementi bulunamadı. Lütfen HTML dosyasını kontrol edin.");
@@ -126,7 +141,12 @@ export class game
 							let rival: string;
 							if (this.gameStatus.game_mode === "remoteGame" || this.gameStatus.game_mode === 'tournament')
 							{
-								rival = await waitForMatchReady(this.socket!, tournamentMode, this);
+								if (this.gameStatus.game_mode === 'tournament')
+								{
+									this.info!.textContent = "Turnuva rakibi için bekleniyor	...";
+									this.info!.classList.remove("hidden");
+								}
+								rival = await waitForMatchReady(this);
 								console.log(`${this.socket!.id} ${rival} maçı için HAZIR`);
 							}
 
@@ -187,6 +207,23 @@ export class game
 			}
 
 		this.socket = createSocket(onSocketConnection);
+		this.socket.on('goToNextRound', () =>
+		{
+      		console.log('Bir üst tura yükseldiniz:');
+			this.info!.textContent = `Bir üst tura yükseldiniz ! \n
+			Bir sonraki roundu bekleyiniz ...`;
+			this.turnToHomePage!.textContent = "Turnuva sayfasına Dön";
+
+			gameInstance.turnToHomePage!.addEventListener("click", () =>
+			{
+				gameInstance.turnToHomePage!.classList.add("hidden");
+				window.history.pushState({}, '', '/tournament');
+				window.location.reload();
+			});
+			
+			this.info!.classList.remove("hidden");
+    		this.turnToHomePage!.classList.remove("hidden");
+   	 	});
 		return true;
 	}
 
@@ -196,7 +233,7 @@ export class game
 		{
 			this.info!.textContent = "Turnuva rakibi için bekleniyor	...";
 			this.info!.classList.remove("hidden");
-			this.gameStatus = { currentGameStarted: false, game_mode: 'tournament', tournamentCode : this.tournamentCode };
+			this.gameStatus = { currentGameStarted: false, game_mode: 'tournament', tournamentCode : this.tournamentCode, finalMatch: this.gameStatus.finalMatch };
 			onModeSelected(this.gameStatus);
 			return;
 		}
@@ -205,13 +242,14 @@ export class game
 			return;
 		}
 
-		let status: { currentGameStarted: boolean, game_mode: GameMode, level?: string };
-		status = { currentGameStarted: false, game_mode: null };
+		let status: GameStatus;
+		status = { currentGameStarted: false, game_mode: null, finalMatch: this.gameStatus.finalMatch };
 
 		const btnVsComp = document.getElementById("btn-vs-computer")!;
 		const btnFindRival = document.getElementById("btn-find-rival")!;
 		const diffDiv = document.getElementById("difficulty")!;
 		const btnLocal = document.getElementById("btn-local")!;
+		const tournament = document.getElementById("tournament")!;
 
 
 		// 1) VS Computer’a basıldığında zorluk seçeneklerini göster
@@ -249,8 +287,57 @@ export class game
 			status.game_mode = 'localGame';
 			this.startButton!.classList.remove("hidden");
 			onModeSelected(status);
-
 		});
+
+		//5) tournament
+
+			tournament.addEventListener("click", () => {
+		// 1️⃣ Mevcut menüyü gizle, bilgi metnini göster
+		document.getElementById("menu")!.classList.add("hidden");
+
+		// 2️⃣ Oyun modunu tournament olarak ayarla
+		status.game_mode = 'tournament';
+		this.tournamentMode = true;
+
+		// 3️⃣ Dinamik olarak bir div ekle: içinde input + button olacak
+		const codeDiv = document.createElement('div');
+		codeDiv.id = 'tournament-code-div';
+		codeDiv.className = 'absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 \
+		flex flex-col justify-center items-center gap-12 mt-4 z-10';
+
+		const codeInput = document.createElement('input');
+		codeInput.type = 'text';
+		codeInput.placeholder = 'Turnuva Kodunu Giriniz';
+		codeInput.className = 'border border-gray-400 rounded px-5 py-2 text-[1.5vw]';
+
+		const submitBtn = document.createElement('button');
+		submitBtn.textContent = 'Oyna';
+		submitBtn.className = 'bg-blue-500 text-white px-5 py-2 rounded text-[1.5vw]';
+		
+		
+		codeDiv.appendChild(codeInput);
+		codeDiv.appendChild(submitBtn);
+		const playDiv = document.getElementById('game-wrapper');
+		playDiv!.appendChild(codeDiv); // Veya uygun bir container'a
+
+		// 4️⃣ Butona tıklanınca kodu oku ve akışı devam ettir
+		submitBtn.addEventListener('click', async () => {
+			const enteredCode = codeInput.value.trim();
+			if (!enteredCode) {
+			alert('Lütfen geçerli bir kod girin.');
+			return;
+			}
+
+			console.log(`enteredCode = ${enteredCode}`);
+			// Örneğin this.tournamentCode'a atayabilirsiniz:
+			this.tournamentCode = enteredCode;
+			status.tournamentCode = this.tournamentCode;
+			// Div’i kaldır
+			codeDiv.remove();
+			onModeSelected(status);
+		});
+		});
+
 	}
 
 
