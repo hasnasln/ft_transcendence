@@ -27,20 +27,36 @@ export  function createSocket(after: any): Socket
     socket.on('connect', () => {
       console.log('Socket connected with ID:', socket.id);
       after();
-
     });
 
-    socket.on('connect_error', (err) => {
+    socket.on('connect_error', (err) =>
+    {
       console.error('Socket connection error:', err.message);
-      // Örneğin token geçersizse server 401 dönebilir, burada logout ve redirect yapabilirsiniz
-      gameInstance.info!.textContent = `Socket connection error:, ${err.message}`;
-      gameInstance.info!.classList.remove("hidden");
-        setTimeout(() =>
+
+      if (err.message.includes("token missing"))
         {
-          gameInstance.info!.classList.add("hidden");
+          alert("Token eksik. Lütfen tekrar giriş yapın.");
           window.history.pushState({}, '', '/singin');
           window.location.reload();
-        }, 2000);
+        }
+      else if (err.message.includes("Token validation error"))
+        {
+          alert("Token doğrulama hatası :" + err.message);
+          window.history.pushState({}, '', '/singin');
+          window.location.reload();
+        }
+      else if (err.message.includes("Game server error"))
+          {
+            alert("Aynı anda birden fazla oyuna katılamazsınız.");
+            window.history.pushState({}, '', '/');
+            window.location.reload();
+          }
+        else
+      {
+          alert("Bağlantı reddedildi: " + err.message);
+          window.history.pushState({}, '', '/');
+          window.location.reload();
+      }
     });
 
 
@@ -55,6 +71,16 @@ export  function createSocket(after: any): Socket
           window.location.reload();
         }, 5000);
     });
+
+    // socket.on('waitingRematch', (rival: string) =>
+    // {
+    //     const answer = window.confirm(`${rival} oyuncusundan tekrar maç isteği geldi. Oynamak istermisin ?`);
+    //   if (answer) {
+        
+    //   } else {
+    //     console.log("Kullanıcı reddetti (No)");
+    //   }
+    // });
 
     return socket;
 }

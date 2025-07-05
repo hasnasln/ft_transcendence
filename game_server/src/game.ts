@@ -373,7 +373,7 @@ export class Game
                 else if (data.status === "resume" && this.isPaused)
                     this.resumeGameLoop();
               });
-              if (!this.matchOver)
+              if (!this.matchOver && (this.gameMode === 'remoteGame' || this.gameMode === 'tournament'))
                 disconnectEvents.forEach(evt => socket.on(evt, () => {this.handleDisconnect(opponent); return;} ));
           }
         });

@@ -3,6 +3,7 @@ import { createServer } from "http";
 import {Player, addPlayerToQueue, removePlayerFromQueue, startGameWithAI, startLocalGame} from "./matchmaking";
 import { error } from "console";
 import { handleTournamentMatch } from "./tournament";
+import { emitErrorToClient } from "./errorHandling";
 
 export interface User {
   uuid: string;
@@ -58,39 +59,52 @@ io.use(async (socket, next) =>
   if (!token) {
     console.log(`[Server] Token gönderilmedi. ID: ${socket.id}`);
     return next(new Error("Authentication error: token missing"));
-
   }
 
-  try
-  {
-      const response = await myFetch('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined , token);
+  const response = await myFetch('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined , token);
+  console.log(`Token validation response: \n ${response}`);
+  const data = await response.json();
 
-      if(!response.ok)
-        throw error;
-      console.log(`Token validation response: \n ${response}`);
-      const data = await response.json();
+  if(!response.ok)
+    return next(new Error("Token validation error: " + data.error));
 
-      console.log("uuid " + data.data.uuid);
-      console.log("username " + data.data.username);
-    
-      const user : User = {uuid: data.data.uuid, username: data.data.username};
-      (socket as any).user = user;
-      next();
+  console.log("uuid " + data.data.uuid);
+  console.log("username " + data.data.username);
+
+  const user : User = {uuid: data.data.uuid, username: data.data.username};
+  (socket as any).user = user;
+
+  const username = (socket as any).user.username;
+  const uuid = (socket as any).user.uuid;
+  const player: Player = { socket, username, uuid };
+
+
+  if (players.has(username)) {
+    const existing = players.get(username);
+    if (existing?.socket.connected) {
+      return next(new Error("Game server error: You can not play two games at the same time"));
+    } else {
+      console.log("Önceki bağlantı kopmuş ama hala map'te. Güncelleniyor.");
+      players.delete(username); // Güvenli temizlik
+    }
   }
-   catch (err)
-  {
-    console.log(`[Server] Token doğrulanamadı. ID: ${socket.id}`);
-    return next(new Error("Authentication error: invalid token"));
-  }
+  players.set(username, player);
+  
+  next();
 });
 
 
 io.on("connection", socket =>
 {
   const username = (socket as any).user.username;
-  const uuid = (socket as any).user.uuid;
-  const player: Player = { socket, username, uuid };
-  players.set(username, player);
+  const player = players.get(username);
+  if(!player)
+    {
+      console.log("Hata kodu : Oyuncu listede bulunamadı");
+      emitErrorToClient("Hata kodu : Oyuncu listede bulunamadı", socket.id, io);
+      socket.disconnect(); // Bu istemcinin bağlantısını keser
+      return; 
+    }
 
   console.log(`✔ Oyuncu bağlandı: ${username} (ID: ${socket.id})`);
 
@@ -106,11 +120,21 @@ io.on("connection", socket =>
     else if (gameStatus.game_mode === 'tournament')
       handleTournamentMatch(player, io, gameStatus.tournamentCode!);
   });
+  // socket.on("disconnect", () => {
+  //   console.log(`disconnect geldi, ${socket.id} ayrıldı`);
+  //   removePlayerFromQueue(player);
+  //   players.delete(player.username);
+  // });
+
   socket.on("disconnect", () => {
-    console.log(`disconnect geldi, ${socket.id} ayrıldı`);
-    removePlayerFromQueue(player);
-    players.delete(player.socket.id);
-  });
+    const username = (socket as any).user?.username;
+    if (username && players.get(username)?.socket.id === socket.id) {
+      removePlayerFromQueue(player);
+      players.delete(username);
+      console.log(`Oyuncu bağlantısı kapandı: ${username}`);
+    }
+    });
+  
 });
 
 

@@ -151,6 +151,8 @@ export function checkForRemoteMatch(io: Server, waitingPlayersMap: Map<string, P
 			reMatchApproval1 = data;
 			socket1Ready = true;
 			console.log(`player1 hazır, reMatchApproval = ${reMatchApproval1}`);
+			if (reMatchApproval1)
+				io.to(player2.socket.id).emit("waitingRematch");
 			checkBothReady();
 			});
 
@@ -158,6 +160,8 @@ export function checkForRemoteMatch(io: Server, waitingPlayersMap: Map<string, P
 			reMatchApproval2 = data;
 			socket2Ready = true;
 			console.log(`player2 hazır, reMatchApproval = ${reMatchApproval2}`);
+			if (reMatchApproval2)
+				io.to(player1.socket.id).emit("waitingRematch");
 			checkBothReady();
 			});
 
