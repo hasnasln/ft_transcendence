@@ -149,6 +149,7 @@ export function initializeEventListeners(gameInfo: GameInfo)
       window.location.reload();
     });
     
+	  console.log('Geri tuşuna basma eventi dinleiyor!');
     window.addEventListener('popstate', (event) => {
 	  console.log('Geri tuşuna basıldı!');
      if(!gameInfo.state?.matchOver)
@@ -158,4 +159,11 @@ export function initializeEventListeners(gameInfo: GameInfo)
     });
 }
 
-
+console.log('Geri tuşuna basma eventi dinleniyor!222');
+window.addEventListener('popstate', (event) => {
+  console.log('Geri tuşuna basıldı!23456');
+  setTimeout(()=> {
+    gameInstance.socket!.disconnect();
+  }, 50)
+  window.location.reload();
+});

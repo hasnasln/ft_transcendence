@@ -3,6 +3,7 @@ import { InputProvider } from "./inputProviders";
 import { GameMode } from "./server";
 import { pushWinnerToTournament } from "./tournament";
 import { emitErrorToClient } from "./errorHandling";
+import { players } from "./server";
 
 type Side = 'leftPlayer' | 'rightPlayer';
 
@@ -394,7 +395,17 @@ export class Game
   type Middleware = (g: Game, dt: number) => boolean;
 
 const skipIfMatchOver: Middleware = (g, _dt) => {
-  if (g.matchOver) {
+  if (g.matchOver)
+  {
+    const leftUsername = g.leftInput.getUsername();
+    const rightUsername = g.rightInput.getUsername();
+
+    const leftPlayer = players.get(leftUsername);
+    const rightPlayer = players.get(rightUsername);
+    // leftPlayer!.isPlaying = false;
+    // if (rightUsername !== "AI")
+    //   rightPlayer!.isPlaying = false;
+
     if(g.gameMode === 'tournament')
     {
        const winnerInput = g.matchWinner === 'leftPlayer' ? g.leftInput : g.rightInput;

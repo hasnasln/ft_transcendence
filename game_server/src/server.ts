@@ -51,89 +51,90 @@ export interface GameStatus {
 	finalMatch?: boolean
 };
 
-const players = new Map<string, Player>();
+export const players = new Map<string, Player>();
 
 io.use(async (socket, next) =>
 {
-  const token = socket.handshake.auth?.token;
-  if (!token) {
-    console.log(`[Server] Token gönderilmedi. ID: ${socket.id}`);
-    return next(new Error("Authentication error: token missing"));
-  }
-
-  const response = await myFetch('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined , token);
-  console.log(`Token validation response: \n ${response}`);
-  const data = await response.json();
-
-  if(!response.ok)
-    return next(new Error("Token validation error: " + data.error));
-
-  console.log("uuid " + data.data.uuid);
-  console.log("username " + data.data.username);
-
-  const user : User = {uuid: data.data.uuid, username: data.data.username};
-  (socket as any).user = user;
-
-  const username = (socket as any).user.username;
-  const uuid = (socket as any).user.uuid;
-  const player: Player = { socket, username, uuid };
-
-
-  if (players.has(username)) {
-    const existing = players.get(username);
-    if (existing?.socket.connected) {
-      return next(new Error("Game server error: You can not play two games at the same time"));
-    } else {
-      console.log("Önceki bağlantı kopmuş ama hala map'te. Güncelleniyor.");
-      players.delete(username); // Güvenli temizlik
+  try
+  {
+    const token = socket.handshake.auth?.token;
+    if (!token) {
+      console.log(`[Server] Token gönderilmedi. ID: ${socket.id}`);
+      throw("Authentication error: token missing");
     }
+
+    const response = await myFetch('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined , token);
+    const data = await response.json();
+    console.log(`Token validation response: \n ${JSON.stringify(data, null, 2)}`);
+
+    if(!response.ok)
+      throw("Token validation error: " + data.error);
+ // 
+    // console.log("uuid " + data.data.uuid);
+    // console.log("username " + data.data.username);
+
+    const user : User = {uuid: data.data.uuid, username: data.data.username};
+    (socket as any).user = user;
+    
+    next();
   }
-  players.set(username, player);
-  
-  next();
+  catch(err: any)
+  {
+    console.log()
+    return next(new Error("Authentication error: " + err.message));
+  }
 });
 
 
 io.on("connection", socket =>
 {
   const username = (socket as any).user.username;
-  const player = players.get(username);
-  if(!player)
-    {
-      console.log("Hata kodu : Oyuncu listede bulunamadı");
-      emitErrorToClient("Hata kodu : Oyuncu listede bulunamadı", socket.id, io);
-      socket.disconnect(); // Bu istemcinin bağlantısını keser
-      return; 
-    }
+  const uuid = (socket as any).user.uuid;
+  let player : Player
+ 
+  console.log("p ", players);
+  console.log("u ", username);
+  if (players.has(username))
+  {
+    socket.disconnect(true);
+    console.log("connection is doubled");
+    return
+  }
+  else
+  {
+    player = {socket, username, uuid}; //isPlaying : false};
+    players.set(username, player);
+  }
 
-  console.log(`✔ Oyuncu bağlandı: ${username} (ID: ${socket.id})`);
+  console.log(`✔ Oyuncu bağlaasdndı: ${username} (ID: ${socket.id})`);
 
-   socket.on("start", async (gameStatus : GameStatus) =>
+  socket.on("start", async (gameStatus : GameStatus) =>
   {
     console.log(`gameStatus = {game_mode = ${gameStatus.game_mode}, level = ${gameStatus.level}}`);
     if (gameStatus.game_mode === "vsAI")
-        startGameWithAI(player, gameStatus.level!, io);
+      startGameWithAI(player, gameStatus.level!, io);
     else if (gameStatus.game_mode === "localGame")
-        startLocalGame(player, io);
+      startLocalGame(player, io);
     else if (gameStatus.game_mode === "remoteGame")
-        addPlayerToQueue(player, io, "remoteGame");
+      addPlayerToQueue(player, io, "remoteGame");
     else if (gameStatus.game_mode === 'tournament')
       handleTournamentMatch(player, io, gameStatus.tournamentCode!);
   });
-  // socket.on("disconnect", () => {
-  //   console.log(`disconnect geldi, ${socket.id} ayrıldı`);
-  //   removePlayerFromQueue(player);
-  //   players.delete(player.username);
-  // });
 
   socket.on("disconnect", () => {
-    const username = (socket as any).user?.username;
-    if (username && players.get(username)?.socket.id === socket.id) {
-      removePlayerFromQueue(player);
-      players.delete(username);
-      console.log(`Oyuncu bağlantısı kapandı: ${username}`);
-    }
-    });
+    console.log(`disconnect geldi, ${socket.id} ayrıldı`);
+    removePlayerFromQueue(player);
+    players.delete(player.username);
+  });
+
+  // socket.on("disconnect", () => {
+  //   removePlayerFromQueue(player);
+  //   const username = (socket as any).user?.username;
+  //   if (username && players.get(username)?.socket.id === socket.id) {
+  //     players.delete(username);
+  //     console.log(`Oyuncu bağlantısı kapandı: ${username}`);
+  //   }
+  //   });
   
 });
 

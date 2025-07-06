@@ -3,12 +3,14 @@ import { Game, Paddle } from "./game";
 import { Server } from "socket.io";
 import { LocalPlayerInput, RemotePlayerInput, AIPlayerInput } from "./inputProviders";
 import { GameMode } from "./server";
+import { emitErrorToClient } from "./errorHandling";
 
 export interface Player
 {
 	socket: Socket;
 	username: string;
 	uuid: string;
+	//isPlaying: boolean;
 }
 
 interface MatchPlayers
@@ -41,6 +43,13 @@ export function removePlayerFromQueue(player: Player)
 
   export function startGameWithAI(human: Player, level: string, io: Server)
   {
+	// if (human.isPlaying)
+	// 	{
+	// 		console.log("Game server error: You can not play two games at the same time");
+	// 		emitErrorToClient("Game server error: You can not play two games at the same time", human.socket.id, io);
+	// 		human.socket.disconnect();
+	// 		return;
+	// 	}
 	const roomId = `game_${human.socket.id}_vs_AI_${level}`;
 	human.socket.join(roomId);
 	
@@ -55,10 +64,11 @@ export function removePlayerFromQueue(player: Player)
 			// Yeni bir oyun başlat
 	human.socket.on("ready", () => 
 	{
-	const game = new Game(leftInput, rightInput, io, roomId, 'vsAI');
-	getGame = () => game;
-	getPaddle = () => game.getPaddle2();
-	game.startGameLoop();
+		const game = new Game(leftInput, rightInput, io, roomId, 'vsAI');
+		getGame = () => game;
+		getPaddle = () => game.getPaddle2();
+		game.startGameLoop();
+		// human.isPlaying = true;
 	});
   }
 
@@ -66,6 +76,13 @@ export function removePlayerFromQueue(player: Player)
 
   export function startLocalGame(player1: Player, io: Server)
   {
+	// if (player1.isPlaying)
+	// 	{
+	// 		console.log("Game server error: You can not play two games at the same time");
+	// 		emitErrorToClient("Game server error: You can not play two games at the same time", player1.socket.id, io);
+	// 		player1.socket.disconnect();
+	// 		return;
+	// 	}
 	const leftInput = new LocalPlayerInput(player1, "left");
 	const rightInput = new LocalPlayerInput(player1, "right");
 
@@ -77,6 +94,7 @@ export function removePlayerFromQueue(player: Player)
 	{
 	const game = new Game(leftInput, rightInput, io, roomId, 'localGame');
 	game.startGameLoop();
+	// player1.isPlaying = true;
 	});
   }
 
@@ -94,6 +112,18 @@ export function checkForRemoteMatch(io: Server, waitingPlayersMap: Map<string, P
 	{
 		const player1 = mapShift(waitingPlayersMap);
 		const player2 = mapShift(waitingPlayersMap);
+		// if (player1!.isPlaying)
+		// 	{
+		// 		console.log("Game server error: You can not play two games at the same time");
+		// 		emitErrorToClient("Game server error: You can not play two games at the same time", player1!.socket.id, io);
+		// 		player1!.socket.disconnect();
+		// 	}
+		// if (player2!.isPlaying)
+		// 	{
+		// 		console.log("Game server error: You can not play two games at the same time");
+		// 		emitErrorToClient("Game server error: You can not play two games at the same time", player2!.socket.id, io);
+		// 		player2!.socket.disconnect();
+		// 	}
 
 		if (player1 && player2)
 		{
@@ -129,16 +159,20 @@ export function checkForRemoteMatch(io: Server, waitingPlayersMap: Map<string, P
 						io.to(roomId).emit("rematch-ready");
 					if ((reMatchApproval1 === reMatchApproval2 && reMatch !== reMatchApproval1) || (reMatchApproval1 !== reMatchApproval2))
 						return;
-					if(tournamentCode !== undefined)
-						{
-							const game = new Game(leftInput, rightInput, io, roomId, gameMode, tournamentCode, roundNumber);
-							game.startGameLoop();
-						}
-					else
-						{
-							const game = new Game(leftInput, rightInput, io, roomId, gameMode);
-							game.startGameLoop();
-						}
+					// if(tournamentCode !== undefined)
+					// 	{
+					// 		const game = new Game(leftInput, rightInput, io, roomId, gameMode, tournamentCode, roundNumber);
+					// 		game.startGameLoop();
+					// 		player1!.isPlaying = true;
+					// 		player2!.isPlaying = true;
+					// 	}
+					// else
+					// 	{
+					// 		const game = new Game(leftInput, rightInput, io, roomId, gameMode);
+					// 		game.startGameLoop();
+					// 		player1!.isPlaying = true;
+					// 		player2!.isPlaying = true;
+					// 	}
 					reMatch = true;
 					reMatchApproval1 = false;
 					reMatchApproval2 = false;
