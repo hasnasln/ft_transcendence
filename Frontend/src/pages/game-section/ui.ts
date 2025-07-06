@@ -6,6 +6,15 @@ import { initializeEventListeners} from "./eventListeners";
 export function updateScoreBoard(gameInfo: GameInfo)
 {if (gameInfo.state?.isPaused) return;
    gameInstance.scoreTable!.innerText = `${gameInfo.ballState!.points.leftPlayer}  :  ${gameInfo.ballState!.points.rightPlayer}`;
+   if(gameInfo.mode === 'tournament')
+   {
+     if (gameInstance.gameStatus.finalMatch)
+        gameInstance.roundNoTable!.innerText = `Final Maçı`;
+      else
+        gameInstance.roundNoTable!.innerText = `Round : ${gameInfo.state?.roundNumber}`;
+
+    gameInstance.tournamentIDTable!.innerText = `Turnuva ID : ${gameInstance.gameStatus.tournamentCode}`;
+   }
 }
 
 export function updateSetBoard(gameInfo: GameInfo)
@@ -21,6 +30,11 @@ export function createGame(gameInfo: GameInfo)
   gameInstance.endMsg!.classList.add("hidden");
   gameInstance.info!.classList.add("hidden");
   gameInstance.scoreBoard!.classList.remove("hidden");
+  if(gameInfo.mode === 'tournament')
+  {
+    gameInstance.roundDiv!.classList.remove("hidden");
+    gameInstance.tournamentIdDiv!.classList.remove("hidden");
+  }
   gameInstance.setBoard!.classList.remove("hidden");
 
   prepareScoreBoards(gameInfo);
@@ -50,20 +64,22 @@ export function showSetToast(gameInfo: GameInfo, message: string): Promise<void>
 export async function startNextSet(gameInfo: GameInfo)
 {
   const winnerName = gameInfo.ballState!.points.leftPlayer > gameInfo.ballState!.points.rightPlayer ? gameInfo.ballState?.usernames.left : gameInfo.ballState?.usernames.right;
-  console.log(`startNextSet fonksiyonuna geldik, winnerName = ${winnerName}`);
   await showSetToast(gameInfo, `Seti ${winnerName} kazandı !`);  // 3 saniye bekler
 }
 
 
 export function showEndMessage(gameInfo: GameInfo)
 {
-  let winnerName = gameInfo.ballState!.points.leftPlayer > gameInfo.ballState!.points.rightPlayer ? gameInfo.ballState?.usernames.left : gameInfo.ballState?.usernames.right;
-  console.log(`showEndMsg fonksiyonuna geldik, gameInfo.state?.matchOver = ${gameInfo.state?.matchOver}`);
+  let winnerName = gameInfo.state?.matchWinner === 'leftPlayer' ? gameInfo.ballState?.usernames.left : gameInfo.ballState?.usernames.right;
   gameInstance.endMsg!.textContent = `${winnerName} maçı kazandı !`;
-  if (gameInfo.state?.inCompleteWinner !== undefined)
+  if (gameInfo.mode === 'tournament' && gameInstance.gameStatus.finalMatch == true)
+      gameInstance.endMsg!.textContent = `${winnerName} ${gameInstance.gameStatus.tournamentCode} turnuvasını kazandı !   Tebrikler !`; 
+
+  if (gameInfo.state?.matchDisconnection)
     {
-      winnerName = gameInfo.state?.inCompleteWinner === 'leftPlayer' ? gameInfo.ballState?.usernames.left : gameInfo.ballState?.usernames.right;
       gameInstance.endMsg!.textContent = `Rakibin bağlantısı kesildi. ${winnerName} maçı kazandı!`;
+        if (gameInfo.mode === 'tournament' && gameInstance.gameStatus.finalMatch == true)
+          gameInstance.endMsg!.textContent = `Rakibin bağlantısı kesildi. ${winnerName} ${gameInstance.gameStatus.tournamentCode} turnuvasını kazandı !   Tebrikler !`;
     }
   gameInstance.endMsg!.classList.remove("hidden");
   if (gameInfo.mode === 'tournament')

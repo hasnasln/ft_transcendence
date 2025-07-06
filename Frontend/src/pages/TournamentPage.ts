@@ -4,6 +4,7 @@ import { _apiManager } from '../api/APIManeger';
 import { ITournament } from '../api/types';
 import { loadingWithMessage } from '../components/loading';
 import { PlayPage } from './play-page';
+import { getTournamentTree } from '../components/tournament_tree';
 
 // Recommended way, to include only the icons you need.
 
@@ -14,8 +15,6 @@ export class TournamentPage
 	private data: ITournament; // Tournament data, initially null
 	private status : boolean = false;
 
-
-
 	constructor() {
 		this.data = 
 		{
@@ -25,6 +24,7 @@ export class TournamentPage
 			admin_id: '',
 			users: [],
 		} // Initialize with undefined
+		this.data = JSON.parse(localStorage.getItem('tdata') || '{}'); // Retrieve tournament data from localStorage if available
 		// this.currentLanguage = exmp.getLanguage();
 	}
 
@@ -73,10 +73,16 @@ export class TournamentPage
 				case 'play-game':
 					this.handlePlay();
 					break;
+				case 'tree':
+					this.handleTree();
 				default:
 					break;
 			}
 		});
+	}
+
+	private handleTree(): void {
+		console.log("----------->>>Tree tıkladı")
 	}
 
 	private async hedleStartTournament(): Promise<void> {
@@ -122,49 +128,68 @@ export class TournamentPage
 		console.log('Creating tournament');
 		const input = document.querySelector('#createInput') as HTMLInputElement;
 		console.log('Turnuva ismi: ', input.value);
+		// localStorage.removeItem('tdata'); // Clear any existing tournament data in localStorage
+		if(localStorage.getItem('tdata') === null)
+		{
 
-		const response = await _apiManager.createTournament(input.value);
-		if (response.success === false) {
-			alert('Tournament created successfully!');
-			return;
+			const response = await _apiManager.createTournament(input.value);
+			const tdata: ITournament = {
+				id: response.data.id,
+				code: response.data.code,
+				name: response.data.name,
+				admin_id: response.data.admin_id,
+				users: response.data.participants
+			}
+			this.data = tdata; // Store the created tournament data
+			localStorage.setItem('tdata', JSON.stringify(tdata)); // Store the tournament data in localStorage
+			if (localStorage.getItem("tdata") !== null)
+				console.log("---------< tdata var");
+			else
+				console.log("---------< tdata yok");
+		} else {
+			this.data = JSON.parse(localStorage.getItem('tdata')!); // Retrieve the tournament data from localStorage
+			this.data.name = input.value; // Update the tournament name
+			// this.data.users = []; // Reset participants list
+			// this.data.admin_id = localStorage.getItem('uuid') || ''; // Set admin_id to current user ID
+			// localStorage.setItem('tdata', JSON.stringify(this.data)); // Store the updated tournament data in localStorage
+			console.log("Turnuva ismi güncellendi: ", this.data.name);
 		}
-		const tdata: ITournament = {
-			id: response.data.id,
-			code: response.data.code,
-			name: response.data.name,
-			admin_id: response.data.admin_id,
-			users: response.data.participants
-		}
-		this.data = tdata; // Store the created tournament data
-		console.log('-_-_-_-_-_-_-_->>Tournament created:', tdata);
+		console.log('-_-_-_-_-_-_-_->>Tournament created:', this.data);
 		container.innerHTML = ''; // Clear the container
-		ShowTournament(container, tdata); // Re-render the tournament section
+		// getTournamentTree(container, 5); // Render the tournament tree
+		ShowTournament(container, this.data); // Re-render the tournament section
 	}
 
 	private async joinRoom(container: HTMLElement): Promise<void> {
 		const input = document.querySelector('#joinInput') as HTMLInputElement;
 		const tournamentId = input.value;
 
-		let response = await _apiManager.playerJoinTournament(input.value);
-		if (response.success === false) {
-			alert('Tournament created not successfully!');
-			return;
+		if (localStorage.getItem('tdata') === null)
+		{
+			let response = await _apiManager.playerJoinTournament(input.value);
+			if (response.success === false) {
+				alert('Tournament created not successfully!');
+				return;
+			} else {
+				response = await _apiManager.getTournament(tournamentId);
+				if (response.success == false)
+					alert("ikinci istekde sıkıntı çıktı")
+			}
+			const tdata: ITournament = {
+				id: response.data.id,
+				code: response.data.code,
+				name: response.data.name,
+				admin_id: response.data.admin_id,
+				users: response.data.participants
+			}
+			localStorage.setItem('tdata', JSON.stringify(tdata)); // Store the tournament data in localStorage
+			this.data = tdata; // Store the created tournament data
 		} else {
-			response = await _apiManager.getTournament(tournamentId);
-			if (response.success == false)
-				alert("ikinci istekde sıkıntı çıktı")
+			this.data = JSON.parse(localStorage.getItem('tdata')!); // Retrieve the tournament data from localStorage
 		}
-		const tdata: ITournament = {
-			id: response.data.id,
-			code: response.data.code,
-			name: response.data.name,
-			admin_id: response.data.admin_id,
-			users: response.data.participants
-		}
-		this.data = tdata; // Store the created tournament data
 		console.log(`Joining room with ID: ${tournamentId}`);
 		container.innerHTML = ''; // Clear the container
-		ShowTournament(container, tdata); // Re-render the tournament section
+		ShowTournament(container, this.data); // Re-render the tournament section
 	}
 
 	private async exitTournament(container: HTMLElement): Promise<void> {
@@ -182,11 +207,9 @@ export class TournamentPage
 			console.log("user tıkladı");
 			console.log('Exiting tournament');
 		}
-		if(true)
-		{
-			container.innerHTML = ''; // Clear the container
-			t_first_section(container); // Re-render the tournament section
-		}
+		localStorage.removeItem('tdata'); // Remove tournament data from localStorage
+		container.innerHTML = ''; // Clear the container
+		t_first_section(container); // Re-render the tournament section
 	}
 
 
@@ -236,9 +259,18 @@ function renderTournament(container: HTMLElement) {
 		'z-0',
 		'bg-gray-300',
 	);
-	t_first_section(div);
-	// createTournamentSection(div);
-	// ShowTournament(div);
+	if (localStorage.getItem('tdata') === null)
+	{
+		console.log("---------------------->tdata yok");
+		t_first_section(div);
+	}
+	else {
+		const tdata: ITournament = JSON.parse(localStorage.getItem('tdata')!);
+		ShowTournament(div, tdata); // Render the tournament section with existing data
+		// getTournamentTree(div, 5); // Render the tournament tree
+		console.log('Tournament data from localStorage:', tdata);
+		console.log('Tournament data from localStorage:', localStorage.getItem('tdata'));
+	}
 	container.appendChild(div);
 }
 
@@ -810,6 +842,10 @@ function TournamentInformation(container: HTMLElement, tdata:ITournament): void 
 		'text-white',
 	);
 
+	const divtree = document.createElement('div');
+	divtree.setAttribute("data-action", "tree");
+	divtree.textContent = "T";
+
 	const div11img = document.createElement('img');
 	div11img.src = '/IMG/refresh.png';
 	div11img.classList.add(
@@ -885,6 +921,7 @@ function TournamentInformation(container: HTMLElement, tdata:ITournament): void 
 
 	
 	div11.appendChild(div11p1);
+	div11.appendChild(divtree);
 	div11.appendChild(div11img);
 
 	

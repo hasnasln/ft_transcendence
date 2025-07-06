@@ -1,6 +1,9 @@
 import { Server} from "socket.io";
 import { InputProvider } from "./inputProviders";
 import { GameMode } from "./server";
+import { pushWinnerToTournament } from "./tournament";
+import { emitErrorToClient } from "./errorHandling";
+import { players } from "./server";
 
 type Side = 'leftPlayer' | 'rightPlayer';
 
@@ -18,7 +21,9 @@ interface GameState
   matchOver: boolean;
   setOver: boolean;
   isPaused: boolean;
-  inCompleteWinner?: Side;
+  matchWinner?: Side;
+  matchDisconnection: boolean;
+  roundNumber?: number;
 }
 
 
@@ -83,10 +88,13 @@ export class Game
   public roomId: string;
   public io: Server;
   public interval!: NodeJS.Timeout | undefined;
+  public matchWinner: Side | undefined = undefined;
+  public matchDisconnection : boolean = false;
+  public tournamentCode : string | undefined = undefined;
+  public roundNumber : number | undefined = undefined;
 
 
-
-  constructor( public leftInput: InputProvider, public rightInput: InputProvider, io: Server, roomId: string, gameMode: GameMode)
+  constructor( public leftInput: InputProvider, public rightInput: InputProvider, io: Server, roomId: string, gameMode: GameMode, tournamentCode?: string, roundNumber?: number)
   {
     this.gameMode = gameMode;
     this.ball = 
@@ -134,6 +142,8 @@ export class Game
 
     this.io = io;
     this.roomId = roomId;
+    this.tournamentCode = tournamentCode;
+    this.roundNumber = roundNumber;
   }
 
   public getBall()
@@ -237,6 +247,7 @@ export class Game
         if (matchControl)
         {
           this.matchOver = true;
+          this.matchWinner = winner;
           this.exportBallState();
           this.exportGameState();
         }
@@ -283,14 +294,16 @@ export class Game
       this.io.to(this.roomId).emit("gameConstants", gameConstants);
   }
 
-  public exportGameState(inCompleteWinner?: Side)
+  public exportGameState()
   {
        const gameState : GameState = 
     {
       matchOver: this.matchOver,
       setOver: this.setOver,
       isPaused: this.isPaused,
-      inCompleteWinner: inCompleteWinner
+      matchWinner: this.matchWinner,
+      matchDisconnection: this.matchDisconnection,
+      roundNumber: this.roundNumber
      };
 
      this.io.to(this.roomId).emit("gameState", gameState);
@@ -314,8 +327,10 @@ export class Game
    public handleDisconnect(inCompleteWinner: Side)
    {
     this.matchOver = true;
+    this.matchWinner = inCompleteWinner;
+    this.matchDisconnection = true;
     if (this.gameMode === 'remoteGame' || this.gameMode === 'tournament')
-        this.exportGameState(inCompleteWinner);
+        this.exportGameState();
     else
         this.exportGameState();
    }
@@ -359,8 +374,8 @@ export class Game
                 else if (data.status === "resume" && this.isPaused)
                     this.resumeGameLoop();
               });
-
-              disconnectEvents.forEach(evt => socket.on(evt, () => {this.handleDisconnect(opponent); return;} ));
+              if (!this.matchOver && (this.gameMode === 'remoteGame' || this.gameMode === 'tournament'))
+                disconnectEvents.forEach(evt => socket.on(evt, () => {this.handleDisconnect(opponent); return;} ));
           }
         });
 
@@ -380,7 +395,31 @@ export class Game
   type Middleware = (g: Game, dt: number) => boolean;
 
 const skipIfMatchOver: Middleware = (g, _dt) => {
-  if (g.matchOver) {
+  if (g.matchOver)
+  {
+    const leftUsername = g.leftInput.getUsername();
+    const rightUsername = g.rightInput.getUsername();
+
+    const leftPlayer = players.get(leftUsername);
+    const rightPlayer = players.get(rightUsername);
+    // leftPlayer!.isPlaying = false;
+    // if (rightUsername !== "AI")
+    //   rightPlayer!.isPlaying = false;
+
+    if(g.gameMode === 'tournament')
+    {
+       const winnerInput = g.matchWinner === 'leftPlayer' ? g.leftInput : g.rightInput;
+       const uuid = winnerInput.getUuid();
+       const username = winnerInput.getUsername();
+       try
+       {
+          pushWinnerToTournament(g.tournamentCode! as string, g.roundNumber! as number, {uuid, username});
+       }
+       catch (err: any)
+       {
+          emitErrorToClient(err.message, g.roomId, g.io);
+       }
+    }
     g.pauseGameLoop();
     return false;
   }

@@ -2,6 +2,13 @@ import { gameInstance, GameMode, game} from "../play";
 import { io, Socket } from "socket.io-client";
 import { _apiManager } from '../../api/APIManeger';
 
+interface MatchPlayers
+{
+  left: {socketId: string, username: string};
+  right: {socketId: string, username: string};
+  roundNo?: number;
+  finalMatch?: boolean
+}
 
 export  function createSocket(after: any): Socket
 {
@@ -20,13 +27,60 @@ export  function createSocket(after: any): Socket
     socket.on('connect', () => {
       console.log('Socket connected with ID:', socket.id);
       after();
-
     });
 
-    socket.on('connect_error', (err) => {
+    socket.on('connect_error', (err) =>
+    {
       console.error('Socket connection error:', err.message);
-      // Örneğin token geçersizse server 401 dönebilir, burada logout ve redirect yapabilirsiniz
+
+      if (err.message.includes("token missing"))
+        {
+          alert("Token eksik. Lütfen tekrar giriş yapın.");
+          window.history.pushState({}, '', '/singin');
+          window.location.reload();
+        }
+      else if (err.message.includes("Token validation error"))
+        {
+          alert("Token doğrulama hatası :" + err.message);
+          window.history.pushState({}, '', '/singin');
+          window.location.reload();
+        }
+      else if (err.message.includes("Game server error"))
+          {
+            alert("Aynı anda birden fazla oyuna katılamazsınız.");
+            window.history.pushState({}, '', '/');
+            window.location.reload();
+          }
+        else
+      {
+          alert("Bağlantı reddedildi: " + err.message);
+          window.history.pushState({}, '', '/');
+          window.location.reload();
+      }
     });
+
+
+    socket.on('tournamentError', (errorMessage : string) => {
+      console.error('Tournament error:', errorMessage);
+      gameInstance.info!.textContent = `Tournament error:, ${errorMessage}`;
+      gameInstance.info!.classList.remove("hidden");
+        setTimeout(() =>
+        {
+          gameInstance.info!.classList.add("hidden");
+          window.history.pushState({}, '', '/tournament');
+          window.location.reload();
+        }, 5000);
+    });
+
+    // socket.on('waitingRematch', (rival: string) =>
+    // {
+    //     const answer = window.confirm(`${rival} oyuncusundan tekrar maç isteği geldi. Oynamak istermisin ?`);
+    //   if (answer) {
+        
+    //   } else {
+    //     console.log("Kullanıcı reddetti (No)");
+    //   }
+    // });
 
     return socket;
 }
@@ -46,7 +100,9 @@ interface GameState {
   matchOver: boolean;
   setOver: boolean;
   isPaused: boolean;
-  inCompleteWinner?: Side;
+  matchWinner?: Side;
+  matchDisconnection: boolean;
+  roundNumber?: number;
 }
 
 
@@ -72,6 +128,7 @@ export class GameInfo
   paddle: PaddleState | null = null;
   mode: GameMode;
   nextSetStartedFlag: boolean = false;
+
   constructor(mode: GameMode)
   {
     this.mode = mode;
@@ -111,15 +168,26 @@ export class GameInfo
 //   username: string;
 // }
 
-export function waitForMatchReady(socket: Socket, tournamentMode: boolean, gameInstance: game): Promise<string>
+export function waitForMatchReady(gameInstance: game): Promise<string>
 {
    return new Promise((resolve) =>
     {
-      socket.on("match-ready", (matchPlayers : {left: {socketId: string, username: string}, right: {socketId: string, username: string}}) =>
-        {console.log(`match-ready emiti geldi: matchPlayers.left.username = ${matchPlayers.left.username},  matchPlayers.right.username = ${matchPlayers.right.username}`);
-          const rival = matchPlayers.left.socketId === socket.id ? matchPlayers.right.username : matchPlayers.left.username;
-          if (tournamentMode)
-            gameInstance.info!.textContent = `Sıradaki maç :  round : ????  vs ${rival}`;
+      gameInstance.socket!.on("match-ready", (matchPlayers : MatchPlayers) =>
+        {console.log(`match-ready emiti geldi: matchPlayers.left.username = ${matchPlayers.left.username},  matchPlayers.right.username = ${matchPlayers.right.username},
+          matchPlayers.roundNo = ${matchPlayers.roundNo}, matchPlayers.finalMatch = ${matchPlayers.finalMatch}`);
+          const rival = matchPlayers.left.socketId === gameInstance.socket!.id ? matchPlayers.right.username : matchPlayers.left.username;
+          if (gameInstance.tournamentMode)
+            {
+              gameInstance.gameStatus.finalMatch = matchPlayers.finalMatch!;
+              gameInstance.gameStatus.roundNo = matchPlayers.roundNo;
+              
+              if(matchPlayers.finalMatch === true)
+                gameInstance.info!.textContent = `Sıradaki maç: ${gameInstance.tournamentCode} final maçı : vs ${rival}`;
+                
+              else
+                gameInstance.info!.textContent = `Sıradaki maç round : ${matchPlayers.roundNo} vs ${rival}`;
+              }
+               
           else
             gameInstance.info!.textContent = `${rival} ile eşleştin`;
           gameInstance.startButton!.innerHTML = `${rival} maçını oyna !`;
@@ -186,7 +254,9 @@ export function waitForGameInfoReady(gameInfo: GameInfo, socket: Socket): Promis
       matchOver: ${state.matchOver},
       setOver: ${state.setOver},
       isPaused: ${state.isPaused},
-      inCompletWinner: ${state.inCompleteWinner}`);
+      matchWinner: ${state.matchWinner},
+      matchDisconnection: ${state.matchDisconnection},
+      roundNumber: ${state.roundNumber}`);
       if (state.matchOver)
         console.log(`matchOver TRUE geldi..........`);
 			gameInfo.setState(state);
