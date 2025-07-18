@@ -1,48 +1,50 @@
-// import { Engine, Scene, Vector3, Mesh } from "@babylonjs/core";
-// import {startNextSet, updateScoreBoard, updateSetBoard, showEndMessage } from "./ui";
-// import { GameInfo } from "./network";
-// import { gameInstance } from "../play";
+import { Engine }   from "@babylonjs/core/Engines/engine";
+import { Scene }    from "@babylonjs/core/scene";
+import { Vector3 }  from "@babylonjs/core/Maths/math.vector";
+import { updateScoreBoard, updateSetBoard } from "./ui";
+import { GameInfo } from "./network";
+import { gameInstance } from "../play";
+import { GameEventBus } from "./gameEventBus";
 
-// export function startGameLoop(engine: Engine, scene: Scene, gameInfo: GameInfo): void
-// {
-//     engine.runRenderLoop(() =>
-//       {
-//         if (gameInfo.state?.matchOver)
-//           {
-//             updateScoreBoard(gameInfo);
-//             updateSetBoard(gameInfo);
-//             showEndMessage(gameInfo);
-//             engine.stopRenderLoop();
-//             return;
-//           }
-//         if (gameInfo.state?.setOver)
-//           {
-//             if (!gameInfo.nextSetStartedFlag)
-//             {
-//               updateScoreBoard(gameInfo);
-//               startNextSet(gameInfo);
-//               gameInfo.nextSetStartedFlag = true;
-//             }
-//             return;
-//           }
-//         if (gameInfo.state?.isPaused) return;
-     
-//         // Topu hareket ettir
-//         gameInstance.ball!.ball.position = new Vector3(gameInfo.ballState?.bp!.x, gameInfo.ballState?.bp!.y, -gameInfo.constants?.ballRadius!);
-//         gameInstance.ball!.velocity = new Vector3(gameInfo.ballState?.bv.x, gameInfo.ballState?.bv.y, 0);
-//         gameInstance.ball!.ball.position.addInPlace(gameInstance.ball!.velocity);
-//         // pedalları hareket ettir
-//         gameInstance.paddle1!.position.y = gameInfo.paddle?.p1y!;
-//         gameInstance.paddle2!.position.y = gameInfo.paddle?.p2y!;
+function updateBallPosition(): void {
+	gameInstance.uiManager.ball!.ball.position = new Vector3(gameInstance.gameInfo!.ballState?.bp!.x, gameInstance.gameInfo!.ballState?.bp!.y, -gameInstance.gameInfo!.constants?.ballRadius!);
+	gameInstance.uiManager.ball!.velocity = new Vector3(gameInstance.gameInfo!.ballState?.bv.x, gameInstance.gameInfo!.ballState?.bv.y, 0);
+	gameInstance.uiManager.ball!.ball.position.addInPlace(gameInstance.uiManager.ball!.velocity);
+}
 
+function updatePaddlePositions(): void {
+	gameInstance.uiManager.paddle1!.position.y = gameInstance.gameInfo!.paddle?.p1y!;
+	gameInstance.uiManager.paddle2!.position.y = gameInstance.gameInfo!.paddle?.p2y!;
+}
 
-//         //skor ve set güncellemesi
-//         updateScoreBoard(gameInfo);
-//         updateSetBoard(gameInfo);
+const handleGameTick = (engine: Engine, scene: Scene, gameInfo: GameInfo) => {
+	if (gameInfo.state?.matchOver) {
+		GameEventBus.getInstance().emit({ type: 'MATCH_ENDED', payload: gameInfo.state?.matchWinner });
+		engine.stopRenderLoop();
+		return;
+	}
+	
+	if (gameInfo.state?.setOver) {
+		GameEventBus.getInstance().emit({ type: 'SET_COMPLETED', payload: gameInfo.state?.matchWinner });
+		engine.stopRenderLoop();
+		return;
+	}
 
-   
-//         scene.render();
-//       });
-// }
+	if (gameInfo.state?.isPaused) {
+		engine.stopRenderLoop();
+		return;
+	}
+
+	updateBallPosition();
+	updatePaddlePositions();
+
+	updateScoreBoard();
+	updateSetBoard();
+	scene.render();
+}
+
+export function startGameLoop(): void {
+    gameInstance.uiManager.engine!.runRenderLoop(() => handleGameTick(gameInstance.uiManager.engine!, gameInstance.uiManager.scene!, gameInstance.gameInfo!));
+}
   
 

@@ -95,7 +95,6 @@ export function moveButton(container: HTMLElement, p: string): void
 		} else {
 			gameInstance.socket!.emit("player-move", { direction: "down" });
 		}
-		// console.log('DOWN button pressed');
 	});
 
 	down_b.addEventListener('touchend', () => {
@@ -104,7 +103,6 @@ export function moveButton(container: HTMLElement, p: string): void
 		} else {
 			gameInstance.socket!.emit("player-move", { direction: "stop" });
 		}
-		// console.log('DOWN button released');
 	});
 
 	controler_container.appendChild(up_b);

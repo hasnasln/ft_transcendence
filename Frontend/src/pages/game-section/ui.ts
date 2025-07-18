@@ -1,113 +1,267 @@
-import { Game } from "./../play";
-import { prepareScoreBoards} from "./network";
-import { initializeEventListeners} from "./eventListeners";
+import { gameInstance, GameManager } from "./../play";
+import { GameInfo, MatchPlayers } from "./network";
+import { Router } from "../../router";
+import { moveButton } from "../../components/mov-button";
+import { Mesh } from "@babylonjs/core/Meshes/mesh";
+import { Engine } from "@babylonjs/core/Engines/engine";
+import { Scene } from "@babylonjs/core/scene";
+import { BallController } from "./ball"; import { createPaddles, createGround, createWalls, createScene } from "../game-section/gameScene";
+import { CameraController } from "../game-section/camera";
+import { GameEventBus } from "./gameEventBus";
 
+export class GameUI {
+	public startButton: HTMLElement | null = null;
+	public scoreBoard: HTMLElement | null = null;
+	public roundDiv: HTMLElement | null = null;
+	public tournamentIdDiv: HTMLElement | null = null;
+	public setBoard: HTMLElement | null = null;
+	public scoreTable: HTMLElement | null = null;
+	public roundNoTable: HTMLElement | null = null;
+	public tournamentIDTable: HTMLElement | null = null;
+	public setTable: HTMLElement | null = null;
+	public endMsg: HTMLElement | null = null;
+	public newmatchButton: HTMLElement | null = null;
+	public turnToHomePage: HTMLElement | null = null;
+	public info: HTMLElement | null = null;
+	public canvas: HTMLCanvasElement | null = null;
 
-export function updateScoreBoard(game: Game)
-{
-  if (!game.gameInfo) return;
-  if (game.gameInfo.state?.isPaused) return;
-   game.scoreTable!.innerText = `${game.gameInfo.ballState?.points.leftPlayer}  :  ${game.gameInfo.ballState?.points.rightPlayer}`;
-   if(game.gameInfo.mode === 'tournament')
-   {
-     if (game.gameStatus.finalMatch)
-        game.roundNoTable!.innerText = `Final Maçı`;
-      else
-        game.roundNoTable!.innerText = `Round : ${game.gameInfo.state?.roundNumber}`;
+	public groundSize: { width: number, height: number } | null = null;
+	public ground: Mesh | null = null;
+	public paddle1: Mesh | null = null;
+	public paddle2: Mesh | null = null;
+	public ball: BallController | null = null;
+	public engine: Engine | undefined;
+	public scene: Scene | undefined;
 
-    game.tournamentIDTable!.innerText = `Turnuva ID : ${game.gameStatus.tournamentCode}`;
-   }
+	public cacheDOMElements(): void {
+		this.startButton = document.getElementById("start-button");
+		this.scoreBoard = document.getElementById("scoreboard");
+		this.roundDiv = document.getElementById("roundDiv");
+		this.tournamentIdDiv = document.getElementById("tournamentIdDiv");
+		this.setBoard = document.getElementById("setboard");
+		this.scoreTable = document.getElementById("score-table");
+		this.roundNoTable = document.getElementById("roundNo");
+		this.tournamentIDTable = document.getElementById("tournamentCode");
+		this.setTable = document.getElementById("set-table");
+		this.endMsg = document.getElementById("end-message");
+		this.newmatchButton = document.getElementById("newmatch-button");
+		this.turnToHomePage = document.getElementById("turnHomePage-button");
+		this.info = document.getElementById("info");
+	}
+
+	public removeCache(): void {
+		this.startButton = null;
+		this.scoreBoard = null;
+		this.roundDiv = null;
+		this.tournamentIdDiv = null;
+		this.setBoard = null;
+		this.scoreTable = null;
+		this.roundNoTable = null;
+		this.tournamentIDTable = null;
+		this.setTable = null;
+		this.endMsg = null;
+		this.newmatchButton = null;
+		this.turnToHomePage = null;
+		this.info = null;
+
+		this.groundSize = { width: 0, height: 0 };
+		this.engine = undefined;
+		this.scene = undefined;
+		this.ground = null;
+		this.paddle1 = null;
+		this.paddle2 = null;
+		this.ball = null;
+	}
+
+	public onMenuHidden(): void {
+		document.getElementById("menu")!.classList.add("hidden");
+	}
+
+	public onDifficultyShown(): void {
+		document.getElementById("difficulty")!.classList.remove("hidden");
+	}
+
+	public onDifficultyHidden(): void {
+		document.getElementById("difficulty")!.classList.add("hidden");
+	}
+
+	public onStartButtonShown(): void {
+		this.startButton!.classList.remove("hidden");
+	}
+
+	public onStartButtonHidden(): void {
+		this.startButton!.classList.add("hidden");
+	}
+
+	public onInfoShown(message: string): void {
+		this.info!.textContent = message;
+		this.info!.classList.remove("hidden");
+	}
+
+	public onInfoHidden(): void {
+		this.info!.classList.add("hidden");
+	}
+
+	public hide(element: HTMLElement | null | undefined): void {
+		element?.classList.add("hidden");
+	}
+
+	public show(element: HTMLElement | null | undefined): void {
+		element?.classList.remove("hidden");
+	}
+
+	public onTurnHomeButtonText(text: string): void {
+		if (this.turnToHomePage) {
+			this.turnToHomePage.textContent = text;
+		}
+	}
+
+	public onTurnToTournamentButton(): void {
+		this.onInfoShown(`Bir üst tura yükseldiniz ! \nBir sonraki roundu bekleyiniz ...`);
+		this.onTurnHomeButtonText("Turnuva sayfasına Dön");
+
+		this.turnToHomePage!.addEventListener("click", () => {
+			this.turnToHomePage!.classList.add("hidden");
+			Router.getInstance().go('/tournament');
+		});
+
+		this.show(this.turnToHomePage);
+	}
+
+	public updateUIForRivalFound(matchPlayers: MatchPlayers, rival: string): void {
+		if (gameInstance.gameStatus.game_mode === 'tournament') {
+			gameInstance.gameStatus.finalMatch = matchPlayers.finalMatch!;
+			gameInstance.gameStatus.roundNo = matchPlayers.roundNo;
+			if (matchPlayers.finalMatch)
+				this.onInfoShown(`Sıradaki maç: ${gameInstance.tournamentCode} final maçı : vs ${rival}`);
+			else
+				this.onInfoShown(`Sıradaki maç round : ${matchPlayers.roundNo} vs ${rival}`);
+		} else {
+			this.onInfoShown(`${rival} ile eşleştin`);
+		}
+		this.startButton!.innerHTML = `${rival} maçını oyna !`;
+		this.startButton!.classList.remove("hidden");
+	}
+
+	public async setupScene(): Promise<void> {
+		initializeGameUI();
+
+		const sceneSetup = createScene();
+		this.canvas = sceneSetup.canvas;
+		this.engine = sceneSetup.engine;
+		this.scene = sceneSetup.scene;
+		new CameraController(this.scene);
+		const { ground, groundSize } = createGround(this.scene, gameInstance.gameInfo!)
+		this.ground = ground;
+		this.groundSize = groundSize;
+		const paddles = createPaddles(this.scene, gameInstance.gameInfo!);
+		this.paddle1 = paddles.paddle1;
+		this.paddle2 = paddles.paddle2;
+		this.ball = new BallController(this.scene, gameInstance.gameInfo!);
+		createWalls(this.scene, gameInstance.gameInfo!);
+		this.canvas!.focus();
+		gameInstance.gameStatus.currentGameStarted = true;
+	}
 }
 
-export function updateSetBoard(game: Game)
-{
-  if (!game.gameInfo) return;
-  if (game.gameInfo.state?.isPaused) return;
-    game.setTable!.innerText = `${game.gameInfo.ballState?.sets.leftPlayer}  :  ${game.gameInfo.ballState?.sets.rightPlayer}`;
+export function updateScoreBoard() {
+	if (!gameInstance.gameInfo) return;
+	if (gameInstance.gameInfo.state?.isPaused) return;
+
+	gameInstance.uiManager.scoreTable!.innerText = `${gameInstance.gameInfo.ballState?.points.leftPlayer}  :  ${gameInstance.gameInfo.ballState?.points.rightPlayer}`;
+	if (gameInstance.gameInfo.mode === 'tournament') {
+		if (gameInstance.gameStatus.finalMatch)
+			gameInstance.uiManager.roundNoTable!.innerText = `Final Maçı`;
+		else
+			gameInstance.uiManager.roundNoTable!.innerText = `Round : ${gameInstance.gameInfo.state?.roundNumber}`;
+
+		gameInstance.uiManager.tournamentIDTable!.innerText = `Turnuva ID : ${gameInstance.gameStatus.tournamentCode}`;
+	}
 }
 
-
-// OYUN FONKSİYONLARI
-
-export function createGame(game: Game)
-{
-  if (!game.gameInfo) return;
-  game.endMsg!.classList.add("hidden");
-  game.info!.classList.add("hidden");
-  game.scoreBoard!.classList.remove("hidden");
-  if(game.gameInfo.mode === 'tournament')
-  {
-    game.roundDiv!.classList.remove("hidden");
-    game.tournamentIdDiv!.classList.remove("hidden");
-  }
-  game.setBoard!.classList.remove("hidden");
-
-  prepareScoreBoards(game);
-  initializeEventListeners(game);
-  updateScoreBoard(game);
-  updateSetBoard(game);
+export function updateSetBoard() {
+	if (!gameInstance.gameInfo) return;
+	if (gameInstance.gameInfo.state?.isPaused) return;
+	gameInstance.uiManager.setTable!.innerText = `${gameInstance.gameInfo.ballState?.sets.leftPlayer}  :  ${gameInstance.gameInfo.ballState?.sets.rightPlayer}`;
 }
 
+export function initializeGameUI() {
+	gameInstance.uiManager.endMsg!.classList.add("hidden");
+	gameInstance.uiManager.info!.classList.add("hidden");
+	gameInstance.uiManager.scoreBoard!.classList.remove("hidden");
+	if (gameInstance.gameInfo!.mode === 'tournament') {
+		gameInstance.uiManager.roundDiv!.classList.remove("hidden");
+		gameInstance.uiManager.tournamentIdDiv!.classList.remove("hidden");
+	}
+	gameInstance.uiManager.setBoard!.classList.remove("hidden");
 
-export function showSetToast(game: Game, message: string): Promise<void>
-{
-  return new Promise((resolve) => {
-    const toast = document.getElementById("set-toast")!;
-    toast.textContent = message;
-    toast.classList.remove("hidden");
-    
-
-    setTimeout(() => {
-      toast.classList.add("hidden");
-     game.gameInfo!.nextSetStartedFlag = false;
-      resolve();
-    }, 3000);
-  });
+	prepareScoreBoards();
+	moveButton(document.getElementById("game-wrapper")!, 'left');
+	if (gameInstance.gameStatus.game_mode === "localGame") {
+		moveButton(document.getElementById("game-wrapper")!, 'right');
+	}
 }
 
+export function showSetToast(gameInfo: GameInfo, message: string): Promise<void> {
+	return new Promise((resolve) => {
+		const toast = document.getElementById("set-toast")!;
+		toast.textContent = message;
+		toast.classList.remove("hidden");
 
-export async function startNextSet(game: Game)
-{
-  if (!game.gameInfo) return;
-  const winnerName = game.gameInfo.ballState!.points.leftPlayer > game.gameInfo.ballState!.points.rightPlayer ? game.gameInfo.ballState?.usernames.left : game.gameInfo.ballState?.usernames.right;
-  await showSetToast(game, `Seti ${winnerName} kazandı !`);  // 3 saniye bekler
+		setTimeout(() => {
+			toast.classList.add("hidden");
+			resolve();
+		}, 3000);
+	});
 }
 
-
-export function showEndMessage(game: Game)
-{
-  if (!game.gameInfo) return;
-  let winnerName = game.gameInfo.state?.matchWinner === 'leftPlayer' ? game.gameInfo.ballState?.usernames.left : game.gameInfo.ballState?.usernames.right;
-  game.endMsg!.textContent = `${winnerName} maçı kazandı !`;
-  if (game.gameInfo.mode === 'tournament' && game.gameStatus.finalMatch == true)
-      game.endMsg!.textContent = `${winnerName} ${game.gameStatus.tournamentCode} turnuvasını kazandı !   Tebrikler !`; 
-
-  if (game.gameInfo.state?.matchDisconnection)
-    {
-      if(game.gameInfo.mode === 'localGame' || game.gameInfo.mode === 'vsAI')
-          game.endMsg!.textContent = `Bağlantısı kesildi. Maç bitti !`;
-      if(game.gameInfo.mode === 'remoteGame' || game.gameInfo.mode === 'tournament')
-          game.endMsg!.textContent = `Rakibin bağlantısı kesildi. ${winnerName} maçı kazandı!`;
-      if (game.gameInfo.mode === 'tournament' && game.gameStatus.finalMatch == true)
-          game.endMsg!.textContent = `Rakibin bağlantısı kesildi. ${winnerName} ${game.gameStatus.tournamentCode} turnuvasını kazandı !   Tebrikler !`;
-    }
-  setTimeout(() =>
-  {
-    game.endMsg!.classList.remove("hidden");
-    if (game.gameInfo!.mode === 'tournament')
-    {
-      game.turnToHomePage!.textContent = "Turnuva sayfasına Dön";
-      game.turnToHomePage!.classList.remove("hidden");
-    }
-    else
-    {
-      if (game.startButton && !game.gameInfo?.state?.matchDisconnection) {
-        game.startButton.textContent = "Aynı Maçı Tekrar Oyna";
-        game.startButton.classList.remove("hidden");
-      }
-      game.newmatchButton!.classList.remove("hidden");
-      game.turnToHomePage!.classList.remove("hidden");
-    }
-  }, 500);
+export async function startNextSet() {
+	const winnerName = gameInstance.gameInfo!.ballState!.points.leftPlayer > gameInstance.gameInfo!.ballState!.points.rightPlayer ? gameInstance.gameInfo?.ballState?.usernames.left : gameInstance.gameInfo?.ballState?.usernames.right;
+	await showSetToast(gameInstance.gameInfo!, `Seti ${winnerName} kazandı !`);  // 3 saniye bekler
 }
 
+export function showEndMessage() {
+	if (!gameInstance.gameInfo) return;
+	let winnerName = gameInstance.gameInfo.state?.matchWinner === 'leftPlayer' ? gameInstance.gameInfo.ballState?.usernames.left : gameInstance.gameInfo.ballState?.usernames.right;
+	gameInstance.uiManager.endMsg!.textContent = `${winnerName} maçı kazandı !`;
+	if (gameInstance.gameInfo.mode === 'tournament' && gameInstance.gameStatus.finalMatch == true)
+		gameInstance.uiManager.endMsg!.textContent = `${winnerName} ${gameInstance.gameStatus.tournamentCode} turnuvasını kazandı !   Tebrikler !`;
+
+	if (gameInstance.gameInfo.state?.matchDisconnection) {
+		if (gameInstance.gameInfo.mode === 'localGame' || gameInstance.gameInfo.mode === 'vsAI')
+			gameInstance.uiManager.endMsg!.textContent = `Bağlantısı kesildi. Maç bitti !`;
+		if (gameInstance.gameInfo.mode === 'remoteGame' || gameInstance.gameInfo.mode === 'tournament')
+			gameInstance.uiManager.endMsg!.textContent = `Rakibin bağlantısı kesildi. ${winnerName} maçı kazandı!`;
+		if (gameInstance.gameInfo.mode === 'tournament' && gameInstance.gameStatus.finalMatch == true)
+			gameInstance.uiManager.endMsg!.textContent = `Rakibin bağlantısı kesildi. ${winnerName} ${gameInstance.gameStatus.tournamentCode} turnuvasını kazandı !   Tebrikler !`;
+	}
+
+	setTimeout(() => {
+		gameInstance.uiManager.endMsg!.classList.remove("hidden");
+		if (gameInstance.gameInfo!.mode === 'tournament') {
+			gameInstance.uiManager.turnToHomePage!.textContent = "Turnuva sayfasına Dön";
+			gameInstance.uiManager.turnToHomePage!.classList.remove("hidden");
+		} else {
+			if (gameInstance.uiManager.startButton && !gameInstance.gameInfo?.state?.matchDisconnection) {
+				gameInstance.uiManager.startButton.textContent = "Aynı Maçı Tekrar Oyna";
+				gameInstance.uiManager.startButton.classList.remove("hidden");
+			}
+			gameInstance.uiManager.newmatchButton!.classList.remove("hidden");
+			gameInstance.uiManager.turnToHomePage!.classList.remove("hidden");
+		}
+	}, 500);
+}
+
+function prepareScoreBoards() {
+	const blueTeam = document.getElementById("blue-team")!;
+	const redTeam = document.getElementById("red-team")!;
+
+	const blueTeam_s = document.getElementById("blue-team-s")!;
+	const redTeam_s = document.getElementById("red-team-s")!;
+
+	blueTeam.innerText = `${gameInstance.gameInfo!.ballState?.usernames.left}`;
+	redTeam.innerText = `${gameInstance.gameInfo!.ballState?.usernames.right}`;
+
+	blueTeam_s.innerText = `${gameInstance.gameInfo!.ballState?.usernames.left}`;
+	redTeam_s.innerText = `${gameInstance.gameInfo!.ballState?.usernames.right}`;
+}

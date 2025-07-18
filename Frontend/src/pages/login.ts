@@ -1,41 +1,52 @@
-import type { IPages } from "./IPages";
+import { _apiManager } from "../api/APIManager";
+import { Router } from "../router";
 import { exmp } from "../languageMeneger";
-import { _apiManager } from "../api/APIManeger";
+import { Page } from '../router';
 
-export class SinginPage implements IPages {
-    private languageChangeHandler: (lang: string) => void;
-
-    constructor() {
-        this.languageChangeHandler = (lang: string) => {
-            console.log(`Language changed to: ${lang}`);
-            const container = document.getElementById('asd123');
-            if (container) {
-                container.innerHTML = '';
-                renderSingin(container);
-            }
-        }
+export class LoginPage implements Page {
+    evaluate(): string {
+        return `
+        <div class="min-h-screen flex items-center justify-center bg-animated-gradient">
+            <main class="glass-container p-10 max-w-md w-full relative animate-fadeIn">
+                <section id="section-login" class="animate-fadeIn">
+                    <form id="login-form" class="flex flex-col space-y-8" autocomplete="off" novalidate>
+                        <h2 class="text-4xl font-extrabold text-center mb-8 title-gradient">
+                            ${exmp.getLang("singin.login-b") || "Giriş Yap"}
+                        </h2>
+                        <input
+                            type="text"
+                            id="nicname_or_mail_input"
+                            placeholder="${exmp.getLang("singin.email-or-nickname-i") || "Kullanıcı adı veya Email"}"
+                            class="input-premium w-full"
+                        />
+                        <input
+                            type="password"
+                            id="password_input"
+                            placeholder="${exmp.getLang("singin.passwor-i") || "Şifre"}"
+                            class="input-premium w-full"
+                        />
+                        <div
+                            id="error_message"
+                            class="error-premium text-sm font-bold mt-2 w-full text-center"
+                            style="visibility:hidden; height:auto;"
+                        ></div>
+                        <button type="submit" class="btn-premium w-full mt-4">
+                            ${exmp.getLang("singin.login-b") || "Giriş Yap"}
+                        </button>
+                        <p class="text-center text-premium mt-6">
+                            ${exmp.getLang("singin.no-account") || "Hesabınız yok mu?"}
+                            <button id="show-register" type="button" class="link-premium ml-2">
+                                ${exmp.getLang("singin.register-b") || "Kayıt Ol"}
+                            </button>
+                        </p>
+                    </form>
+                </section>
+            </main>
+        </div>`;
     }
 
-    render(container: HTMLElement): void {
-        if (!container) {
-            console.error('Container not found');
-            return;
-        }
-        exmp.addLanguageChangeListener(this.languageChangeHandler);
-        exmp.waitForLoad().then(() => {
-            renderSingin(container);
-            requestAnimationFrame(() => {
-                this.init();
-            });
-        });
-    }
-
-    destroy(): void {
-        exmp.removeLanguageChangeListener(this.languageChangeHandler);
-        document.body.innerHTML = '';
-    }
-
-    init(): void {
+    onLoad?(): void {
+        renderSingin();
         const x = document.getElementById('asd123');
         if (!x) return;
         x.addEventListener('click', (event) => {
@@ -44,7 +55,7 @@ export class SinginPage implements IPages {
             if (!action) return;
             switch (action) {
                 case 'register':
-                    this.handleRegister();
+                    Router.getInstance().go('/register');
                     break;
                 case 'singin':
                     this.handleLogin();
@@ -53,11 +64,7 @@ export class SinginPage implements IPages {
                     console.warn(`Unknown action: ${action}`);
             }
         });
-    }
 
-    handleRegister(): void {
-        history.pushState({}, '', '/register');
-        window.dispatchEvent(new Event('popstate'));
     }
 
     private showError(message: string): void {
@@ -102,9 +109,7 @@ export class SinginPage implements IPages {
                 return;
             }
             
-            // Başarılı giriş
-            history.pushState({}, '', '/');
-            window.dispatchEvent(new Event('popstate'));
+            Router.getInstance().go('/');
         } catch (error: any) {
             const errorMessage = exmp.getLang('singin-errors.networkError');
             this.showError(errorMessage);
@@ -113,11 +118,7 @@ export class SinginPage implements IPages {
     }
 }
 
-export function renderSingin(container: HTMLElement): void {
-    if (!document.getElementById("custom-signin-style")) {
-        const style = document.createElement("style");
-        style.id = "custom-signin-style";
-        style.textContent = `
+const customStyle = `
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(30px) scale(0.95); }
             to { opacity: 1; transform: translateY(0) scale(1); }
@@ -337,111 +338,67 @@ export function renderSingin(container: HTMLElement): void {
             transform: translateY(-50%);
             font-size: 18px;
             color: #ef4444;
-        }
-        `;
-        document.head.appendChild(style);
+        }`
+
+async function submit() {
+    const loginInput = document.getElementById("nicname_or_mail_input") as HTMLInputElement;
+    const passwordInput = document.getElementById("password_input") as HTMLInputElement;
+    const errorDiv = document.getElementById("error_message") as HTMLDivElement;
+
+    const nicnameOrMail = (loginInput.value || "").trim();
+    const passwordValue = (passwordInput.value || "").trim();
+    
+    if (!nicnameOrMail || !passwordValue) {
+        errorDiv.textContent = !nicnameOrMail
+            ? exmp.getLang('singin-errors.required.email')
+            : exmp.getLang('singin-errors.required.password');
+        errorDiv.style.visibility = "visible";
+        return;
     }
-
-    // Ana arka plan
-    const mainBg = document.createElement("div");
-    mainBg.className = "min-h-screen flex items-center justify-center bg-animated-gradient";
-
-    const main = document.createElement("main");
-    main.className = "glass-container p-10 max-w-md w-full relative animate-fadeIn";
-
-    addFlagLangDropdown(main);
-
-    const sectionLogin = document.createElement("section");
-    sectionLogin.id = "section-login";
-    sectionLogin.className = "animate-fadeIn";
-
-    const loginForm = document.createElement("form");
-    loginForm.id = "login-form";
-    loginForm.className = "flex flex-col space-y-8";
-    loginForm.autocomplete = "off";
-    loginForm.noValidate = true;
-
-    const loginTitle = document.createElement("h2");
-    loginTitle.className = "text-4xl font-extrabold text-center mb-8 title-gradient";
-    loginTitle.textContent = exmp.getLang("singin.login-b") || "Giriş Yap";
-
-    const loginInput = document.createElement("input");
-    loginInput.type = "text";
-    loginInput.id = "nicname_or_mail_input";
-    loginInput.placeholder = exmp.getLang("singin.email-or-nickname-i") || "Kullanıcı adı veya Email";
-    loginInput.className = "input-premium w-full";
-
-    const passwordInput = document.createElement("input");
-    passwordInput.type = "password";
-    passwordInput.id = "password_input";
-    passwordInput.placeholder = exmp.getLang("singin.passwor-i") || "Şifre";
-    passwordInput.className = "input-premium w-full";
-
-    const errorDiv = document.createElement("div");
-    errorDiv.id = "error_message";
-    errorDiv.className = "error-premium text-sm font-bold mt-2 w-full text-center";
-    errorDiv.style.visibility = "hidden";
-    errorDiv.style.height = "auto";
-
-    const loginButton = document.createElement("button");
-    loginButton.type = "submit";
-    loginButton.className = "btn-premium w-full mt-4";
-    loginButton.textContent = exmp.getLang("singin.login-b") || "Giriş Yap";
-
-    const loginFooter = document.createElement("p");
-    loginFooter.className = "text-center text-premium mt-6";
-    loginFooter.innerHTML = `${exmp.getLang("singin.no-account") || "Hesabınız yok mu?"}
-    <button id="show-register" type="button" class="link-premium ml-2">${exmp.getLang("singin.register-b") || "Kayıt Ol"}</button>`;
-
-    loginForm.appendChild(loginTitle);
-    loginForm.appendChild(loginInput);
-    loginForm.appendChild(passwordInput);
-    loginForm.appendChild(errorDiv);
-    loginForm.appendChild(loginButton);
-    loginForm.appendChild(loginFooter);
-    sectionLogin.appendChild(loginForm);
-
-    main.appendChild(sectionLogin);
-    mainBg.appendChild(main);
-    container.appendChild(mainBg);
-
-    const showRegisterBtn = loginFooter.querySelector("#show-register") as HTMLButtonElement;
-    showRegisterBtn.onclick = () => {
-        history.pushState({}, '', '/register');
-        window.dispatchEvent(new Event('popstate'));
-    };
-
-    loginForm.onsubmit = async (e) => {
-        e.preventDefault();
-        const nicnameOrMail = (loginInput.value || "").trim();
-        const passwordValue = (passwordInput.value || "").trim();
-        
-        if (!nicnameOrMail || !passwordValue) {
-            errorDiv.textContent = !nicnameOrMail
-                ? exmp.getLang('singin-errors.required.email')
-                : exmp.getLang('singin-errors.required.password');
+    
+    try {
+        const response = await _apiManager.login(nicnameOrMail, passwordValue);
+        if (!response.success) {
+            const errorKey = response.message || 'INVALID_CREDENTIALS';
+            const errorMessage = exmp.getLang(`singin-errors.${errorKey}`) ||
+                exmp.getLang('singin-errors.INVALID_CREDENTIALS');
+            errorDiv.textContent = errorMessage;
             errorDiv.style.visibility = "visible";
             return;
         }
         
-        try {
-            const response = await _apiManager.login(nicnameOrMail, passwordValue);            if (!response.success) {
-                const errorKey = response.message || 'INVALID_CREDENTIALS';
-                const errorMessage = exmp.getLang(`singin-errors.${errorKey}`) ||
-                    exmp.getLang('singin-errors.INVALID_CREDENTIALS');
-                errorDiv.textContent = errorMessage;
-                errorDiv.style.visibility = "visible";
-                return;
-            }
-            
-            errorDiv.style.visibility = "hidden";
-            history.pushState({}, '', '/');
-            window.dispatchEvent(new Event('popstate'));
-        } catch (error: any) {
-            errorDiv.textContent = exmp.getLang('singin-errors.networkError');
-            errorDiv.style.visibility = "visible";
-        }
-    };
+        errorDiv.style.visibility = "hidden";
+        Router.getInstance().go('/');
+    } catch (error: any) {
+        errorDiv.textContent = exmp.getLang('singin-errors.networkError');
+        errorDiv.style.visibility = "visible";
+    }
+}
+
+export function renderSingin(): void {
+    const container = Router.getInstance().rootContainer();
+    // Inject custom styles once
+    if (!document.getElementById("custom-signin-style")) {
+        const style = document.createElement("style");
+        style.id = "custom-signin-style";
+        style.textContent = customStyle;
+        document.head.appendChild(style);
+    }
+
+    // Initialize language dropdown
+    addFlagLangDropdown(container);
+
+    // Wire up buttons and form
+    const showRegisterBtn = container.querySelector("#show-register");
+    showRegisterBtn?.addEventListener("click", () => {
+        Router.getInstance().go("/register");
+    });
+
+    const loginForm = container.querySelector("#login-form") as HTMLFormElement;
+    loginForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        submit();
+    });
 }
 
 function getFlag(lang: string) {

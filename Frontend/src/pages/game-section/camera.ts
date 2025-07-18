@@ -1,4 +1,8 @@
-import {FreeCamera, Scene, HemisphericLight, Vector3, KeyboardEventTypes} from "@babylonjs/core";
+import { FreeCamera }          from "@babylonjs/core/Cameras/freeCamera";
+import { Scene }               from "@babylonjs/core/scene";
+import { HemisphericLight }    from "@babylonjs/core/Lights/hemisphericLight";
+import { Vector3 }             from "@babylonjs/core/Maths/math.vector";
+import { KeyboardEventTypes }  from "@babylonjs/core/Events/keyboardEvents";
 
 export class CameraController
 {

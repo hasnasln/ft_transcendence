@@ -1,33 +1,36 @@
 import './style.css';
-import { router } from './router';
-import { checkPageWidth } from './components/responsive-helper';
+import { Router, ServerErrorPage } from './router';
+import { HomePage } from './pages/home';
+import { TournamentPage } from './pages/TournamentPagev2';
+import { PlayPage } from './pages/play-page';
+import { RegisterPage } from './pages/register';
+import { LoginPage } from './pages/login';
 
-const app = document.getElementById('app') as HTMLElement;
+function bootstrap() {
+	const routerV2 = Router.getInstance();
 
+	routerV2.registerGuard({
+		canGo: (path: string) => {
+			if (["/register", "/login", "/500"].includes(path)) {
+				return true;
+			}
 
-// interface User {Add commentMore actions
-// 	name: string
-// 	mail: string
-// }
+			const isLoggedIn = !!localStorage.getItem('token');
+			if (!isLoggedIn) {
+				routerV2.go('/login', true);
+				return false;
+			}
+			return true;
+		}
+	});
 
-// class FakeApi {Add commentMore actions
-// 	getUser(name: string): User {
-// 		return {name: "ahmet", mail: "mustafa@gmail.com"}
-// 	}
-	
-// }
-const isloggedIn = localStorage.getItem('token');
-
-console.log("isloggedIn:", isloggedIn);
-if (app){
-	if (!isloggedIn) 
-		window.history.pushState({}, '', '/singin');
-	router();
-	// Popstate event listener'ını ekleyelim
+	routerV2.registerPage("/", new HomePage());
+	routerV2.registerPage("/tournament", new TournamentPage());
+	routerV2.registerPage("/play", new PlayPage());
+	routerV2.registerPage("/register", new RegisterPage());
+	routerV2.registerPage("/login", new LoginPage());
+	routerV2.registerPage("/500", new ServerErrorPage());
+	routerV2.go(window.location.pathname, true);
 }
 
-window.addEventListener('popstate', () => {
-	router();
-});
-
-window.addEventListener('resize', checkPageWidth);
+bootstrap();
