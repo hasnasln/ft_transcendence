@@ -445,13 +445,29 @@ export class PlayPage
 		const set_toast = createDivAddId('set-toast');
 		const end_message = createDivAddId('end-message');
 		const info = createDivAddId('info');
+		const countdown = createDivAddId('countdown');
+
+		countdown.classList.add(
+			'absolute',
+			'top-[40%]',
+			'left-1/2',
+			'-translate-x-1/2',
+			'bg-black',
+			'text-white',
+			'text-[1.8vw]',
+			'px-[2vw]',
+			'py-[1vw]',
+			'rounded-[30px]',
+			'z-10',
+			'hidden'
+		);
 		
 		set_toast.classList.add(
 			'absolute',
 			'bottom-[20%]',
 			'left-1/2',
 			'-translate-x-1/2',
-			'bg-[#222]',
+			'bg-black',
 			'text-white',
 			'text-[1.5vw]',
 			'px-[2vw]',
@@ -467,7 +483,7 @@ export class PlayPage
 			'left-1/2',
 			'-translate-x-1/2',
 			'-translate-y-1/2',
-			'bg-[#000000cc]',
+			'bg-black',
 			'text-white',
 			'text-[2vw]',
 			'px-[4vw]',
@@ -484,7 +500,7 @@ export class PlayPage
 			'top-[20%]',
 			'left-1/2',
 			'-translate-x-1/2',
-			'bg-[#222]',
+			'bg-black',
 			'text-white',
 			'text-[1.8vw]',
 			'px-[2vw]',
@@ -535,7 +551,7 @@ export class PlayPage
 		renderDifficulty(paly_div);
 
 
-		[start_Button, devambutton, new_match, turnToHomePage, set_toast, end_message, info].forEach(child => {
+		[start_Button, devambutton, new_match, turnToHomePage, set_toast, end_message, info, countdown].forEach(child => {
 		paly_div.appendChild(child);
 		})
 

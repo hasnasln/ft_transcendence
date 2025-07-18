@@ -1,8 +1,4 @@
-import { Player, checkForRemoteMatch } from "./matchmaking";
-import { Server } from "socket.io";
 import { IApiResponseWrapper, HTTPMethod, myFetch } from "./server";
-import { error } from "console";
-import { emitErrorToClient } from "./errorHandling";
 
 export type Participant = {
     uuid: string;
@@ -52,17 +48,17 @@ export type Match = {
     participant2: Participant;
 }
 
-function isParticipantAmongWinners(participantId: string, activeRound: Round): boolean
+export function isParticipantAmongWinners(participantId: string, activeRound: Round): boolean
 {
 	return activeRound.winners?.some(p => p.uuid === participantId) ?? false;
 }
 
-function isFinalMatch(activeRound: Round): boolean
+export function isFinalMatch(activeRound: Round): boolean
 {
 	return (activeRound.expected_winner_count === 1 && activeRound.winners === null);
 }
 
-function findMyMatch(tournament: TournamentData, participantId: string): {roundNumber: number, match_id : string | null, finalMatch : boolean}
+export function findMyMatch(tournament: TournamentData, participantId: string): {roundNumber: number, match_id : string | null, finalMatch : boolean}
 {
     if (tournament.status === TournamentStatus.CREATED) {
         
@@ -161,71 +157,41 @@ export async function  pushWinnerToTournament(tournamentCode: string, roundNumbe
         body: JSON.stringify(body)
         });
 
-        // JSON yanıtı al
         const result = await response.json() as Result;
         console.log("pushWinner isteğinin yanıtı:", JSON.stringify(result, null, 2));
         return result;
     }
     catch (err: any)
     {
-        console.error('Fetch error:', err);
+        console.error('pushWinner Fetch error:', err);
         throw err;
     }
 }
 
 
-const waitingMatches: Map<string, Map<string, Player>> = new Map();
-
-export async function handleTournamentMatch(player: Player, io: Server, tournamentCode: string)
+export async function joinMatchByCode(token: string, tournamentCode: string, roundNumber: number, participant: Participant): Promise<Result>
 {
-    try
-    {
-        const response = await getTournament(tournamentCode!);
-        if (!response.success)
-            throw error(`Could not get the tournament with code : ${tournamentCode}`);
+    const url = `http://tournament.transendence.com/api/tournament/${tournamentCode}/join-match`;
+    const body = {round_number: roundNumber, participant: participant};
 
-        const match_id = findMyMatch(response.data, player.uuid).match_id;
-        if(!match_id)
-        {
-            io.to(player.socket.id).emit("goToNextRound");
-            return;
-        }
-        
-        if (!waitingMatches.has(match_id))
-            waitingMatches.set(match_id, new Map<string, Player>());
-        const myMatchMap = waitingMatches.get(match_id);
-        if (!myMatchMap) {
-            throw new Error(`Maç bulunamadı: match_id = ${match_id}`);
-        }
-        myMatchMap.set(player.username, player);
-        myMatchMap.forEach((value, key) => {
-        console.log(`Key: ${key}, Value: {${value.socket}, ${value.username}, ${value.uuid}`);
-        });
+  try {
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(body)
+    });
 
-        if (myMatchMap.size > 2)
-            throw new Error(`Bir şeyler ters gitti ! myMatchMap.size 2 den büyük olamaz, şu an ${myMatchMap.size}`);
-        const roundNumber = findMyMatch(response.data, player.uuid).roundNumber;
-        const finalMatch = findMyMatch(response.data, player.uuid).finalMatch;
-        checkForRemoteMatch(io, myMatchMap, 'tournament', tournamentCode, roundNumber, finalMatch);
+        const result = await response.json() as Result;
+        console.log("joinMatchByCode isteğinin yanıtı:", JSON.stringify(result, null, 2));
+        return result;
     }
     catch (err: any)
     {
-    console.error("Hata kodu:", err.message);
-    emitErrorToClient(err.message, player.socket.id, io);
+        console.error(' joinMatchByCode Fetch error:', err);
+        throw err;
     }
-
-    
-
 }
-
-
-// export async function sendRequest(request: FastifyRequest) {
-// 	const responseData = await unitRequest('http://localhost:8081/api/auth/validate', {
-// 		method: "POST",
-// 		headers: {
-// 			'Authorization': request.headers.authorization as string,
-// 		},
-// 		//body: JSON.stringify(request.body)
-// 	});
-// }
 

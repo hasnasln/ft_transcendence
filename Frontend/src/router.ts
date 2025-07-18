@@ -60,9 +60,9 @@ export function router()
 				loadingWithMessage(info, 'Lütfen Telefonu Yatay Tutunuz');
 				
 				setTimeout(() => {
-					gameInstance.initGameSettings(false);
+					gameInstance.initGameSettings(gameInstance.tournamentMode, gameInstance.reload, gameInstance.tournamentCode);
 					info.classList.add('hidden');
-					info.classList.remove('bg-blue-500');
+					info.classList.remove('bg-gray-950');
 					menu.classList.remove('hidden');
 				}, 2000);
 			}

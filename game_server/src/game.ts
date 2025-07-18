@@ -1,9 +1,9 @@
 import { Server} from "socket.io";
 import { InputProvider } from "./inputProviders";
-import { GameMode } from "./server";
+import { GameMode, matchManager} from "./server";
 import { pushWinnerToTournament } from "./tournament";
+import { Match } from "./matchManager";
 import { emitErrorToClient } from "./errorHandling";
-import { players } from "./server";
 
 type Side = 'leftPlayer' | 'rightPlayer';
 
@@ -90,11 +90,10 @@ export class Game
   public interval!: NodeJS.Timeout | undefined;
   public matchWinner: Side | undefined = undefined;
   public matchDisconnection : boolean = false;
-  public tournamentCode : string | undefined = undefined;
-  public roundNumber : number | undefined = undefined;
+  public match : Match;
 
 
-  constructor( public leftInput: InputProvider, public rightInput: InputProvider, io: Server, roomId: string, gameMode: GameMode, tournamentCode?: string, roundNumber?: number)
+  constructor( public leftInput: InputProvider, public rightInput: InputProvider, io: Server, roomId: string, gameMode: GameMode, match: Match)
   {
     this.gameMode = gameMode;
     this.ball = 
@@ -142,8 +141,7 @@ export class Game
 
     this.io = io;
     this.roomId = roomId;
-    this.tournamentCode = tournamentCode;
-    this.roundNumber = roundNumber;
+    this.match = match;
   }
 
   public getBall()
@@ -187,11 +185,8 @@ export class Game
     {
       this.resetScores();
       this.setOver = false;
-
-   this.exportGameState();
-
+      this.exportGameState();
       this.lastUpdatedTime = Date.now();
-
     }, 3000);
   }
 
@@ -268,6 +263,7 @@ export class Game
       clearInterval(this.interval);
       this.interval = undefined;
     }
+    console.log(`maç pause edildi: ${this.leftInput.getUsername()}_vs_${this.rightInput.getUsername()}`);
   }
 
   public resumeGameLoop() {
@@ -277,6 +273,7 @@ export class Game
   }
   
   this.lastUpdatedTime = Date.now();
+  console.log(`durdurulmuş maç resume edildi: ${this.leftInput.getUsername()}_vs_${this.rightInput.getUsername()}`);
   }
 
 
@@ -303,7 +300,7 @@ export class Game
       isPaused: this.isPaused,
       matchWinner: this.matchWinner,
       matchDisconnection: this.matchDisconnection,
-      roundNumber: this.roundNumber
+      roundNumber: this.match.tournament?.roundNo,
      };
 
      this.io.to(this.roomId).emit("gameState", gameState);
@@ -324,15 +321,18 @@ export class Game
         this.io.to(this.roomId).emit("ballUpdate", ballState);
   }
 
-   public handleDisconnect(inCompleteWinner: Side)
+   public finishIncompleteMatch(username?: string)
    {
+    let inCompleteWinner;
+    if (username)
+      inCompleteWinner = username === this.leftInput.getUsername() ? 'leftPlayer' : 'rightPlayer' as Side;
+    else
+      inCompleteWinner = undefined;
     this.matchOver = true;
     this.matchWinner = inCompleteWinner;
     this.matchDisconnection = true;
-    if (this.gameMode === 'remoteGame' || this.gameMode === 'tournament')
-        this.exportGameState();
-    else
-        this.exportGameState();
+    this.exportGameState();
+    console.log(`incomplete maç bitti : inCompleteWinner = ${inCompleteWinner}`);
    }
 
 
@@ -358,12 +358,10 @@ export class Game
 
   this.exportGameState();
 
-    const sides = [{socket: typeof this.leftInput.getSocket === 'function' ? this.leftInput.getSocket()! : null, opponent: 'rightPlayer' as Side},
-      {socket: typeof this.rightInput.getSocket === 'function' ? this.rightInput.getSocket()! : null, opponent: 'leftPlayer' as Side}];
+    const sides = [{socket: typeof this.leftInput.getSocket === 'function' ? this.leftInput.getSocket()! : null},
+      {socket: typeof this.rightInput.getSocket === 'function' ? this.rightInput.getSocket()! : null}];
 
-      const disconnectEvents = ["disconnect", "reset-match"];
-
-      sides.forEach(({ socket, opponent }) =>
+      sides.forEach(({socket}) =>
         {
           if (socket)
           {
@@ -374,12 +372,8 @@ export class Game
                 else if (data.status === "resume" && this.isPaused)
                     this.resumeGameLoop();
               });
-              if (!this.matchOver && (this.gameMode === 'remoteGame' || this.gameMode === 'tournament'))
-                disconnectEvents.forEach(evt => socket.on(evt, () => {this.handleDisconnect(opponent); return;} ));
           }
         });
-
-
     if(this.isPaused === false)
        {
          Math.random() <= 0.5  ? this.resetBall('leftPlayer') : this.resetBall('rightPlayer');
@@ -397,15 +391,6 @@ export class Game
 const skipIfMatchOver: Middleware = (g, _dt) => {
   if (g.matchOver)
   {
-    const leftUsername = g.leftInput.getUsername();
-    const rightUsername = g.rightInput.getUsername();
-
-    const leftPlayer = players.get(leftUsername);
-    const rightPlayer = players.get(rightUsername);
-    // leftPlayer!.isPlaying = false;
-    // if (rightUsername !== "AI")
-    //   rightPlayer!.isPlaying = false;
-
     if(g.gameMode === 'tournament')
     {
        const winnerInput = g.matchWinner === 'leftPlayer' ? g.leftInput : g.rightInput;
@@ -413,7 +398,7 @@ const skipIfMatchOver: Middleware = (g, _dt) => {
        const username = winnerInput.getUsername();
        try
        {
-          pushWinnerToTournament(g.tournamentCode! as string, g.roundNumber! as number, {uuid, username});
+          pushWinnerToTournament(g.match.tournament?.code as string, g.match.tournament?.roundNo as number, {uuid, username});
        }
        catch (err: any)
        {
@@ -421,6 +406,12 @@ const skipIfMatchOver: Middleware = (g, _dt) => {
        }
     }
     g.pauseGameLoop();
+    g.exportGameState();
+
+    if(g.match.gameMode === 'localGame' || g.match.gameMode === 'vsAI')
+      matchManager.clearMatch(g.match);
+    console.log(`maç bitirildi: ${g.leftInput.getUsername()}_vs_${g.rightInput.getUsername()}`);
+    g.match.end();
     return false;
   }
   return true;
@@ -519,11 +510,11 @@ const enforceSpeedLimits: Middleware = (g, _dt) => {
 
 const handleScoring: Middleware = (g, _dt) => {
   if (g.ball.position.x > g.ground.width / 2 + 5 * g.unitConversionFactor) {
-    g.scorePoint('leftPlayer');
+    g.scorePoint('leftPlayer'); console.log(`skor oldu: left, maç ${g.leftInput.getUsername()}_vs_${g.rightInput.getUsername()}`);
     return false;
   }
   if (g.ball.position.x < -g.ground.width / 2 - 5 * g.unitConversionFactor) {
-    g.scorePoint('rightPlayer');
+    g.scorePoint('rightPlayer'); console.log(`skor oldu: right, maç ${g.leftInput.getUsername()}_vs_${g.rightInput.getUsername()}`);
     return false;
   }
   return true;
@@ -532,6 +523,7 @@ const handleScoring: Middleware = (g, _dt) => {
 const exportStates: Middleware = (g, _dt) => {
   g.exportBallState();
   g.exportPaddleState();
+  g.exportGameState();
   return true;
 };
 

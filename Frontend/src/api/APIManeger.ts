@@ -345,6 +345,7 @@ export class APIManager
 			const data = await response.json();
 			result.success = true;
 			result.message = data.message;
+			localStorage.removeItem('tdata'); // Remove tournament data from localStorage
 			return result;
 		} catch (error) {
 			console.error('Error in deleteTournament:', error);
@@ -387,6 +388,7 @@ export class APIManager
 			result.success = true;
 			result.message = data.message;
 			result.data = data.data;
+			localStorage.removeItem('tdata'); // Remove tournament data from localStorage
 			return result;
 		} catch (error) {
 			console.error('Error in playerLeaveTournament:', error);
@@ -409,6 +411,8 @@ export class APIManager
 			result.success = true;
 			result.message = data.message;
 			result.data = data.data;
+			if (data.data.status === 'completed')
+				localStorage.removeItem('tdata'); // Remove tournament data from localStorage
 			return result;
 		} catch (error) {
 			console.error('Error in getTournament:', error);

@@ -1,4 +1,4 @@
-import { gameInstance, GameMode, game} from "../play";
+import { GameMode, Game} from "../play";
 import { io, Socket } from "socket.io-client";
 import { _apiManager } from '../../api/APIManeger';
 
@@ -10,7 +10,7 @@ interface MatchPlayers
   finalMatch?: boolean
 }
 
-export  function createSocket(after: any): Socket
+export  function createSocket(game: Game, after: any): Socket
 {
     // 1) Token’ı alın
     const token = _apiManager.getToken();
@@ -20,13 +20,26 @@ export  function createSocket(after: any): Socket
 
 
     // 2) Socket.IO bağlantısını auth ile oluşturun
-    const socket = io('http://game.transendence.com', {
+  const socket = io('http://localhost:3001', {
       auth: { token }
     });
 
-    socket.on('connect', () => {
-      console.log('Socket connected with ID:', socket.id);
-      after();
+  let firstConnect = true;
+
+    socket.on('connect', () =>
+    {
+      if (firstConnect)
+      {
+        console.info("🎉 İlk bağlantı kuruldu:", socket.id);
+        firstConnect = false;
+        after();
+      }
+      else
+      {
+        console.info("🔄 Yeniden bağlanıldı:", socket.id);
+        game.socket = socket;
+        game.resumeAfterReconnect();
+      }
     });
 
     socket.on('connect_error', (err) =>
@@ -45,42 +58,51 @@ export  function createSocket(after: any): Socket
           window.history.pushState({}, '', '/singin');
           window.location.reload();
         }
-      else if (err.message.includes("Game server error"))
-          {
-            alert("Aynı anda birden fazla oyuna katılamazsınız.");
+      else
+        {
+            alert("Oyun sunucusu bağlantısı reddedildi: " + err.message);
             window.history.pushState({}, '', '/');
             window.location.reload();
-          }
-        else
-      {
-          alert("Bağlantı reddedildi: " + err.message);
+        }
+    });
+  
+    window.addEventListener("offline", () =>
+    {
+      socket.disconnect();
+      console.warn("🔌 Tarayıcı offline oldu");
+      game.handleNetworkPause();
+    });
+
+    window.addEventListener("online", () =>
+    {
+      console.info("🔌 Tarayıcı tekrar online");
+      socket.connect();
+      game.info!.textContent = "Tekrar bağlanılıyor…";
+      game.info!.classList.remove("hidden");
+    });
+
+    // 5️⃣ Socket.IO disconnect: heartbeat veya manuel disconnect
+    socket.on("disconnect", (reason: string) =>
+    {
+      console.warn("🔌 disconnect:", reason);
+      // Eğer sunucu kaynaklıysa (örn. io server disconnect), direkt yönlendir
+      if (reason === "io server disconnect") {
+        alert("Sunucu tarafından bağlantı kesildi. Ana sayfaya dönülüyor.");
+        window.history.pushState({}, '', '/');
+        window.location.reload();
+        return;
+      }
+      // Aksi halde (ping timeout, transport close vb.) pause
+      game.handleNetworkPause();
+    });
+
+    socket.on('gameServerError', (errorMessage : string) =>
+    {
+      console.error(errorMessage);
+      alert("HATA : " + errorMessage);
           window.history.pushState({}, '', '/');
           window.location.reload();
-      }
     });
-
-
-    socket.on('tournamentError', (errorMessage : string) => {
-      console.error('Tournament error:', errorMessage);
-      gameInstance.info!.textContent = `Tournament error:, ${errorMessage}`;
-      gameInstance.info!.classList.remove("hidden");
-        setTimeout(() =>
-        {
-          gameInstance.info!.classList.add("hidden");
-          window.history.pushState({}, '', '/tournament');
-          window.location.reload();
-        }, 5000);
-    });
-
-    // socket.on('waitingRematch', (rival: string) =>
-    // {
-    //     const answer = window.confirm(`${rival} oyuncusundan tekrar maç isteği geldi. Oynamak istermisin ?`);
-    //   if (answer) {
-        
-    //   } else {
-    //     console.log("Kullanıcı reddetti (No)");
-    //   }
-    // });
 
     return socket;
 }
@@ -96,7 +118,7 @@ interface GameConstants {
   paddleHeight: number;
 }
 
-interface GameState {
+export interface GameState {
   matchOver: boolean;
   setOver: boolean;
   isPaused: boolean;
@@ -161,133 +183,104 @@ export class GameInfo
   }
 }
 
-
-// interface Player
-// {
-//   socket: Socket;
-//   username: string;
-// }
-
-export function waitForMatchReady(gameInstance: game): Promise<string>
+export function waitForMatchReady(game: Game): Promise<string>
 {
    return new Promise((resolve) =>
     {
-      gameInstance.socket!.on("match-ready", (matchPlayers : MatchPlayers) =>
+      game.socket!.on("match-ready", (matchPlayers : MatchPlayers) =>
         {console.log(`match-ready emiti geldi: matchPlayers.left.username = ${matchPlayers.left.username},  matchPlayers.right.username = ${matchPlayers.right.username},
           matchPlayers.roundNo = ${matchPlayers.roundNo}, matchPlayers.finalMatch = ${matchPlayers.finalMatch}`);
-          const rival = matchPlayers.left.socketId === gameInstance.socket!.id ? matchPlayers.right.username : matchPlayers.left.username;
-          if (gameInstance.tournamentMode)
+          const rival = matchPlayers.left.socketId === game.socket!.id ? matchPlayers.right.username : matchPlayers.left.username;
+          if (game.tournamentMode)
             {
-              gameInstance.gameStatus.finalMatch = matchPlayers.finalMatch!;
-              gameInstance.gameStatus.roundNo = matchPlayers.roundNo;
+              game.gameStatus.finalMatch = matchPlayers.finalMatch!;
+              game.gameStatus.roundNo = matchPlayers.roundNo;
               
               if(matchPlayers.finalMatch === true)
-                gameInstance.info!.textContent = `Sıradaki maç: ${gameInstance.tournamentCode} final maçı : vs ${rival}`;
+                game.info!.textContent = `Sıradaki maç: ${game.tournamentCode} final maçı : vs ${rival}`;
                 
               else
-                gameInstance.info!.textContent = `Sıradaki maç round : ${matchPlayers.roundNo} vs ${rival}`;
+                game.info!.textContent = `Sıradaki maç round : ${matchPlayers.roundNo} vs ${rival}`;
               }
                
           else
-            gameInstance.info!.textContent = `${rival} ile eşleştin`;
-          gameInstance.startButton!.innerHTML = `${rival} maçını oyna !`;
-          gameInstance.startButton!.classList.remove("hidden");
+            game.info!.textContent = `${rival} ile eşleştin`;
+          game.startButton!.innerHTML = `${rival} maçını oyna !`;
+          game.startButton!.classList.remove("hidden");
           resolve(rival);
         });
     });
 }
 
 
-export function waitForRematchApproval(socket: Socket, rival: string): Promise<boolean>
+export function waitForMatchApproval(game : Game): Promise<void>
 {
   return new Promise((resolve) =>
     {
-      gameInstance.info!.textContent = `Talebiniz ${rival} oyuncusuna iletildi.`;
-      gameInstance.info!.classList.remove("hidden");
-      setTimeout(() => { gameInstance.info!.textContent = `${rival} oyuncusunun onayı bekleniyor ...`; }, 1000);
+      game.info!.textContent = `Talebiniz ${game.rival} oyuncusuna iletildi.`;
+      game.info!.classList.remove("hidden");
+      setTimeout(() => { game.info!.textContent = `${game.rival} oyuncusunun onayı bekleniyor ...`; }, 1000);
       
-      socket.on("rematch-ready", () =>
-        {console.log("rematch-ready emiti geldi");
-          gameInstance.info!.textContent = `Maç başlıyor`;
+      game.socket!.on("match-starting", () =>
+        {console.log("match-starting emiti geldi");
+          game.info!.textContent = `Maç başlıyor`;
           setTimeout(() =>
             {
-              gameInstance.info!.classList.add("hidden");
-              resolve(true);
+              game.info!.classList.add("hidden");
             }, 1000);
+            resolve();
         });
-
-      setTimeout(() =>
-      {
-        gameInstance.info!.textContent = `${rival} oyuncusundan onay gelmedi !`;
-        setTimeout(() =>
-        {
-          gameInstance.info!.classList.add("hidden");
-        }, 2000);
-        resolve(false);
-      }, 20000);   
-  });
+    });
 }
 
 
-export function waitForGameInfoReady(gameInfo: GameInfo, socket: Socket): Promise<void>
+export function waitForGameInfoReady(game: Game): Promise<void>
 {
 	return new Promise((resolve) => {
 		const tryResolve = () => {
-			if (gameInfo.isReady()) {
+			if (game.gameInfo!.isReady()) {
 				resolve();
 			}
 		};
 
-		socket.on("gameConstants", (constants: GameConstants) => {
-      console.log(`cliente  gameConstants geldi :
-      groundWidth: ${constants.groundWidth},
-       groundHeight: ${constants.groundHeight},
-       ballRadius: ${constants.ballRadius},
-       paddleWidth: ${constants.paddleWidth},
-       paddleHeight: ${constants.paddleHeight}`);
-			gameInfo.setConstants(constants);
+		game.socket!.on("gameConstants", (constants: GameConstants) => {
+			game.gameInfo!.setConstants(constants);
 			tryResolve();
 		});
 
-		socket.on("gameState", (state: GameState) => {
-      console.log(`client e gameState geldi:
-      matchOver: ${state.matchOver},
-      setOver: ${state.setOver},
-      isPaused: ${state.isPaused},
-      matchWinner: ${state.matchWinner},
-      matchDisconnection: ${state.matchDisconnection},
-      roundNumber: ${state.roundNumber}`);
+		game.socket!.on("gameState", (state: GameState) => {
       if (state.matchOver)
         console.log(`matchOver TRUE geldi..........`);
-			gameInfo.setState(state);
+			game.gameInfo!.setState(state);
 			tryResolve();
 		});
 
-		socket.on("ballUpdate", (ballState: BallState) => {
-			gameInfo.setBall(ballState);
+		game.socket!.on("ballUpdate", (ballState: BallState) => {
+			game.gameInfo!.setBall(ballState);
 			tryResolve();
 		});
 
-		socket.on("paddleUpdate", (data) => {
+		game.socket!.on("paddleUpdate", (data) => {
       const paddle:PaddleState = data;
-			gameInfo.setPaddle(paddle);
+			game.gameInfo!.setPaddle(paddle);
 			tryResolve();
 		});
 	});
 }
 
 
-export function prepareScoreBoards(gameInfo: GameInfo)
+export function prepareScoreBoards(game: Game)
 {
-const blueTeam = document.getElementById("blue-team")!;
-const redTeam = document.getElementById("red-team")!;
+  if (!game.gameInfo) return;
+  const blueTeam = document.getElementById("blue-team")!;
+  const redTeam = document.getElementById("red-team")!;
 
-const blueTeam_s = document.getElementById("blue-team-s")!;
-const redTeam_s = document.getElementById("red-team-s")!;
+  const blueTeam_s = document.getElementById("blue-team-s")!;
+  const redTeam_s = document.getElementById("red-team-s")!;
 
-blueTeam.innerText = `${gameInfo.ballState?.usernames.left}`;
-redTeam.innerText = `${gameInfo.ballState?.usernames.right}`;
+  blueTeam.innerText = `${game.gameInfo.ballState?.usernames.left}`;
+  redTeam.innerText = `${game.gameInfo.ballState?.usernames.right}`;
 
-blueTeam_s.innerText = `${gameInfo.ballState?.usernames.left}`;
-redTeam_s.innerText = `${gameInfo.ballState?.usernames.right}`;
+  blueTeam_s.innerText = `${game.gameInfo.ballState?.usernames.left}`;
+  redTeam_s.innerText = `${game.gameInfo.ballState?.usernames.right}`;
 }

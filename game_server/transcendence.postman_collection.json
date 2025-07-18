@@ -1,0 +1,1372 @@
+{
+	"info": {
+		"_postman_id": "599303e0-a601-4131-8722-c395f8000397",
+		"name": "transcendence",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45294665",
+		"_collection_link": "https://batuhankas-4847712.postman.co/workspace/Batuhan-Kas's-Workspace~ef9e7922-47e0-4b22-8e02-8680dd6fbfbf/collection/45294665-599303e0-a601-4131-8722-c395f8000397?action=share&source=collection_link&creator=45294665"
+	},
+	"item": [
+		{
+			"name": "tournament",
+			"item": [
+				{
+					"name": "createTournament",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();",
+									"const code = responseJson.data.code;",
+									"",
+									"pm.globals.set(\"roomCode\", code);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New Room\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tournament_host}}/api/tournament",
+							"host": [
+								"{{tournament_host}}"
+							],
+							"path": [
+								"api",
+								"tournament"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "createTournament",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"New Roowsm\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/tournament",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"tournament"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "277"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 03 Jun 2025 18:12:28 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"message\": \"Tournament with ID 1 created successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"code\": \"PNVFNY\",\n        \"name\": \"New Roowsm\",\n        \"admin_id\": \"c32609d2-c64d-4a01-936b-8369cb783457\",\n        \"participants\": [\n            {\n                \"uuid\": \"c32609d2-c64d-4a01-936b-8369cb783457\",\n                \"username\": \"testuser\"\n            }\n        ],\n        \"status\": \"created\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "leaveTournamentByCode",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tournament_host}}/api/tournament/{{roomCode}}/leave",
+							"host": [
+								"{{tournament_host}}"
+							],
+							"path": [
+								"api",
+								"tournament",
+								"{{roomCode}}",
+								"leave"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "leaveTournamentById",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"batu\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/tournament/100/leave",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"tournament",
+										"100",
+										"leave"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "77"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 28 May 2025 14:27:55 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"message\": \"Participant batu left tournament 100 successfully\"\n}"
+						},
+						{
+							"name": "leaveTournamentById",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/tournament/{{roomCode}}/leave",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"tournament",
+										"{{roomCode}}",
+										"leave"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "72"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 03 Jun 2025 19:46:54 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"FAIL\",\n    \"error\": \"Tournament admin cannot leave the tournament\"\n}"
+						}
+					]
+				},
+				{
+					"name": "startTournamentByCode",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tournament_host}}/api/tournament/{{roomCode}}/start",
+							"host": [
+								"{{tournament_host}}"
+							],
+							"path": [
+								"api",
+								"tournament",
+								"{{roomCode}}",
+								"start"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "leaveTournamentById",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"batu\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/tournament/100/leave",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"tournament",
+										"100",
+										"leave"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "77"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 28 May 2025 14:27:55 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"message\": \"Participant batu left tournament 100 successfully\"\n}"
+						},
+						{
+							"name": "leaveTournamentById",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/tournament/{{roomCode}}/leave",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"tournament",
+										"{{roomCode}}",
+										"leave"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "72"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 03 Jun 2025 19:46:54 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"FAIL\",\n    \"error\": \"Tournament admin cannot leave the tournament\"\n}"
+						}
+					]
+				},
+				{
+					"name": "getTournamentParticipants",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// JSON'u güvenli şekilde al",
+									"const data = pm.response.json().data;",
+									"",
+									"// tournament_start veya rounds yoksa çık",
+									"if (!data.tournament_start || !Array.isArray(data.tournament_start.rounds)) {",
+									"    console.log(\"No tournament rounds available yet. Probably not started.\");",
+									"    return;",
+									"}",
+									"",
+									"// Tüm round'ları al",
+									"const rounds = data.tournament_start.rounds;",
+									"",
+									"// is_completed === false olan round'u bul",
+									"const nextRound = rounds.find(r => r.is_completed === false);",
+									"",
+									"if (nextRound) {",
+									"    const nextRoundNumber = nextRound.round_number;",
+									"    pm.globals.set(\"roundNumber\", nextRoundNumber);",
+									"    console.log(\"Set roundNumber to:\", nextRoundNumber);",
+									"} else {",
+									"    console.log(\"No upcoming (incomplete) round found.\");",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tournament_host}}/api/tournament/{{roomCode}}",
+							"host": [
+								"{{tournament_host}}"
+							],
+							"path": [
+								"api",
+								"tournament",
+								"{{roomCode}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "getTournamentParticipants",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{tournament_host}}/api/tournament/{{roomCode}}",
+									"host": [
+										"{{tournament_host}}"
+									],
+									"path": [
+										"api",
+										"tournament",
+										"{{roomCode}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "689"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 21 Jun 2025 14:56:31 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"message\": \"Participants for tournament AD3TST retrieved successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"code\": \"AD3TST\",\n        \"name\": \"New Room\",\n        \"admin_id\": \"4f491471-194c-4fa7-bdcf-0ea25a747de3\",\n        \"participants\": [\n            {\n                \"uuid\": \"4f491471-194c-4fa7-bdcf-0ea25a747de3\",\n                \"username\": \"batuhan\"\n            },\n            {\n                \"uuid\": \"daf1f686-2ddd-4148-bbbd-6d4cdb617fa0\",\n                \"username\": \"hamza\"\n            }\n        ],\n        \"status\": \"ongoing\",\n        \"start_time\": \"2025-06-21T14:56:16.806Z\",\n        \"tournament_start\": {\n            \"rounds\": [\n                {\n                    \"round_number\": 1,\n                    \"matches\": [\n                        {\n                            \"participant1\": {\n                                \"uuid\": \"4f491471-194c-4fa7-bdcf-0ea25a747de3\",\n                                \"username\": \"batuhan\"\n                            },\n                            \"participant2\": {\n                                \"uuid\": \"daf1f686-2ddd-4148-bbbd-6d4cdb617fa0\",\n                                \"username\": \"hamza\"\n                            }\n                        }\n                    ],\n                    \"winner\": null,\n                    \"expected_winner_count\": 1,\n                    \"is_completed\": false\n                }\n            ]\n        }\n    }\n}"
+						},
+						{
+							"name": "last",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{tournament_host}}/api/tournament/{{roomCode}}",
+									"host": [
+										"{{tournament_host}}"
+									],
+									"path": [
+										"api",
+										"tournament",
+										"{{roomCode}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "access-control-allow-origin",
+									"value": "*"
+								},
+								{
+									"key": "access-control-allow-credentials",
+									"value": "true"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "844"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 06 Jul 2025 20:39:35 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"message\": \"Participants for tournament MPZDS8 retrieved successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"code\": \"MPZDS8\",\n        \"name\": \"New Room\",\n        \"admin_id\": \"df3b6bf3-df0c-4b26-ab66-66623217c7d4\",\n        \"participants\": [\n            {\n                \"uuid\": \"df3b6bf3-df0c-4b26-ab66-66623217c7d4\",\n                \"username\": \"batu\"\n            },\n            {\n                \"uuid\": \"f2f55c39-a536-40fe-8c0a-1930d5fb3ea2\",\n                \"username\": \"hamza\"\n            }\n        ],\n        \"status\": \"completed\",\n        \"start_time\": \"2025-07-06T20:38:33.933Z\",\n        \"tournament_start\": {\n            \"rounds\": [\n                {\n                    \"round_number\": 1,\n                    \"matches\": [\n                        {\n                            \"participant1\": {\n                                \"uuid\": \"f2f55c39-a536-40fe-8c0a-1930d5fb3ea2\",\n                                \"username\": \"hamza\",\n                                \"status\": \"joined\"\n                            },\n                            \"participant2\": {\n                                \"uuid\": \"df3b6bf3-df0c-4b26-ab66-66623217c7d4\",\n                                \"username\": \"batu\",\n                                \"status\": \"joined\"\n                            },\n                            \"status\": \"completed\"\n                        }\n                    ],\n                    \"winners\": [\n                        {\n                            \"uuid\": \"f2f55c39-a536-40fe-8c0a-1930d5fb3ea2\",\n                            \"username\": \"hamza\"\n                        }\n                    ],\n                    \"expected_winner_count\": 1,\n                    \"is_completed\": true\n                }\n            ]\n        },\n        \"end_time\": \"2025-07-06T20:39:30.814Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "updateTournamentParticipants",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"round_number\": {{roundNumber}},\n    \"winner\": {\n        \"uuid\": \"daf1f686-2ddd-4148-bbbd-6d4cdb617fa0\",\n        \"username\": \"hamza\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tournament_host}}/api/tournament/{{roomCode}}",
+							"host": [
+								"{{tournament_host}}"
+							],
+							"path": [
+								"api",
+								"tournament",
+								"{{roomCode}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "getTournamentParticipants",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/tournament/{{roomCode}}/participants",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"tournament",
+										"{{roomCode}}",
+										"participants"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "164"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 03 Jun 2025 20:29:07 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"message\": \"Participants for tournament UP3WQH retrieved successfully\",\n    \"data\": [\n        {\n            \"uuid\": \"c32609d2-c64d-4a01-936b-8369cb783457\",\n            \"username\": \"testuser\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "deleteTournamentByCode",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tournament_host}}/api/tournament/{{roomCode}}",
+							"host": [
+								"{{tournament_host}}"
+							],
+							"path": [
+								"api",
+								"tournament",
+								"{{roomCode}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "deleteTournamentById",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/tournament/{{roomCode}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"tournament",
+										"{{roomCode}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "74"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 03 Jun 2025 20:29:46 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"message\": \"Tournament with ID UP3WQH deleted successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "joinTournamentByCode",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tournament_host}}/api/tournament/{{roomCode}}/join",
+							"host": [
+								"{{tournament_host}}"
+							],
+							"path": [
+								"api",
+								"tournament",
+								"{{roomCode}}",
+								"join"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "joinTournamentById",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"batu\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/tournament/100/join",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"tournament",
+										"100",
+										"join"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "79"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 28 May 2025 14:27:28 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"message\": \"Participant batu joined tournament 100 successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "joinMatchByCode",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"round_number\": {{roundNumber}},\n    \"participant\": {\n        \"uuid\": \"df3b6bf3-df0c-4b26-ab66-66623217c7d4\",\n        \"username\": \"batu\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tournament_host}}/api/tournament/{{roomCode}}/join-match",
+							"host": [
+								"{{tournament_host}}"
+							],
+							"path": [
+								"api",
+								"tournament",
+								"{{roomCode}}",
+								"join-match"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "joinTournamentById",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"batu\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/tournament/100/join",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"tournament",
+										"100",
+										"join"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "79"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 28 May 2025 14:27:28 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"message\": \"Participant batu joined tournament 100 successfully\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "authentication",
+			"item": [
+				{
+					"name": "auth/register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test\",\n    \"email\": \"test@test2.com\",\n    \"password\": \"testtest\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth_host}}/api/auth/register",
+							"host": [
+								"{{auth_host}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "createTournament",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"batuhan\",\n    \"email\": \"test@mail.com\",\n    \"password\": \"test\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/api/auth/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"api",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "56"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 28 May 2025 21:43:31 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"message\": \"User registered successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "auth/login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.globals.set(\"token\", jsonData.token);",
+									"        console.log(\"Token başarıyla kaydedildi\");",
+									"    }",
+									"    if (jsonData.uuid) {",
+									"        pm.globals.set(\"uuid\", jsonData.uuid);",
+									"        console.log(\"ID başarıyla kaydedildi\");",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"batu@batu.com\",\n    \"password\": \"batubatu\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth_host}}/api/auth/login",
+							"host": [
+								"{{auth_host}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "auth/login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"a@abc.com\",\n    \"password\": \"testpassword\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/auth/login",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "388"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 03 Jun 2025 15:28:55 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"message\": \"Login successful\",\n    \"uuid\": \"c32609d2-c64d-4a01-936b-8369cb783457\",\n    \"username\": \"testuser\",\n    \"email\": \"a@abc.com\",\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiYzMyNjA5ZDItYzY0ZC00YTAxLTkzNmItODM2OWNiNzgzNDU3IiwidXNlcm5hbWUiOiJ0ZXN0dXNlciIsImVtYWlsIjoiYUBhYmMuY29tIiwiaWF0IjoxNzQ4OTY0NTM1LCJleHAiOjE3NTE1NTY1MzV9.aN4bDGzSU7nexuDbZSs0J_ImnSErZvqg6rmwBkQVKrg\"\n}"
+						}
+					]
+				},
+				{
+					"name": "auth/validate",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth_host}}/api/auth/validate",
+							"host": [
+								"{{auth_host}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"validate"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "auth/validate",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/auth/validate",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"validate"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "173"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 31 May 2025 13:48:21 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"message\": \"Token is valid\",\n    \"data\": {\n        \"uuid\": \"9bf89aee-1ce6-4e82-8fc0-7d8ab124326c\",\n        \"username\": \"testuser\",\n        \"email\": \"a@abc.com\",\n        \"iat\": 1748698450,\n        \"exp\": 1751290450\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "auth/update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"uuid\": \"8a320c8d-e41b-4c1c-9dd4-c75176a9df9f\",\n    \"username\": \"hcoskun\",\n    \"email\": \"yenimail@test.com\",\n    \"password\": \"cokyenisifre\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth_host}}/api/auth/{{uuid}}",
+							"host": [
+								"{{auth_host}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"{{uuid}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "user/updateUser",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"uuid\": \"8a320c8d-e41b-4c1c-9dd4-c75176a9df9f\",\n    \"username\": \"yeniusertest\",\n    \"email\": \"yenimail@test.com\",\n    \"password\": \"dahayenisifre\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/user/updateUser",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"updateUser"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "325"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 03 Jun 2025 15:24:11 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=72"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"OK\",\n    \"message\": \"User updated successfully\",\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiOGEzMjBjOGQtZTQxYi00YzFjLTlkZDQtYzc1MTc2YTlkZjlmIiwidXNlcm5hbWUiOiJ5ZW5pdXNlcnRlc3QiLCJlbWFpbCI6InllbmltYWlsQHRlc3QuY29tIiwiaWF0IjoxNzQ4OTY0MjUxLCJleHAiOjE3NTE1NTYyNTF9.GqSQCdFM3QQQ_Uwv_tIW_JItzxoVGpW8UFa-WsjEQVg\"\n}"
+						}
+					]
+				}
+			]
+		}
+	]
+}

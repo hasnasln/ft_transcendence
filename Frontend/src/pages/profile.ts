@@ -681,7 +681,7 @@ function createProfileInfoSection(): HTMLElement {
 	}
 	
 	const profileImage = document.createElement('img');
-	profileImage.src = `/ICONS/${currentAvatar}`;
+	profileImage.src = `/public/ICONS/${currentAvatar}`;
 	profileImage.alt = 'Profile Avatar';
 	profileImage.className = 'w-full h-full object-cover rounded-full';
 	profileImage.id = 'current-avatar';
@@ -901,7 +901,7 @@ function showAvatarSelector(currentImageElement: HTMLImageElement): void {
 		`;
 		
 		const avatarImg = document.createElement('img');
-		avatarImg.src = `/ICONS/${avatar}`;
+		avatarImg.src = `/public/ICONS/${avatar}`;
 		avatarImg.alt = avatar;
 		avatarImg.className = 'w-full h-full object-cover';
 		
@@ -942,7 +942,7 @@ function showAvatarSelector(currentImageElement: HTMLImageElement): void {
 }
 
 function selectAvatar(avatarName: string, imageElement: HTMLImageElement, modal: HTMLElement): void {
-	imageElement.src = `/ICONS/${avatarName}`;
+	imageElement.src = `/public/ICONS/${avatarName}`;
 	localStorage.setItem('selectedAvatar', avatarName);
 	
 	closeModal(modal);

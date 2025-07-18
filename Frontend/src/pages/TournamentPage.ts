@@ -232,7 +232,7 @@ export class TournamentPage
 				loadingWithMessage(info, 'Lütfen Telefonu Yatay Tutunuz');
 							
 				setTimeout(() => {
-					gameInstance.initGameSettings(true, this.data.code);
+					gameInstance.initGameSettings(true, false, this.data.code);
 					info.classList.add('hidden');
 					info.classList.remove('bg-blue-500');
 				}, 2000);

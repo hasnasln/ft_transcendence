@@ -1,7 +1,7 @@
 import { Socket } from "socket.io";
 import {Game, Paddle } from "./game";
 import { predictBallY } from "./aiPlayer";
-import { Player } from "./matchmaking";
+import { Player } from "./matchManager";
 
 export interface InputProvider
 {

@@ -1,13 +1,23 @@
 import { Server } from "socket.io";
 import { createServer } from "http";
-import {Player, addPlayerToQueue, removePlayerFromQueue, startGameWithAI, startLocalGame} from "./matchmaking";
-import { error } from "console";
-import { handleTournamentMatch } from "./tournament";
+import { Player, MatchManager } from "./matchManager";
 import { emitErrorToClient } from "./errorHandling";
+
+export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament';
+export interface GameStatus {
+	currentGameStarted: boolean;
+	game_mode: GameMode;
+	level?: string;
+	tournamentCode?: string;
+	tournamentName?: string;
+	roundNo?: number;
+	finalMatch?: boolean
+};
 
 export interface User {
   uuid: string;
   username: string;
+  token: string;
   email?: string; 
   name?: string;
   surname?: string;
@@ -32,6 +42,8 @@ export interface IApiResponseWrapper
 const httpServer = createServer();
 const io = new Server(httpServer, {
   cors: { origin: "*" },
+  pingInterval: 1000,
+  pingTimeout: 2000
 });
 
 const PORT = 3001;
@@ -40,18 +52,8 @@ httpServer.listen(PORT, () => {
 });
 
 
-export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament';
-export interface GameStatus {
-	currentGameStarted: boolean;
-	game_mode: GameMode;
-	level?: string;
-	tournamentCode?: string;
-	tournamentName?: string;
-	roundNo?: number;
-	finalMatch?: boolean
-};
+export const matchManager = new MatchManager(io);
 
-export const players = new Map<string, Player>();
 
 io.use(async (socket, next) =>
 {
@@ -64,23 +66,24 @@ io.use(async (socket, next) =>
     }
 
     const response = await myFetch('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined , token);
+    if (!response.ok)
+    {
+      console.log("getmedi", response);
+    }
     const data = await response.json();
     console.log(`Token validation response: \n ${JSON.stringify(data, null, 2)}`);
 
     if(!response.ok)
       throw("Token validation error: " + data.error);
- // 
-    // console.log("uuid " + data.data.uuid);
-    // console.log("username " + data.data.username);
 
-    const user : User = {uuid: data.data.uuid, username: data.data.username};
+    const user : User = {uuid: data.data.uuid, username: data.data.username, token: token};
     (socket as any).user = user;
     
     next();
   }
   catch(err: any)
   {
-    console.log()
+    console.log("Authentication error: " + err.message)
     return next(new Error("Authentication error: " + err.message));
   }
 });
@@ -90,52 +93,70 @@ io.on("connection", socket =>
 {
   const username = (socket as any).user.username;
   const uuid = (socket as any).user.uuid;
+  const token = (socket as any).user.token;
   let player : Player
  
-  console.log("p ", players);
-  console.log("u ", username);
-  if (players.has(username))
+  if (matchManager.connectedPlayers.has(username))
   {
+    emitErrorToClient("Şu anda oyun sunucusuna başka bir oturumdan bağlısınız. Yalnızca bir oturumdan oynayabilirsiniz !", socket.id, io);
     socket.disconnect(true);
     console.log("connection is doubled");
-    return
+    return;
   }
   else
   {
-    player = {socket, username, uuid}; //isPlaying : false};
-    players.set(username, player);
+    player = {socket, username, uuid, token, status: 'online', socketReady: false};
+    matchManager.connectedPlayers.set(username, player);
   }
 
-  console.log(`✔ Oyuncu bağlaasdndı: ${username} (ID: ${socket.id})`);
+  console.log(`✔ Oyuncu bağlandı: ${username} (ID: ${socket.id})`);
 
-  socket.on("start", async (gameStatus : GameStatus) =>
+  const myMatch = matchManager.getMatchByPlayer(player.username);
+  if (myMatch && (myMatch.gameMode === 'remoteGame' || myMatch.gameMode === 'tournament') && (myMatch.state === 'in-progress' || myMatch.state === 'paused'))
   {
-    console.log(`gameStatus = {game_mode = ${gameStatus.game_mode}, level = ${gameStatus.level}}`);
-    if (gameStatus.game_mode === "vsAI")
-      startGameWithAI(player, gameStatus.level!, io);
-    else if (gameStatus.game_mode === "localGame")
-      startLocalGame(player, io);
-    else if (gameStatus.game_mode === "remoteGame")
-      addPlayerToQueue(player, io, "remoteGame");
-    else if (gameStatus.game_mode === 'tournament')
-      handleTournamentMatch(player, io, gameStatus.tournamentCode!);
-  });
+    try {matchManager.handleReconnect(player);}
+    catch (err: any)
+    {
+      emitErrorToClient(err.message, socket.id, io);
+      socket.disconnect(true);
+      console.log(err.message);
+    return;
+    }
+  }
+  else
+  {
+    socket.on("start", async (gameStatus : GameStatus) =>
+    {
+      console.log(`gameStatus = {game_mode = ${gameStatus.game_mode}, level = ${gameStatus.level}}`);
+      if (gameStatus.game_mode === "vsAI")
+        matchManager.createMatchWithAI(player, gameStatus.level!);
+      else if (gameStatus.game_mode === "localGame")
+        matchManager.createLocalMatch(player);
+      else if (gameStatus.game_mode === "remoteGame")
+        matchManager.addPlayerToRemoteQueue(player);
+      else if (gameStatus.game_mode === 'tournament')
+        matchManager.handleTournamentMatch(player, gameStatus.tournamentCode!);
+    });
+  }
 
-  socket.on("disconnect", () => {
-    console.log(`disconnect geldi, ${socket.id} ayrıldı`);
-    removePlayerFromQueue(player);
-    players.delete(player.username);
-  });
+    socket.on("reset-match", () =>
+    {
+      const activeMatch = matchManager.getMatchByPlayer(player.username);
+      if(activeMatch)
+      {console.log(`reset-match emiti geldi, activeMatch var ve room = ${activeMatch.roomId}`);
+        activeMatch.finishIncompleteMatch();
+        matchManager.clearMatch(activeMatch);
+      }
+    });
 
-  // socket.on("disconnect", () => {
-  //   removePlayerFromQueue(player);
-  //   const username = (socket as any).user?.username;
-  //   if (username && players.get(username)?.socket.id === socket.id) {
-  //     players.delete(username);
-  //     console.log(`Oyuncu bağlantısı kapandı: ${username}`);
-  //   }
-  //   });
-  
+    socket.on("disconnect", () =>
+    {
+      console.log(`disconnect geldi, ${socket.id} ayrıldı`);
+      setTimeout(() =>
+      {
+        matchManager.handleDisconnect(player);
+      }, 50);
+    });
 });
 
 
@@ -151,8 +172,8 @@ export function myFetch(url: string, method: string, headers: HeadersInit, body?
 			if (body) {
 				options.body = body;
 			}
-			console.log("Fetch URL:", url);
-			console.log("Fetch Options:", options);
+			// console.log("Fetch URL:", url);
+			// console.log("Fetch Options:", options);
 			return fetch(url, options)
 		} catch (error) {
 			console.error('Error in fetch:', error);
