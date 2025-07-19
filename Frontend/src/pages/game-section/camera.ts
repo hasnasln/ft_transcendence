@@ -121,13 +121,12 @@ export class CameraController
     });
   }
 
-    public resetCamera()
-    {
-    this.angleXZ = 0;
-    this.angleYZ = 0;
-    this.radius = 20;
-    this.camera.position = new Vector3(0, 0, -this.radius);
-    this.camera.setTarget(this.target);
+    public resetCamera() {
+        this.angleXZ = 0;
+        this.angleYZ = 0;
+        this.radius = 20;
+        this.camera.position = new Vector3(0, 0, -this.radius);
+        this.camera.setTarget(this.target);
     }
 
     public updateCamera()
