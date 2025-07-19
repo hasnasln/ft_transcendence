@@ -106,8 +106,8 @@ GameEventBus.getInstance().on('ENTER_READY_PHASE', () => {
 	gameInstance.uiManager.hide(gameInstance.uiManager.turnToHomePage);
 });
 
-GameEventBus.getInstance().on('ENTER_PLAYING_PHASE',  () => {
-	gameInstance.uiManager.setupScene();
+GameEventBus.getInstance().on('ENTER_PLAYING_PHASE',  async () => {
+	await gameInstance.uiManager.setupScene();
 	listenPlayerInputs(gameInstance.gameInfo!);
 	startGameLoop();
 });
