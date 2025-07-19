@@ -4,7 +4,7 @@ import { Server } from "socket.io";
 import { LocalPlayerInput, RemotePlayerInput, AIPlayerInput } from "./inputProviders";
 import { GameMode } from "./server";
 import { getTournament, findMyMatch, joinMatchByCode } from "./tournament";
-import { emitErrorToClient } from "./errorHandling";
+import { emitError } from "./errorHandling";
 
 export interface Player {
 	socket: Socket;
@@ -187,7 +187,7 @@ export class MatchManager {
 					try {
 						joinMatchByCode(player.token, match.tournament?.code as string, match.tournament?.roundNo as number, { uuid: player.uuid, username: player.username });
 					} catch (err: any) {
-						emitErrorToClient(err.message, match.roomId, this.io);
+						emitError(err.message, match.roomId, this.io);
 					}
 				}
 
@@ -290,7 +290,7 @@ export class MatchManager {
 		}
 		catch (err: any) {
 			console.error("Hata kodu:", err.message);
-			emitErrorToClient(err.message, player.socket.id, this.io);
+			emitError(err.message, player.socket.id, this.io);
 		}
 	}
 
@@ -370,7 +370,7 @@ export class MatchManager {
 				if (timeOut) {
 					clearTimeout(timeOut);
 					this.reconnectTimers.delete(me.username);
-				} z
+				}
 
 				setTimeout(() => {
 					myMatch.resume();

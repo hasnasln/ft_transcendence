@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import { createServer } from "http";
 import { Player, MatchManager } from "./matchManager";
-import { emitErrorToClient } from "./errorHandling";
+import { emitError } from "./errorHandling";
 
 export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament';
 export interface GameStatus {
@@ -49,62 +49,56 @@ httpServer.listen(PORT, () => {
 	console.log(`Server listening on port ${PORT}`);
 });
 
-
 export const matchManager = new MatchManager(io);
 
-
 io.use(async (socket, next) => {
-	try {
-		const token = socket.handshake.auth?.token;
-		if (!token) {
-			console.log(`[Server] Token gönderilmedi. ID: ${socket.id}`);
-			throw ("Authentication error: token missing");
-		}
-
-		const response = await apiCall('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined, token);
-		if (!response.ok) {
-			console.log("getmedi", response);
-		}
-		const data = await response.json();
-		console.log(`Token validation response: \n ${JSON.stringify(data, null, 2)}`);
-
-		if (!response.ok)
-			throw ("Token validation error: " + data.error);
-
-		const user: User = { uuid: data.data.uuid, username: data.data.username, token: token };
-		(socket as any).user = user;
-
-		next();
-	} catch (err: any) {
-		console.log("Authentication error: " + err.message)
-		return next(new Error("Authentication error: " + err.message));
+	const token = socket.handshake.auth?.token;
+	if (!token) {
+		console.log(`[Server] Token gönderilmedi. ID: ${socket.id}`);
+		next(new Error("Authentication error: token missing"));
+		return;
 	}
+
+	const response = await apiCall('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined, token);
+	const body = await response.json();
+	console.log(`Token validation response: \n ${JSON.stringify(body, null, 2)}`);
+
+	if (!response.ok) {
+		next(new Error("Token validation error: " + body.error));
+		return;
+	}
+
+	const user: User = { uuid: body.data.uuid, username: body.data.username, token: token };
+	(socket as any).user = user;
+
+	next();
 });
 
 
 io.on("connection", socket => {
-	const username = (socket as any).user.username;
-	const uuid = (socket as any).user.uuid;
-	const token = (socket as any).user.token;
+	const user = (socket as any).user;
+	const username = user.username;
+	const uuid = user.uuid;
+	const token = user.token;
 	let player: Player
 
 	if (matchManager.connectedPlayers.has(username)) {
-		emitErrorToClient("Şu anda oyun sunucusuna başka bir oturumdan bağlısınız. Yalnızca bir oturumdan oynayabilirsiniz !", socket.id, io);
+		emitError("Şu anda oyun sunucusuna başka bir oturumdan bağlısınız. Yalnızca bir oturumdan oynayabilirsiniz !", socket.id, io);
 		socket.disconnect(true);
 		console.log("connection is doubled");
 		return;
-	} else {
-		player = { socket, username, uuid, token, status: 'online', socketReady: false };
-		matchManager.connectedPlayers.set(username, player);
-	}
-
+	} 
+	
+	player = { socket, username, uuid, token, status: 'online', socketReady: false };
+	matchManager.connectedPlayers.set(username, player);
 	console.log(`✔ Oyuncu bağlandı: ${username} (ID: ${socket.id})`);
 
-	const myMatch = matchManager.getMatchByPlayer(player.username);
-	if (myMatch && (myMatch.gameMode === 'remoteGame' || myMatch.gameMode === 'tournament') && (myMatch.state === 'in-progress' || myMatch.state === 'paused')) {
-		try { matchManager.handleReconnect(player); }
-		catch (err: any) {
-			emitErrorToClient(err.message, socket.id, io);
+	const match = matchManager.getMatchByPlayer(player.username);
+	if (match && (match.gameMode === 'remoteGame' || match.gameMode === 'tournament') && (match.state === 'in-progress' || match.state === 'paused')) {
+		try {
+			matchManager.handleReconnect(player);
+		} catch (err: any) {
+			emitError(err.message, socket.id, io);
 			socket.disconnect(true);
 			console.log(err.message);
 			return;

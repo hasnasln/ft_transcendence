@@ -3,7 +3,7 @@ import { InputProvider } from "./inputProviders";
 import { GameMode, matchManager } from "./server";
 import { pushWinnerToTournament } from "./tournament";
 import { Match } from "./matchManager";
-import { emitErrorToClient } from "./errorHandling";
+import { emitError } from "./errorHandling";
 
 type Side = 'leftPlayer' | 'rightPlayer';
 
@@ -386,7 +386,7 @@ const skipIfMatchOver: Middleware = (g, _dt) => {
 				pushWinnerToTournament(g.match.tournament?.code as string, g.match.tournament?.roundNo as number, { uuid, username });
 			}
 			catch (err: any) {
-				emitErrorToClient(err.message, g.roomId, g.io);
+				emitError(err.message, g.roomId, g.io);
 			}
 		}
 		g.pauseGameLoop();
