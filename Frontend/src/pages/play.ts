@@ -107,9 +107,10 @@ export class GameManager {
 
 		let rival: string | null = null;
 		if (this.gameStatus.game_mode === "remoteGame" || this.gameStatus.game_mode === 'tournament') {
-			GameEventBus.getInstance().emit({ type: 'WAITING_FOR_RIVAL'});
+			//todo remove awaits
+			await GameEventBus.getInstance().emit({ type: 'WAITING_FOR_RIVAL'});
 			const matchPlayers: MatchPlayers = await waitForMatchReady(this);
-			GameEventBus.getInstance().emit({ type: 'RIVAL_FOUND', payload: {matchPlayers} });
+			await GameEventBus.getInstance().emit({ type: 'RIVAL_FOUND', payload: {matchPlayers} });
 		}
 		this.currentRival = rival;
 	};
