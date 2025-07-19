@@ -6,11 +6,11 @@ export type Participant = {
 };
 
 export class Result<T = any> {
-  constructor(
-    public statusCode: number,
-    public data: T | null,
-    public message: string
-  ) {}
+    constructor(
+        public statusCode: number,
+        public data: T | null,
+        public message: string
+    ) { }
 }
 
 export enum TournamentStatus {
@@ -48,25 +48,22 @@ export type Match = {
     participant2: Participant;
 }
 
-export function isParticipantAmongWinners(participantId: string, activeRound: Round): boolean
-{
-	return activeRound.winners?.some(p => p.uuid === participantId) ?? false;
+export function isParticipantAmongWinners(participantId: string, activeRound: Round): boolean {
+    return activeRound.winners?.some(p => p.uuid === participantId) ?? false;
 }
 
-export function isFinalMatch(activeRound: Round): boolean
-{
-	return (activeRound.expected_winner_count === 1 && activeRound.winners === null);
+export function isFinalMatch(activeRound: Round): boolean {
+    return (activeRound.expected_winner_count === 1 && activeRound.winners === null);
 }
 
-export function findMyMatch(tournament: TournamentData, participantId: string): {roundNumber: number, match_id : string | null, finalMatch : boolean}
-{
+export function findMyMatch(tournament: TournamentData, participantId: string): { roundNumber: number, match_id: string | null, finalMatch: boolean } {
     if (tournament.status === TournamentStatus.CREATED) {
-        
+
         throw new Error(`Tournament ${tournament.name} is not ONGOING yet`);
     }
 
     if (tournament.status === TournamentStatus.COMPLETED) {
-        
+
         throw new Error(`Tournament ${tournament.name} is COMPLETED already`);
     }
 
@@ -87,28 +84,26 @@ export function findMyMatch(tournament: TournamentData, participantId: string): 
         throw new Error(`Round Already Completed in the tournament ${tournament.name}`);
     }
 
-    let  match_id: string;
+    let match_id: string;
     const roundNumber = activeRound.round_number;
     const finalMatch = isFinalMatch(activeRound);
-    
-    for (const match of activeRound.matches)
-    {
-        if (match.participant1.uuid === participantId || match.participant2.uuid === participantId)
-        {
-             match_id = `${tournament.code}_r${activeRound.round_number}_m${match.participant1.username}_vs_${match.participant2.username}`;
-             const opponentId = match.participant1.uuid === participantId ?  match.participant2.uuid :  match.participant1.uuid;
-             if (isParticipantAmongWinners(participantId, activeRound))
+
+    for (const match of activeRound.matches) {
+        if (match.participant1.uuid === participantId || match.participant2.uuid === participantId) {
+            match_id = `${tournament.code}_r${activeRound.round_number}_m${match.participant1.username}_vs_${match.participant2.username}`;
+            const opponentId = match.participant1.uuid === participantId ? match.participant2.uuid : match.participant1.uuid;
+            if (isParticipantAmongWinners(participantId, activeRound))
                 throw new Error(`You have already played your match in this round : ${activeRound.round_number}, tournament ${tournament.name}. Wait for next round !`);
-             else if (isParticipantAmongWinners(opponentId, activeRound))
+            else if (isParticipantAmongWinners(opponentId, activeRound))
                 throw new Error(`You have already played your match in this round : ${activeRound.round_number}, tournament ${tournament.name} and eliminated`);
-             else
-                return {roundNumber, match_id, finalMatch};
+            else
+                return { roundNumber, match_id, finalMatch };
 
         }
     }
 
     if (isParticipantAmongWinners(participantId, activeRound))
-        return {roundNumber, match_id: null, finalMatch: false};
+        return { roundNumber, match_id: null, finalMatch: false };
     else
         throw new Error(`You have already been eliminated from the tournament ${tournament.name} !`);
 
@@ -116,80 +111,73 @@ export function findMyMatch(tournament: TournamentData, participantId: string): 
 
 
 
-export async function  getTournament(tournamentCode: string): Promise<IApiResponseWrapper>
-{
-  const result: IApiResponseWrapper = {success: false, message: '', data: null};
-  try{
-    const response = await myFetch(`http://tournament.transendence.com/api/tournament/${tournamentCode}`, HTTPMethod.GET, {
-      'Content-Type': 'application/json',
-      'bypass': 'bypassauth'
-    });
-    if (!response.ok)
-    {
-      console.log("getmedi");
+export async function getTournament(tournamentCode: string): Promise<IApiResponseWrapper> {
+    const result: IApiResponseWrapper = { success: false, message: '', data: null };
+    try {
+        const response = await myFetch(`http://tournament.transendence.com/api/tournament/${tournamentCode}`, HTTPMethod.GET, {
+            'Content-Type': 'application/json',
+            'bypass': 'bypassauth'
+        });
+        if (!response.ok) {
+            console.log("getmedi");
+        }
+        const data = await response.json();
+        console.log("gelen:", JSON.stringify(data, null, 2));
+        result.success = true;
+        result.message = data.message;
+        result.data = data.data;
+        return result;
+    } catch (error) {
+        console.error('Error in getTournament:', error);
+        throw error;
     }
-    const data = await response.json();
-    console.log("gelen:", JSON.stringify(data, null, 2));
-    result.success = true;
-    result.message = data.message;
-    result.data = data.data;
-    return result;
-  } catch (error) {
-    console.error('Error in getTournament:', error);
-    throw error;
-  }
 }
 
 
-export async function  pushWinnerToTournament(tournamentCode: string, roundNumber: number, matchWinner: Participant): Promise<Result>
-{
+export async function pushWinnerToTournament(tournamentCode: string, roundNumber: number, matchWinner: Participant): Promise<Result> {
     const url = `http://tournament.transendence.com/api/tournament/${tournamentCode}`;
-    const body = {round_number: roundNumber, winner: matchWinner};
+    const body = { round_number: roundNumber, winner: matchWinner };
 
-    try
-    {
+    try {
         const response = await fetch(url, {
-        method: 'PATCH',
-        headers: {
-        'Content-Type': 'application/json',
-        'bypass': 'bypassauth'
-        },
-        body: JSON.stringify(body)
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'bypass': 'bypassauth'
+            },
+            body: JSON.stringify(body)
         });
 
         const result = await response.json() as Result;
         console.log("pushWinner isteğinin yanıtı:", JSON.stringify(result, null, 2));
         return result;
     }
-    catch (err: any)
-    {
+    catch (err: any) {
         console.error('pushWinner Fetch error:', err);
         throw err;
     }
 }
 
 
-export async function joinMatchByCode(token: string, tournamentCode: string, roundNumber: number, participant: Participant): Promise<Result>
-{
+export async function joinMatchByCode(token: string, tournamentCode: string, roundNumber: number, participant: Participant): Promise<Result> {
     const url = `http://tournament.transendence.com/api/tournament/${tournamentCode}/join-match`;
-    const body = {round_number: roundNumber, participant: participant};
+    const body = { round_number: roundNumber, participant: participant };
 
-  try {
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify(body)
-    });
+    try {
+        const response = await fetch(url, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(body)
+        });
 
         const result = await response.json() as Result;
         console.log("joinMatchByCode isteğinin yanıtı:", JSON.stringify(result, null, 2));
         return result;
     }
-    catch (err: any)
-    {
+    catch (err: any) {
         console.error(' joinMatchByCode Fetch error:', err);
         throw err;
     }
