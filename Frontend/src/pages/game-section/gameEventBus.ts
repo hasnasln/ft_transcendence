@@ -42,12 +42,11 @@ export class GameEventBus {
 		return GameEventBus.instance;
 	}
 
+	// concurrent. ensure enqueued.
 	public async emit(event: GameEvent): Promise<void> {
 		console.log(`Event emitted: ${event.type}`, event.payload);
 		const handlers = this.listeners[event.type] || [];
-		for (const handler of handlers) {
-			await handler(event);
-		}
+		await Promise.all(handlers.map(handler => handler(event)));
 	}
 
 	public on(eventType: GameEventType, handler: EventHandler): void {
