@@ -1,3 +1,5 @@
+import { gameInstance } from "./pages/play";
+
 export interface Page {
     evaluate(): string;
     onLoad?(): void;
@@ -412,9 +414,17 @@ export class Router {
 
 	private constructor() {
 		this.currentPath = window.location.pathname;
-		window.addEventListener('popstate', () => {
+		window.addEventListener('popstate', (e) => {
+			if (this.currentPath === "/play"
+				&& gameInstance.gameStatus.currentGameStarted
+				&& !window.confirm("Are you sure you want to leave the game?")) {
+				return;
+			}
 			this.go(window.location.pathname, true);
-			console.log(`Popstate event triggered, current path: ${this.currentPath}`);
+		});
+
+		window.addEventListener('pushstate', (e) => {
+			this.go(window.location.pathname, true);
 		});
 	}
 
