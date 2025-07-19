@@ -7,9 +7,9 @@ import { RegisterPage } from './pages/register';
 import { LoginPage } from './pages/login';
 
 function bootstrap() {
-	const routerV2 = Router.getInstance();
+	const router = Router.getInstance();
 
-	routerV2.registerGuard({
+	router.registerGuard({
 		canGo: (path: string) => {
 			if (["/register", "/login", "/500"].includes(path)) {
 				return true;
@@ -17,20 +17,20 @@ function bootstrap() {
 
 			const isLoggedIn = !!localStorage.getItem('token');
 			if (!isLoggedIn) {
-				routerV2.go('/login', true);
+				router.go('/login', true);
 				return false;
 			}
 			return true;
 		}
 	});
 
-	routerV2.registerPage("/", new HomePage());
-	routerV2.registerPage("/tournament", new TournamentPage());
-	routerV2.registerPage("/play", new PlayPage());
-	routerV2.registerPage("/register", new RegisterPage());
-	routerV2.registerPage("/login", new LoginPage());
-	routerV2.registerPage("/500", new ServerErrorPage());
-	routerV2.go(window.location.pathname, true);
+	router.registerPage("/", new HomePage());
+	router.registerPage("/tournament", new TournamentPage());
+	router.registerPage("/play", new PlayPage());
+	router.registerPage("/register", new RegisterPage());
+	router.registerPage("/login", new LoginPage());
+	router.registerPage("/500", new ServerErrorPage());
+	router.go(window.location.pathname, true);
 }
 
 bootstrap();
