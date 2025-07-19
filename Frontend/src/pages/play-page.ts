@@ -92,12 +92,11 @@ export class PlayPage implements Page {
 		info.classList.add('bg-gray-950');
 		loadingWithMessage(info, 'Lütfen Telefonu Yatay Tutunuz');
 		
-		requestAnimationFrame(() => {
-			gameInstance.startPlayProcess(false);
-			info.classList.add('hidden');
-			info.classList.remove('bg-blue-500');
-			const menu = document.getElementById('menu') as HTMLElement;
-			menu.classList.remove('hidden');
-		});
+    //todo bunu sil
+    gameInstance.startPlayProcess(false);
+    info.classList.add('hidden');
+    info.classList.remove('bg-blue-500');
+    const menu = document.getElementById('menu') as HTMLElement;
+    menu.classList.remove('hidden');
 	}
 }
