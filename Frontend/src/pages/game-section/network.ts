@@ -20,7 +20,7 @@ export async function createSocket(): Promise<Socket> {
 		return;
 		}
 
-		const socket = io('http://game.transendence.com', {
+		const socket = io('http://localhost:3001', {
 			auth: { token }
 		});
 
@@ -82,13 +82,15 @@ interface GameState {
 	roundNumber?: number;
 }
 
-interface BallState {
-	bp: {x: number, y: number};
-	bv: {x: number, y: number};
+interface SetState {
 	points: { leftPlayer: number, rightPlayer: number };
 	sets: { leftPlayer: number, rightPlayer: number };
-	usernames: {left: String, right: String}
-	py: number;
+	usernames: {left: string, right: string}
+}
+
+interface BallPosition {
+	x: number;
+	y: number;
 }
 
 interface PaddleState {
@@ -100,17 +102,21 @@ export class GameInfo
 {
 	public constants: GameConstants | null = null;
 	public state: GameState | null = null;
-	public ballState: BallState | null = null;
 	public paddle: PaddleState | null = null;
 	public mode: GameMode;
+	public ballPosition: BallPosition | null = null;
+	public setState: SetState | null = null;
 
 	constructor(mode: GameMode){
 		this.mode = mode;
 	}
 
-	/** bilgiler hazır mı? */ // BUNA GÖRE GAME LOOP BAŞLATILACAK !!!!!!!!!!!!!!!!!!
-	isReadyToStart() {
-		return Boolean(this.constants && this.state && this.ballState && this.paddle);
+	public isReadyToStart(): boolean {
+		return this.constants != null &&
+			this.state != null &&
+			this.setState != null &&
+			this.paddle != null &&
+			this.ballPosition != null;
 	}
 }
 
@@ -144,13 +150,18 @@ export function waitForRematchApproval(socket: Socket, rival: string): Promise<b
 export function listenStateUpdates(gameInfo: GameInfo, socket: Socket): void {
 	socket.on("gameConstants", (constants: GameConstants) => gameInfo.constants = constants);
 	socket.on("gameState", (state: GameState) => gameInfo.state = state);
-	socket.on("ballUpdate", (ballState: BallState) => gameInfo.ballState = ballState);
+	socket.on("bu", (raw: string) => {
+  		const [x,y] = raw.split(':').map(Number);
+		gameInfo.ballPosition = { x, y };
+	});
+	socket.on("updateState", (setState: SetState) => gameInfo.setState = setState);
 	socket.on("paddleUpdate", (data) => gameInfo.paddle = data);
 }
 
 export function onFirstStateUpdate(gameInfo: GameInfo): Promise<void> {
 	return new Promise((resolve) => {
 		const timerId = setInterval(() => {
+			console.log("gameinfo:", gameInfo);
 			if (gameInfo.isReadyToStart()) {
 				clearInterval(timerId);
 				resolve();

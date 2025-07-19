@@ -7,9 +7,10 @@ import { gameInstance } from "../play";
 import { GameEventBus } from "./gameEventBus";
 
 function updateBallPosition(): void {
-	gameInstance.uiManager.ball!.ball.position = new Vector3(gameInstance.gameInfo!.ballState?.bp!.x, gameInstance.gameInfo!.ballState?.bp!.y, -gameInstance.gameInfo!.constants?.ballRadius!);
-	gameInstance.uiManager.ball!.velocity = new Vector3(gameInstance.gameInfo!.ballState?.bv.x, gameInstance.gameInfo!.ballState?.bv.y, 0);
-	gameInstance.uiManager.ball!.ball.position.addInPlace(gameInstance.uiManager.ball!.velocity);
+	gameInstance.uiManager.ball!.ball.position = new Vector3(
+		gameInstance.gameInfo!.ballPosition?.x,
+		gameInstance.gameInfo!.ballPosition?.y,
+		-gameInstance.gameInfo!.constants?.ballRadius!);
 }
 
 function updatePaddlePositions(): void {

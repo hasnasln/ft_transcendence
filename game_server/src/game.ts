@@ -26,16 +26,6 @@ interface GameState
   roundNumber?: number;
 }
 
-
-interface BallState
-{
-  bp: {x: number, y: number};
-  bv: {x: number, y: number};
-  points: { leftPlayer: number, rightPlayer: number };
-  sets: { leftPlayer: number, rightPlayer: number };
-  usernames: {left: string, right: string}
-}
-
 interface PaddleState
 {
   p1y: number;
@@ -74,6 +64,7 @@ export class Game
   public ball: Ball;
   public paddle1: Paddle;
   public paddle2: Paddle;
+  public lastPaddleUpdate: PaddleState | undefined = undefined;
   public paddleSpeed: number;
   public ground: {width: number; height : number};
   public points: { leftPlayer: number, rightPlayer: number };
@@ -179,6 +170,7 @@ export class Game
     this.setOver = true;
 
     this.exportBallState();
+    this.exportSetState();
     this.exportGameState();
   
     setTimeout(() =>
@@ -306,20 +298,41 @@ export class Game
      this.io.to(this.roomId).emit("gameState", gameState);
   }
 
+  public exportSetState() {
+    const setState = {
+      points: this.points,
+      sets: this.sets,
+      usernames: { left: this.leftInput.getUsername(), right: this.rightInput.getUsername() }
+    };
+
+    this.io.to(this.roomId).emit("updateState", setState);
+  }
 
    public exportBallState()
   {
-       const ballState: BallState =
-        {
-          bp: { x: this.ball.position.x / this.unitConversionFactor, y : this.ball.position.y / this.unitConversionFactor},
-          bv: {x: this.ball.velocity.x / this.unitConversionFactor, y : this.ball.velocity.y /this.unitConversionFactor},
-          points: this.points,
-          sets: this.sets,
-          usernames: {left: this.leftInput.getUsername(), right: this.rightInput.getUsername()}
-        };
 
-        this.io.to(this.roomId).emit("ballUpdate", ballState);
-  }
+        const actualX = this.ball.position.x / this.unitConversionFactor;
+        const actualY = this.ball.position.y / this.unitConversionFactor;
+
+        if (isNaN(actualX) || isNaN(actualY)) {
+          console.error(`Invalid ball coordinates: x=${actualX}, y=${actualY}`);
+          return;
+        }
+
+        //+05.91:-21.33
+        const absX = Math.abs(actualX).toFixed(2).padStart(5, '0');
+        const absY = Math.abs(actualY).toFixed(2).padStart(5, '0');
+        const signX = actualX < 0 ? '-' : '+';
+        const signY = actualY < 0 ? '-' : '+';
+
+        const message = `${signX}${absX}:${signY}${absY}`;
+        if (message.length !== 13) {
+          console.error(`Invalid message length: ${message.length}`);
+          return;
+        }
+
+        this.io.to(this.roomId).emit("bu", message);
+      }
 
    public finishIncompleteMatch(username?: string)
    {
@@ -336,7 +349,7 @@ export class Game
    }
 
 
-    public exportPaddleState()
+  public exportPaddleState()
   {
      const paddleState: PaddleState =
         {
@@ -344,6 +357,10 @@ export class Game
           p2y: this.paddle2.position.y/this.unitConversionFactor
         }
 
+        if (this.lastPaddleUpdate && this.lastPaddleUpdate.p1y === paddleState.p1y && this.lastPaddleUpdate.p2y === paddleState.p2y) {
+          return; // No change in paddle positions, skip emitting
+        }
+        this.lastPaddleUpdate = paddleState;
         this.io.to(this.roomId).emit("paddleUpdate", paddleState);
   }
 
@@ -351,6 +368,7 @@ export class Game
   public startGameLoop()
   {
     this.exportGameConstants();
+    this.exportSetState();
 
     this.matchOver = false;
     this.setOver = false;
@@ -505,25 +523,33 @@ const enforceSpeedLimits: Middleware = (g, _dt) => {
   return true;
 };
 
-
-
+const isBallOutOfBounds = (g: Game): number => {
+  if (g.ball.position.x > g.ground.width / 2 + 5 * g.unitConversionFactor) 
+    return -1;
+  if (g.ball.position.x < -g.ground.width / 2 - 5 * g.unitConversionFactor) 
+    return 1;
+  return 0;
+}
 
 const handleScoring: Middleware = (g, _dt) => {
-  if (g.ball.position.x > g.ground.width / 2 + 5 * g.unitConversionFactor) {
-    g.scorePoint('leftPlayer'); console.log(`skor oldu: left, maç ${g.leftInput.getUsername()}_vs_${g.rightInput.getUsername()}`);
-    return false;
+  const ballArea = isBallOutOfBounds(g);
+  if (ballArea === 0) {
+    return true;
   }
-  if (g.ball.position.x < -g.ground.width / 2 - 5 * g.unitConversionFactor) {
-    g.scorePoint('rightPlayer'); console.log(`skor oldu: right, maç ${g.leftInput.getUsername()}_vs_${g.rightInput.getUsername()}`);
-    return false;
+
+  if (ballArea === -1) {
+    g.scorePoint('leftPlayer');
+  } else {
+    g.scorePoint('rightPlayer');
   }
-  return true;
+  g.exportSetState();
+
+  return false;
 };
 
 const exportStates: Middleware = (g, _dt) => {
   g.exportBallState();
   g.exportPaddleState();
-  g.exportGameState();
   return true;
 };
 
