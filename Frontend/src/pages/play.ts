@@ -1,4 +1,4 @@
-
+import '@babylonjs/core/Rendering/edgesRenderer'
 import { GameInfo, listenStateUpdates, waitForMatchReady, waitForRematchApproval, onFirstStateUpdate, MatchPlayers } from "./game-section/network";
 import { Socket } from "socket.io-client";
 import { createSocket } from "./game-section/network";
@@ -145,7 +145,6 @@ export class GameManager {
 			.then(() => listenStateUpdates(this.gameInfo!, this.socket!)) // start listening the game server
 			.then(() => onFirstStateUpdate(this.gameInfo!))			// wait game server for start the game
 			.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }))
-			.catch(err => console.error("Game start chain error:", err));
 		return true;
 	}
 

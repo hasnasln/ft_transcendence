@@ -7,10 +7,11 @@ import { gameInstance } from "../play";
 import { GameEventBus } from "./gameEventBus";
 
 function updateBallPosition(): void {
-	gameInstance.uiManager.ball!.ball.position = new Vector3(
+	const vector = new Vector3(
 		gameInstance.gameInfo!.ballPosition?.x,
 		gameInstance.gameInfo!.ballPosition?.y,
 		-gameInstance.gameInfo!.constants?.ballRadius!);
+	gameInstance.uiManager.ball!.ball.position = vector;
 }
 
 function updatePaddlePositions(): void {
