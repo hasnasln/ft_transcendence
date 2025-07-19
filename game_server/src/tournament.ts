@@ -1,4 +1,4 @@
-import { IApiResponseWrapper, HTTPMethod, myFetch } from "./server";
+import { IApiResponseWrapper, HTTPMethod, apiCall } from "./server";
 
 export type Participant = {
     uuid: string;
@@ -106,15 +106,12 @@ export function findMyMatch(tournament: TournamentData, participantId: string): 
         return { roundNumber, match_id: null, finalMatch: false };
     else
         throw new Error(`You have already been eliminated from the tournament ${tournament.name} !`);
-
 }
-
-
 
 export async function getTournament(tournamentCode: string): Promise<IApiResponseWrapper> {
     const result: IApiResponseWrapper = { success: false, message: '', data: null };
     try {
-        const response = await myFetch(`http://tournament.transendence.com/api/tournament/${tournamentCode}`, HTTPMethod.GET, {
+        const response = await apiCall(`http://tournament.transendence.com/api/tournament/${tournamentCode}`, HTTPMethod.GET, {
             'Content-Type': 'application/json',
             'bypass': 'bypassauth'
         });

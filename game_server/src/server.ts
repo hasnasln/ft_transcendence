@@ -61,7 +61,7 @@ io.use(async (socket, next) => {
 			throw ("Authentication error: token missing");
 		}
 
-		const response = await myFetch('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined, token);
+		const response = await apiCall('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined, token);
 		if (!response.ok) {
 			console.log("getmedi", response);
 		}
@@ -75,8 +75,7 @@ io.use(async (socket, next) => {
 		(socket as any).user = user;
 
 		next();
-	}
-	catch (err: any) {
+	} catch (err: any) {
 		console.log("Authentication error: " + err.message)
 		return next(new Error("Authentication error: " + err.message));
 	}
@@ -94,8 +93,7 @@ io.on("connection", socket => {
 		socket.disconnect(true);
 		console.log("connection is doubled");
 		return;
-	}
-	else {
+	} else {
 		player = { socket, username, uuid, token, status: 'online', socketReady: false };
 		matchManager.connectedPlayers.set(username, player);
 	}
@@ -111,8 +109,7 @@ io.on("connection", socket => {
 			console.log(err.message);
 			return;
 		}
-	}
-	else {
+	} else {
 		socket.on("start", async (gameStatus: GameStatus) => {
 			console.log(`gameStatus = {game_mode = ${gameStatus.game_mode}, level = ${gameStatus.level}}`);
 			if (gameStatus.game_mode === "vsAI")
@@ -144,7 +141,7 @@ io.on("connection", socket => {
 });
 
 
-export function myFetch(url: string, method: string, headers: HeadersInit, body?: BodyInit, token?: string): Promise<Response> {
+export function apiCall(url: string, method: string, headers: HeadersInit, body?: BodyInit, token?: string): Promise<Response> {
 	try {
 		const options: RequestInit = {
 			method,
@@ -156,8 +153,6 @@ export function myFetch(url: string, method: string, headers: HeadersInit, body?
 		if (body) {
 			options.body = body;
 		}
-		// console.log("Fetch URL:", url);
-		// console.log("Fetch Options:", options);
 		return fetch(url, options)
 	} catch (error) {
 		console.error('Error in fetch:', error);
