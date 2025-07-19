@@ -82,7 +82,7 @@ export class TournamentPage implements Page {
 
 	private async hedleStartTournament(): Promise<void> {
 		console.log('Starting tournament');
-		const response = await _apiManager.startTournament(this.data.code);
+		const response = await _apiManager.startTournament(this.data!.code);
 		if (response.success) {
 			this.status = true;
 			this.handeleRefresh();
@@ -96,8 +96,8 @@ export class TournamentPage implements Page {
 		if (x) {
 			console.log('Refreshing player list2');
 			x.innerHTML = ''; // Clear the existing list
-			const response = await _apiManager.getTournament(this.data.code);
-			this.data.users = response.data.participants; // Update the tournament data with the new participants
+			const response = await _apiManager.getTournament(this.data!.code);
+			this.data!.users = response.data.participants; // Update the tournament data with the new participants
 			if (response.data.tournament_start)
 				this.status = true; // Set status to true if the tournament has started
 			// sadece 3 saniye bekle
@@ -106,7 +106,7 @@ export class TournamentPage implements Page {
 			setTimeout(() => {
 				// 3 saniye sonra listeyi güncelle
 				// this.updatePlayerList(x);
-				x.innerHTML = getPlayersListHTML(this.data); // Re-render the player list
+				x.innerHTML = getPlayersListHTML(this.data!); // Re-render the player list
 				if (this.status) {
 					const playButton = document.getElementById('play-button');
 					if (playButton) {
@@ -140,11 +140,11 @@ export class TournamentPage implements Page {
 				console.log("---------< tdata yok");
 		} else {
 			this.data = JSON.parse(localStorage.getItem('tdata')!); // Retrieve the tournament data from localStorage
-			this.data.name = input.value; // Update the tournament name
+			this.data!.name = input.value; // Update the tournament name
 			// this.data.users = []; // Reset participants list
 			// this.data.admin_id = localStorage.getItem('uuid') || ''; // Set admin_id to current user ID
 			// localStorage.setItem('tdata', JSON.stringify(this.data)); // Store the updated tournament data in localStorage
-			console.log("Turnuva ismi güncellendi: ", this.data.name);
+			console.log("Turnuva ismi güncellendi: ", this.data!.name);
 		}
 		console.log('-_-_-_-_-_-_-_->>Tournament created:', this.data);
 		container.innerHTML = ''; // Clear the container
@@ -179,18 +179,18 @@ export class TournamentPage implements Page {
 			this.data = JSON.parse(localStorage.getItem('tdata')!); // Retrieve the tournament data from localStorage
 		}
 		console.log(`Joining room with ID: ${tournamentId}`);
-		container.innerHTML = getShowTournamentHTML(this.data); // Re-render the tournament section
+		container.innerHTML = getShowTournamentHTML(this.data!); // Re-render the tournament section
 	}
 
 	private async exitTournament(container: HTMLElement): Promise<void> {
-		if (this.data.admin_id === localStorage.getItem('uuid')) {
-			const response = await _apiManager.deleteTournament(this.data.code);
+		if (this.data!.admin_id === localStorage.getItem('uuid')) {
+			const response = await _apiManager.deleteTournament(this.data!.code);
 			console.log(response.message);
 			console.log("Oda yöneticisi tıkladı");
 			console.log('turnuva siliniyor');
 		}
 		else {
-			const response = await _apiManager.leaveTournament(this.data.code);
+			const response = await _apiManager.leaveTournament(this.data!.code);
 			console.log(response.message);
 			console.log("user tıkladı");
 			console.log('Exiting tournament');
