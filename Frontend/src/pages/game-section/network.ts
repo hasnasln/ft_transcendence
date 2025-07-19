@@ -161,7 +161,6 @@ export function listenStateUpdates(gameInfo: GameInfo, socket: Socket): void {
 export function onFirstStateUpdate(gameInfo: GameInfo): Promise<void> {
 	return new Promise((resolve) => {
 		const timerId = setInterval(() => {
-			console.log("gameinfo:", gameInfo);
 			if (gameInfo.isReadyToStart()) {
 				clearInterval(timerId);
 				resolve();

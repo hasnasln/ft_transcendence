@@ -1,4 +1,4 @@
-import { gameInstance, GameManager } from "./../play";
+import { gameInstance } from "./../play";
 import { GameInfo, MatchPlayers } from "./network";
 import { Router } from "../../router";
 import { moveButton } from "../../components/mov-button";
@@ -7,7 +7,6 @@ import { Engine } from "@babylonjs/core/Engines/engine";
 import { Scene } from "@babylonjs/core/scene";
 import { BallController } from "./ball"; import { createPaddles, createGround, createWalls, createScene } from "../game-section/gameScene";
 import { CameraController } from "../game-section/camera";
-import { GameEventBus } from "./gameEventBus";
 
 export class GameUI {
 	public startButton: HTMLElement | null = null;
