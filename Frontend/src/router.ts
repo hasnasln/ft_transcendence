@@ -414,7 +414,7 @@ export class Router {
 
 	private constructor() {
 		this.currentPath = window.location.pathname;
-		window.addEventListener('popstate', (e) => {
+		window.addEventListener('popstate', async () => {
 			if (this.currentPath === "/play"
 				&& gameInstance.gameStatus.currentGameStarted
 				&& !window.confirm("Are you sure you want to leave the game?")) {
@@ -475,8 +475,6 @@ export class Router {
 	}
 
 	public createNewPage(path: string) {
-		console.log(`Creating new page for path: ${path}`);
-		console.log(`Restoring old content for path: ${this.currentPath}`);
 		const oldContentContainer = document.getElementById(Router.CONTENT_CONTAINER_ID);
 		if (oldContentContainer) {
 			oldContentContainer.id = 'hidden-page-' + this.currentPath;
@@ -498,7 +496,6 @@ export class Router {
 
 
 	public loadExistingPage(newPagePath: string) {
-		console.log(`Loading existing page for path: ${newPagePath}`);
 		let contentContainer = document.getElementById(Router.CONTENT_CONTAINER_ID);
 		const legacyPage = this.currentPage;
 		const newPage = this.activePages.get(newPagePath);
