@@ -161,6 +161,11 @@ export class GameUI {
 		this.canvas!.focus();
 		gameInstance.gameStatus.currentGameStarted = true;
 	}
+
+	public isSceneReady(): boolean {
+		return this.canvas !== null && this.engine !== undefined && this.scene !== undefined &&
+			this.ground !== null && this.paddle1 !== null && this.paddle2 !== null && this.ball !== null;
+	}
 }
 
 export function updateScoreBoard() {

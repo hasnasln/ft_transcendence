@@ -116,10 +116,10 @@ export async function getTournament(tournamentCode: string): Promise<IApiRespons
             'bypass': 'bypassauth'
         });
         if (!response.ok) {
-            console.log("getmedi");
+            //console.log("getmedi");
         }
         const data = await response.json();
-        console.log("gelen:", JSON.stringify(data, null, 2));
+        //console.log("gelen:", JSON.stringify(data, null, 2));
         result.success = true;
         result.message = data.message;
         result.data = data.data;
@@ -146,10 +146,9 @@ export async function pushWinnerToTournament(tournamentCode: string, roundNumber
         });
 
         const result = await response.json() as Result;
-        console.log("pushWinner isteğinin yanıtı:", JSON.stringify(result, null, 2));
+        //console.log("pushWinner isteğinin yanıtı:", JSON.stringify(result, null, 2));
         return result;
-    }
-    catch (err: any) {
+    } catch (err: any) {
         console.error('pushWinner Fetch error:', err);
         throw err;
     }
@@ -171,7 +170,7 @@ export async function joinMatchByCode(token: string, tournamentCode: string, rou
         });
 
         const result = await response.json() as Result;
-        console.log("joinMatchByCode isteğinin yanıtı:", JSON.stringify(result, null, 2));
+        //console.log("joinMatchByCode isteğinin yanıtı:", JSON.stringify(result, null, 2));
         return result;
     }
     catch (err: any) {

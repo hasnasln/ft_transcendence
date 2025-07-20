@@ -5,6 +5,7 @@ import { pushWinnerToTournament } from "./tournament";
 import { Match } from "./matchManager";
 import { emitError } from "./errorHandling";
 
+const FPS = 60; 
 type Side = 'leftPlayer' | 'rightPlayer';
 
 interface GameConstants {
@@ -37,9 +38,9 @@ interface Position {
 export interface Ball {
 	readonly firstSpeedFactor: number;
 	readonly airResistanceFactor: number;
+	readonly radius: number;
 	minimumSpeed: number;
 	maximumSpeed: number;
-	readonly radius: number;
 	speedIncreaseFactor: number;
 	firstPedalHit: number;
 	position: Position;
@@ -51,7 +52,6 @@ export interface Paddle {
 	readonly height: number;
 	position: Position;
 }
-
 
 export class Game {
 	public ball: Ball;
@@ -76,11 +76,9 @@ export class Game {
 	public matchDisconnection: boolean = false;
 	public match: Match;
 
-
 	constructor(public leftInput: InputProvider, public rightInput: InputProvider, io: Server, roomId: string, gameMode: GameMode, match: Match) {
 		this.gameMode = gameMode;
-		this.ball =
-		{
+		this.ball = {
 			firstSpeedFactor: 0.18 * this.unitConversionFactor,
 			airResistanceFactor: 0.998,
 			minimumSpeed: 0.18 * this.unitConversionFactor,
@@ -92,15 +90,13 @@ export class Game {
 			velocity: { x: 0, y: 0 },
 		};
 
-		this.ground =
-		{
+		this.ground = {
 			width: this.groundWidth,
 			height: this.groundWidth * (152.5) / 274,
 		};
 
 		const w = 0.2 * this.unitConversionFactor;
-		this.paddle1 =
-		{
+		this.paddle1 = {
 			width: w,
 			height: this.ground.height * (0.3),
 			position: {
@@ -109,8 +105,7 @@ export class Game {
 			}
 		};
 
-		this.paddle2 =
-		{
+		this.paddle2 = {
 			width: 0.2 * this.unitConversionFactor,
 			height: this.ground.height * (0.3),
 			position: {
@@ -145,13 +140,10 @@ export class Game {
 		return this.paddle2;
 	}
 
-
 	public resetScores() {
 		this.points.leftPlayer = 0;
 		this.points.rightPlayer = 0;
 	}
-
-
 
 	public startNextSet() {
 		this.lastUpdatedTime = undefined;
@@ -165,66 +157,61 @@ export class Game {
 			this.resetScores();
 			this.setOver = false;
 			this.exportGameState();
+			this.exportSetState();
 			this.lastUpdatedTime = Date.now();
 		}, 3000);
 	}
-
 
 	public resetBall(lastScorer: "leftPlayer" | "rightPlayer") {
 		this.lastUpdatedTime = undefined;
 		this.ball.firstPedalHit = 0;
 		this.ball.speedIncreaseFactor = 1.7;
 		this.ball.minimumSpeed = this.ball.firstSpeedFactor;
-		// 🎯 Önce topu durdur
 		this.ball.velocity = { x: 0, y: 0 };
-
-		// 🎯 Topu ortada sabitle
 		this.ball.position = { x: 0, y: Math.random() * (0.8 * this.ground.height) - 0.4 * this.ground.height };
 
-		// 🎯 Belirli bir süre bekle ( 1 saniye)
 		setTimeout(() => {
 			const angle = lastScorer == 'leftPlayer' ? (Math.random() * 2 - 1) * Math.PI / 6 : Math.PI - (Math.random() * 2 - 1) * Math.PI / 6;
 
 			this.ball.velocity = { x: Math.cos(angle) * this.ball.firstSpeedFactor, y: Math.sin(angle) * this.ball.firstSpeedFactor };
 			this.lastUpdatedTime = Date.now();
-		}, 1000); // 1000ms = 1 saniye
+		}, 1000);
 	}
 
+	public isSetOver(): boolean {
+		const p1 = this.points.leftPlayer;
+		const p2 = this.points.rightPlayer;
+		return (p1 >= 3 || p2 >= 3) && Math.abs(p1 - p2) >= 2;
+	}
 
 	public scorePoint(winner: Side) {
 		if (this.matchOver || this.isPaused) return;
 
 		this.points[winner]++;
 
-		const p1 = this.points.leftPlayer;
-		const p2 = this.points.rightPlayer;
-
-		// Kontrol: Set bitti mi?
-		if ((p1 >= 3 || p2 >= 3) && Math.abs(p1 - p2) >= 2) {
-			if (p1 > p2) {
-				this.sets.leftPlayer++;
-			} else {
-				this.sets.rightPlayer++;
-			}
-
-			const matchControl = (this.sets.leftPlayer === 3 || this.sets.rightPlayer === 3);
-			if (!matchControl)
-				this.startNextSet();
-
+		if (!this.isSetOver()) {
 			this.resetBall(winner);
+			return;
+		}
 
-			// Kontrol: Maç bitti mi?
-			if (matchControl) {
-				this.matchOver = true;
-				this.matchWinner = winner;
-				this.exportBallState();
-				this.exportGameState();
-			}
+		if (this.points.leftPlayer > this.points.rightPlayer) {
+			this.sets.leftPlayer++;
+		} else {
+			this.sets.rightPlayer++;
 		}
-		else   //set bitmedi
-		{
+
+		const shouldMatchEnded = (this.sets.leftPlayer === 3 || this.sets.rightPlayer === 3);
+		if (!shouldMatchEnded){
+			this.startNextSet();
 			this.resetBall(winner);
+			return;
 		}
+		
+		this.resetBall(winner);
+		this.matchOver = true;
+		this.matchWinner = winner;
+		this.exportBallState();
+		this.exportGameState();
 	}
 
 	public pauseGameLoop() {
@@ -235,7 +222,7 @@ export class Game {
 			clearInterval(this.interval);
 			this.interval = undefined;
 		}
-		console.log(`maç pause edildi: ${this.leftInput.getUsername()}_vs_${this.rightInput.getUsername()}`);
+		//console.log(`maç pause edildi: ${this.leftInput.getUsername()}_vs_${this.rightInput.getUsername()}`);
 	}
 
 	public resumeGameLoop() {
@@ -245,13 +232,11 @@ export class Game {
 		}
 
 		this.lastUpdatedTime = Date.now();
-		console.log(`durdurulmuş maç resume edildi: ${this.leftInput.getUsername()}_vs_${this.rightInput.getUsername()}`);
+		//console.log(`durdurulmuş maç resume edildi: ${this.leftInput.getUsername()}_vs_${this.rightInput.getUsername()}`);
 	}
 
-
 	public exportGameConstants() {
-		const gameConstants: GameConstants =
-		{
+		const gameConstants: GameConstants = {
 			groundWidth: this.ground.width / this.unitConversionFactor,
 			groundHeight: this.ground.height / this.unitConversionFactor,
 			ballRadius: this.ball.radius / this.unitConversionFactor,
@@ -287,41 +272,27 @@ export class Game {
 	}
 
 	public exportBallState() {
+		const x = this.ball.position.x / this.unitConversionFactor;
+		const y = this.ball.position.y / this.unitConversionFactor;
 
-		const actualX = this.ball.position.x / this.unitConversionFactor;
-		const actualY = this.ball.position.y / this.unitConversionFactor;
-
-		if (isNaN(actualX) || isNaN(actualY)) {
-			console.error(`Invalid ball coordinates: x=${actualX}, y=${actualY}`);
+		if (isNaN(x) || isNaN(y)) {
+			console.error(`Invalid ball coordinates: x=${x}, y=${y}`);
 			return;
 		}
 
 		//+05.91:-21.33
-		const absX = Math.abs(actualX).toFixed(2).padStart(5, '0');
-		const absY = Math.abs(actualY).toFixed(2).padStart(5, '0');
-		const signX = actualX < 0 ? '-' : '+';
-		const signY = actualY < 0 ? '-' : '+';
-
-		const message = `${signX}${absX}:${signY}${absY}`;
-		if (message.length !== 13) {
-			console.error(`Invalid message length: ${message.length}`);
-			return;
-		}
-
-		this.io.to(this.roomId).emit("bu", message);
+		this.io.to(this.roomId).emit("bu", `${x.toFixed(2)}:${y.toFixed(2)}`);
 	}
 
 	public finishIncompleteMatch(username?: string) {
-		let inCompleteWinner;
+		let inCompleteWinner: Side | undefined = undefined;
 		if (username)
-			inCompleteWinner = username === this.leftInput.getUsername() ? 'leftPlayer' : 'rightPlayer' as Side;
-		else
-			inCompleteWinner = undefined;
+			inCompleteWinner = (username === this.leftInput.getUsername() ? 'leftPlayer' : 'rightPlayer') as Side;
 		this.matchOver = true;
 		this.matchWinner = inCompleteWinner;
 		this.matchDisconnection = true;
 		this.exportGameState();
-		console.log(`incomplete maç bitti : inCompleteWinner = ${inCompleteWinner}`);
+		//console.log(`incomplete maç bitti : inCompleteWinner = ${inCompleteWinner}`);
 	}
 
 
@@ -333,12 +304,11 @@ export class Game {
 		}
 
 		if (this.lastPaddleUpdate && this.lastPaddleUpdate.p1y === paddleState.p1y && this.lastPaddleUpdate.p2y === paddleState.p2y) {
-			return; // No change in paddle positions, skip emitting
+			return; 
 		}
 		this.lastPaddleUpdate = paddleState;
 		this.io.to(this.roomId).emit("paddleUpdate", paddleState);
 	}
-
 
 	public startGameLoop() {
 		this.exportGameConstants();
@@ -350,8 +320,10 @@ export class Game {
 
 		this.exportGameState();
 
-		const sides = [{ socket: typeof this.leftInput.getSocket === 'function' ? this.leftInput.getSocket()! : null },
-		{ socket: typeof this.rightInput.getSocket === 'function' ? this.rightInput.getSocket()! : null }];
+		const sides = [
+			{ socket: typeof this.leftInput.getSocket === 'function' ? this.leftInput.getSocket()! : null },
+			{ socket: typeof this.rightInput.getSocket === 'function' ? this.rightInput.getSocket()! : null }
+		];
 
 		sides.forEach(({ socket }) => {
 			if (socket) {
@@ -363,16 +335,14 @@ export class Game {
 				});
 			}
 		});
-		if (this.isPaused === false) {
+
+		if (!this.isPaused) {
 			Math.random() <= 0.5 ? this.resetBall('leftPlayer') : this.resetBall('rightPlayer');
 		}
 
-		this.interval = setInterval(() => update(this), 1000 / 120); // 120 FPS
-
+		this.interval = setInterval(() => update(this), 1000 / FPS); // 60 FPS
 	}
-
 }
-
 
 type Middleware = (g: Game, dt: number) => boolean;
 
@@ -384,8 +354,7 @@ const skipIfMatchOver: Middleware = (g, _dt) => {
 			const username = winnerInput.getUsername();
 			try {
 				pushWinnerToTournament(g.match.tournament?.code as string, g.match.tournament?.roundNo as number, { uuid, username });
-			}
-			catch (err: any) {
+			} catch (err: any) {
 				emitError(err.message, g.roomId, g.io);
 			}
 		}
@@ -394,7 +363,7 @@ const skipIfMatchOver: Middleware = (g, _dt) => {
 
 		if (g.match.gameMode === 'localGame' || g.match.gameMode === 'vsAI')
 			matchManager.clearMatch(g.match);
-		console.log(`maç bitirildi: ${g.leftInput.getUsername()}_vs_${g.rightInput.getUsername()}`);
+		//console.log(`maç bitirildi: ${g.leftInput.getUsername()}_vs_${g.rightInput.getUsername()}`);
 		g.match.end();
 		return false;
 	}
@@ -411,8 +380,8 @@ const moveBall: Middleware = (g, dt) => {
 
 const movePaddles: Middleware = (g, _dt) => {
 	const upperBound = g.ground.height / 2 - g.paddle1.height / 2 + (1.5 * g.paddle1.width);
-	const d1 = g.leftInput.getPaddleDelta() * g.paddleSpeed;
-	const d2 = g.rightInput.getPaddleDelta() * g.paddleSpeed;
+	const d1 = g.leftInput.getPaddleDelta() * g.paddleSpeed * _dt;
+	const d2 = g.rightInput.getPaddleDelta() * g.paddleSpeed * _dt;
 	if (Math.abs(g.paddle1.position.y + d1) <= upperBound) g.paddle1.position.y += d1;
 	if (Math.abs(g.paddle2.position.y + d2) <= upperBound) g.paddle2.position.y += d2;
 	return true;

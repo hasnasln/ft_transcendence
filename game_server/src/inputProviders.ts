@@ -17,9 +17,9 @@ export class RemotePlayerInput implements InputProvider {
 	private player: Player;
 	constructor(player: Player) {
 		this.player = player;
-		player.socket.on("player-move", ({ direction }: { direction: "up" | "down" | "stop" }) => {
+		player.socket.on("player-move", 
+			({ direction }: { direction: "up" | "down" | "stop" }) => {
 			this.delta = direction === "up" ? +1 : direction === "down" ? -1 : 0;
-
 		});
 	}
 	getPaddleDelta() { return this.delta; }
@@ -28,22 +28,22 @@ export class RemotePlayerInput implements InputProvider {
 	getUuid() { return this.player.uuid; }
 }
 
-
 export class AIPlayerInput implements InputProvider {
 	private username: string;
-	private level: string = "medium";
 	private lastDecisionTime = 0;
 	private targetY = 0;
 	private refreshTime: number = 1500; //ms
 
-	constructor(private readonly getGame: () => Game, private readonly getPaddle: () => Paddle, username: string, level: string) {
-		this.username = username;
-		this.level = level;
+	constructor(private readonly getGame: () => Game, private readonly getPaddle: () => Paddle, level: string) {
+		const aiNames = ["Hamza (AI)", "Hasan (AI)", "Fatma (AI)", "Ayhan (AI)", "Batuhan (AI)"];
+		this.username = aiNames[Math.floor(Math.random() * aiNames.length)];
 
 		if (level === 'easy')
-			this.refreshTime = 2000; //ms
+			this.refreshTime = 2000;
+		else if (level === 'medium')
+			this.refreshTime = 1500; 
 		else if (level === 'hard')
-			this.refreshTime = 1000; //ms
+			this.refreshTime = 1000;
 	}
 
 	getPaddleDelta(): number {
@@ -64,8 +64,7 @@ export class AIPlayerInput implements InputProvider {
 		const diff = this.targetY - paddle.position.y;
 		if (Math.abs(diff) < paddleSpeed)
 			return 0;
-		else
-			return diff > 0 ? 1 : -1;
+		return diff > 0 ? 1 : -1;
 	}
 
 	getUsername() { return this.username; }
