@@ -139,7 +139,7 @@ export class GameUI {
 			this.onInfoShown(`${rival} ile eşleştin`);
 		}
 		this.startButton!.innerHTML = `${rival} maçını oyna !`;
-		this.startButton!.classList.remove("hidden");
+		setTimeout(() => this.startButton?.classList.remove("hidden"), 500);
 	}
 
 	public async setupScene(): Promise<void> {
