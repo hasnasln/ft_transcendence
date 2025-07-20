@@ -1,7 +1,7 @@
 import { gameInstance, GameMode, GameManager} from "../play";
-import { io, Socket } from "socket.io-client";
 import { _apiManager } from '../../api/APIManager';
-import { Router } from "../../router";
+import { GameEventBus } from "./gameEventBus";
+import { WebSocketClient } from "./wsclient";
 
 export interface MatchPlayers
 {
@@ -9,58 +9,6 @@ export interface MatchPlayers
 	right: {socketId: string, username: string};
 	roundNo?: number;
 	finalMatch?: boolean
-}
-
-export async function createSocket(): Promise<Socket> {
-	return new Promise<Socket>((resolve, reject) => {
-		console.log("connecting to socket.io server...");
-		const token = _apiManager.getToken();
-		if (!token) {
-		reject("No token found. Try login again.");
-		return;
-		}
-
-		const socket = io('http://localhost:3001', {
-			auth: { token }
-		});
-
-		socket.on('connect', () => {
-			console.log('Socket connected with ID:', socket.id);
-			resolve(socket);
-		});
-
-		socket.on('connect_error', (err) => {
-			console.error('Socket connection error:', err.message);
-			if (err.message.includes("token missing")) {
-				alert("Token eksik. Lütfen tekrar giriş yapın.");
-				Router.getInstance().go('/login');
-			} else if (err.message.includes("Token validation error")) {
-				alert("Token doğrulama hatası :" + err.message);
-				Router.getInstance().go('/login');
-			} else if (err.message.includes("Game server error")) {
-				alert("Aynı anda birden fazla oyuna katılamazsınız.");
-				Router.getInstance().go('/');
-			} else {
-				alert("Bağlantı reddedildi: " + err.message);
-				Router.getInstance().go('/');
-			}
-		});
-
-		socket.on('tournamentError', (errorMessage : string) => {
-			console.error('Tournament error:', errorMessage);
-			gameInstance.uiManager.info!.textContent = `Tournament error:, ${errorMessage}`;
-			gameInstance.uiManager.info!.classList.remove("hidden");
-			setTimeout(() => {
-				gameInstance.uiManager.info!.classList.add("hidden");
-				Router.getInstance().go('/tournament')
-			}, 5000);
-			});
-
-			socket.on('goToNextRound', () => {
-			console.log('Bir üst tura yükseldiniz:');
-			gameInstance.uiManager.onTurnToTournamentButton();
-		});
-	})
 }
 
 type Side = 'leftPlayer' | 'rightPlayer'
@@ -122,14 +70,14 @@ export class GameInfo
 
 export function waitForMatchReady(gameInstance: GameManager): Promise<MatchPlayers> {
 	return new Promise((resolve) => {
-			gameInstance.socket!.on("match-ready", (matchPlayers : MatchPlayers) => resolve(matchPlayers));
+			WebSocketClient.getInstance().once("match-ready", (matchPlayers : MatchPlayers) => resolve(matchPlayers));
 		});
 }
 
-export function waitForRematchApproval(socket: Socket, rival: string): Promise<boolean> {
+export function waitForRematchApproval(rival: string): Promise<boolean> {
 	return new Promise((resolve) => {
 		gameInstance.uiManager.onInfoShown(`Talebiniz ${rival} oyuncusuna iletildi.`);
-		socket.on("rematch-ready", () => {
+		WebSocketClient.getInstance().on("rematch-ready", () => {
 			gameInstance.uiManager.onInfoShown(`Maç başlıyor`);
 			setTimeout(() => {
 				gameInstance.uiManager.onInfoHidden();
@@ -147,15 +95,24 @@ export function waitForRematchApproval(socket: Socket, rival: string): Promise<b
 	});
 }
 
-export function listenStateUpdates(gameInfo: GameInfo, socket: Socket): void {
-	socket.on("gameConstants", (constants: GameConstants) => gameInfo.constants = constants);
-	socket.on("gameState", (state: GameState) => gameInfo.state = state);
-	socket.on("bu", (raw: string) => {
+export function listenStateUpdates(gameInfo: GameInfo): void {
+	WebSocketClient.getInstance().on("gameConstants", (constants: GameConstants) => gameInfo.constants = constants);
+	WebSocketClient.getInstance().on("gameState", (state: GameState) => gameInfo.state = state);
+	WebSocketClient.getInstance().on("bu", (raw: string) => {
   		const [x,y] = raw.split(':').map(Number);
 		gameInfo.ballPosition = { x, y };
+		if (Math.random() < 0.01) {
+			console.log(`Ball position updated: ${x}, ${y}`);
+		}
 	});
-	socket.on("updateState", (setState: SetState) => gameInfo.setState = setState);
-	socket.on("paddleUpdate", (data) => gameInfo.paddle = data);
+	WebSocketClient.getInstance().on("updateState", (setState: SetState) => gameInfo.setState = setState);
+	WebSocketClient.getInstance().on("paddleUpdate", (data) => gameInfo.paddle = data);
+	WebSocketClient.getInstance().on("opponent-disconnected", () => {
+		GameEventBus.getInstance().emit({ type: 'RIVAL_DISCONNECTED', payload: {} });
+	});
+	WebSocketClient.getInstance().on("opponent-reconnected", () => {
+		GameEventBus.getInstance().emit({ type: 'RIVAL_RECONNECTED', payload: {} });
+	});
 }
 
 export function onFirstStateUpdate(gameInfo: GameInfo): Promise<void> {

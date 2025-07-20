@@ -51,6 +51,21 @@ httpServer.listen(PORT, () => {
 
 export const matchManager = new MatchManager(io);
 
+setInterval(() => {
+	const now = Date.now();
+	for (const [username, disconnectEvent] of matchManager.disconnectTimestamps) {
+		if (now - disconnectEvent.timestamp > 15_000) {
+			matchManager.disconnectTimestamps.delete(username);
+			const {player,match} = disconnectEvent;
+			if (match.state === 'in-progress' || match.state === 'paused') {
+				const opponent = match.players.find(p => p.username !== player.username)!;
+				match.finishIncompleteMatch(opponent.username);
+			}
+			matchManager.clearMatch(match);
+		}
+	}
+}, 1000);
+
 io.use(async (socket, next) => {
 	const token = socket.handshake.auth?.token;
 	if (!token) {
@@ -93,10 +108,17 @@ io.on("connection", socket => {
 	matchManager.connectedPlayers.set(username, player);
 	console.log(`✔ Oyuncu bağlandı: ${username} (ID: ${socket.id})`);
 
-	const match = matchManager.getMatchByPlayer(player.username);
-	if (match && (match.gameMode === 'remoteGame' || match.gameMode === 'tournament') && (match.state === 'in-progress' || match.state === 'paused')) {
+	socket.on("rejoin", () => {
+		console.log(`[${new Date().toISOString()}] ${username.padStart(10)} 'rejoin' message received.`);
+		const match = matchManager.getMatchByPlayer(player.username);
+		if (!match || (match.gameMode !== 'remoteGame' && match.gameMode !== 'tournament') || (match.state !== 'in-progress' && match.state !== 'paused')) {
+			//console.log(`Rejoin request rejected for player ${player.username}. Match exists: ${!!match}, Game mode: ${match?.gameMode}, Match state: ${match?.state}`);
+			socket.emit("rejoin-response", {status: "rejected"});
+			return;
+		}
+
 		try {
-			matchManager.handleReconnect(player);
+			matchManager.handleReconnect(player, match);
 		} catch (err: any) {
 			emitError(err.message, socket.id, io);
 			socket.disconnect(true);

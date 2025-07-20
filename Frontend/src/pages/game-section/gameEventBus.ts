@@ -1,8 +1,10 @@
+import { Router } from "../../router";
 import { gameInstance } from "../play";
 import { listenPlayerInputs } from "./eventListeners";
 import { startGameLoop } from "./gameLoop";
 import { MatchPlayers } from "./network";
 import { updateScoreBoard, updateSetBoard, showEndMessage, startNextSet } from "./ui";
+import { WebSocketClient } from "./wsclient";
 export type GameEventType =
 	| 'SET_COMPLETED'
 	| 'MATCH_ENDED'
@@ -18,6 +20,15 @@ export type GameEventType =
 	| 'ENTER_READY_PHASE'
 	| 'ENTER_PLAYING_PHASE'
 	| 'REMATCH_APPROVAL'
+	| 'RIVAL_DISCONNECTED'
+	| 'RIVAL_RECONNECTED'
+	| 'INITIALLY_CONNECTED'
+	| 'DISCONNECTED'
+	| 'CONNECTION_ERROR'
+	| 'RECONNECTION_ATTEMPT_FAILED'
+	| 'RECONNECTION_ATTEMPT'
+	| 'RECONNECTION_GAVE_UP'
+	| 'RECONNECTED'
 ;
 
 export interface GameEvent {
@@ -64,8 +75,7 @@ export class GameEventBus {
 
 GameEventBus.getInstance().on('SET_COMPLETED', async () => {
 	updateScoreBoard();
-	return startNextSet()
-		.then(() => startGameLoop());
+	return startNextSet().then(() => startGameLoop());
 });
 
 GameEventBus.getInstance().on('MATCH_ENDED', () => {
@@ -75,7 +85,7 @@ GameEventBus.getInstance().on('MATCH_ENDED', () => {
 });
 
 GameEventBus.getInstance().on('GAME_RESUMED', () => {
-	startGameLoop();
+	//startGameLoop();
 });
 
 GameEventBus.getInstance().on('WAITING_FOR_RIVAL', () => {
@@ -88,7 +98,7 @@ GameEventBus.getInstance().on('WAITING_FOR_RIVAL', () => {
 
 GameEventBus.getInstance().on('RIVAL_FOUND', (event) => {
 	const matchPlayers: MatchPlayers = event.payload.matchPlayers;
-	const rival: string = matchPlayers.left.socketId === gameInstance.socket!.id ? matchPlayers.right.username : matchPlayers.left.username;
+	const rival: string = matchPlayers.left.socketId === WebSocketClient.getInstance().getSocket()!.id ? matchPlayers.right.username : matchPlayers.left.username;
 	gameInstance.uiManager.updateUIForRivalFound(matchPlayers, rival);
 });
 
@@ -119,3 +129,48 @@ GameEventBus.getInstance().on('REMATCH_APPROVAL', (event) => {
 	}
 });
 
+GameEventBus.getInstance().on('RIVAL_DISCONNECTED', () => {
+	gameInstance.uiManager.onInfoShown("Rakip bağlantısı kesildi. Bekleniyor...");
+});
+
+GameEventBus.getInstance().on('RIVAL_RECONNECTED', () => {
+	gameInstance.uiManager.onInfoShown("Rakip yeniden bağlandı.");
+	setTimeout(() => {
+		gameInstance.uiManager.onInfoHidden();
+	}, 1000);
+});
+
+GameEventBus.getInstance().on('INITIALLY_CONNECTED', () => {
+});
+
+GameEventBus.getInstance().on('DISCONNECTED', (event) => {
+	if (gameInstance.gameStatus.currentGameStarted)
+		gameInstance.handleNetworkPause();
+	if (event.payload.reason === 'io server disconnect') {
+		gameInstance.uiManager.onInfoShown("Oyun sunucusu bağlantınızı reddetti. Başka bir oturum açık.");
+	}
+});
+
+GameEventBus.getInstance().on('RECONNECTED', () => {
+	if (!gameInstance.gameStatus.currentGameStarted || !gameInstance.uiManager.isSceneReady()) return;
+	console.log("Reconnected to the game server.");
+	gameInstance.requestRejoin();
+});
+
+GameEventBus.getInstance().on('CONNECTION_ERROR', (event) => {
+	const err = event.payload.reason;
+	if (err === "Existing session found.") {
+		gameInstance.uiManager.onInfoShown("Oyun sunucusu bağlantınızı reddetti. Başka bir oturum açık.");
+	}
+	/*console.error('Socket connection error:', err);
+	if (err.includes("token missing")) {
+		alert("Token eksik. Lütfen tekrar giriş yapın.");
+		Router.getInstance().go('/login');
+	} else if (err.includes("Token validation error")) {
+		alert("Token doğrulama hatası :" + err);
+		Router.getInstance().go('/login');
+	} else if (err.includes("Game server error")) {
+		alert("Aynı anda birden fazla oyuna katılamazsınız.");
+		Router.getInstance().go('/');
+	}*/
+});

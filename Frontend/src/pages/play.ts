@@ -1,9 +1,9 @@
 import '@babylonjs/core/Rendering/edgesRenderer'
 import { GameInfo, listenStateUpdates, waitForMatchReady, waitForRematchApproval, onFirstStateUpdate, MatchPlayers } from "./game-section/network";
-import { Socket } from "socket.io-client";
-import { createSocket } from "./game-section/network";
 import { GameUI } from "./game-section/ui";
 import { GameEventBus } from "./game-section/gameEventBus";
+import { Router } from '../router';
+import { WebSocketClient } from './game-section/wsclient';
 
 export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament' | null;
 
@@ -18,7 +18,6 @@ export interface GameStatus {
 }
 
 export class GameManager {
-	public socket: Socket | null = null;
 	public uiManager: GameUI = new GameUI();
 	public gameInfo: GameInfo | null = null;
 	public gameStatus: GameStatus = {
@@ -28,7 +27,7 @@ export class GameManager {
 	};
 	public reMatch: boolean = false;
 	public username: string | null = null;
-	public tournamentMode : boolean = false;
+	public tournamentMode: boolean = false;
 	public tournamentCode?: string;
 	public currentRival: string | null = null;
 
@@ -36,13 +35,13 @@ export class GameManager {
 		this.uiManager.removeCache();
 	}
 
-    private configureTournament(tournamentMode: boolean, tournamentCode?: string): void {
-        this.tournamentMode = tournamentMode;
+	private configureTournament(tournamentMode: boolean, tournamentCode?: string): void {
+		this.tournamentMode = tournamentMode;
 		if (tournamentMode) {
-            this.tournamentCode = tournamentCode!;
-			this.gameStatus = { currentGameStarted: false, game_mode: 'tournament', tournamentCode : this.tournamentCode, finalMatch: this.gameStatus.finalMatch };
+			this.tournamentCode = tournamentCode!;
+			this.gameStatus = { currentGameStarted: false, game_mode: 'tournament', tournamentCode: this.tournamentCode, finalMatch: this.gameStatus.finalMatch };
 		}
-    }
+	}
 
 	//todo listen once?
 	private async listenModeSelectorButtons(): Promise<void> {
@@ -88,61 +87,62 @@ export class GameManager {
 		});
 	}
 
-	private configure = async (socket: Socket) => {
-		this.socket = socket;
+	private configure = async () => {
 		if (this.gameStatus.game_mode === 'tournament') {
 			return
 		}
 
 		if (!this.gameStatus.currentGameStarted) {
 			await this.listenModeSelectorButtons();
-			return 
+			return
 		}
 		throw new Error("Mode could not selected: " + this.gameStatus);
 	};
 
 	private enterWaittingPhase = async (status: GameStatus): Promise<void> => {
 		this.gameStatus = status;
-		this.socket!.emit("start", this.gameStatus);
+		WebSocketClient.getInstance().emit("create", this.gameStatus);
 
 		let rival: string | null = null;
 		if (this.gameStatus.game_mode === "remoteGame" || this.gameStatus.game_mode === 'tournament') {
 			//todo remove awaits
-			await GameEventBus.getInstance().emit({ type: 'WAITING_FOR_RIVAL'});
+			await GameEventBus.getInstance().emit({ type: 'WAITING_FOR_RIVAL' });
 			const matchPlayers: MatchPlayers = await waitForMatchReady(this);
-			await GameEventBus.getInstance().emit({ type: 'RIVAL_FOUND', payload: {matchPlayers} });
+			await GameEventBus.getInstance().emit({ type: 'RIVAL_FOUND', payload: { matchPlayers } });
 		}
 		this.currentRival = rival;
 	};
 
-    private enterReadyPhase = async () => {
-        if (this.gameStatus.currentGameStarted) {
-            this.reMatch = true;
-            this.finalize();
-        }
+	private enterReadyPhase = async () => {
+		if (this.gameStatus.currentGameStarted) {
+			this.reMatch = true;
+			this.finalize();
+		}
 
-        this.socket!.emit("ready", false);
-        if (this.gameStatus.game_mode === "remoteGame" && this.reMatch) {
-            const approval = await waitForRematchApproval(this.socket!, this.currentRival as string);
+		WebSocketClient.getInstance().emit("ready", false);
+		if (this.gameStatus.game_mode === "remoteGame" && this.reMatch) {
+			const approval = await waitForRematchApproval(this.currentRival as string);
 			GameEventBus.getInstance().emit({ type: 'REMATCH_APPROVAL', payload: { approval } });
 			if (!approval) return;
-			this.socket!.emit("ready", true);
-        }
-        this.gameInfo = new GameInfo(this.gameStatus.game_mode);
-        return;
-    };
+			WebSocketClient.getInstance().emit("ready", true);
+		}
+		this.gameInfo = new GameInfo(this.gameStatus.game_mode);
+		return;
+	};
 
 	public startPlayProcess(tournamentMode: boolean, tournamentCode?: string): boolean {
-        this.configureTournament(tournamentMode, tournamentCode);
-        this.uiManager.cacheDOMElements();
-        createSocket()
-			.then((socket: Socket) => this.configure(socket)) // fill mode, difficulty, etc.
+		this.configureTournament(tournamentMode, tournamentCode);
+		this.uiManager.cacheDOMElements();
+		WebSocketClient.getInstance().connect("http://localhost:3001")
+			.catch(err => {
+				console.error("WebSocket connection error:", err);
+			}).then(() => this.configure()) // fill mode, difficulty, etc.
 			.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_WAITING_PHASE' }))
 			.then(() => this.enterWaittingPhase(this.gameStatus)) // wait for rival finding
 			.then(() => onClickedTo(this.uiManager.startButton!)) // wait for start click
 			.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_READY_PHASE' }))
 			.then(() => this.enterReadyPhase()) 				  // wait for rival's start click
-			.then(() => listenStateUpdates(this.gameInfo!, this.socket!)) // start listening the game server
+			.then(() => listenStateUpdates(this.gameInfo!)) // start listening the game server
 			.then(() => onFirstStateUpdate(this.gameInfo!))			// wait game server for start the game
 			.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }))
 		return true;
@@ -155,14 +155,56 @@ export class GameManager {
 		this.uiManager.engine = undefined;
 
 		["gameConstants", "gameState", "ballUpdate", "paddleUpdate",
-		"ready", "rematch-ready", "start", "username", "player-move",
-		"local-input", "pause-resume", "reset-match"]
+			"ready", "rematch-ready", "start", "username", "player-move",
+			"local-input", "pause-resume", "reset-match"]
 			.forEach(event => {
-			this.socket!.off(event);
-		});
+				WebSocketClient.getInstance().off(event);
+			});
 
 		this.gameInfo = null;
 		this.gameStatus.currentGameStarted = false;
+	}
+
+	public handleNetworkPause(): void {
+		if (this.gameInfo?.state?.matchOver || !this.gameStatus.currentGameStarted)
+			return;
+
+		if (this.gameStatus.game_mode === 'localGame' || this.gameStatus.game_mode === 'vsAI') {
+			this.uiManager.onInfoShown("Ağ bağlantısı koptu. Maçınız bitirilecek ...");
+			setTimeout(() => {
+				this.uiManager.onInfoHidden();
+				Router.getInstance().go('/play');
+			}, 2000);
+			return;
+		}
+
+		console.log("Network kopması algılandı, oyunu duraklatıyoruz.");
+		this.uiManager.onInfoShown("Ağ bağlantısı koptu. 15 sn içerisinde bağlantı gelirse maçınız devam edecek...");
+	}
+
+	public requestRejoin() {
+		gameInstance.uiManager.onInfoShown("Yeniden bağlandı. Oyuna katılma izni isteniyor...");
+		WebSocketClient.getInstance().once("rejoin-response", (response: { status: string }) => {
+			if (response.status === "approved") {
+				console.log("Rejoin approved, resuming game.");
+				gameInstance.uiManager.onInfoShown("Izin verildi. Oyuna katılınıyor...");
+				setTimeout(() => gameInstance.uiManager.onInfoHidden(), 1000);
+			} else {
+				console.log("Rejoin rejected, redirecting to play page.");
+				gameInstance.uiManager.onInfoShown("Izin verilmedi. Ana sayfaya dönülüyor...");
+				gameInstance.uiManager.engine?.stopRenderLoop();
+				gameInstance.uiManager.scene?.dispose();
+				gameInstance.uiManager.engine?.dispose();
+				gameInstance.uiManager.scene = undefined;
+				gameInstance.uiManager.engine = undefined;
+				gameInstance.gameInfo = null;
+				gameInstance.gameStatus.currentGameStarted = false;
+				gameInstance.uiManager.removeCache();
+				setTimeout(() => Router.getInstance().go('/'), 1000);
+			}
+		});
+
+		WebSocketClient.getInstance().emit("rejoin");
 	}
 }
 

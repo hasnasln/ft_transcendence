@@ -74,6 +74,12 @@ export class Match {
 	}
 }
 
+export interface DisconnectionEvent {
+	player: Player;
+	match: Match;
+	timestamp: number;
+}
+
 export class MatchManager {
 	public connectedPlayers: Map<string, Player> = new Map();
 	public reconnectTimers: Map<string, NodeJS.Timeout> = new Map();
@@ -296,89 +302,70 @@ export class MatchManager {
 
 	handleDisconnect(player: Player) {
 		this.connectedPlayers.delete(player.username);
-		player.status = 'offline';
-		const myMatch = this.getMatchByPlayer(player.username);
-		if (myMatch) {
-			console.log(`handleDisconnect e geldik (${player.username}): myMatch var ve myMatch.roomId = ${myMatch.roomId},  myMatch.state = ${myMatch.state}, myMatch.gameMode = ${myMatch.gameMode}`);
-			if (myMatch.gameMode === 'vsAI' || myMatch.gameMode === 'localGame') {
-				myMatch.finishIncompleteMatch();
-				this.clearMatch(myMatch);
-				return;
-			} else {
-				const opponent = player.username === myMatch.players[0].username ? myMatch.players[1] : myMatch.players[0];
-				switch (myMatch.state) {
-					case 'waiting':
-						this.cancelRemoteMatch(player.socket.id, myMatch, 'disconnect');
-						break;
-					case 'in-progress':
-					case 'paused':
-						myMatch.pause();
-						const res = this.io.to(opponent.socket.id).emit("opponent-disconnected");
-						console.log(`${opponent.username} e opponent-disconnect gitti, opponent.socket.id = ${opponent.socket.id} res = ${res}`);
-						const cancelTimeout1 = setTimeout(() => {
-							myMatch.finishIncompleteMatch(opponent.username);
-							this.clearMatch(myMatch);
-						}, 15000);
-						this.reconnectTimers.set(player.username, cancelTimeout1);
-						break;
-					case 'completed':
-						if (myMatch.gameMode === 'tournament') {
-							this.clearMatch(myMatch);
-						} else {
-							const cancelTimeout2 = setTimeout(() => {
-								this.clearMatch(myMatch);
-							}, 15000);
-							this.reconnectTimers.set(player.username, cancelTimeout2);
-						}
-						break;
+		const match = this.getMatchByPlayer(player.username);
+		if (!match) {
+			this.dequeue(player);
+			return;
+		}
+
+		if (match.gameMode === 'vsAI' || match.gameMode === 'localGame') {
+			match.finishIncompleteMatch();
+			this.clearMatch(match);
+			return;
+		}
+
+		const opponent = player.username === match.players[0].username ? match.players[1] : match.players[0];
+		switch (match.state) {
+			case 'waiting':
+				this.cancelRemoteMatch(player.socket.id, match, 'disconnect');
+				break;
+			case 'in-progress':
+			case 'paused':
+				match.pause();
+				const res = this.io.to(opponent.socket.id).emit("opponent-disconnected");
+				this.disconnectTimestamps.set(player.username, { player, match, timestamp: Date.now() });
+				break;
+			case 'completed':
+				if (match.gameMode === 'tournament') {
+					this.clearMatch(match);
+				} else {
+					this.disconnectTimestamps.set(player.username, { player, match, timestamp: Date.now() });
 				}
-			}
-		} else {
-			this.removePlayerFromRemoteQueue(player);
-			console.log(`handleDisconnect e geldik (${player.username}): myMatch yokmuş`);
+				break;
 		}
 	}
 
-
-	handleReconnect(player: Player) {
-		player.status = 'online';
+	handleReconnect(player: Player, match: Match) {
 		const roomId = this.roomsByUsername.get(player.username);
 
-		const myMatch = this.matchesByRoom.get(roomId!);
+		const playersIndex = player.username === match.players[0].username ? 0 : 1;
+		match.players[playersIndex] = player;
+		player.socket = player.socket;
+		player.socket.join(roomId!);
 
-		if (myMatch) {
-			const me = player.username === myMatch.players[0].username ? myMatch.players[0] : myMatch.players[1];
-			const opponent = player.username === myMatch.players[0].username ? myMatch.players[1] : myMatch.players[0];
-			// me.socket.leave(roomId!);
-			me.socket = player.socket;
-			me.socket.join(roomId!);
-
-			// opponent.socket.removeAllListeners("ready");
-			// opponent.socket.removeAllListeners("cancel");
-			this.waitForRemoteMatchApproval(me, true);
-
-			const input = new RemotePlayerInput(me);
-			myMatch.game!.leftInput.getUsername() === me.username ? myMatch.game!.leftInput = input : myMatch.game!.rightInput = input;
-
-			me.socket.on("reload-ready", () => {
-				this.io.to(opponent.socket.id).emit("opponent-reconnected");
-				myMatch.game?.exportGameConstants();
-				myMatch.game?.exportBallState();
-				myMatch.game?.exportPaddleState();
-				myMatch.game?.exportGameState();
-				const timeOut = this.reconnectTimers.get(me.username);
-				if (timeOut) {
-					clearTimeout(timeOut);
-					this.reconnectTimers.delete(me.username);
-				}
-
-				setTimeout(() => {
-					myMatch.resume();
-				}, 1000);
-			})
-		} else {
-			throw new Error("Yarım kalan maçınız bulunamadı, bitmiş veya silinmiş olabilir. Tekrar bağlanınız");
+		if (!match.game) {
+			throw new Error(`Match game is not initialized for player ${player.username} in room ${roomId}`);
 		}
+		if (!this.disconnectTimestamps.has(player.username)) {
+			throw new Error(`Disconnection event not found for player ${player.username}`);
+		}
+		this.disconnectTimestamps.delete(player.username);
+		player.socket.emit("rejoin-response", {status: "approved"});
+
+		const input = new RemotePlayerInput(player);
+		if (match.game.leftInput.getUsername() === player.username) {
+			match.game.leftInput = input;
+		} else {
+			match.game.rightInput = input;
+		}
+
+		match.players.find(p => p.username !== player.username)!.socket.emit("opponent-reconnected");
+		match.resume();
+		match.game.exportGameConstants();
+		match.game.exportBallState();
+		match.game.exportPaddleState();
+		match.game.exportGameState();
+		match.game.exportSetState();
 	}
 
 	clearMatch(match: Match) {
