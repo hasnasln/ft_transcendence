@@ -3,401 +3,460 @@ import { _apiManager } from '../api/APIManager';
 import { ITournament } from '../api/types';
 import { PlayPage } from './play-page';
 import { Page } from '../router';
+import { t_first_section } from './tournament/FormComponents';
+import { ShowTournament, getTournamentFormat, getOptimalTournamentSize, calculateByes, listPlayers} from './tournament/MainRenderer';
+import { TournamentActionHandler } from './tournament/ActionHandler';
+import { TournamentLoadingManager } from './tournament/LoadingManager';
+import { TournamentEventHandler } from './tournament/EventHandler';
+import { TournamentValidation } from './tournament/ValidationHelper';
+import { TournamentUIManager } from './tournament/UIManager';
+import { TournamentTreeManager } from './tournament/TreeManager';
+import { TournamentGameManager } from './tournament/GameManager';
+import { TournamentStateManager } from './tournament/StateManager';
+import { TournamentNotificationManager } from './tournament/NotificationManager';
 
-// Recommended way, to include only the icons you need.
 export class TournamentPage implements Page {
-	private data: ITournament | null = null;
-	private status: boolean = false;
+    private data: ITournament;
+    private status: boolean = false;
+    private actionHandler: TournamentActionHandler;
+    private loadingManager: TournamentLoadingManager;
+    private eventHandler: TournamentEventHandler;
+    private validation: TournamentValidation;
+    private uiManager: TournamentUIManager;
+    private treeManager: TournamentTreeManager;
+    private gameManager: TournamentGameManager;
+    private stateManager: TournamentStateManager;
+    private notificationManager: TournamentNotificationManager;
+    private performanceObserver: PerformanceObserver | null = null;
 
-	public evaluate(): string {
-		return getTournamentPageHTML();
-	}
-
-	public onLoad(): void {
-		this.data = JSON.parse(localStorage.getItem('tdata') || '{}'); // Retrieve tournament data from localStorage if available
-
-		requestAnimationFrame(() => this.init());
-
-		document.addEventListener('click', (e) => {
-			const toggleContainer = document.getElementById('toggleContainer');
-			if (!toggleContainer) return;
-
-			if ((e.target as HTMLElement).closest('#showCreate')) {
-				animation(toggleContainer, 1, 0);
-				document.getElementById('fatma123')?.classList.remove('hidden');
-				document.getElementById('fatma1234')?.classList.add('hidden');
-			} else if ((e.target as HTMLElement).closest('#showJoin')) {
-				animation(toggleContainer, -1, toggleContainer.offsetWidth);
-				document.getElementById('fatma123')?.classList.add('hidden');
-				document.getElementById('fatma1234')?.classList.remove('hidden');
-			}
-		});
-	}
-
-	public init(): void {
-		const container = document.getElementById('tournament-main');
-		if (!container) {
-			console.error('Container not found');
-			return;
-		}
-		container.addEventListener('click', (event) => {
-			event.preventDefault();
-			//! closet metodu ile tıklanan elementin üstündeki data-action attribute'ü olan elementi buluyoruz
-			//? burası sorun farklı noktalarda sorun çıkarabilir
-			//* örnek olarak içerideki bir tıklanma istenmeyen dışardaki bir tıklamayı çalıştırabilir, düşünülmesi lazım
-			const target = (event.target as HTMLElement).closest('[data-action]');
-			if (!target) return;
-			const action = target.getAttribute('data-action');
-			if (!action) return;
-			switch (action) {
-				case 'create-tournament':
-					this.createTournament(container);
-					break;
-				case 'join-room':
-					this.joinRoom(container);
-					break;
-				case 'exit-tournament':
-					this.exitTournament(container);
-					break;
-				case 'refresh':
-					this.handeleRefresh();
-					break;
-				case 'start-tournament':
-					this.hedleStartTournament();
-					break;
-				case 'play-game':
-					this.handlePlay();
-					break;
-				case 'tree':
-					this.handleTree();
-				default:
-					break;
-			}
-		});
-	}
-
-	private handleTree(): void {
-		console.log("----------->>>Tree tıkladı")
-	}
-
-	private async hedleStartTournament(): Promise<void> {
-		console.log('Starting tournament');
-		const response = await _apiManager.startTournament(this.data!.code);
-		if (response.success) {
-			this.status = true;
-			this.handeleRefresh();
-		}
-		console.log(response.data);
-	}
-
-	private async handeleRefresh(): Promise<void> {
-		console.log('Refreshing player list');
-		const x = document.getElementById('list-player');
-		if (x) {
-			console.log('Refreshing player list2');
-			x.innerHTML = ''; // Clear the existing list
-			const response = await _apiManager.getTournament(this.data!.code);
-			this.data!.users = response.data.participants; // Update the tournament data with the new participants
-			if (response.data.tournament_start)
-				this.status = true; // Set status to true if the tournament has started
-			// sadece 3 saniye bekle
-			//! burada refleş işleminden dönen değerler kontorl edlip ona göre buton gözükme işlemi olacak
-			//! şimdilik ilk refleşten sonra direk gözükür durumda.
-			setTimeout(() => {
-				// 3 saniye sonra listeyi güncelle
-				// this.updatePlayerList(x);
-				x.innerHTML = getPlayersListHTML(this.data!); // Re-render the player list
-				if (this.status) {
-					const playButton = document.getElementById('play-button');
-					if (playButton) {
-						playButton.style.visibility = 'visible'; // Show the button
-					}
-				}
-			}, 1000);
-		}
-	}
-
-	private async createTournament(container: HTMLElement): Promise<void> {
-		console.log('Creating tournament');
-		const input = document.querySelector('#createInput') as HTMLInputElement;
-		console.log('Turnuva ismi: ', input.value);
-		// localStorage.removeItem('tdata'); // Clear any existing tournament data in localStorage
-		if (localStorage.getItem('tdata') === null) {
-
-			const response = await _apiManager.createTournament(input.value);
-			const tdata: ITournament = {
-				id: response.data.id,
-				code: response.data.code,
-				name: response.data.name,
-				admin_id: response.data.admin_id,
-				users: response.data.participants
-			}
-			this.data = tdata; // Store the created tournament data
-			localStorage.setItem('tdata', JSON.stringify(tdata)); // Store the tournament data in localStorage
-			if (localStorage.getItem("tdata") !== null)
-				console.log("---------< tdata var");
-			else
-				console.log("---------< tdata yok");
-		} else {
-			this.data = JSON.parse(localStorage.getItem('tdata')!); // Retrieve the tournament data from localStorage
-			this.data!.name = input.value; // Update the tournament name
-			// this.data.users = []; // Reset participants list
-			// this.data.admin_id = localStorage.getItem('uuid') || ''; // Set admin_id to current user ID
-			// localStorage.setItem('tdata', JSON.stringify(this.data)); // Store the updated tournament data in localStorage
-			console.log("Turnuva ismi güncellendi: ", this.data!.name);
-		}
-		console.log('-_-_-_-_-_-_-_->>Tournament created:', this.data);
-		container.innerHTML = ''; // Clear the container
-		// getTournamentTree(container, 5); // Render the tournament tree
-		container.innerHTML = getShowTournamentHTML(this.data!); // Re-render the tournament section
-	}
-
-	private async joinRoom(container: HTMLElement): Promise<void> {
-		const input = document.querySelector('#joinInput') as HTMLInputElement;
-		const tournamentId = input.value;
-
-		if (localStorage.getItem('tdata') === null) {
-			let response = await _apiManager.joinTournament(input.value);
-			if (!response.success) {
-				alert('Tournament created not successfully!');
-				return;
-			} else {
-				response = await _apiManager.getTournament(tournamentId);
-				if (!response.success)
-					alert("ikinci istekde sıkıntı çıktı")
-			}
-			const tdata: ITournament = {
-				id: response.data.id,
-				code: response.data.code,
-				name: response.data.name,
-				admin_id: response.data.admin_id,
-				users: response.data.participants
-			}
-			localStorage.setItem('tdata', JSON.stringify(tdata)); // Store the tournament data in localStorage
-			this.data = tdata; // Store the created tournament data
-		} else {
-			this.data = JSON.parse(localStorage.getItem('tdata')!); // Retrieve the tournament data from localStorage
-		}
-		console.log(`Joining room with ID: ${tournamentId}`);
-		container.innerHTML = getShowTournamentHTML(this.data!); // Re-render the tournament section
-	}
-
-	private async exitTournament(container: HTMLElement): Promise<void> {
-		if (this.data!.admin_id === localStorage.getItem('uuid')) {
-			const response = await _apiManager.deleteTournament(this.data!.code);
-			console.log(response.message);
-			console.log("Oda yöneticisi tıkladı");
-			console.log('turnuva siliniyor');
-		}
-		else {
-			const response = await _apiManager.leaveTournament(this.data!.code);
-			console.log(response.message);
-			console.log("user tıkladı");
-			console.log('Exiting tournament');
-		}
-		localStorage.removeItem('tdata'); // Remove tournament data from localStorage
-		container.innerHTML = getTournamentFirstSectionHTML(); // Re-render the tournament section
-	}
-
-	private handlePlay() {
-		const tournamentDiv = document.getElementById("tournament-main");
-		if (!tournamentDiv)
-			console.log(`turnuva divi yok`);
-		else {
-			tournamentDiv.innerHTML = '';
-			const playPage = new PlayPage();
-			/** todo
-			const {info, menu} = playPage.render(tournamentDiv);
-			// 3 sanite bekle
-			if (info !== null && menu !== null) {
-				info.classList.remove('hidden');
-				// info.textContent = exmp.getLang("game.loading");
-				info.classList.add('bg-gray-950');
-				loadingWithMessage(info, 'Lütfen Telefonu Yatay Tutunuz');
-							
-				setTimeout(() => {
-					gameInstance.initGameSettings(true, this.data.code);
-					info.classList.add('hidden');
-					info.classList.remove('bg-blue-500');
-				}, 2000); 
-			}*/
-		}
-	}
-}
-
-function getTournamentPageHTML(): string {
-	const tdata = localStorage.getItem('tdata');
-
-	let content: string;
-	if (tdata === null) {
-		content = getTournamentFirstSectionHTML();
-	} else {
-		const tournamentData: ITournament = JSON.parse(tdata);
-		content = getShowTournamentHTML(tournamentData);
-	}
-
-	return `
-        <div id="tournament-main" class="flex flex-col items-center justify-center h-full w-full absolute top-0 left-0 z-0 bg-gray-300">
-            ${content}
-        </div>
-    `;
-}
-
-
-
-function getJoinOrCreatePanelHTML(id: string, key: string, title: string, placeholder: string): string {
-	const position = id === 'createPanel' ? 'right-0' : 'left-0';
-
-	return `
-        <div id="${id}" class="absolute top-0 w-1/2 h-full z-[1] flex items-center justify-center ${position}">
-            <form class="bg-white flex flex-col items-center justify-center h-full w-full px-10 text-center">
-                <h1 class="text-2xl font-bold mb-2">${title}</h1>
-                
-                <input 
-                    type="text" 
-                    id="${key}Input" 
-                    placeholder="${placeholder}" 
-                    class="bg-gray-200 text-sm p-3 rounded w-full mt-2 outline-none"
-                />
-                
-                <div 
-                    id="${key}_error_message" 
-                    class="flex justify-center items-center text-red-500 text-sm font-bold mt-2 w-[60%] bg-red-100"
-                    style="height: 1.5rem; visibility: hidden;"
-                ></div>
-                
-                <button 
-                    type="button" 
-                    id="${key}Btn" 
-                    data-action="${key === 'create' ? 'create-tournament' : 'join-room'}"
-                    class="bg-teal-600 text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded mt-3"
-                >
-                    ${exmp.getLang(title)}
-                </button>
-            </form>
-        </div>
-    `;
-}
-
-function getTournamentFirstSectionHTML(): string {
-	return `
-        <div id="tournament-container" class="relative bg-white rounded-[30px] shadow-lg w-[768px] max-w-full min-h-[480px] overflow-hidden transition-all-ease font-montserrat">
-            ${getJoinOrCreatePanelHTML('createPanel', 'create', exmp.getLang('tournament-first-page.create-title'), exmp.getLang('tournament-first-page.create-placeholder'))}
-            
-            ${getJoinOrCreatePanelHTML('joinPanel', 'join', exmp.getLang('tournament-first-page.join-title'), exmp.getLang('tournament-first-page.join-placeholder'))}
-            
-            <div id="toggleContainer" class="absolute top-0 w-1/2 h-full z-[10]">
-                <div id="fatma" class="bg-gradient-to-r from-indigo-600 to-teal-500 h-full w-[100%] relative flex items-center justify-center">
-                    <!-- Join Toggle Content (visible by default) -->
-                    <div id="fatma1234" class="z-[100] w-full flex flex-col items-center justify-center gap-4 text-center px-6 text-white">
-                        <h1 class="text-3xl font-bold">${exmp.getLang('tournament-first-page.m-title-for-showcreate')}</h1>
-                        <button id="showCreate" class="bg-transparent border border-white text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded">
-                            ${exmp.getLang('tournament-first-page.m-join-button')}
-                        </button>
-                    </div>
-                    
-                    <div id="fatma123" class="hidden z-[100] w-full flex flex-col items-center justify-center gap-4 text-center px-6 text-white">
-                        <h1 class="text-3xl font-bold">${exmp.getLang('tournament-first-page.m-title-for-showjoin')}</h1>
-                        <button id="showJoin" class="bg-transparent border border-white text-white text-xs font-semibold uppercase tracking-wide py-2 px-12 rounded">
-                            ${exmp.getLang('tournament-first-page.m-create-button')}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-
-
-function animation(obje: HTMLElement, dir: number, start: number) {
-	let x = 0;
-
-	function move() {
-		x += dir * 20;
-		obje.style.transform = `translateX(${start + x}px)`;
-		if (x >= obje.offsetWidth || x <= -obje.offsetWidth)
-			return;
-		requestAnimationFrame(move)
-	}
-	move();
-}
-
-function getShowTournamentHTML(tdata: ITournament): string {
-	return `
-        <div id="tournament-div02" class="flex flex-col justify-start items-center rounded-3xl w-[1200px] h-[900px] bg-gray-300 p-6 gap-4 overflow-y-auto overflow-x-auto scrollbar">
-            ${getTournamentInformationHTML(tdata)}
-        </div>
-    `;
-}
-
-
-function getTournamentInformationHTML(tdata: ITournament): string {
-	const isAdmin = tdata.admin_id === localStorage.getItem('uuid');
-
-	return `
-        <div class="flex flex-col justify-between items-center bg-gray-900 rounded-lg p-4 w-[640px] h-[350px] lg:w-[950px] lg:h-[500px]">
-            <div class="w-full flex flex-row justify-between items-center gap-4 p-4">
-                <div class="flex flex-row justify-center items-center gap-4 p-1">
-                    <img src="/IMG/trophy.png" class="w-[50px] h-[50px]" alt="Trophy">
-                    <h1 class="text-2xl font-bold text-center text-white">${tdata.name}</h1>
-                </div>
-                
-                ${isAdmin ? `
-                    <div id="start-button" data-action="start-tournament" class="flex justify-center items-center bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300">
-                        BASLAT
-                    </div>
-                ` : ''}
-                
-                <div data-action="exit-tournament" class="flex justify-center items-center flex-row bg-red-500 text-white px-4 py-2 gap-2 rounded-lg hover:bg-red-700 transition-colors duration-300 hover:cursor-pointer">
-                    <img src="/IMG/exit.png" class="w-[30px] h-[35px]" alt="Exit">
-                    <p>${exmp.getLang('tournament-second-page.exit')}</p>
-                </div>
-            </div>
-            
-            <div class="flex flex-col justify-center items-start w-full bg-gray-800 h-[20%]">
-                <p class="text-gray-400 text-lg pl-4">${exmp.getLang('tournament-second-page.tournament-id')}</p>
-                <p class="text-white text-lg pl-4 font-bold">${tdata.code}</p>
-            </div>
-            
-            <div class="flex flex-col justify-center items-start w-full bg-gray-800 h-[20%]">
-                <p class="text-gray-400 text-lg pl-4">${exmp.getLang('tournament-second-page.tournament-creater')}</p>
-                <p class="text-white text-lg pl-4 font-bold">${tdata.users[0].username}</p>
-            </div>
-            
-            <div class="flex flex-col justify-center items-start w-full bg-gray-800 h-[20%]">
-                <p class="text-gray-400 text-lg pl-4">${exmp.getLang('tournament-second-page.tournament-total-players')}</p>
-                <p class="text-white text-lg pl-4 font-bold">10</p>
-            </div>
-        </div>
+    constructor() {
+        const defaultData: ITournament = {
+            id: -1,
+            code: '',
+            name: '',
+            admin_id: '',
+            users: [],
+        };
         
-        <div class="flex flex-col justify-between items-center bg-gray-900 rounded-lg p-4 gap-4 w-[640px] h-[400px] lg:w-[980px] lg:h-[600px]">
-            <!-- Header -->
-            <div class="w-full flex flex-row justify-between items-center pl-4 pr-5 pt-1">
-                <p class="text-2xl font-bold text-center text-white">${exmp.getLang('tournament-second-page.tournament-joined-players')}</p>
-                <div data-action="tree">T</div>
-                <img src="/IMG/refresh.png" data-action="refresh" class="w-[30px] h-[35px] hover:cursor-pointer hover:scale-110" alt="Refresh">
-            </div>
+        this.data = this.loadTournamentData(defaultData);
+        
+        this.actionHandler = new TournamentActionHandler(this.data, this.status);
+        this.loadingManager = new TournamentLoadingManager();
+        this.eventHandler = new TournamentEventHandler();
+        this.validation = new TournamentValidation();
+        this.uiManager = new TournamentUIManager();
+        this.treeManager = new TournamentTreeManager(this.data, this.uiManager);
+        this.gameManager = new TournamentGameManager(this.data, this.status, this.validation, this.uiManager);
+        this.stateManager = new TournamentStateManager(this.data, this.status, this.uiManager, this.loadingManager);
+        this.notificationManager = new TournamentNotificationManager(this.uiManager);
+    }
+
+    private loadTournamentData(defaultData: ITournament): ITournament {
+        try {
+            const storedData = localStorage.getItem('tdata');
+            if (!storedData || storedData === '{}' || storedData === 'null') {
+                return defaultData;
+            }
             
-            <div id="list-player" class="flex flex-col items-center justify-start w-full h-full overflow-y-auto gap-4 p-4 rounded-2xl bg-gray-800 shadow-inner scrollbar scrollbar-thumb-gray-600 scrollbar-track-gray-200 hover:scrollbar-thumb-gray-800 rounded-md max-h-[90%]">
-                ${getPlayersListHTML(tdata)}
-            </div>
+            const parsedData = JSON.parse(storedData);
+            if (!parsedData || typeof parsedData !== 'object' || !parsedData.code) {
+                console.warn('Invalid tournament data in localStorage, using defaults');
+                return defaultData;
+            }
             
-            <div id="play-button" data-action="play-game" class="flex flex-row justify-start items-center gap-4 p-4 bg-gray-400 w-[25%] rounded-lg hover:bg-yellow-500 transition-colors duration-300 hover:cursor-pointer" style="visibility: hidden;">
-                <div class="flex justify-center items-center w-full">
-                    ${exmp.getLang('tournament-second-page.play')}
-                </div>
-            </div>
-        </div>
-    `;
-}
+            return parsedData;
+        } catch (error) {
+            console.error('Error parsing localStorage tournament data:', error);
+            localStorage.removeItem('tdata');
+            return defaultData;
+        }
+    }
 
+    evaluate(): string {
+        if (localStorage.getItem('tdata') === null) {
+            return this.renderFirstSection();
+        } else {
+            const tdata: ITournament = JSON.parse(localStorage.getItem('tdata')!);
+            return this.renderTournament(tdata);
+        }
+    }
 
+    private renderFirstSection(): string {
+        const tempDiv = document.createElement('div');
+        tempDiv.id = "tournament-main";
+        tempDiv.className = "flex flex-col items-center justify-center min-h-screen w-full absolute top-0 left-0 z-0 bg-gradient-to-br bg-gray-300";
+        t_first_section(tempDiv);
+        return tempDiv.outerHTML;
+    }
 
-function getPlayersListHTML(tdata: ITournament): string {
-	return tdata.users.map(player => `
-        <div class="flex flex-row justify-center items-center bg-gray-700 rounded-lg p-4 w-[84%] h-[15%] m-2 shadow-lg hover:bg-gray-600 transition-colors duration-300 transition-transform hover:scale-[1.02]">
-            <p class="text-white text-lg font-bold">${player.username}</p>
-        </div>
-    `).join('');
+    private renderTournament(tdata: ITournament): string {
+        const tempDiv = document.createElement('div');
+        tempDiv.id = "tournament-main";
+        tempDiv.className = "flex flex-col items-center justify-center min-h-screen w-full absolute top-0 left-0 z-0 bg-gradient-to-br bg-gray-300";
+        ShowTournament(tempDiv, tdata);
+        return tempDiv.outerHTML;
+    }
+
+    public onLoad(): void {
+        document.removeEventListener('click', this.handleClick);
+        document.addEventListener('click', this.handleClick);
+        setTimeout(() => {
+            this.init();
+        }, 100);
+    }
+
+    public onUnload(): void {
+        document.removeEventListener('click', this.handleClick);
+        if (this.performanceObserver) {
+            this.performanceObserver.disconnect();
+            this.performanceObserver = null;
+        }
+    }
+
+    private handleClick = (event: MouseEvent) => {
+        this.handleClickEvent(event);
+    }
+
+    private init(): void {
+        const container = this.uiManager.findTournamentContainer();
+        if (!container) {
+            console.error('Container not found');
+            return;
+        }
+        this.setupEventDelegation(container);
+        this.eventHandler.setupKeyboardShortcuts();
+        this.eventHandler.setupGlobalErrorHandling();
+        this.setupPerformanceMonitoring();
+    }
+
+    private setupEventDelegation(container: HTMLElement): void {
+        container.addEventListener('click', (event) => {
+            this.handleClickEvent(event);
+        });
+        container.addEventListener('submit', (event) => {
+            this.eventHandler.handleFormSubmission(event);
+        });
+        container.addEventListener('input', (event) => {
+            this.handleInputChange(event);
+        });
+    }
+
+    private handleClickEvent(event: Event): void {
+        event.preventDefault();
+        const target = (event.target as HTMLElement).closest('[data-action]');
+        if (!target) return;
+        const action = target.getAttribute('data-action');
+        if (!action) return;
+        
+        if (action !== 'refresh' && this.isButtonDisabled(target as HTMLElement)) {
+            console.warn(`Action ${action} ignored - button is disabled`);
+            return;
+        }
+        if (this.loadingManager.isRateLimited(action)) {
+            console.warn(`Action ${action} ignored - rate limited`);
+            return;
+        }
+        this.executeAction(action, target as HTMLElement);
+    }
+    private handleInputChange(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        const inputId = input.id;
+        if (inputId === 'createInput' || inputId === 'joinInput') {
+            this.notificationManager.performRealTimeValidation(input);
+        }
+    }
+    private executeAction(action: string, target: HTMLElement): void {
+        this.loadingManager.setActionLoading(action, target);
+        this.performAction(action, target)
+            .catch(error => {
+                console.error(`Error executing action ${action}:`, error);
+                this.handleActionError(action, target, error);
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    this.loadingManager.clearActionLoading(action, target);
+                }, 500);
+            });
+    }
+    private async performAction(action: string, target: HTMLElement): Promise<void> {
+        const container = this.uiManager.findTournamentContainer();
+        if (!container) throw new Error('Container not found');
+
+        switch (action) {
+            case 'create-tournament':
+                await this.createTournament(container);
+                break;
+            case 'join-room':
+                await this.joinRoom(container);
+                break;
+            case 'exit-tournament':
+                await this.exitTournament(container);
+                break;
+            case 'refresh':
+                await this.handleRefresh();
+                break;
+            case 'start-tournament':
+                await this.handleStartTournament();
+                break;
+            case 'play-game':
+                await this.gameManager.handlePlay();
+                break;
+            case 'tree':
+                await this.treeManager.handleTree();
+                break;
+            case 'show-create':
+                this.handleShowCreate(container);
+                break;
+            case 'show-join':
+                this.handleShowJoin(container);
+                break;
+            default:
+                console.warn(`Unknown action: ${action}`);
+                break;
+        }
+    }
+    private async createTournament(container: HTMLElement): Promise<void> {
+        try {
+            const input = document.querySelector('#createInput') as HTMLInputElement;
+            const validationResult = this.validation.validateCreateInput(input);
+            if (!validationResult.isValid) {
+                this.notificationManager.showCreateError(validationResult.message);
+                return;
+            }
+            
+            const tournamentName = validationResult.tournamentName;
+            this.loadingManager.showCreateLoading();
+            
+            const createResult = await this.actionHandler.createTournament(tournamentName);
+            if (createResult.success && createResult.data) {
+                this.notificationManager.showCreateSuccess(createResult.data);
+                await this.stateManager.handleCreateSuccess(container, createResult.data);
+                this.updateManagersData(createResult.data);
+            } else {
+                this.handleCreateError(createResult.message || '❌ Turnuva verisi alınamadı! Lütfen tekrar deneyin.');
+            }
+        } catch (error) {
+            console.error('Error creating tournament:', error);
+            this.handleCreateError('❌ Turnuva oluşturulurken beklenmeyen bir hata oluştu!\n\nLütfen tekrar deneyin.');
+        }
+    }
+    private async joinRoom(container: HTMLElement): Promise<void> {
+        try {
+            const input = document.querySelector('#joinInput') as HTMLInputElement;
+            const validationResult = this.validation.validateJoinInput(input);
+            if (!validationResult.isValid) {
+                this.notificationManager.showJoinError(validationResult.message);
+                return;
+            }
+            
+            const tournamentId = validationResult.tournamentId;
+            this.loadingManager.showJoinLoading();
+            
+            const joinResult = await this.actionHandler.joinTournament(tournamentId);
+            if (joinResult.success) {
+                if (joinResult.data) {
+                    this.notificationManager.showJoinSuccess();
+                    await this.stateManager.handleJoinSuccess(container, joinResult.data);
+                    this.updateManagersData(joinResult.data);
+                } else {
+                    this.handleJoinError('❌ Turnuva verisi alınamadı! Lütfen tekrar deneyin.');
+                }
+            } else {
+                this.handleJoinError(joinResult.message);
+            }
+        } catch (error) {
+            console.error('Error joining tournament:', error);
+            this.handleJoinError('❌ Turnuvaya katılırken beklenmeyen bir hata oluştu!\n\nLütfen tekrar deneyin.');
+        }
+    }
+
+    private async handleStartTournament(): Promise<void> {
+        try {
+            const validationResult = this.validation.validateTournamentStart(this.data.users.length);
+            if (!validationResult.isValid) {
+                this.notificationManager.showStartError(validationResult.message);
+                return;
+            }
+            
+            const confirmation = await this.getStartConfirmation();
+            if (!confirmation) {
+                return;
+            }
+            
+            this.loadingManager.showStartLoading();
+            const startResult = await this.actionHandler.startTournament();
+            
+            if (startResult.success) {
+                this.notificationManager.showStartSuccess(startResult.message, this.data.users.length);
+                await this.stateManager.handleStartSuccess(startResult.message);
+                this.updateManagersStatus(true);
+            } else {
+                this.handleStartError(startResult.message);
+            }
+        } catch (error) {
+            console.error('Error starting tournament:', error);
+            this.handleStartError('❌ Turnuva başlatılırken beklenmeyen bir hata oluştu!\n\nLütfen tekrar deneyin.');
+        }
+    }
+    private async handleRefresh(): Promise<void> {
+        try {
+            this.notificationManager.showRefreshLoading(this.loadingManager);
+            const refreshResult = await this.actionHandler.refreshTournament();
+
+            if (refreshResult.success) {
+                if (refreshResult.data) {
+                    await this.stateManager.handleRefreshSuccess(refreshResult.data);
+                    this.updateManagersData(refreshResult.data);
+                } else {
+                    this.handleRefreshError('❌ Turnuva verisi alınamadı!');
+                }
+            } else {
+                this.handleRefreshError(refreshResult.message);
+            }
+        } catch (error) {
+            console.error('Refresh error:', error);
+            this.handleRefreshError('❌ Veriler güncellenirken hata oluştu!\n\nLütfen tekrar deneyin.');
+        }
+    }
+    private async exitTournament(container: HTMLElement): Promise<void> {
+        try {
+            const confirmation = await this.getExitConfirmation();
+            if (!confirmation.confirmed) {
+                return;
+            }
+            
+            this.loadingManager.showExitLoading(confirmation.isAdmin);
+            const exitResult = await this.actionHandler.exitTournament();
+            
+            if (exitResult.success) {
+                this.notificationManager.showExitSuccess(exitResult.message);
+                await this.stateManager.handleExitSuccess(container, exitResult.message);
+            } else {
+                this.handleExitError(exitResult.message);
+            }
+        } catch (error) {
+            console.error('Exit tournament error:', error);
+            this.handleExitError('❌ Turnuvadan çıkılırken bir hata oluştu!\n\nLütfen tekrar deneyin.');
+            this.stateManager.forceExitToMainPage(container);
+        }
+    }
+    private setupPerformanceMonitoring(): void {
+        if ('PerformanceObserver' in window && !this.performanceObserver) {
+            this.performanceObserver = new PerformanceObserver((list) => {
+                const entries = list.getEntries();
+                entries.forEach(entry => {
+                    if (entry.duration > 1000) {
+                        console.warn(`Slow operation detected: ${entry.name} took ${entry.duration}ms`);
+                    }
+                });
+            });
+            
+            try {
+                this.performanceObserver.observe({ entryTypes: ['measure', 'navigation'] });
+            } catch (error) {
+                console.warn('Performance monitoring not supported:', error);
+                this.performanceObserver = null;
+            }
+        }
+    }
+    private isButtonDisabled(button: HTMLElement): boolean {
+        return button.hasAttribute('disabled') || 
+               button.classList.contains('disabled') ||
+               (button as HTMLButtonElement).disabled;
+    }
+    private handleActionError(action: string, target: HTMLElement, error: any): void {
+        console.error(`Action ${action} failed:`, error);
+        this.uiManager.showActionError(target, `${action} işlemi başarısız oldu!`);
+    }
+    private handleShowCreate(container: HTMLElement): void {
+        const toggleContainer = container.querySelector('#toggleContainer') as HTMLElement;
+        const createDiv = container.querySelector('#fatma123') as HTMLElement;
+        const joinDiv = container.querySelector('#fatma1234') as HTMLElement;
+        if (toggleContainer) {
+            this.animateToggle(toggleContainer, 1, 0);
+        }
+        if (createDiv) createDiv.classList.remove('hidden');
+        if (joinDiv) joinDiv.classList.add('hidden');
+    }
+    private handleShowJoin(container: HTMLElement): void {
+        const toggleContainer = container.querySelector('#toggleContainer') as HTMLElement;
+        const joinDiv = container.querySelector('#fatma1234') as HTMLElement;
+        const createDiv = container.querySelector('#fatma123') as HTMLElement;
+        if (toggleContainer) {
+            this.animateToggle(toggleContainer, -1, toggleContainer.offsetWidth);
+        }
+        if (joinDiv) joinDiv.classList.remove('hidden');
+        if (createDiv) createDiv.classList.add('hidden');
+    }
+    private animateToggle(element: HTMLElement, direction: number, startPosition: number): void {
+        let currentPosition = 0;
+        let animationId: number;
+        
+        const animate = () => {
+            currentPosition += direction * 20;
+            element.style.transform = `translateX(${startPosition + currentPosition}px)`;
+            
+            const shouldContinue = direction > 0 
+                ? currentPosition < element.offsetWidth 
+                : currentPosition > -element.offsetWidth;
+                
+            if (shouldContinue) {
+                animationId = requestAnimationFrame(animate);
+            }
+        };
+        if (element.dataset.animationId) {
+            cancelAnimationFrame(parseInt(element.dataset.animationId));
+        }
+        
+        animationId = requestAnimationFrame(animate);
+        element.dataset.animationId = animationId.toString();
+    }
+    private async getStartConfirmation(): Promise<boolean> {
+        const playerCount = this.data.users.length;
+        const confirmationMessage = this.validation.createStartConfirmationMessage(playerCount);
+        return confirm(confirmationMessage);
+    }
+    private async getExitConfirmation(): Promise<{ confirmed: boolean; isAdmin: boolean }> {
+        const isAdmin = this.data.admin_id === localStorage.getItem('uuid');
+        const confirmationMessage = this.validation.createExitConfirmationMessage(isAdmin);
+        const confirmed = confirm(confirmationMessage);
+        return { confirmed, isAdmin };
+    }
+    private handleCreateError(errorMessage: string): void {
+        this.loadingManager.removeLoadingOverlay('create');
+        this.notificationManager.showCreateError(errorMessage);
+    }
+    private handleJoinError(errorMessage: string): void {
+        this.loadingManager.removeLoadingOverlay('join');
+        this.notificationManager.showJoinError(errorMessage);
+    }
+    private handleStartError(errorMessage: string): void {
+        this.loadingManager.removeLoadingOverlay('start');
+        const playerCount = this.data.users.length;
+        const canStart = playerCount >= 2 && playerCount <= 10;
+        this.notificationManager.resetStartButton(canStart, this.uiManager);
+        this.notificationManager.showStartError(errorMessage);
+    }
+    private handleRefreshError(errorMessage: string): void {
+        this.notificationManager.resetRefreshButton();
+        this.notificationManager.showRefreshError(errorMessage);
+        this.stateManager.renderFallbackData();
+    }
+    private handleExitError(errorMessage: string): void {
+        this.loadingManager.removeLoadingOverlay('exit');
+        this.notificationManager.showExitError(errorMessage);
+    }
+    private updateManagersData(newData: ITournament): void {
+        this.data = newData;
+        this.actionHandler.updateData(newData, this.status);
+        this.treeManager.updateData(newData);
+        this.gameManager.updateData(newData, this.status);
+        this.stateManager.updateData(newData);
+    }
+    private updateManagersStatus(newStatus: boolean): void {
+        this.status = newStatus;
+        this.actionHandler.updateData(this.data, newStatus);
+        this.gameManager.updateData(this.data, newStatus);
+        this.stateManager.updateStatus(newStatus);
+    }
 }
