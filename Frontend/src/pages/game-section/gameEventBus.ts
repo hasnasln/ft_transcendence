@@ -1,6 +1,5 @@
-import { Router } from "../../router";
 import { gameInstance } from "../play";
-import { listenPlayerInputs } from "./eventListeners";
+import { listenPlayerInputs } from "./keyboard";
 import { startGameLoop } from "./gameLoop";
 import { MatchPlayers } from "./network";
 import { updateScoreBoard, showEndMessage, startNextSet } from "./ui";
