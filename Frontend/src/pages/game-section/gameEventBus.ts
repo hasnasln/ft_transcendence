@@ -1,8 +1,9 @@
+import { Router } from "../../router";
 import { gameInstance } from "../play";
-import { listenPlayerInputs } from "./keyboard";
+import { listenPlayerInputs } from "./eventListeners";
 import { startGameLoop } from "./gameLoop";
 import { MatchPlayers } from "./network";
-import { updateScoreBoard, updateSetBoard, showEndMessage, startNextSet } from "./ui";
+import { updateScoreBoard, showEndMessage, startNextSet } from "./ui";
 import { WebSocketClient } from "./wsclient";
 export type GameEventType =
 	| 'SET_COMPLETED'
@@ -78,9 +79,7 @@ GameEventBus.getInstance().on('SET_COMPLETED', async () => {
 });
 
 GameEventBus.getInstance().on('MATCH_ENDED', () => {
-	gameInstance.removeUserInGame();
 	updateScoreBoard();
-	updateSetBoard();
 	showEndMessage();
 });
 
@@ -117,7 +116,6 @@ GameEventBus.getInstance().on('ENTER_READY_PHASE', () => {
 });
 
 GameEventBus.getInstance().on('ENTER_PLAYING_PHASE',  async () => {
-	gameInstance.saveUserInGame();
 	await gameInstance.uiManager.setupScene();
 	listenPlayerInputs(gameInstance.gameInfo!);
 	startGameLoop();

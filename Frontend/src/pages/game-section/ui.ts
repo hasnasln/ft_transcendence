@@ -13,11 +13,9 @@ export class GameUI {
 	public scoreBoard: HTMLElement | null = null;
 	public roundDiv: HTMLElement | null = null;
 	public tournamentIdDiv: HTMLElement | null = null;
-	public setBoard: HTMLElement | null = null;
 	public scoreTable: HTMLElement | null = null;
 	public roundNoTable: HTMLElement | null = null;
 	public tournamentIDTable: HTMLElement | null = null;
-	public setTable: HTMLElement | null = null;
 	public endMsg: HTMLElement | null = null;
 	public newmatchButton: HTMLElement | null = null;
 	public turnToHomePage: HTMLElement | null = null;
@@ -33,15 +31,13 @@ export class GameUI {
 	public scene: Scene | undefined;
 
 	public cacheDOMElements(): void {
-		this.startButton = document.getElementById("ready-button");
+		this.startButton = document.getElementById("start-button");
 		this.scoreBoard = document.getElementById("scoreboard");
 		this.roundDiv = document.getElementById("roundDiv");
 		this.tournamentIdDiv = document.getElementById("tournamentIdDiv");
-		this.setBoard = document.getElementById("setboard");
 		this.scoreTable = document.getElementById("score-table");
 		this.roundNoTable = document.getElementById("roundNo");
 		this.tournamentIDTable = document.getElementById("tournamentCode");
-		this.setTable = document.getElementById("set-table");
 		this.endMsg = document.getElementById("end-message");
 		this.newmatchButton = document.getElementById("newmatch-button");
 		this.turnToHomePage = document.getElementById("turnHomePage-button");
@@ -53,11 +49,9 @@ export class GameUI {
 		this.scoreBoard = null;
 		this.roundDiv = null;
 		this.tournamentIdDiv = null;
-		this.setBoard = null;
 		this.scoreTable = null;
 		this.roundNoTable = null;
 		this.tournamentIDTable = null;
-		this.setTable = null;
 		this.endMsg = null;
 		this.newmatchButton = null;
 		this.turnToHomePage = null;
@@ -131,6 +125,7 @@ export class GameUI {
 		if (gameInstance.gameStatus.game_mode === 'tournament') {
 			gameInstance.gameStatus.finalMatch = matchPlayers.finalMatch!;
 			gameInstance.gameStatus.roundNo = matchPlayers.roundNo;
+			
 			if (matchPlayers.finalMatch)
 				this.onInfoShown(`Sıradaki maç: ${gameInstance.tournamentCode} final maçı : vs ${rival}`);
 			else
@@ -172,22 +167,56 @@ export function updateScoreBoard() {
 	if (!gameInstance.gameInfo) return;
 	if (gameInstance.gameInfo.state?.isPaused) return;
 
-	gameInstance.uiManager.scoreTable!.innerText = `${gameInstance.gameInfo.setState?.points.leftPlayer}  :  ${gameInstance.gameInfo.setState?.points.rightPlayer}`;
-	if (gameInstance.gameInfo.mode === 'tournament') {
-		if (gameInstance.gameStatus.finalMatch)
-			gameInstance.uiManager.roundNoTable!.innerText = `Final Maçı`;
-		else
-			gameInstance.uiManager.roundNoTable!.innerText = `Round : ${gameInstance.gameInfo.state?.roundNumber}`;
-
-		gameInstance.uiManager.tournamentIDTable!.innerText = `Turnuva ID : ${gameInstance.gameStatus.tournamentCode}`;
+	const scoreHome = document.getElementById("score-home");
+	const scoreAway = document.getElementById("score-away");
+	
+	if (scoreHome && scoreAway) {
+		scoreHome.textContent = `${gameInstance.gameInfo.setState?.points.leftPlayer}`;
+		scoreAway.textContent = `${gameInstance.gameInfo.setState?.points.rightPlayer}`;
 	}
-}
+	
+	if (gameInstance.uiManager.scoreTable) {
+		gameInstance.uiManager.scoreTable.innerText = `${gameInstance.gameInfo.setState?.points.leftPlayer}  :  ${gameInstance.gameInfo.setState?.points.rightPlayer}`;
+	}
+	
+	const roundDisplay = document.getElementById("roundNo");
+	if (roundDisplay) {
+		if (gameInstance.gameInfo.mode === 'tournament') {
+			if (gameInstance.gameStatus.finalMatch) {
+				roundDisplay.innerText = `Final`;
+			} else {
+				const roundNumber = gameInstance.gameInfo.state?.roundNumber || 1;
+				const roundNoFromStatus = gameInstance.gameStatus.roundNo;
+				
+				const actualRound = roundNoFromStatus || roundNumber || 1;
+				roundDisplay.innerText = `Round ${actualRound}`;
+			}
+		} else {
+			const leftSets = gameInstance.gameInfo.setState?.sets.leftPlayer || 0;
+			const rightSets = gameInstance.gameInfo.setState?.sets.rightPlayer || 0;
+			const totalSets = leftSets + rightSets;
+			const currentRound = totalSets + 1;
+			
+			roundDisplay.innerText = `Round ${currentRound}`;
+		}
+	}
+	
+	if (gameInstance.gameInfo.mode === 'tournament') {
+		if (gameInstance.uiManager.roundNoTable) {
+			if (gameInstance.gameStatus.finalMatch) {
+				gameInstance.uiManager.roundNoTable.innerText = `Final`;
+			} else {
+				const roundNumber = gameInstance.gameInfo.state?.roundNumber || 1;
+				const roundNoFromStatus = gameInstance.gameStatus.roundNo;
+				const actualRound = roundNoFromStatus || roundNumber || 1;
+				gameInstance.uiManager.roundNoTable.innerText = `Round ${actualRound}`;
+			}
+		}
 
-export function updateSetBoard() {
-	if (!gameInstance.gameInfo) return;
-	if (gameInstance.gameInfo.state?.isPaused) return;
-
-	gameInstance.uiManager.setTable!.innerText = `${gameInstance.gameInfo.setState?.sets.leftPlayer}  :  ${gameInstance.gameInfo.setState?.sets.rightPlayer}`;
+		if (gameInstance.uiManager.tournamentIDTable) {
+			gameInstance.uiManager.tournamentIDTable.innerText = `Turnuva ID : ${gameInstance.gameStatus.tournamentCode}`;
+		}
+	}
 }
 
 export function initializeGameUI() {
@@ -198,9 +227,10 @@ export function initializeGameUI() {
 		gameInstance.uiManager.roundDiv!.classList.remove("hidden");
 		gameInstance.uiManager.tournamentIdDiv!.classList.remove("hidden");
 	}
-	gameInstance.uiManager.setBoard!.classList.remove("hidden");
 
 	prepareScoreBoards();
+	updateScoreBoard();
+	
 	moveButton(document.getElementById("game-wrapper")!, 'left');
 	if (gameInstance.gameStatus.game_mode === "localGame") {
 		moveButton(document.getElementById("game-wrapper")!, 'right');
@@ -258,15 +288,14 @@ export function showEndMessage() {
 }
 
 function prepareScoreBoards() {
-	const blueTeam = document.getElementById("blue-team")!;
-	const redTeam = document.getElementById("red-team")!;
+	const blueTeam = document.getElementById("blue-team");
+	const redTeam = document.getElementById("red-team");
 
-	const blueTeam_s = document.getElementById("blue-team-s")!;
-	const redTeam_s = document.getElementById("red-team-s")!;
-
-	blueTeam.innerText = `${gameInstance.gameInfo!.setState?.usernames.left}`;
-	redTeam.innerText = `${gameInstance.gameInfo!.setState?.usernames.right}`;
-
-	blueTeam_s.innerText = `${gameInstance.gameInfo!.setState?.usernames.left}`;
-	redTeam_s.innerText = `${gameInstance.gameInfo!.setState?.usernames.right}`;
+	if (blueTeam && gameInstance.gameInfo?.setState?.usernames.left) {
+		blueTeam.innerText = `${gameInstance.gameInfo.setState.usernames.left}`;
+	}
+	
+	if (redTeam && gameInstance.gameInfo?.setState?.usernames.right) {
+		redTeam.innerText = `${gameInstance.gameInfo.setState.usernames.right}`;
+	}
 }

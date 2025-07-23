@@ -1,7 +1,7 @@
 import { Engine }   from "@babylonjs/core/Engines/engine";
 import { Scene }    from "@babylonjs/core/scene";
 import { Vector3 }  from "@babylonjs/core/Maths/math.vector";
-import { updateScoreBoard, updateSetBoard } from "./ui";
+import { updateScoreBoard } from "./ui";
 import { GameInfo } from "./network";
 import { gameInstance } from "../play";
 import { GameEventBus } from "./gameEventBus";
@@ -20,11 +20,6 @@ function updatePaddlePositions(): void {
 }
 
 const handleGameTick = (engine: Engine, scene: Scene, gameInfo: GameInfo) => {
-	if (gameInfo.state?.isPaused) {
-		//engine.stopRenderLoop();
-		return;
-	}
-
 	if (gameInfo.state?.matchOver) {
 		console.log("Match is over, loop stop.");
 		engine.stopRenderLoop();
@@ -39,11 +34,15 @@ const handleGameTick = (engine: Engine, scene: Scene, gameInfo: GameInfo) => {
 		return;
 	}
 
+	if (gameInfo.state?.isPaused) {
+		//engine.stopRenderLoop();
+		return;
+	}
+
 	updateBallPosition();
 	updatePaddlePositions();
 
 	updateScoreBoard();
-	updateSetBoard();
 	scene.render();
 }
 

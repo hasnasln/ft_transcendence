@@ -22,6 +22,8 @@ export function createScene() {
   const engine = new Engine(canvas, true);
   const scene = new Scene(engine);
   
+  scene.clearColor = new Color4(0, 0, 0, 0);
+  
   engine.setHardwareScalingLevel(1 / window.devicePixelRatio);
   return { canvas, engine, scene };
 }
