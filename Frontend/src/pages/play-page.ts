@@ -1,6 +1,5 @@
 import { exmp } from '../languageMeneger';
 import { gameInstance } from './play';
-import { loadingWithMessage } from '../components/loading';
 import { Page } from '../router';
 
 function getScoreBoard(): string {
@@ -484,16 +483,6 @@ export class PlayPage implements Page {
 	}
 
 	public onLoad(): void {
-		const info = document.getElementById('info') as HTMLElement;
-		info.classList.remove('hidden');
-		info.classList.add('bg-gradient-to-br', 'from-blue-500/20', 'to-purple-500/20');
-		loadingWithMessage(info, 'Lütfen Telefonu Yatay Tutunuz');
-		
-    //todo bunu sil
     gameInstance.startPlayProcess(false);
-    info.classList.add('hidden');
-    info.classList.remove('bg-gradient-to-br', 'from-blue-500/20', 'to-purple-500/20');
-    const menu = document.getElementById('menu') as HTMLElement;
-    menu.classList.remove('hidden');
 	}
 }
