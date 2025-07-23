@@ -102,7 +102,7 @@ export class GameManager {
 		if (this.gameStatus.game_mode === "remoteGame" || this.gameStatus.game_mode === 'tournament') {
 			//todo remove awaits
 			await GameEventBus.getInstance().emit({ type: 'WAITING_FOR_RIVAL' });
-			const matchPlayers: MatchPlayers = await waitForMatchReady(this);
+			const matchPlayers: MatchPlayers = await waitForMatchReady();
 			await GameEventBus.getInstance().emit({ type: 'RIVAL_FOUND', payload: { matchPlayers } });
 		}
 		this.currentRival = rival;
@@ -142,7 +142,7 @@ export class GameManager {
 					.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_READY_PHASE' }))
 					.then(() => this.enterReadyPhase()) 				  
 					.then(() => listenStateUpdates(this.gameInfo!)) // start listening the game server
-					.then(() => onFirstStateUpdate(this.gameInfo!))			// wait game server for start the game
+					.then(() => onFirstStateUpdate(this.gameInfo!)) // wait game server for start the game
 					.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }))
 				});
 			})

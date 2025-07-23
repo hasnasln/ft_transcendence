@@ -31,7 +31,7 @@ export class GameUI {
 	public scene: Scene | undefined;
 
 	public cacheDOMElements(): void {
-		this.startButton = document.getElementById("start-button");
+		this.startButton = document.getElementById("ready-button");
 		this.scoreBoard = document.getElementById("scoreboard");
 		this.roundDiv = document.getElementById("roundDiv");
 		this.tournamentIdDiv = document.getElementById("tournamentIdDiv");
