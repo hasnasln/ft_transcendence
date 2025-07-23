@@ -4,10 +4,42 @@ import { Page } from '../router';
 
 function getMenu(): string {
   const buttonData = [
-    { id: 'btn-vs-computer', text: exmp.getLang("game.vs-compiter-b"), icon: '🤖', gradient: 'from-blue-500/20 to-cyan-500/20', hover: 'hover:from-blue-500/30 hover:to-cyan-500/30', border: 'border-blue-400/30 hover:border-blue-400/50', shadow: 'hover:shadow-blue-500/25' },
-    { id: 'btn-find-rival', text: exmp.getLang("game.find-reval-b"), icon: '⚔️', gradient: 'from-purple-500/20 to-pink-500/20', hover: 'hover:from-purple-500/30 hover:to-pink-500/30', border: 'border-purple-400/30 hover:border-purple-400/50', shadow: 'hover:shadow-purple-500/25' },
-    { id: 'btn-local', text: exmp.getLang("game.local-game"), icon: '🏠', gradient: 'from-green-500/20 to-emerald-500/20', hover: 'hover:from-green-500/30 hover:to-emerald-500/30', border: 'border-green-400/30 hover:border-green-400/50', shadow: 'hover:shadow-green-500/25' },
-    { id: 'tournament', text: exmp.getLang("game.tournament"), icon: '🏆', gradient: 'from-yellow-500/20 to-orange-500/20', hover: 'hover:from-yellow-500/30 hover:to-orange-500/30', border: 'border-yellow-400/30 hover:border-yellow-400/50', shadow: 'hover:shadow-yellow-500/25' }
+    { 
+      id: 'btn-vs-computer', 
+      text: exmp.getLang("game.vs-compiter-b"), 
+      icon: '<svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v5m-3 0h6M4 11h16M5 15h14a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1Z"/></svg>', 
+      gradient: 'from-blue-500/20 to-cyan-500/20', 
+      hover: 'hover:from-blue-500/30 hover:to-cyan-500/30', 
+      border: 'border-blue-400/30 hover:border-blue-400/50', 
+      shadow: 'hover:shadow-blue-500/25' 
+    },
+    { 
+      id: 'btn-find-rival', 
+      text: exmp.getLang("game.find-reval-b"), 
+      icon: '<svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 10.5h.01m-4.01 0h.01M8 10.5h.01M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-6.6a1 1 0 0 0-.69.275l-2.866 2.723A.5.5 0 0 1 8 18.635V17a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/></svg>', 
+      gradient: 'from-purple-500/20 to-pink-500/20', 
+      hover: 'hover:from-purple-500/30 hover:to-pink-500/30', 
+      border: 'border-purple-400/30 hover:border-purple-400/50', 
+      shadow: 'hover:shadow-purple-500/25' 
+    },
+    { 
+      id: 'btn-local', 
+      text: exmp.getLang("game.local-game"), 
+      icon: '<svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/></svg>', 
+      gradient: 'from-green-500/20 to-emerald-500/20', 
+      hover: 'hover:from-green-500/30 hover:to-emerald-500/30', 
+      border: 'border-green-400/30 hover:border-green-400/50', 
+      shadow: 'hover:shadow-green-500/25' 
+    },
+    { 
+      id: 'tournament', 
+      text: exmp.getLang("game.tournament"), 
+      icon: '<svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M4.5 17H4a1 1 0 0 1-1-1 3 3 0 0 1 3-3h1m0-3.05A2.5 2.5 0 1 1 9 5.5M19.5 17h.5a1 1 0 0 0 1-1 3 3 0 0 0-3-3h-1m0-3.05a2.5 2.5 0 1 0-2-4.45m.5 13.5h-7a1 1 0 0 1-1-1 3 3 0 0 1 3-3h3a3 3 0 0 1 3 3 1 1 0 0 1-1 1Zm-1-9.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"/></svg>', 
+      gradient: 'from-yellow-500/20 to-orange-500/20', 
+      hover: 'hover:from-yellow-500/30 hover:to-orange-500/30', 
+      border: 'border-yellow-400/30 hover:border-yellow-400/50', 
+      shadow: 'hover:shadow-yellow-500/25' 
+    }
   ];
   
   return `<div id="menu" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[65%] max-w-2xl rounded-3xl flex flex-col justify-center items-center gap-6 z-10  p-8" style="

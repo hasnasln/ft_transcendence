@@ -193,15 +193,43 @@ export class GamePage implements Page {
 						inset 0 0 30px rgba(0, 255, 255, 0.1);
 				"></div>
 				<div id="countdown" class="absolute top-[40%] left-1/2 -translate-x-1/2 bg-black text-white text-[1.8vw] px-[2vw] py-[1vw] rounded-[30px] z-10 hidden"></div>
-				<button id="ready-button" class="modern-game-button absolute left-1/2 -translate-x-1/2 -translate-y-1/2 top-[45%] px-[2.8vw] py-[1.2vw] text-[1.5vw] text-white border-none rounded-[12px] cursor-pointer z-30 transition-all transform hidden">${exmp.getLang("game.stratt-game")}</button>
-				<button id="resume-button" class="modern-game-button absolute left-1/2 -translate-x-1/2 -translate-y-1/2 top-[45%] px-[2.8vw] py-[1.2vw] text-[1.5vw] text-white border-none rounded-[12px] cursor-pointer z-30 transition-all transform hidden">${exmp.getLang("game.continue-game")}</button>
-				<button id="newmatch-button" class="modern-game-button absolute left-1/2 -translate-x-1/2 -translate-y-1/2 top-[60%] px-[2.8vw] py-[1.2vw] text-[1.5vw] text-white border-none rounded-[12px] cursor-pointer z-30 transition-all transform hidden">${exmp.getLang("game.new-game")}</button>
+				<button id="ready-button" class="modern-game-button absolute left-1/2 -translate-x-1/2 -translate-y-1/2 top-[45%] px-[2.8vw] py-[1.2vw] text-[1.5vw] text-white border-none rounded-[12px] cursor-pointer z-30 transition-all transform hidden">
+					<div class="flex items-center gap-2">
+						<svg class="w-[1.8vw] h-[1.8vw]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 18V6l8 6-8 6Z"/>
+						</svg>
+						<span>${exmp.getLang("game.stratt-game")}</span>
+					</div>
+				</button>
+				<button id="resume-button" class="modern-game-button absolute left-1/2 -translate-x-1/2 -translate-y-1/2 top-[45%] px-[2.8vw] py-[1.2vw] text-[1.5vw] text-white border-none rounded-[12px] cursor-pointer z-30 transition-all transform hidden">
+					<div class="flex items-center gap-2">
+						<svg class="w-[1.8vw] h-[1.8vw]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 4v16l-4-2-4 2V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1Z"/>
+						</svg>
+						<span>${exmp.getLang("game.continue-game")}</span>
+					</div>
+				</button>
+				<button id="newmatch-button" class="modern-game-button absolute left-1/2 -translate-x-1/2 -translate-y-1/2 top-[60%] px-[2.8vw] py-[1.2vw] text-[1.5vw] text-white border-none rounded-[12px] cursor-pointer z-30 transition-all transform hidden">
+					<div class="flex items-center gap-2">
+						<svg class="w-[1.8vw] h-[1.8vw]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14m-7 7V5"/>
+						</svg>
+						<span>${exmp.getLang("game.new-game")}</span>
+					</div>
+				</button>
 				<button id="turnHomePage-button" class="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 top-[75%] px-[2.8vw] py-[1.2vw] text-[1.5vw] text-red-200 rounded-2xl cursor-pointer z-30 transition-all duration-300 transform hidden font-semibold" style="
 					background: linear-gradient(135deg, rgba(255, 0, 100, 0.15), rgba(255, 0, 150, 0.15));
 					border: 2px solid rgba(255, 0, 100, 0.4);
 					box-shadow: 0 0 20px rgba(255, 0, 100, 0.3), inset 0 0 20px rgba(255, 0, 100, 0.05);
 					backdrop-filter: blur(10px);
-				" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 30px rgba(255, 0, 100, 0.5), inset 0 0 30px rgba(255, 0, 100, 0.1)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 0 20px rgba(255, 0, 100, 0.3), inset 0 0 20px rgba(255, 0, 100, 0.05)';">Ana sayfaya dön</button>    `;
+				" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 30px rgba(255, 0, 100, 0.5), inset 0 0 30px rgba(255, 0, 100, 0.1)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 0 20px rgba(255, 0, 100, 0.3), inset 0 0 20px rgba(255, 0, 100, 0.05)';">
+					<div class="flex items-center gap-2">
+						<svg class="w-[1.8vw] h-[1.8vw]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
+						</svg>
+						<span>Ana sayfaya dön</span>
+					</div>
+				</button>    `;
     }
 }
 
