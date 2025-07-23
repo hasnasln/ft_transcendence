@@ -14,6 +14,7 @@ import { TournamentTreeManager } from './tournament/TreeManager';
 import { TournamentGameManager } from './tournament/GameManager';
 import { TournamentStateManager } from './tournament/StateManager';
 import { TournamentNotificationManager } from './tournament/NotificationManager';
+import { gameInstance } from './play';
 
 export class TournamentPage implements Page {
     private data: ITournament;

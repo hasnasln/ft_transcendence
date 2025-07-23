@@ -2,6 +2,7 @@ import { _apiManager } from '../../api/APIManager';
 import { ITournament } from '../../api/types';
 import { PlayPage } from '../play-page';
 import { gameInstance } from '../play';
+import { Router } from '../../router';
 
 export class TournamentGameManager {
     private data: ITournament;
@@ -59,26 +60,10 @@ export class TournamentGameManager {
     }
 
     private async initializeGame(): Promise<void> {
-        const playPage = new PlayPage();
-        const mainContainer = document.body;
-        const tournamentContainer = this.uiManager.findTournamentContainer();
-        if (!tournamentContainer) {
-            throw new Error('Tournament container not found');
-        }
-        tournamentContainer.style.display = 'none';
-        mainContainer.innerHTML = playPage.evaluate();
-        const success = gameInstance.startPlayProcess(true, this.data.code);
-        if (success) {
-            this.handleGameSuccess();
-        } else {
-            this.handleGameError();
-        }
+        Router.getInstance().go("/play");
+        gameInstance.startPlayProcess(true, this.data.code);
     }
 
-    private handleGameSuccess(): void {
-        setTimeout(() => {
-        }, 500);
-    }
 
     private handleGameError(): void {
         const tournamentContainer = this.uiManager.findTournamentContainer();
