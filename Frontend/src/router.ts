@@ -143,7 +143,7 @@ export class NotFoundPage implements Page {
 	        <div class="flex flex-col items-center max-w-lg text-center">
 	          ${NotFoundPage.illustration}
 	          <h2 class="mt-6 text-3xl font-semibold text-gray-800 dark:text-white md:text-4xl">404 - Page Not Found</h2>
-	          <p class="mt-4 text-gray-500 dark:text-gray-400">Sorry, we couldn’t find the page you’re looking for.</p>
+	          <p class="mt-4 text-gray-500 dark:text-gray-400">Are you looking for your dream girl? Don't worry. Good girls can be found every corner of the Earth but Earth is round.</p>
 	          <a href="/" class="px-8 mt-6 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900">Go back home</a>
 	        </div>
 	      </div>
