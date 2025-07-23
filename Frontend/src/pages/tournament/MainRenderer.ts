@@ -1,4 +1,3 @@
-import { exmp } from '../../languageMeneger';
 import { _apiManager } from '../../api/APIManager';
 import { ITournament } from '../../api/types';
 import { TournamentIcons } from './IconsHelper';
@@ -40,7 +39,9 @@ function createHeaderSection(tdata: ITournament): string {
                 <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text mb-4">
                     ${tdata.name}
                 </h1>
-                <p class="text-base sm:text-lg text-gray-300 mb-6">Turnuva Kontrol Paneli</p>
+                <p
+                data-langm-key="tournament-second-page.title"
+                class="text-base sm:text-lg text-gray-300 mb-6">!_!</p>
             </div>
         </div>
     `;
@@ -60,10 +61,10 @@ function createDetailsCard(tdata: ITournament): string {
         <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 lg:p-8 shadow-xl">
             ${createCardHeader()}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                ${createInfoCard('Tournament ID', tdata.code, TournamentIcons.getTournamentIdIcon(), 'from-purple-500 to-indigo-500', 'Turnuvaya katılım için benzersiz kod')}
-                ${createInfoCard('Tournament Creator', tdata.users[0]?.username || 'Unknown', TournamentIcons.getUserIcon(), 'from-blue-500 to-cyan-500', 'Turnuvayı organize eden kişi')}
-                ${createInfoCard('Active Players', `${tdata.users.length} / 10`, TournamentIcons.getPlayersIcon(), 'from-green-500 to-emerald-500', 'Aktif katılımcı sayısı ve kapasite')}
-                ${createInfoCard('Status', 'Aktif', TournamentIcons.getStatusIcon(), 'from-pink-500 to-rose-500', 'Turnuva mevcut durumu')}
+                ${createInfoCard('IdCard', tdata.code, TournamentIcons.getTournamentIdIcon(), 'from-purple-500 to-indigo-500')}
+                ${createInfoCard('Creater', tdata.users[0]?.username || 'Unknown', TournamentIcons.getUserIcon(), 'from-blue-500 to-cyan-500')}
+                ${createInfoCard('ActivePlayer', `${tdata.users.length} / 10`, TournamentIcons.getPlayersIcon(), 'from-green-500 to-emerald-500')}
+                ${createInfoCard('Status', 'Aktif', TournamentIcons.getStatusIcon(), 'from-pink-500 to-rose-500')}
             </div>
         </div>
     `;
@@ -76,28 +77,38 @@ function createCardHeader(): string {
                     ${TournamentIcons.getTrophyIcon()}
                 </div>
                 <div>
-                    <h2 class="text-xl sm:text-2xl font-bold text-white mb-1">Turnuva Bilgileri</h2>
-                    <p class="text-gray-300 text-sm sm:text-base">Detaylı istatistikler</p>
+                    <h2
+                        data-langm-key="tournament-second-page.DetailsCard.header"
+                        class="text-xl sm:text-2xl font-bold text-white mb-1">!_!
+                    </h2>
+                    <p
+                    data-langm-key="tournament-second-page.DetailsCard.header2"
+                        class="text-gray-300 text-sm sm:text-base">!_!
+                    </p>
                 </div>
             </div>
             <div class="flex items-center space-x-2 sm:space-x-3">
-                ${createActionButton('refresh', TournamentIcons.getRefreshIcon(), 'from-blue-500 to-cyan-500', 'Yenile')}
-                ${createActionButton('tree', TournamentIcons.getTreeIcon(), 'from-green-500 to-emerald-500', 'Turnuva Ağacı')}
-                ${createActionButton('exit-tournament', TournamentIcons.getExitIcon(), 'from-red-500 to-pink-500', 'Çıkış')}
+                ${createActionButton('refresh', TournamentIcons.getRefreshIcon(), 'from-blue-500 to-cyan-500', 'refresh')}
+                ${createActionButton('tree', TournamentIcons.getTreeIcon(), 'from-green-500 to-emerald-500', 'tree')}
+                ${createActionButton('exit-tournament', TournamentIcons.getExitIcon(), 'from-red-500 to-pink-500', 'exit')}
             </div>
         </div>
     `;
 }
 function createActionButton(action: string, icon: string, color: string, tooltip: string): string {
     return `
-        <button data-action="${action}" class="p-2 sm:p-3 bg-gradient-to-br ${color} rounded-xl transition-all duration-300 hover:scale-105 shadow-md" title="${tooltip}">
-            <div class="relative">
-                ${icon}
-            </div>
+        <button
+            data-langm-key="tournament-second-page.DetailsCard.button.${tooltip}"
+            data-langm-path="title"
+            data-action="${action}"
+            class="p-2 sm:p-3 bg-gradient-to-br ${color} rounded-xl transition-all duration-300 hover:scale-105 shadow-md">
+                <div class="relative">
+                    ${icon}
+                </div>
         </button>
     `;
 }
-function createInfoCard(title: string, value: string, icon: string, gradient: string, description: string): string {
+function createInfoCard(title_key: string, value_key: string, icon: string, gradient: string): string {
     return `
         <div class="group relative bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-500 hover:scale-105 hover:shadow-2xl">
             <div class="absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-500"></div>
@@ -107,12 +118,19 @@ function createInfoCard(title: string, value: string, icon: string, gradient: st
                         ${icon}
                     </div>
                     <div class="text-right">
-                        <p class="text-gray-400 text-sm font-medium">${title}</p>
-                        <p class="text-white text-2xl font-bold">${value}</p>
+                        <p
+                            data-langm-key="tournament-second-page.DetailsCard.${title_key}"
+                            class="text-gray-400 text-sm font-medium">!_!
+                        </p>
+                        <p class="text-white text-2xl font-bold">${value_key}
+                        </p>
                     </div>
                 </div>
                 <div class="h-1 bg-gradient-to-r ${gradient} rounded-full opacity-20 group-hover:opacity-50 transition-opacity duration-500"></div>
-                <p class="text-gray-400 text-xs mt-3 leading-relaxed">${description}</p>
+                <p
+                data-langm-key="tournament-second-page.DetailsCard.${title_key}-description"
+                    class="text-gray-400 text-xs mt-3 leading-relaxed">!_!
+                </p>
             </div>
         </div>
     `;
@@ -128,7 +146,10 @@ function createAdminPanel(tdata: ITournament): string {
     return `
         <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 shadow-xl mt-4">
             <div class="text-center mb-4">
-                <h3 class="text-lg sm:text-xl font-bold text-white mb-2">Admin Paneli</h3>
+                <h3
+                    data-langm-key="tournament-second-page.AdminPanel.title"
+                    class="text-lg sm:text-xl font-bold text-white mb-2">!_!
+                </h3>
             </div>
             ${createStartButton(canStart, playerCount, minPlayers, maxPlayers)}
             ${createStartInfo(canStart, playerCount, minPlayers, maxPlayers)}
@@ -141,16 +162,19 @@ function createStartButton(canStart: boolean, playerCount: number, minPlayers: n
         : 'bg-gray-600 text-gray-300 cursor-not-allowed';
     const buttonContent = canStart 
         ? `<div class="flex items-center justify-center space-x-2">
-               ${TournamentIcons.getRocketIcon()}
-               <span>TURNUVAYI BAŞLAT</span>
+                ${TournamentIcons.getRocketIcon()}
+                <span
+                    data-langm-key="tournament-second-page.AdminPanel.Button.avtive">!_!
+                </span>
            </div>`
         : `<div class="flex items-center justify-center space-x-2">
                ${TournamentIcons.getLockIcon()}
-               <span class="text-xs sm:text-sm">
-                   ${playerCount < minPlayers 
-                       ? `OYUNCU BEKLENİYOR (${playerCount}/${minPlayers})`
-                       : `TURNUVA DOLU (${playerCount}/${maxPlayers})`
-                   }
+               <span 
+                    data-langm-key="tournament-second-page.AdminPanel.Button.${playerCount < minPlayers 
+                        ? `deactive-1`
+                        : `deactive-2`
+                    }"
+                    class="text-xs sm:text-sm">!_!
                </span>
            </div>`;
     const dataAction = canStart ? 'start-tournament' : '';
@@ -160,6 +184,13 @@ function createStartButton(canStart: boolean, playerCount: number, minPlayers: n
         </button>
     `;
 }
+
+/**
+ * buton2 nin ikinci açıklaması gereksiz, turnuva tam dolu olduğu zaman yeni bir kişi zaten giremiyor.
+ * 
+ * buton2 nin aktif olduğu durmda ${getTournamentFormat(playerCount)} • ${calculateByes(playerCount)} bye
+ * kısmı için herhangi bir düzenleme yapmadım ama lazım
+ *  */
 function createStartInfo(canStart: boolean, playerCount: number, minPlayers: number, maxPlayers: number): string {
     if (canStart) {
         return `
@@ -167,10 +198,14 @@ function createStartInfo(canStart: boolean, playerCount: number, minPlayers: num
                 <div class="bg-green-500/20 border border-green-500/30 rounded-xl p-4">
                     <div class="flex items-center justify-center space-x-2 mb-2">
                         ${TournamentIcons.getCheckIcon()}
-                        <p class="text-green-400 font-semibold text-sm">Başlatılabilir!</p>
+                        <p
+                            data-langm-key="tournament-second-page.AdminPanel.Button2.active"
+                            class="text-green-400 font-semibold text-sm">!_!
+                        </p>
                     </div>
                     <div class="text-center">
-                        <p class="text-green-300 text-xs">
+                        <p
+                            class="text-green-300 text-xs">
                             ${getTournamentFormat(playerCount)} • ${calculateByes(playerCount)} bye
                         </p>
                     </div>
@@ -183,16 +218,18 @@ function createStartInfo(canStart: boolean, playerCount: number, minPlayers: num
                 <div class="bg-yellow-500/20 border border-yellow-500/30 rounded-xl p-4">
                     <div class="flex items-center justify-center space-x-2 mb-2">
                         ${TournamentIcons.getWarningIcon()}
-                        <p class="text-yellow-400 font-semibold text-sm">
-                            ${playerCount < minPlayers ? 'Daha fazla oyuncu gerekli' : 'Turnuva dolu'}
+                        <p 
+                            data-langm-key="tournament-second-page.AdminPanel.Button2.${playerCount < minPlayers ? 'deactive-1' : 'deactive-2'}"
+                            class="text-yellow-400 font-semibold text-sm">!_!
                         </p>
                     </div>
                     <div class="text-center">
-                        <p class="text-yellow-300 text-xs">
-                            ${playerCount < minPlayers 
-                                ? `En az ${minPlayers} oyuncu gerekli (şu an: ${playerCount})`
-                                : `Maksimum ${maxPlayers} oyuncu (şu an: ${playerCount})`
-                            }
+                        <p
+                            data-langm-key="tournament-second-page.AdminPanel.Button2.${playerCount < minPlayers 
+                                ? `description-1`
+                                : `description-2`
+                            }"
+                            class="text-yellow-300 text-xs">!_!
                         </p>
                     </div>
                 </div>
@@ -219,8 +256,14 @@ function createPlayersHeader(): string {
             <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
                 ${TournamentIcons.getPlayersIcon()}
             </div>
-            <h3 class="text-lg sm:text-xl font-bold text-white mb-2">Katılımcılar</h3>
-            <p class="text-gray-300 text-sm">Turnuva oyuncuları</p>
+            <h3
+                data-langm-key="tournament-second-page.PlayersPanel.title"
+                class="text-lg sm:text-xl font-bold text-white mb-2">!_!
+            </h3>
+            <p
+                data-langm-key="tournament-second-page.PlayersPanel.title2"
+                class="text-gray-300 text-sm">!_!
+            </p>
         </div>
     `;
 }
@@ -229,7 +272,9 @@ function createPlayButton(): string {
         <button id="play-button" data-action="play-game" class="w-full py-3 sm:py-4 px-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold text-sm sm:text-base rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg mt-6" style="visibility: hidden;">
             <div class="flex items-center justify-center space-x-2">
                 ${TournamentIcons.getGameIcon()}
-                <span>OYUNA BAŞLA</span>
+                <span
+                    data-langm-key="tournament-second-page.PlayersPanel.PlayButton">!_!
+                </span>
             </div>
         </button>
     `;
@@ -270,6 +315,10 @@ function createPlayersListHTML(tdata: ITournament): string {
         ${createCapacityIndicator(tdata.users.length)}
     `;
 }
+
+// Bu fonsiyon turnuva içerisnde 0 oyuncu olduğu durumda aktif olan bir fonsiyon
+// bizde turnuva oluşturucusu hep içeride olduğu için aşağıdaki fonsiyona gerek yok:
+// createEmptyPlayersState
 function createEmptyPlayersState(): string {
     return `
         <div class="flex flex-col items-center justify-center py-16 text-center">
@@ -288,6 +337,7 @@ function createEmptyPlayersState(): string {
         </div>
     `;
 }
+
 function createPlayerCard(player: any, index: number, adminId: string): string {
     const isAdmin = player.user_id === adminId;
     const playerInitial = player.username.charAt(0).toUpperCase();
@@ -316,14 +366,16 @@ function createPlayerInfo(username: string, isAdmin: boolean): string {
         : `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
            </svg>`;
-    const roleText = isAdmin ? 'Admin' : 'Oyuncu';
+    const roleText = isAdmin ? 'Admin' : 'Player';
     const roleColor = isAdmin ? 'text-yellow-400' : 'text-blue-400';
     return `
         <div class="flex-1 min-w-0">
             <h4 class="text-white font-semibold text-sm sm:text-base truncate">${username}</h4>
             <p class="text-gray-400 text-xs sm:text-sm flex items-center space-x-1">
                 ${roleIcon}
-                <span class="${roleColor}">${roleText}</span>
+                <span
+                data-langm-key="tournament-second-page.PlayersPanel.PlayerCard.Role.${roleText}"
+                class="${roleColor}"></span>
             </p>
         </div>
     `;
@@ -344,15 +396,22 @@ function createCapacityIndicator(currentCapacity: number): string {
     return `
         <div class="mt-6 p-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
             <div class="flex justify-between items-center mb-3">
-                <span class="text-gray-300 text-sm font-medium">Kapasite</span>
+                <span
+                    data-langm-key="tournament-second-page.PlayersPanel.CapacityIndicator.capacity"
+                    class="text-gray-300 text-sm font-medium">!_!
+                </span>
                 <span class="text-white font-bold">${currentCapacity} / ${maxCapacity}</span>
             </div>
             <div class="w-full bg-gray-700/50 rounded-full h-2">
                 <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
             </div>
             <div class="flex justify-between items-center mt-2 text-xs text-gray-400">
-                <span>Min: 2</span>
-                <span>Max: 10</span>
+                <span
+                    data-langm-key="tournament-second-page.PlayersPanel.CapacityIndicator.min">!_!
+                </span>
+                <span
+                    data-langm-key="tournament-second-page.PlayersPanel.CapacityIndicator.max">!_!
+                </span>
             </div>
         </div>
     `;

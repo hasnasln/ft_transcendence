@@ -68,11 +68,11 @@ export class HomePage implements Page {
 
 							<div class="flex items-center justify-center w-full max-w-lg">
 								<ul class="flex flex-col gap-3 p-6 bg-white/5 backdrop-blur-3xl rounded-3xl border border-white/10 shadow-2xl w-full max-w-md transition-all duration-700 hover:bg-white/10 hover:border-white/20 hover:shadow-purple-500/20 hover:shadow-2xl ring-1 ring-white/5">
-									${mainMenuButton(exmp.getLang('home.play-b'), 'play', 'bg-violet-400', 'border-violet-400', 'text-purple-800', 'border-purple-300', 'bg-purple-100', getPlayIconHTML())}
-									${mainMenuButton(exmp.getLang('home.settings-b'), 'settings', 'bg-indigo-400', 'border-indigo-400', 'text-blue-800', 'border-blue-300', 'bg-blue-100', getSettingsIconHTML())}
-									${mainMenuButton(exmp.getLang('home.profile-b'), 'profile', 'bg-blue-500', 'border-blue-500', 'text-green-800', 'border-green-300', 'bg-green-100', getProfileIconHTML())}
-									${mainMenuButton(exmp.getLang('home.tournament-b'), 'tournament', 'bg-red-400', 'border-red-400', 'text-orange-800', 'border-orange-300', 'bg-orange-100', getTournamentIconHTML())}
-									${mainMenuButton(exmp.getLang('home.logout-b'), 'exit', 'bg-gray-500', 'border-gray-500', 'text-red-800', 'border-red-300', 'bg-red-100', getExitIconHTML())}
+									${mainMenuButton('home.play-b', 'play', 'bg-violet-400', 'border-violet-400', 'text-purple-800', 'border-purple-300', 'bg-purple-100', getPlayIconHTML())}
+									${mainMenuButton('home.settings-b', 'settings', 'bg-indigo-400', 'border-indigo-400', 'text-blue-800', 'border-blue-300', 'bg-blue-100', getSettingsIconHTML())}
+									${mainMenuButton('home.profile-b',  'profile', 'bg-blue-500', 'border-blue-500', 'text-green-800', 'border-green-300', 'bg-green-100', getProfileIconHTML())}
+									${mainMenuButton('home.tournament-b', 'tournament', 'bg-red-400', 'border-red-400', 'text-orange-800', 'border-orange-300', 'bg-orange-100', getTournamentIconHTML())}
+									${mainMenuButton('home.logout-b', 'exit', 'bg-gray-500', 'border-gray-500', 'text-red-800', 'border-red-300', 'bg-red-100', getExitIconHTML())}
 								</ul>
 							</div>
 						</div>
@@ -88,6 +88,7 @@ export class HomePage implements Page {
 
 	public onLoad(): void {
 		document.addEventListener('click', this.handleClick);
+		exmp.applyLanguage()
 	}
 
 	private handleClick = (event: MouseEvent) => {
@@ -218,7 +219,7 @@ function profileCard(name: string, linkedin: string, github: string, avatar: str
 	`;
 }
 
-function mainMenuButton(text: string, action: string, floaterBgColor: string, floaterBorderColor: string, textColor: string, iconBorderColor: string, iconBgColor: string, icon: string): string {
+function mainMenuButton(langkey: string, action: string, floaterBgColor: string, floaterBorderColor: string, textColor: string, iconBorderColor: string, iconBgColor: string, icon: string): string {
 	return `
 		<li class="group relative w-14 h-14 overflow-hidden rounded-2xl transition-all duration-700 ease-out hover:w-80 hover:shadow-2xl hover:shadow-purple-500/30 cursor-pointer bg-gradient-to-br from-white/90 to-gray-50/90 backdrop-blur-2xl border border-white/30 hover:border-purple-300/60 hover:from-white hover:to-purple-50/50 transform hover:scale-105 hover:-translate-y-1 ring-1 ring-white/20 hover:ring-purple-300/40" data-action="${action}">
 			<div class="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-purple-500/15 via-pink-500/15 to-blue-500/15 transition-opacity duration-700 rounded-2xl"></div>
@@ -235,8 +236,10 @@ function mainMenuButton(text: string, action: string, floaterBgColor: string, fl
 				</div>
 				
 				<div data-action="${action}" class="flex-1 min-w-0 ml-4 transform translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-700 ease-out delay-100 overflow-hidden">
-					<span data-action="${action}" class="block text-lg font-bold tracking-wide bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent group-hover:from-purple-700 group-hover:to-pink-600 transition-all duration-500 drop-shadow-sm">
-						${text}
+					<span 
+						data-action="${action}" 
+						data-langm-key="${langkey}" 
+						class="block text-lg font-bold tracking-wide bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent group-hover:from-purple-700 group-hover:to-pink-600 transition-all duration-500 drop-shadow-sm">
 					</span>
 				</div>
 				

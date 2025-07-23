@@ -4,7 +4,7 @@ import { exmp } from "../languageMeneger";
 export class Settingsv2 {
 	private isOpen = false;
 	private selectedColor = '#3b82f6';
-	private selectedLanguage = 'tr';
+	private selectedLanguage = localStorage.getItem('language') || 'tr';
 	private closeHandler: ((e: Event) => void) | null = null;
 
 	public constructor() {
@@ -19,6 +19,7 @@ export class Settingsv2 {
 		
 		requestAnimationFrame(() => {
 			this.initializeEventListeners();
+			exmp.applyLanguage()
 		});
 
 	}
@@ -165,12 +166,11 @@ export class Settingsv2 {
 						</svg>
 					</div>
 					<div class="flex-1">
-						<h3 class="text-4xl font-black text-transparent bg-clip-text 
+						<h3 data-langm-key="settings.ball-color" class="text-4xl font-black text-transparent bg-clip-text 
 							bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800
 							tracking-tight leading-tight group-hover:from-gray-900 
 							group-hover:via-blue-900 group-hover:to-gray-900
 							transition-all duration-700 mb-3">
-							${exmp.getLang("settings.ball-color")}
 						</h3>
 					</div>
 				</div>
@@ -362,12 +362,11 @@ export class Settingsv2 {
 						</svg>
 					</div>
 					<div class="flex-1">
-						<h3 class="text-4xl font-black text-transparent bg-clip-text 
+						<h3 data-langm-key="settings.language-select" class="text-4xl font-black text-transparent bg-clip-text 
 							bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800
 							tracking-tight leading-tight group-hover:from-gray-900 
 							group-hover:via-green-900 group-hover:to-gray-900
 							transition-all duration-700 mb-3">
-							${exmp.getLang("settings.language-select")}
 						</h3>
 					</div>
 				</div>
@@ -610,7 +609,7 @@ export class Settingsv2 {
                 id="settings-save-btn"
             >
                 <div class="relative flex items-center justify-center gap-4 z-10">
-                    <span class="text-xl font-bold tracking-wide">${exmp.getLang("settings.save-button")}</span>
+                    <span data-langm-key="settings.save-button" class="text-xl font-bold tracking-wide"></span>
                     <svg class="w-7 h-7 group-hover:translate-x-3 group-hover:scale-110 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" 
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
@@ -726,7 +725,7 @@ export class Settingsv2 {
 					<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
 					<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
 				</svg>
-				<span class="text-lg font-semibold">${exmp.getLang("settings.saving") || "Kaydediliyor..."}</span>
+				<span data-langm-key="settings.saving" class="text-lg font-semibold"></span>
 			</div>
 		`;
 		
@@ -828,9 +827,8 @@ function createHeaderV2(): HTMLElement {
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
 				</svg>
 			</button>
-			<h1 class="text-3xl font-bold text-white relative z-10
+			<h1 data-langm-key class="text-3xl font-bold text-white relative z-10
 				tracking-tight leading-tight drop-shadow-lg">
-				${exmp.getLang("settings.title")}
 			</h1>
 		</div>
 	`;

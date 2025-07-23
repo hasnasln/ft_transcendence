@@ -103,6 +103,7 @@ export class TournamentPage implements Page {
         setTimeout(() => {
             this.init();
         }, 100);
+        exmp.applyLanguage()
     }
 
     public onUnload(): void {
@@ -214,6 +215,7 @@ export class TournamentPage implements Page {
                 console.warn(`Unknown action: ${action}`);
                 break;
         }
+        exmp.applyLanguage();
     }
     private async createTournament(container: HTMLElement): Promise<void> {
         try {
@@ -440,7 +442,7 @@ export class TournamentPage implements Page {
     private handleRefreshError(errorMessage: string): void {
         this.notificationManager.resetRefreshButton();
         this.notificationManager.showRefreshError(errorMessage);
-        this.stateManager.renderFallbackData();
+        exmp.applyLanguage();
     }
     private handleExitError(errorMessage: string): void {
         this.loadingManager.removeLoadingOverlay('exit');

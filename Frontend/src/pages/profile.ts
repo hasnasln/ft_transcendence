@@ -68,6 +68,7 @@ export class ProfileSettings {
 
 		this.setupEventListener(profileSettingsContainer);
 		this.isInitialized = true;
+		exmp.applyLanguage()
 	}
 	
 	private setupEventListener(container: HTMLElement): void {
@@ -266,6 +267,7 @@ export class ProfileSettings {
 		}
 	}
 
+	// settings kısmı açık olduğu durudma herhangi bir değişiklik olması mümkün olmadığı için böyle kalabilir
 	getProfileSettings(): ISection[] {
 		return [
 			{name: exmp.getLang("profile-settings.username"), type: 'text', placeholder: exmp.getLang("profile-settings.username-placeholder"), action: 'nick-name'},
