@@ -4,6 +4,7 @@ import { GameUI } from "./game-section/ui";
 import { GameEventBus } from "./game-section/gameEventBus";
 import { Router } from '../router';
 import { WebSocketClient } from './game-section/wsclient';
+import { GamePage } from './game';
 
 export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament' | null;
 
@@ -135,6 +136,7 @@ export class GameManager {
 			.then(() => {
 				requestAnimationFrame(() => {
 					this.uiManager.cacheDOMElements();
+					GamePage.enablePage();
 					this.uiManager.onStartButtonShown();
 					GameEventBus.getInstance().emit({ type: 'ENTER_WAITING_PHASE' })
 					.then(() => this.enterWaittingPhase(this.gameStatus)) // wait for rival finding

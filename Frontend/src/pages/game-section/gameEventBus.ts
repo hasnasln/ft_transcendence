@@ -4,6 +4,7 @@ import { startGameLoop } from "./gameLoop";
 import { MatchPlayers } from "./network";
 import { updateScoreBoard, showEndMessage, startNextSet } from "./ui";
 import { WebSocketClient } from "./wsclient";
+import { GamePage } from "../game";
 export type GameEventType =
 	| 'SET_COMPLETED'
 	| 'MATCH_ENDED'
@@ -74,6 +75,7 @@ export class GameEventBus {
 
 GameEventBus.getInstance().on('SET_COMPLETED', async () => {
 	updateScoreBoard();
+	GamePage.disablePage();
 	return startNextSet().then(() => startGameLoop());
 });
 
