@@ -23,6 +23,8 @@ export class KeyboardInputHandler {
 	}
 
 	public keyToDirectionAndSide(key: string): { direction: "up" | "down" | "stop", side: "left" | "right" } | null {
+		if (key == null)
+			return null;
 		switch (key.toLowerCase()) {
 			case 'w':
 				return { direction: "up", side: "left" };
@@ -47,23 +49,33 @@ export class KeyboardInputHandler {
 		}
 	}
 		
-	public keyDown(key: string): void {
-		const { direction, side } = this.keyToDirectionAndSide(key)!;
+	/** returns should event cancelled */
+	public keyDown(key: string): boolean {
+		const event = this.keyToDirectionAndSide(key);
+		if (!event) return false;
+
+		const { direction, side } = event;
 		if (this.direction === direction && (this.side === side || this.mode === "remote"))
-			return;
+			return true;
 
 		this.direction = direction;
 		this.side = side;
 		this.sendStateUpdate();
+		return true;
 	}
 
-	public keyUp(key: string): void {
-		const { direction, side } = this.keyToDirectionAndSide(key)!;
+	/** returns should event cancelled */
+	public keyUp(key: string): boolean {
+		const event = this.keyToDirectionAndSide(key);
+		if (!event) return false;
+
+		const { direction, side } = event;
 		if (this.direction !== direction && (this.side === side || this.mode === "remote")) // old direction is not the same as current, it means there is override.
-			return;
+			return true;
 
 		this.direction = "stop";
 		this.sendStateUpdate();
+		return true;
 	}
 
 	public listen() {
@@ -75,13 +87,15 @@ export class KeyboardInputHandler {
 }
 
 function onKeyDown(event: KeyboardEvent) {
-	event.preventDefault();
-	KeyboardInputHandler.getInstance().keyDown(event.key);
+	if (KeyboardInputHandler.getInstance().keyDown(event.key)) {
+		event.preventDefault();
+	}
 }
 
 function onKeyUp(event: KeyboardEvent) {
-	event.preventDefault();
-	KeyboardInputHandler.getInstance().keyUp(event.key);
+	if (KeyboardInputHandler.getInstance().keyUp(event.key)) {
+		event.preventDefault();
+	}
 }
 
 function listenPauseInputs(gameInfo: GameInfo) {

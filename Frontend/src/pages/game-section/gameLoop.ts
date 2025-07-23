@@ -20,6 +20,11 @@ function updatePaddlePositions(): void {
 }
 
 const handleGameTick = (engine: Engine, scene: Scene, gameInfo: GameInfo) => {
+	if (gameInfo.state?.isPaused) {
+		//engine.stopRenderLoop();
+		return;
+	}
+
 	if (gameInfo.state?.matchOver) {
 		console.log("Match is over, loop stop.");
 		engine.stopRenderLoop();
@@ -31,11 +36,6 @@ const handleGameTick = (engine: Engine, scene: Scene, gameInfo: GameInfo) => {
 		console.log("Set is over, loop stop.");
 		engine.stopRenderLoop();
 		GameEventBus.getInstance().emit({ type: 'SET_COMPLETED', payload: gameInfo.state?.matchWinner });
-		return;
-	}
-
-	if (gameInfo.state?.isPaused) {
-		//engine.stopRenderLoop();
 		return;
 	}
 

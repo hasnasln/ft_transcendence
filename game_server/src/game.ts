@@ -498,6 +498,7 @@ const middlewareChain: Middleware[] = [
 	exportStates
 ];
 
+
 function update(game: Game): void {
 
 	let dt = 1;

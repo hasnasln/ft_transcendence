@@ -46,8 +46,7 @@ interface PaddleState {
 	p2y: number;
 }
 
-export class GameInfo
-{
+export class GameInfo {
 	public constants: GameConstants | null = null;
 	public state: GameState | null = null;
 	public paddle: PaddleState | null = null;
@@ -68,7 +67,7 @@ export class GameInfo
 	}
 }
 
-export function waitForMatchReady(gameInstance: GameManager): Promise<MatchPlayers> {
+export function waitForMatchReady(): Promise<MatchPlayers> {
 	return new Promise((resolve) => {
 			WebSocketClient.getInstance().once("match-ready", (matchPlayers : MatchPlayers) => resolve(matchPlayers));
 		});

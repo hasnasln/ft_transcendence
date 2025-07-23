@@ -119,7 +119,7 @@ export class GameManager {
 			this.finalize();
 		}
 
-		WebSocketClient.getInstance().emit("ready", false);
+		WebSocketClient.getInstance().emit("ready", false); //false or true doesnt matter here. server ignores.
 		if (this.gameStatus.game_mode === "remoteGame" && this.reMatch) {
 			const approval = await waitForRematchApproval(this.currentRival as string);
 			GameEventBus.getInstance().emit({ type: 'REMATCH_APPROVAL', payload: { approval } });
@@ -130,22 +130,32 @@ export class GameManager {
 		return;
 	};
 
-	public startPlayProcess(tournamentMode: boolean, tournamentCode?: string): boolean {
+	public startPlayProcess(tournamentMode: boolean, tournamentCode?: string): void {
 		this.configureTournament(tournamentMode, tournamentCode);
 		this.uiManager.cacheDOMElements();
+
 		WebSocketClient.getInstance().connect("http://localhost:3001")
-			.catch(err => {
-				console.error("WebSocket connection error:", err);
-			}).then(() => this.configure()) // fill mode, difficulty, etc.
+			.catch(err => 	console.error("WebSocket connection error:", err))
+			.then(() => this.configure()) // fill mode, difficulty, etc.
 			.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_WAITING_PHASE' }))
 			.then(() => this.enterWaittingPhase(this.gameStatus)) // wait for rival finding
 			.then(() => onClickedTo(this.uiManager.startButton!)) // wait for start click
 			.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_READY_PHASE' }))
-			.then(() => this.enterReadyPhase()) 				  // wait for rival's start click
+			.then(() => this.enterReadyPhase()) 				  
 			.then(() => listenStateUpdates(this.gameInfo!)) // start listening the game server
 			.then(() => onFirstStateUpdate(this.gameInfo!))			// wait game server for start the game
 			.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }))
-		return true;
+	}
+
+	public startRejoinProcess(tournamentMode: boolean, tournamentCode?: string): void {
+		WebSocketClient.getInstance().connect("http://localhost:3001")
+		this.configureTournament(tournamentMode, tournamentCode);
+		this.uiManager.cacheDOMElements();
+
+		listenStateUpdates(this.gameInfo!)
+		onFirstStateUpdate(this.gameInfo!)
+			.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }))
+			.then(() => this.requestRejoin())
 	}
 
 	public finalize() {
@@ -154,7 +164,7 @@ export class GameManager {
 		this.uiManager.scene = undefined;
 		this.uiManager.engine = undefined;
 
-		["gameConstants", "gameState", "ballUpdate", "paddleUpdate",
+		["gameConstants", "gameState", "bu", "paddleUpdate",
 			"ready", "rematch-ready", "start", "username", "player-move",
 			"local-input", "pause-resume", "reset-match"]
 			.forEach(event => {
@@ -205,6 +215,18 @@ export class GameManager {
 		});
 
 		WebSocketClient.getInstance().emit("rejoin");
+	}
+
+	public saveUserInGame():void {
+		localStorage.setItem("inGame", "true");
+	}
+
+	public removeUserInGame():void {
+		localStorage.removeItem("inGame");
+	}
+
+	public wasUserInGame(): boolean {
+		return localStorage.getItem("inGame") === "true";
 	}
 }
 

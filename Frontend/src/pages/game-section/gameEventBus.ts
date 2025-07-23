@@ -1,6 +1,5 @@
-import { Router } from "../../router";
 import { gameInstance } from "../play";
-import { listenPlayerInputs } from "./eventListeners";
+import { listenPlayerInputs } from "./keyboard";
 import { startGameLoop } from "./gameLoop";
 import { MatchPlayers } from "./network";
 import { updateScoreBoard, updateSetBoard, showEndMessage, startNextSet } from "./ui";
@@ -79,6 +78,7 @@ GameEventBus.getInstance().on('SET_COMPLETED', async () => {
 });
 
 GameEventBus.getInstance().on('MATCH_ENDED', () => {
+	gameInstance.removeUserInGame();
 	updateScoreBoard();
 	updateSetBoard();
 	showEndMessage();
@@ -117,6 +117,7 @@ GameEventBus.getInstance().on('ENTER_READY_PHASE', () => {
 });
 
 GameEventBus.getInstance().on('ENTER_PLAYING_PHASE',  async () => {
+	gameInstance.saveUserInGame();
 	await gameInstance.uiManager.setupScene();
 	listenPlayerInputs(gameInstance.gameInfo!);
 	startGameLoop();

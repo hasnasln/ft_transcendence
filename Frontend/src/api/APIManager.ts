@@ -133,7 +133,7 @@ export class APIManager {
 				localStorage.setItem('avatar', data.uuid.at(-1) + '.png'); // Example avatar logic, can be customized
 			} else {
 				result.success = false;
-				result.message = 'Token not found in response';
+				result.message = data.error || 'Token not found in response';
 				return result;
 			}
 			return result;
@@ -279,7 +279,8 @@ export class APIManager {
 				localStorage.setItem('email', dataResponse.email);
 				localStorage.setItem('avatar', dataResponse.uuid.at(-1) + '.png'); // Example avatar logic, can be customized
 			} else {
-				throw new Error('Token not found in response');
+				const msg= dataResponse.error || 'Token not found in response';
+				throw new Error(msg);
 			}
 			return dataResponse;
 		} catch (error) {

@@ -80,6 +80,8 @@ export interface DisconnectionEvent {
 }
 
 export class MatchManager {
+	public static instance: MatchManager | null = null;
+
 	public connectedPlayers: Map<string, Player> = new Map();
 	public disconnectTimestamps: Map<string, DisconnectionEvent> = new Map();
 	private matchesByRoom: Map<string, Match> = new Map();
@@ -88,7 +90,14 @@ export class MatchManager {
 	private waitingTournamentMatches: Map<string, Map<string, Player>> = new Map();
 	private io: Server;
 
-	constructor(io: Server) { this.io = io; }
+	constructor(io: Server) {
+		this.io = io;
+		MatchManager.instance = this;
+	}
+
+	public static getInstance(): MatchManager | null {
+		return MatchManager.instance;
+	}
 
 	public handleMatchRequest(player: Player, status: GameStatus) {
 		if (status.game_mode === "vsAI")
