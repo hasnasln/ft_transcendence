@@ -272,4 +272,6 @@
 #game-canvas {
     background: transparent !important;
     background-color: transparent !important;
+    outline: none !important;
+    border: none !important;
 }

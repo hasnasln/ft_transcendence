@@ -15,7 +15,7 @@ const PADDLE1_DIFFUSE = new Color3(0, 0, 0.7); // blue
 const PADDLE1_EMISSIVE = new Color3(0, 0, 0.5); // dark blue
 const PADDLE2_DIFFUSE = new Color3(0.7, 0, 0); // red
 const PADDLE2_EMISSIVE = new Color3(0.5, 0, 0); // dark red
-const WALL_COLOR = new Color3(0.1, 0.5, 0.1); // green
+const WALL_COLOR = new Color3(87/255, 43/255, 158/255); // purple
 
 export function createScene() {
   const canvas = document.getElementById("game-canvas") as HTMLCanvasElement;
