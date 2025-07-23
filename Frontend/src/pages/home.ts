@@ -230,7 +230,7 @@ function mainMenuButton(langkey: string, action: string, floaterBgColor: string,
 				<div class="absolute bottom-3 left-4 w-1 h-1 bg-blue-400 rounded-full opacity-0 group-hover:opacity-70 group-hover:animate-bounce transition-all duration-1000 delay-500"></div>
 			</div>
 			
-			<button data-action="${action}" class="relative w-full h-full flex items-center px-4 py-3 ${textColor} font-semibold transition-all duration-700 ease-out focus:outline-none focus:ring-2 focus:ring-purple-500/50 rounded-2xl">
+			<button data-action="${action}" class="relative w-full h-full flex items-center px-2 py-2 ${textColor} font-semibold transition-all duration-700 ease-out focus:outline-none focus:ring-2 focus:ring-purple-500/50 rounded-2xl">
 				<div data-action="${action}" class="relative flex-shrink-0 w-10 h-10 rounded-xl ${iconBgColor} ${iconBorderColor} border-2 shadow-lg flex items-center justify-center transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-xl group-hover:shadow-purple-500/30 before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-white/40 before:to-transparent before:opacity-0 group-hover:before:opacity-100 before:transition-opacity before:duration-500 ring-1 ring-white/20 group-hover:ring-purple-300/50">
 					${icon}
 				</div>

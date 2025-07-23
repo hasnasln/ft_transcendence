@@ -47,7 +47,7 @@ export class Settingsv2 {
 
 		const sidebar = document.createElement('div');
 		sidebar.className = `
-			w-[520px] h-full 
+			min-w-[550px] w-full lg:w-2/3 xl:w-1/3 h-full 
 			bg-gradient-to-br from-white/95 via-slate-50/90 to-gray-100/95
 			backdrop-blur-3xl backdrop-saturate-200 backdrop-brightness-110
 			shadow-[0_32px_64px_-12px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.3)]
