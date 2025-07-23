@@ -5,6 +5,7 @@ import { TournamentPage } from './pages/TournamentPagev2';
 import { PlayPage } from './pages/play-page';
 import { RegisterPage } from './pages/register';
 import { LoginPage } from './pages/login';
+import { GamePage } from './pages/game';
 
 function bootstrap() {
 	const router = Router.getInstance();
@@ -27,6 +28,7 @@ function bootstrap() {
 	router.registerPage("/", new HomePage());
 	router.registerPage("/tournament", new TournamentPage());
 	router.registerPage("/play", new PlayPage());
+	router.registerPage("/game", new GamePage());
 	router.registerPage("/register", new RegisterPage());
 	router.registerPage("/login", new LoginPage());
 	router.registerPage("/500", new ServerErrorPage());

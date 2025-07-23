@@ -54,15 +54,13 @@ export class GameManager {
 
 		return new Promise<void>((resolve) => {
 			btnVsComp.addEventListener("click", () => {
-				this.uiManager.onMenuHidden();
 				this.uiManager.onDifficultyShown();
+				this.uiManager.onMenuHidden();
 			});
 
 			diffDiv.querySelectorAll("button").forEach(btn => {
 				btn.addEventListener("click", async () => {
 					const level = (btn as HTMLButtonElement).dataset.level!;
-					this.uiManager.onDifficultyHidden();
-					this.uiManager.onStartButtonShown();
 					status.game_mode = 'vsAI';
 					status.level = level;
 					this.gameStatus = status;
@@ -71,15 +69,12 @@ export class GameManager {
 			});
 
 			btnFindRival.addEventListener("click", async () => {
-				this.uiManager.onMenuHidden();
 				status.game_mode = 'remoteGame';
 				this.gameStatus = status;
 				resolve();
 			});
 
 			btnLocal.addEventListener("click", async () => {
-				this.uiManager.onMenuHidden();
-				this.uiManager.onStartButtonShown();
 				status.game_mode = 'localGame';
 				this.gameStatus = status;
 				resolve();
@@ -132,19 +127,25 @@ export class GameManager {
 
 	public startPlayProcess(tournamentMode: boolean, tournamentCode?: string): void {
 		this.configureTournament(tournamentMode, tournamentCode);
-		this.uiManager.cacheDOMElements();
 
 		WebSocketClient.getInstance().connect("http://localhost:3001")
 			.catch(err => 	console.error("WebSocket connection error:", err))
 			.then(() => this.configure()) // fill mode, difficulty, etc.
-			.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_WAITING_PHASE' }))
-			.then(() => this.enterWaittingPhase(this.gameStatus)) // wait for rival finding
-			.then(() => onClickedTo(this.uiManager.startButton!)) // wait for start click
-			.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_READY_PHASE' }))
-			.then(() => this.enterReadyPhase()) 				  
-			.then(() => listenStateUpdates(this.gameInfo!)) // start listening the game server
-			.then(() => onFirstStateUpdate(this.gameInfo!))			// wait game server for start the game
-			.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }))
+			.then(() => Router.getInstance().go('/game')) // go to game page
+			.then(() => {
+				requestAnimationFrame(() => {
+					this.uiManager.cacheDOMElements();
+					this.uiManager.onStartButtonShown();
+					GameEventBus.getInstance().emit({ type: 'ENTER_WAITING_PHASE' })
+					.then(() => this.enterWaittingPhase(this.gameStatus)) // wait for rival finding
+					.then(() => onClickedTo(this.uiManager.startButton!)) // wait for start click
+					.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_READY_PHASE' }))
+					.then(() => this.enterReadyPhase()) 				  
+					.then(() => listenStateUpdates(this.gameInfo!)) // start listening the game server
+					.then(() => onFirstStateUpdate(this.gameInfo!))			// wait game server for start the game
+					.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }))
+				});
+			})
 	}
 
 	public startRejoinProcess(tournamentMode: boolean, tournamentCode?: string): void {
