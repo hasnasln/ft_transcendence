@@ -75,13 +75,13 @@ export class GameEventBus {
 
 GameEventBus.getInstance().on('SET_COMPLETED', async () => {
 	updateScoreBoard();
-	GamePage.disablePage();
 	return startNextSet().then(() => startGameLoop());
 });
 
 GameEventBus.getInstance().on('MATCH_ENDED', () => {
 	updateScoreBoard();
 	showEndMessage();
+	GamePage.disablePage();
 });
 
 GameEventBus.getInstance().on('GAME_RESUMED', () => {
