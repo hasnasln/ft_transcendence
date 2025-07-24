@@ -244,7 +244,7 @@ export class Game {
 			paddleHeight: this.paddle1.height / this.unitConversionFactor
 		};
 
-		this.io.to(this.roomId).emit("gameConstants", gameConstants);
+		this.io.to(this.roomId).emit("init", gameConstants);
 	}
 
 	public exportGameState() {
@@ -292,9 +292,7 @@ export class Game {
 		this.matchWinner = inCompleteWinner;
 		this.matchDisconnection = true;
 		this.exportGameState();
-		//console.log(`incomplete maç bitti : inCompleteWinner = ${inCompleteWinner}`);
 	}
-
 
 	public exportPaddleState() {
 		const paddleState: PaddleState =
@@ -498,9 +496,7 @@ const middlewareChain: Middleware[] = [
 	exportStates
 ];
 
-
 function update(game: Game): void {
-
 	let dt = 1;
 	const now = Date.now();
 	if (game.lastUpdatedTime !== undefined) {
@@ -513,4 +509,3 @@ function update(game: Game): void {
 		if (!mw(game, dt)) break;
 	}
 }
-

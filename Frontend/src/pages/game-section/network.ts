@@ -95,10 +95,10 @@ export function waitForRematchApproval(rival: string): Promise<boolean> {
 }
 
 export function listenStateUpdates(gameInfo: GameInfo): void {
-	WebSocketClient.getInstance().on("gameConstants", (constants: GameConstants) => gameInfo.constants = constants);
+	WebSocketClient.getInstance().on("init", (constants: GameConstants) => gameInfo.constants = constants);
 	WebSocketClient.getInstance().on("gameState", (state: GameState) => gameInfo.state = state);
 	WebSocketClient.getInstance().on("bu", (raw: string) => {
-  		const [x,y] = raw.split(':').map(Number);
+  		const [x, y] = raw.split(':').map(Number);
 		gameInfo.ballPosition = { x, y };
 	});
 	WebSocketClient.getInstance().on("updateState", (setState: SetState) => gameInfo.setState = setState);
