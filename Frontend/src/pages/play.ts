@@ -102,7 +102,6 @@ export class GameManager {
 
 		let rival: string | null = null;
 		if (this.gameStatus.game_mode === "remoteGame" || this.gameStatus.game_mode === 'tournament') {
-			//todo remove awaits
 			await GameEventBus.getInstance().emit({ type: 'WAITING_FOR_RIVAL' });
 			const matchPlayers: MatchPlayers = await waitForMatchReady();
 			await GameEventBus.getInstance().emit({ type: 'RIVAL_FOUND', payload: { matchPlayers } });
@@ -116,13 +115,14 @@ export class GameManager {
 			this.finalize();
 		}
 
-		WebSocketClient.getInstance().emit("ready", false); //false or true doesnt matter here. server ignores.
 		if (this.gameStatus.game_mode === "remoteGame" && this.reMatch) {
 			const approval = await waitForRematchApproval(this.currentRival as string);
 			GameEventBus.getInstance().emit({ type: 'REMATCH_APPROVAL', payload: { approval } });
-			if (!approval) return;
-			WebSocketClient.getInstance().emit("ready", true);
+			if (!approval)
+				return;
 		}
+
+		WebSocketClient.getInstance().emit("ready", {}); //false or true doesnt matter here. server ignores.
 		this.gameInfo = new GameInfo(this.gameStatus.game_mode);
 		return;
 	};
@@ -150,7 +150,7 @@ export class GameManager {
 				.then(() => this.enterWaittingPhase(this.gameStatus)) // wait for rival finding
 				.then(() => onClickedTo(this.uiManager.startButton!)) // wait for start click
 				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_READY_PHASE' }))
-				.then(() => this.enterReadyPhase()) 				  
+				.then(() => this.enterReadyPhase())
 				.then(() => listenStateUpdates(this.gameInfo!)) // start listening the game server
 				.then(() => onFirstStateUpdate(this.gameInfo!)) // wait game server for start the game
 				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }))
@@ -174,8 +174,8 @@ export class GameManager {
 		this.uiManager.scene = undefined;
 		this.uiManager.engine = undefined;
 
-		["gameConstants", "gameState", "bu", "paddleUpdate",
-			"ready", "rematch-ready", "start", "username", "player-move",
+		["init", "gameState", "bu", "paddleUpdate",
+			"ready", "rematch-ready", "player-move",
 			"local-input", "pause-resume", "reset-match"]
 			.forEach(event => {
 				WebSocketClient.getInstance().off(event);
