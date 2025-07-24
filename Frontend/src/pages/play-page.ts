@@ -1,6 +1,6 @@
 import { exmp } from '../languageMeneger';
-import { gameInstance } from './play';
-import { Page } from '../router';
+import { gameInstance, GameManager } from './play';
+import { Page, Router } from '../router';
 
 function getMenu(): string {
   const buttonData = [
@@ -139,7 +139,13 @@ export class PlayPage implements Page {
 	}
 
 	public onLoad(): void {
-    	gameInstance.startPlayProcess(false);
+		gameInstance.preparePlayProcess(false)
+			.then(() => {
+				Router.getInstance().go("/game");
+				requestAnimationFrame(() => {
+					gameInstance.startPlayProcess();
+				});
+			});
 	}
 }
 

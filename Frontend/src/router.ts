@@ -435,6 +435,10 @@ export class Router {
 		return Router.instance;
 	}
 
+	public getCurrentPath(): string {
+		return this.currentPath;
+	}
+
 	public registerGuard(guard: RouterGuard): void {
 		if (this.guards.has(guard)) {
 			console.warn('Guard already registered.');

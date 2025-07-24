@@ -100,9 +100,6 @@ export function listenStateUpdates(gameInfo: GameInfo): void {
 	WebSocketClient.getInstance().on("bu", (raw: string) => {
   		const [x,y] = raw.split(':').map(Number);
 		gameInfo.ballPosition = { x, y };
-		if (Math.random() < 0.01) {
-			console.log(`Ball position updated: ${x}, ${y}`);
-		}
 	});
 	WebSocketClient.getInstance().on("updateState", (setState: SetState) => gameInfo.setState = setState);
 	WebSocketClient.getInstance().on("paddleUpdate", (data) => gameInfo.paddle = data);

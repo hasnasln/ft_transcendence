@@ -1,6 +1,6 @@
 import { gameInstance } from "../play";
 import { listenPlayerInputs } from "./keyboard";
-import { startGameLoop } from "./gameLoop";
+import { GameLoop } from "./gameLoop";
 import { MatchPlayers } from "./network";
 import { updateScoreBoard, showEndMessage, startNextSet } from "./ui";
 import { WebSocketClient } from "./wsclient";
@@ -75,7 +75,10 @@ export class GameEventBus {
 
 GameEventBus.getInstance().on('SET_COMPLETED', async () => {
 	updateScoreBoard();
-	return startNextSet().then(() => startGameLoop());
+	return startNextSet().then(() => {
+		console.log("Game Loop started due to set completion.");
+		GameLoop.getInstance().start();
+	});
 });
 
 GameEventBus.getInstance().on('MATCH_ENDED', () => {
@@ -119,7 +122,8 @@ GameEventBus.getInstance().on('ENTER_READY_PHASE', () => {
 GameEventBus.getInstance().on('ENTER_PLAYING_PHASE',  async () => {
 	await gameInstance.uiManager.setupScene();
 	listenPlayerInputs(gameInstance.gameInfo!);
-	startGameLoop();
+	console.log("Game Loop started due to playing phase entry.");
+	GameLoop.getInstance().start();
 });
 
 GameEventBus.getInstance().on('REMATCH_APPROVAL', (event) => {

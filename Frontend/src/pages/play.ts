@@ -5,6 +5,7 @@ import { GameEventBus } from "./game-section/gameEventBus";
 import { Router } from '../router';
 import { WebSocketClient } from './game-section/wsclient';
 import { GamePage } from './game';
+import { GameLoop } from './game-section/gameLoop';
 
 export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament' | null;
 
@@ -126,28 +127,32 @@ export class GameManager {
 		return;
 	};
 
-	public startPlayProcess(tournamentMode: boolean, tournamentCode?: string): void {
-		this.configureTournament(tournamentMode, tournamentCode);
 
+	public preparePlayProcess(tournamentMode: boolean, tournamentCode?: string): Promise<void> {
+		this.configureTournament(tournamentMode, tournamentCode);
+		return this.configure();
+	}
+
+	public startPlayProcess(): void {
 		WebSocketClient.getInstance().connect("http://localhost:3001")
 			.catch(err => 	console.error("WebSocket connection error:", err))
-			.then(() => this.configure()) // fill mode, difficulty, etc.
-			.then(() => Router.getInstance().go('/game')) // go to game page
 			.then(() => {
-				requestAnimationFrame(() => {
-					this.uiManager.cacheDOMElements();
-					GamePage.enablePage();
-					this.uiManager.onStartButtonShown();
-					GameEventBus.getInstance().emit({ type: 'ENTER_WAITING_PHASE' })
-					.then(() => this.enterWaittingPhase(this.gameStatus)) // wait for rival finding
-					.then(() => onClickedTo(this.uiManager.startButton!)) // wait for start click
-					.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_READY_PHASE' }))
-					.then(() => this.enterReadyPhase()) 				  
-					.then(() => listenStateUpdates(this.gameInfo!)) // start listening the game server
-					.then(() => onFirstStateUpdate(this.gameInfo!)) // wait game server for start the game
-					.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }))
-				});
-			})
+				if (Router.getInstance().getCurrentPath() !== '/game') {
+					throw new Error("GameManager should be started from /game path, but current path is: " + Router.getInstance().getCurrentPath());
+				}
+
+				this.uiManager.cacheDOMElements();
+				GamePage.enablePage();
+				this.uiManager.onStartButtonShown();
+				GameEventBus.getInstance().emit({ type: 'ENTER_WAITING_PHASE' })
+				.then(() => this.enterWaittingPhase(this.gameStatus)) // wait for rival finding
+				.then(() => onClickedTo(this.uiManager.startButton!)) // wait for start click
+				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_READY_PHASE' }))
+				.then(() => this.enterReadyPhase()) 				  
+				.then(() => listenStateUpdates(this.gameInfo!)) // start listening the game server
+				.then(() => onFirstStateUpdate(this.gameInfo!)) // wait game server for start the game
+				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }))
+			});
 	}
 
 	public startRejoinProcess(tournamentMode: boolean, tournamentCode?: string): void {
@@ -205,7 +210,7 @@ export class GameManager {
 			} else {
 				console.log("Rejoin rejected, redirecting to play page.");
 				gameInstance.uiManager.onInfoShown("Izin verilmedi. Ana sayfaya dönülüyor...");
-				gameInstance.uiManager.engine?.stopRenderLoop();
+				GameLoop.getInstance().stop();
 				gameInstance.uiManager.scene?.dispose();
 				gameInstance.uiManager.engine?.dispose();
 				gameInstance.uiManager.scene = undefined;
