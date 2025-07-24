@@ -21,6 +21,12 @@ interface MatchPlayers {
 	finalMatch?: boolean
 }
 
+export interface DisconnectionEvent {
+	player: Player;
+	match: Match;
+	timestamp: number;
+}
+
 export class Match {
 	roomId: string;
 	players: [Player, Player];
@@ -73,12 +79,6 @@ export class Match {
 	}
 }
 
-export interface DisconnectionEvent {
-	player: Player;
-	match: Match;
-	timestamp: number;
-}
-
 export class MatchManager {
 	public static instance: MatchManager | null = null;
 
@@ -86,7 +86,7 @@ export class MatchManager {
 	public disconnectTimestamps: Map<string, DisconnectionEvent> = new Map();
 	private matchesByRoom: Map<string, Match> = new Map();
 	public roomsByUsername: Map<string, string> = new Map();
-	private waitingRemotePlayers: Map<string, Player> = new Map();
+	private queuedPlayers: Player[] = [];
 	private waitingTournamentMatches: Map<string, Map<string, Player>> = new Map();
 	private io: Server;
 
@@ -108,6 +108,8 @@ export class MatchManager {
 			this.enqueue(player);
 		else if (status.game_mode === 'tournament')
 			this.handleTournamentMatch(player, status.tournamentCode!);
+		else
+			console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} requested for game mode ${status.game_mode}, but it is not supported.`);
 	}
 
 	private createMatchWithAI(human: Player, level: string) {
@@ -119,7 +121,6 @@ export class MatchManager {
 		this.roomsByUsername.set(human.username, roomId);
 		human.socket.join(roomId);
 
-		// Yeni bir oyun başlat
 		human.socket.on("ready", () => {
 			let getGame: () => Game;
 			let getPaddle: () => Paddle;
@@ -151,50 +152,47 @@ export class MatchManager {
 	}
 
 	private enqueue(player: Player) {
-		this.waitingRemotePlayers.set(player.username, player);
+		this.queuedPlayers.push(player);
 		console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} enqueued for remote match.`);
-		//console.log(`oyuncu waitingRemotePlayers a kaydedildi, player.socket.id = ${player.username}`);
-		this.checkForRemoteMatch(this.waitingRemotePlayers);
+		this.tryCreatingRemoteMatches(this.queuedPlayers);
 	}
 
 	private dequeue(player: Player) {
-		const checkPlayer = this.waitingRemotePlayers.get(player.username);
-		if (checkPlayer === undefined) {
-			return;
-		}
-		this.waitingRemotePlayers.delete(player.username);
+		this.queuedPlayers = this.queuedPlayers.filter(p => p !== player);
 	}
 
-	checkForRemoteMatch(waitingsMap: Map<string, Player>, tournament?: { code: string, roundNo: number, finalMatch: boolean }) {
-		while (waitingsMap.size >= 2) {
-			const player1 = mapShift(waitingsMap);
-			const player2 = mapShift(waitingsMap);
-			if (!player1 || !player2)
-				throw new Error("Player1 or Player2 is undefined in checkForRemoteMatch: " + JSON.stringify({ player1, player2 }));
+	private tryCreatingRemoteMatches(queuedPlayers: Player[], tournament?: { code: string, roundNo: number, finalMatch: boolean }) {
+		if (queuedPlayers.length < 2)
+			return;
 
-			const roomId = `room_${player1.username}_${player2.username}`;
-			const match = new Match(roomId, player1, player2);
-			match.tournament = tournament;
-			match.gameMode = tournament ? 'tournament' : 'remoteGame';
-			this.matchesByRoom.set(roomId, match);
-			this.roomsByUsername.set(player1.username, roomId);
-			this.roomsByUsername.set(player2.username, roomId);
-			player1.socket.join(roomId);
-			player2.socket.join(roomId);
-			console.log(`[${new Date().toISOString()}] ${player1.username.padStart(10)} and ${player2.username.padStart(10)} matched. Waiting for approval...`);
-
-			const matchPlayers: MatchPlayers = {
-				left: { socketId: player1.socket.id, username: player1.username },
-				right: { socketId: player2.socket.id, username: player2.username },
-				roundNo: tournament?.roundNo,
-				finalMatch: tournament?.finalMatch
-			};
-			//console.log(`matchPlayers.left.username = ${matchPlayers.left.username},  matchPlayers.right.username = ${matchPlayers.right.username}, matchPlayers.roundNo = ${matchPlayers.roundNo}, matchPlayers.finalMatch = ${matchPlayers.finalMatch}`);
-
-			this.io.to(roomId).emit("match-ready", matchPlayers);
-			this.waitForRemoteMatchApproval(player1);
-			this.waitForRemoteMatchApproval(player2);
+		const player1 = queuedPlayers.shift();
+		const player2 = queuedPlayers.shift();
+		if (!player1 || !player2 || player1 === player2) {
+			console.log(`[${new Date().toISOString()}] Player1 and Player2 can't play together: ${JSON.stringify({ player1, player2 })}`);
+			return;
 		}
+
+		const roomId = `room_${player1.username}_${player2.username}`;
+		const match = new Match(roomId, player1, player2);
+		match.tournament = tournament;
+		match.gameMode = tournament ? 'tournament' : 'remoteGame';
+		this.matchesByRoom.set(roomId, match);
+		this.roomsByUsername.set(player1.username, roomId);
+		this.roomsByUsername.set(player2.username, roomId);
+		console.log(`[${new Date().toISOString()}] ${player1.username.padStart(10)} and ${player2.username.padStart(10)} matched. Waiting for approval...`);
+
+		const matchPlayers: MatchPlayers = {
+			left: { socketId: player1.socket.id, username: player1.username },
+			right: { socketId: player2.socket.id, username: player2.username },
+			roundNo: tournament?.roundNo,
+			finalMatch: tournament?.finalMatch
+		};
+
+		player1.socket.join(roomId);
+		player2.socket.join(roomId);
+		this.io.to(roomId).emit("match-ready", matchPlayers);
+		this.waitForRemoteMatchApproval(player1);
+		this.waitForRemoteMatchApproval(player2);
 	}
 
 	waitForRemoteMatchApproval(player: Player) {
@@ -301,7 +299,8 @@ export class MatchManager {
 			const roundNumber = findMyMatch(response.data, player.uuid).roundNumber;
 			const finalMatch = findMyMatch(response.data, player.uuid).finalMatch;
 			const tournament = { code: tournamentCode, roundNo: roundNumber, finalMatch: finalMatch };
-			this.checkForRemoteMatch(myMatchMap, tournament);
+
+			this.tryCreatingRemoteMatches(Array.from(myMatchMap.values()), tournament);
 		}
 		catch (err: any) {
 			console.error("Hata kodu:", err.message);
