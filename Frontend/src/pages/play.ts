@@ -1,5 +1,5 @@
 import '@babylonjs/core/Rendering/edgesRenderer'
-import { GameInfo, listenStateUpdates, waitForMatchReady, waitForRematchApproval, onFirstStateUpdate, MatchPlayers } from "./game-section/network";
+import { GameInfo, listenStateUpdates, waitForMatchReady, waitForRematchApproval, waitGameStart, MatchPlayers } from "./game-section/network";
 import { GameUI } from "./game-section/ui";
 import { GameEventBus } from "./game-section/gameEventBus";
 import { Router } from '../router';
@@ -152,9 +152,18 @@ export class GameManager {
 				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_READY_PHASE' }))
 				.then(() => this.enterReadyPhase())
 				.then(() => listenStateUpdates(this.gameInfo!)) // start listening the game server
-				.then(() => onFirstStateUpdate(this.gameInfo!)) // wait game server for start the game
-				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }))
+				.then(() => waitGameStart(this.gameInfo!)) // wait game server for start the game
+				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }));
 			});
+	}
+
+	public handleMatchCancellation() {
+		this.uiManager.onInfoShown("Maç iptal edildi. Ana sayfaya yönlendiriliyor...");
+		this.finalize();
+		setTimeout(() => {
+			Router.getInstance().invalidatePage("/play");
+			Router.getInstance().go('/play');
+		}, 1000);
 	}
 
 	public startRejoinProcess(tournamentMode: boolean, tournamentCode?: string): void {
@@ -163,14 +172,14 @@ export class GameManager {
 		this.uiManager.cacheDOMElements();
 
 		listenStateUpdates(this.gameInfo!)
-		onFirstStateUpdate(this.gameInfo!)
+		waitGameStart(this.gameInfo!)
 			.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }))
 			.then(() => this.requestRejoin())
 	}
 
 	public finalize() {
-		this.uiManager.scene!.dispose();
-		this.uiManager.engine!.dispose();
+		this.uiManager.scene?.dispose();
+		this.uiManager.engine?.dispose();
 		this.uiManager.scene = undefined;
 		this.uiManager.engine = undefined;
 

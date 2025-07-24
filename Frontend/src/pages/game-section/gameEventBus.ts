@@ -4,7 +4,6 @@ import { GameLoop } from "./gameLoop";
 import { MatchPlayers } from "./network";
 import { updateScoreBoard, showEndMessage, startNextSet } from "./ui";
 import { WebSocketClient } from "./wsclient";
-import { GamePage } from "../game";
 export type GameEventType =
 	| 'SET_COMPLETED'
 	| 'MATCH_ENDED'
@@ -99,6 +98,9 @@ GameEventBus.getInstance().on('WAITING_FOR_RIVAL', () => {
 });
 
 GameEventBus.getInstance().on('RIVAL_FOUND', (event) => {
+	WebSocketClient.getInstance().once("match-cancelled", () => {
+		gameInstance.handleMatchCancellation();
+	});
 	const matchPlayers: MatchPlayers = event.payload.matchPlayers;
 	const rival: string = matchPlayers.left.socketId === WebSocketClient.getInstance().getSocket()!.id ? matchPlayers.right.username : matchPlayers.left.username;
 	gameInstance.uiManager.updateUIForRivalFound(matchPlayers, rival);

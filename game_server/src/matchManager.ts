@@ -263,8 +263,10 @@ export class MatchManager {
 
 	cancelRemoteMatch(cancellerId: string, match: Match, cancelMode: string) {
 		console.log(`[${new Date().toISOString()}] ${match.roomId.padStart(10)} thought to cancel the match.`);
-		if (match.readyTimeout)
-			clearTimeout(match.readyTimeout);
+		if (!match.readyTimeout) {
+			return;
+		}
+		clearTimeout(match.readyTimeout);
 		match.readyTimeout = null;
 		if (match.state !== 'waiting')
 			return;

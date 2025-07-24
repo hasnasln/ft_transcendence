@@ -111,7 +111,7 @@ export function listenStateUpdates(gameInfo: GameInfo): void {
 	});
 }
 
-export function onFirstStateUpdate(gameInfo: GameInfo): Promise<void> {
+export function waitGameStart(gameInfo: GameInfo): Promise<void> {
 	return new Promise((resolve) => {
 		const timerId = setInterval(() => {
 			if (gameInfo.isReadyToStart()) {
