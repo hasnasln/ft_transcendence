@@ -1,5 +1,5 @@
 import { exmp } from '../languageMeneger';
-import { gameInstance, GameManager } from './play';
+import { gameInstance } from './play';
 import { Page, Router } from '../router';
 
 function getMenu(): string {
@@ -30,19 +30,10 @@ function getMenu(): string {
       hover: 'hover:from-green-500/30 hover:to-emerald-500/30', 
       border: 'border-green-400/30 hover:border-green-400/50', 
       shadow: 'hover:shadow-green-500/25' 
-    },
-    { 
-      id: 'tournament', 
-      text: exmp.getLang("game.tournament"), 
-      icon: '<svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M4.5 17H4a1 1 0 0 1-1-1 3 3 0 0 1 3-3h1m0-3.05A2.5 2.5 0 1 1 9 5.5M19.5 17h.5a1 1 0 0 0 1-1 3 3 0 0 0-3-3h-1m0-3.05a2.5 2.5 0 1 0-2-4.45m.5 13.5h-7a1 1 0 0 1-1-1 3 3 0 0 1 3-3h3a3 3 0 0 1 3 3 1 1 0 0 1-1 1Zm-1-9.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"/></svg>', 
-      gradient: 'from-yellow-500/20 to-orange-500/20', 
-      hover: 'hover:from-yellow-500/30 hover:to-orange-500/30', 
-      border: 'border-yellow-400/30 hover:border-yellow-400/50', 
-      shadow: 'hover:shadow-yellow-500/25' 
     }
   ];
   
-  return `<div id="menu" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[65%] max-w-2xl rounded-3xl flex flex-col justify-center items-center gap-6 z-10  p-8" style="
+  return `<div id="menu" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[65%] max-w-2xl rounded-3xl flex flex-col justify-center items-center gap-6 z-10  p-24" style="
 		background: 
 			linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(10, 10, 30, 0.95)),
 			radial-gradient(circle at center, rgba(0, 255, 255, 0.05) 0%, transparent 70%),
@@ -59,7 +50,6 @@ function getMenu(): string {
 	">
       <div class="text-center mb-6">
         <h2 class="text-white text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-3">PONG ARENA</h2>
-        <div class="w-32 h-1 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 mx-auto rounded-full" style="box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);"></div>
         <p class="text-cyan-200/80 text-lg mt-3 font-medium">Oyun modunu seçin</p>
       </div>
       ${buttonData.map(({id, text, icon, gradient, hover, border, shadow}) => `
