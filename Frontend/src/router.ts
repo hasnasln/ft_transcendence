@@ -498,7 +498,6 @@ export class Router {
 		})
 	}
 
-
 	public loadExistingPage(newPagePath: string) {
 		let contentContainer = document.getElementById(Router.CONTENT_CONTAINER_ID);
 		const legacyPage = this.currentPage;
@@ -539,6 +538,14 @@ export class Router {
 		newPageElement.id = Router.CONTENT_CONTAINER_ID;
 		newPageElement.classList.remove('hidden');
 		this.savePageInfo(newPagePath, newPage);
+	}
+
+	public invalidatePage(path: string): void {
+		this.activePages.delete(path);
+	}
+
+	public invalidateAllPages(): void {
+		this.activePages.clear();
 	}
 	
 	public go(path: string, force: boolean = false): void {

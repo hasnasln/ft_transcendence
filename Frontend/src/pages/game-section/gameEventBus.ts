@@ -84,7 +84,6 @@ GameEventBus.getInstance().on('SET_COMPLETED', async () => {
 GameEventBus.getInstance().on('MATCH_ENDED', () => {
 	updateScoreBoard();
 	showEndMessage();
-	GamePage.disablePage();
 });
 
 GameEventBus.getInstance().on('GAME_RESUMED', () => {

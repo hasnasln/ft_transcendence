@@ -167,6 +167,7 @@ export function listenPlayerInputs(gameInfo: GameInfo) {
 
 		const toPage = gameInfo.mode === 'tournament' ? '/tournament' : '/';
 		Router.getInstance().go(toPage);
+		Router.getInstance().invalidatePage('/game');
 	});
 }
 
