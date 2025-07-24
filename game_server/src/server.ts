@@ -46,7 +46,7 @@ const io = new Server(httpServer, {
 
 const PORT = 3001;
 httpServer.listen(PORT, () => {
-	console.log(`Server listening on port ${PORT}`);
+	console.log(`Server running on port ${PORT}`);
 });
 
 export const matchManager = new MatchManager(io);
@@ -105,12 +105,10 @@ io.on("connect", socket => {
 	}
 
 	console.log(`[${new Date().toISOString()}] ${username.padStart(10)} connected.`);
-
 	socket.on("rejoin", () => {
 		console.log(`[${new Date().toISOString()}] ${username.padStart(10)} 'rejoin' message received.`);
 		const match = matchManager.getMatchByPlayer(player.username);
 		if (!match || (match.gameMode !== 'remoteGame' && match.gameMode !== 'tournament') || (match.state !== 'in-progress' && match.state !== 'paused')) {
-			//console.log(`Rejoin request rejected for player ${player.username}. Match exists: ${!!match}, Game mode: ${match?.gameMode}, Match state: ${match?.state}`);
 			socket.emit("rejoin-response", {status: "rejected"});
 			return;
 		}
@@ -120,7 +118,7 @@ io.on("connect", socket => {
 		} catch (err: any) {
 			emitError(err.message, socket.id, io);
 			socket.disconnect(true);
-			//console.log(err.message);
+			console.log(err);
 			return;
 		}
 	});
@@ -134,7 +132,6 @@ io.on("connect", socket => {
 		console.log(`[${new Date().toISOString()}] ${username.padStart(10)} 'reset-match' message received.`);
 		const activeMatch = matchManager.getMatchByPlayer(player.username);
 		if (activeMatch) {
-			//console.log(`reset-match emiti geldi, activeMatch var ve room = ${activeMatch.roomId}`);
 			activeMatch.finishIncompleteMatch();
 			matchManager.clearMatch(activeMatch);
 		}
@@ -142,11 +139,9 @@ io.on("connect", socket => {
 
 	socket.on("disconnect", () => {
 		console.log(`[${new Date().toISOString()}] ${username.padStart(10)} 'disconnect' message received.`);
-		//console.log(`${socket.id} disconnected`);
 		matchManager.handleDisconnect(player);
 	});
 });
-
 
 export function apiCall(url: string, method: string, headers: HeadersInit, body?: BodyInit, token?: string): Promise<Response> {
 	try {
@@ -169,7 +164,7 @@ export function apiCall(url: string, method: string, headers: HeadersInit, body?
 
 function acceptConnection(socket: Socket, player: Player): boolean {
 	if (matchManager.connectedPlayers.has(player.username)) {
-		emitError("Şu anda oyun sunucusuna başka bir oturumdan bağlandınız. Yalnızca bir oturumdan oynayabilirsiniz !", socket.id, io);
+		emitError("Şu anda oyun sunucusuna başka bir oturumdan bağlandınız. Yalnızca bir oturumdan oynayabilirsiniz!", socket.id, io);
 		socket.disconnect(true);
 		//console.log("new connection is rejected due to existing session.");
 		return false;
