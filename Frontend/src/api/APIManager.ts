@@ -157,6 +157,7 @@ export class APIManager {
 				throw new Error('Logout failed');
 			}
 			this.setToken(null);
+			Router.getInstance().invalidateAllPages();
 			return response;
 		} catch (error) {
 			console.error('Error in logout:', error);
