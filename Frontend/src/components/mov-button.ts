@@ -18,7 +18,7 @@ export function moveButton(container: HTMLElement, p: string): void
 		'justify-center',
 		'w-[100px]',
 		'h-[100px]',
-		'gap-[1vw]',
+		'gap-2',
 		// 'bg-red-200',
 	);
 	if (p === 'left') 
