@@ -27,6 +27,7 @@ export interface IApiTournament {
 }
 
 export interface IApiResponseWrapper {
+	code: number; // HTTP status code
 	success: boolean;
 	message?: string;
 	data?: any; // Data can be of any type, depending on the API response
@@ -103,7 +104,7 @@ export class APIManager {
 	}
 
 	public async login(email: string, password: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null };
+		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
 		this.active_pass = password;
 		localStorage.setItem('password', password);
 		try {
@@ -111,6 +112,7 @@ export class APIManager {
 				'Content-Type': 'application/json',
 			}, JSON.stringify({ "email": email, "password": password }));
 
+			result.code = response.status;
 			if (!response.ok) {
 				result.success = false;
 				if (response.status === 401) {
@@ -219,7 +221,7 @@ export class APIManager {
 	}
 
 	public async register(registerData: IApiRegister): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null };
+		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
 		console.log("Register data:", registerData);
 		try {
 			const response = await this.apiCall(`${this.baseUrl}/register`, HTTPMethod.POST, {
@@ -233,6 +235,7 @@ export class APIManager {
 					result.message = 'Username or email already exists';
 				return result;
 			}
+			result.code = response.status;
 			result.success = true;
 			result.data = await response.json();
 			return result;
@@ -291,7 +294,7 @@ export class APIManager {
 
 	//*********************************Turnuva Kısmı************************************/
 	public async createTournament(name: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null };
+		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
@@ -304,6 +307,7 @@ export class APIManager {
 			result.success = true;
 			result.message = data.message || 'Mesaj kısmı boşta';
 			result.data = data.data || null;
+			result.code = response.status;
 			return result;
 		} catch (error) {
 			console.error('create içerisnde eror var:' + error);
@@ -312,18 +316,14 @@ export class APIManager {
 	}
 
 	public async deleteTournament(tournamentId: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null };
+		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
 		try {
-			const response = await this.apiCall(`${this.t_url}/${tournamentId}`, HTTPMethod.DELETE, {
-			});
+			const response = await this.apiCall(`${this.t_url}/${tournamentId}`, HTTPMethod.DELETE, {});
 
-			if (!response.ok) {
-				const errorText = await response.text(); // daha açıklayıcı hata
-				throw new Error(`Delete Tournament failed: ${errorText}`);
-			}
 			const data = await response.json();
-			result.success = true;
-			result.message = data.message;
+			result.success = response.ok;
+			result.message = response.ok ? data.message : data.error || 'No message';
+			result.code = response.status;
 			return result;
 		} catch (error) {
 			console.error('Error in deleteTournament:', error);
@@ -332,7 +332,7 @@ export class APIManager {
 	}
 
 	public async joinTournament(tournamentId: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null };
+		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentId}/join`, HTTPMethod.POST, {
 			});
@@ -345,6 +345,7 @@ export class APIManager {
 			result.success = true;
 			result.message = data.message;
 			result.data = data.data;
+			result.code = response.status;
 			return result;
 		} catch (error) {
 			console.error('Error in playerJoinTournament:', error);
@@ -353,18 +354,16 @@ export class APIManager {
 	}
 
 	public async leaveTournament(tournamentCode: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null };
+		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentCode}/leave`, HTTPMethod.POST, {
 			});
 
-			if (!response.ok) {
-				throw new Error('Leave Tournament failed');
-			}
 			const data = await response.json();
-			result.success = true;
-			result.message = data.message;
+			result.success = response.ok;
+			result.message = response.ok ? data.message : data.error || 'No message';
 			result.data = data.data;
+			result.code = response.status;
 			return result;
 		} catch (error) {
 			console.error('Error in playerLeaveTournament:', error);
@@ -373,7 +372,7 @@ export class APIManager {
 	}
 
 	public async getTournament(tournamentCode: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null };
+		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentCode}`, HTTPMethod.GET, {
 				'Content-Type': 'application/json',
@@ -382,6 +381,7 @@ export class APIManager {
 			result.success = true;
 			result.message = data.message;
 			result.data = data.data;
+			result.code = response.status;
 			return result;
 		} catch (error) {
 			console.error('Error in getTournament:', error);
@@ -390,7 +390,7 @@ export class APIManager {
 	}
 
 	public async startTournament(tournamentId: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null };
+		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentId}/start`, HTTPMethod.POST, {})
 			if (!response.ok) {
@@ -400,6 +400,7 @@ export class APIManager {
 			const data = await response.json()
 			result.success = true;
 			result.message = data.message;
+			result.code = response.status;
 			return result
 		} catch (error) {
 			console.error('Error in playerJoinTournament:', error);

@@ -166,19 +166,29 @@ export class TournamentActionHandler {
     async exitTournament(): Promise<{ success: boolean; message: string }> {
         const isAdmin = this.data.admin_id === localStorage.getItem('uuid');
         try {
+            let response;
             if (isAdmin) {
-                const response = await _apiManager.deleteTournament(this.data.code);
-                return {
-                    success: response.success !== false,
-                    message: response.message || '✅ Turnuva başarıyla silindi!'
-                };
+                response = await _apiManager.deleteTournament(this.data.code);
             } else {
-                const response = await _apiManager.leaveTournament(this.data.code);
+                response = await _apiManager.leaveTournament(this.data.code);
+            }
+
+            if (response.code === 404) {
+                response.success = true; // accept not found is a success of not existence
+            }
+
+            if (!response.success) {
                 return {
-                    success: response.success !== false,
-                    message: response.message || '✅ Turnuvadan başarıyla ayrıldınız!'
+                    success: false,
+                    message: response.message || '❌ Turnuvadan çıkarken hata oluştu!'
                 };
             }
+
+            return {
+                success: response.success,
+                message: response.message || '✅ Turnuvadan başarıyla ayrıldınız!'
+            };
+
         } catch (error) {
             console.error('Exit action error:', error);
             return {
