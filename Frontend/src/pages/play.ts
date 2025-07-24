@@ -143,7 +143,9 @@ export class GameManager {
 
 				this.uiManager.cacheDOMElements();
 				GamePage.enablePage();
-				this.uiManager.onStartButtonShown();
+
+				if (this.gameStatus.game_mode === 'localGame' || this.gameStatus.game_mode === 'vsAI')
+					this.uiManager.onStartButtonShown();
 				GameEventBus.getInstance().emit({ type: 'ENTER_WAITING_PHASE' })
 				.then(() => this.enterWaittingPhase(this.gameStatus)) // wait for rival finding
 				.then(() => onClickedTo(this.uiManager.startButton!)) // wait for start click
