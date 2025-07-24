@@ -214,7 +214,9 @@ export class GamePage implements Page {
 						<span>${exmp.getLang("game.new-game")}</span>
 					</div>
 				</button>
-				<button id="turnHomePage-button" class="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 top-[75%] px-[2.8vw] py-[1.2vw] text-[1.5vw] text-red-200 rounded-2xl cursor-pointer z-30 transition-all duration-300 transform hidden font-semibold" style="
+				<button id="turnHomePage-button" class="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 top-[75%] px-[2.8vw] py-[1.2vw] text-[1.5vw]
+                  text-red-200 rounded-2xl cursor-pointer z-30 transition-all duration-300 transform hidden font-semibold"
+        style="
 					background: linear-gradient(135deg, rgba(255, 0, 100, 0.15), rgba(255, 0, 150, 0.15));
 					border: 2px solid rgba(255, 0, 100, 0.4);
 					box-shadow: 0 0 20px rgba(255, 0, 100, 0.3), inset 0 0 20px rgba(255, 0, 100, 0.05);
@@ -226,7 +228,7 @@ export class GamePage implements Page {
 						</svg>
 						<span>Ana sayfaya dön</span>
 					</div>
-				</button>    `;
+				</button>`;
     }
 }
 

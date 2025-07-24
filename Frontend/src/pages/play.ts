@@ -174,12 +174,8 @@ export class GameManager {
 		this.uiManager.scene = undefined;
 		this.uiManager.engine = undefined;
 
-		["init", "gameState", "bu", "paddleUpdate",
-			"ready", "rematch-ready", "player-move",
-			"local-input", "pause-resume", "reset-match"]
-			.forEach(event => {
-				WebSocketClient.getInstance().off(event);
-			});
+		["init", "gameState", "bu", "paddleUpdate", "ready", "rematch-ready", "player-move", "local-input", "pause-resume", "reset-match"]
+			.forEach(event => WebSocketClient.getInstance().off(event));
 
 		this.gameInfo = null;
 		this.gameStatus.currentGameStarted = false;
