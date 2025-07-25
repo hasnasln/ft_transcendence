@@ -5,7 +5,7 @@ import { Router, Page } from "../router";
 
 export class RegisterPage implements Page {
 
-	evaluate(): string {
+    evaluate(): string {
         return `<div class="min-h-screen flex items-center justify-center bg-animated-gradient">
             <main id="register_main" class="glass-container p-10 mx-16 max-w-full lg:max-w-md w-full relative animate-fadeIn">
                 <section id="section-register" class="animate-fadeIn">
@@ -356,19 +356,25 @@ async function submit(e: Event): Promise<void> {
         errorDiv.style.visibility = "visible";
         return;
     }
-
     const registerData: IApiRegister = { username, email, password };
     
     try {
         const response = await _apiManager.register(registerData);
         if (!response.success) {
-            const errorKey = response.message || 'registerFailed';
-            const errorMessage = exmp.getLang(`register-errors.${errorKey}`) || 
-                                exmp.getLang('register-errors.registerFailed');
-            errorDiv.textContent = errorMessage;
-            errorDiv.style.visibility = "visible";
-            return;
+        const errorKey = response.message || 'registerFailed';
+
+        if (errorKey === 'usernameExists') {
+            errorDiv.textContent = exmp.getLang('register-errors.exists.username');
+        } else if (errorKey === 'emailExists') {
+            errorDiv.textContent = exmp.getLang('register-errors.exists.email');
+        } else {
+            errorDiv.textContent = exmp.getLang(`register-errors.${errorKey}`) || 
+                                   exmp.getLang('register-errors.registerFailed');
         }
+
+        errorDiv.style.visibility = "visible";
+        return;
+    }
         
         errorDiv.style.visibility = "hidden";
         Router.getInstance().go('/login');
