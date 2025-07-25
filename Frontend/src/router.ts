@@ -497,12 +497,12 @@ export class Router {
 		this.activePages.set(path, page);
 		this.setContent(pageContent);
 		this.savePageInfo(path, page);
-		
+
 		// bu sizi rahatsız ediyorsa iyi developersınız demektir.
 		requestAnimationFrame(() => {
 			this.injectButtonListener();
 			page.onLoad?.();
-		})
+		});
 	}
 
 	public loadExistingPage(newPagePath: string) {

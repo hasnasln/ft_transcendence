@@ -1,5 +1,6 @@
 import { exmp } from "../languageManager";
 import { Page, Router } from "../router";
+import { gameInstance } from "./play";
 import { retroGridBackground } from "./play-page";
 
 export class GamePage implements Page {
@@ -150,7 +151,7 @@ export class GamePage implements Page {
         return retroGridBackground(getScoreBoard() + getSetBoard() + this.hiddenButtons());
     }
 
-    onLoad(): void {
+    public onLoad(): void {
         document.addEventListener("click", (event) => {
             const target = event.target as HTMLElement;
             if (target.id === "go-play-page") {
@@ -159,8 +160,8 @@ export class GamePage implements Page {
         });
     }
 
-    onUnload(): void {
-        console.log("Game page unloaded");
+    public onUnload(): void {
+      gameInstance.finalize();
     }
 
     public hiddenButtons() {
