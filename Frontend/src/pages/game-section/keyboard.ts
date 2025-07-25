@@ -153,7 +153,8 @@ export function listenPlayerInputs(gameInfo: GameInfo) {
 
 		if (!gameInfo.state?.matchOver)
 			WebSocketClient.getInstance().emit("reset-match");
-		window.location.reload(); //todo bundan kaçın
+		Router.getInstance().go("/play");
+		Router.getInstance().invalidatePage('/game');
 	});
 
 	gameInstance.uiManager.turnToHomePage!.addEventListener("click", () => {
