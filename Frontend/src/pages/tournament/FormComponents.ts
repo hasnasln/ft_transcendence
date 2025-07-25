@@ -24,7 +24,7 @@ function joinorcreate(id: string, key: string, title_key: string, placeholder_ke
 }
 function toggleWithJoin():string {
     return `
-        <div id="fatma1234" class="z-[100] w-full flex flex-col items-center justify-center gap-4 text-center px-6 text-white">
+        <div id="joinSection" class="z-[100] w-full flex flex-col items-center justify-center gap-4 text-center px-6 text-white">
             <h1
             data-langm-key="tournament-first-page.m-title-for-showcreate"
             class="text-2xl sm:text-3xl font-bold"></h1>
@@ -36,7 +36,7 @@ function toggleWithJoin():string {
 }
 function toggleWithCreate():string {
     return `
-        <div id="fatma123" class="z-[100] hidden w-full flex flex-col items-center justify-center gap-4 text-center px-6 text-white">
+        <div id="createSection" class="z-[100] hidden w-full flex flex-col items-center justify-center gap-4 text-center px-6 text-white">
             <h1
             data-langm-key="tournament-first-page.m-title-for-showjoin"
             class="text-2xl sm:text-3xl font-bold"></h1>

@@ -373,8 +373,8 @@ export class TournamentPage implements Page {
     }
     private handleShowCreate(container: HTMLElement): void {
         const toggleContainer = container.querySelector('#toggleContainer') as HTMLElement;
-        const createDiv = container.querySelector('#fatma123') as HTMLElement;
-        const joinDiv = container.querySelector('#fatma1234') as HTMLElement;
+        const createDiv = container.querySelector('#createSection') as HTMLElement;
+        const joinDiv = container.querySelector('#joinSection') as HTMLElement;
         if (toggleContainer) {
             this.animateToggle(toggleContainer, 1, 0);
         }
@@ -383,8 +383,8 @@ export class TournamentPage implements Page {
     }
     private handleShowJoin(container: HTMLElement): void {
         const toggleContainer = container.querySelector('#toggleContainer') as HTMLElement;
-        const joinDiv = container.querySelector('#fatma1234') as HTMLElement;
-        const createDiv = container.querySelector('#fatma123') as HTMLElement;
+        const joinDiv = container.querySelector('#joinSection') as HTMLElement;
+        const createDiv = container.querySelector('#createSection') as HTMLElement;
         if (toggleContainer) {
             this.animateToggle(toggleContainer, -1, toggleContainer.offsetWidth);
         }
