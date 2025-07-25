@@ -1,8 +1,10 @@
 import { gameInstance } from "./pages/play";
 
 export interface Page {
+	onButtonClick?(buttonId: string): void;
     evaluate(): string;
     onLoad?(): void;
+	onUnload?(): void;
 }
 
 export class NotFoundPage implements Page {
@@ -459,6 +461,10 @@ export class Router {
 		this.pages.set(path, page);
 	}
 
+	private injectButtonListener(): void {
+		this.rootContainer().addEventListener('click', (e) => buttonAgent(e, this.currentPage!));
+	}
+
 	public getPageByPath(path: string): Page {
 		return this.pages.get(path) || new NotFoundPage();
 	}
@@ -494,6 +500,7 @@ export class Router {
 		
 		// bu sizi rahatsız ediyorsa iyi developersınız demektir.
 		requestAnimationFrame(() => {
+			this.injectButtonListener();
 			page.onLoad?.();
 		})
 	}
@@ -541,7 +548,18 @@ export class Router {
 	}
 
 	public invalidatePage(path: string): void {
+		const page = this.activePages.get(path);
+		if (!page) {
+			console.warn(`No active page found for path: ${path}`);
+			return;
+		}
+
 		this.activePages.delete(path);
+
+		page.onUnload?.();
+
+		const container = document.getElementById('hidden-page-' + path);
+		container?.remove();
 	}
 
 	public invalidateAllPages(): void {
@@ -566,4 +584,18 @@ export class Router {
 			this.createNewPage(path);
 		}
 	}
+}
+
+/** Routes button clicks and delegates
+ * them to the page instance */
+function buttonAgent(e: MouseEvent, page: Page): void {
+	if (!page.onButtonClick) return;
+	if (!(e.target instanceof HTMLElement))
+		return;
+
+	const buttonId = e.target.closest('button')?.id;
+	if (!buttonId)
+		return;
+
+	page.onButtonClick(buttonId);
 }

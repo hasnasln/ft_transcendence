@@ -7,6 +7,7 @@ import { WebSocketClient } from "./wsclient";
 export type GameEventType =
 	| 'SET_COMPLETED'
 	| 'MATCH_ENDED'
+	| 'SCENE_DISPOSED'
 	| 'GAME_PAUSED'
 	| 'GAME_RESUMED'
 	| 'RIVAL_FOUND'
@@ -28,6 +29,8 @@ export type GameEventType =
 	| 'RECONNECTION_ATTEMPT'
 	| 'RECONNECTION_GAVE_UP'
 	| 'RECONNECTED'
+	| 'GAME_MODE_CHOSEN'
+	| 'AI_DIFFICULTY_CHOSEN'
 ;
 
 export interface GameEvent {
@@ -40,6 +43,7 @@ export type EventHandler = (event: GameEvent) => void | Promise<void>;
 
 export class GameEventBus {
 	private listeners: { [eventType: string]: EventHandler[] } = {};
+	private onceListeners: { [eventType: string]: EventHandler[] } = {};
 
 	private static instance: GameEventBus;
 	private constructor() {
@@ -57,6 +61,18 @@ export class GameEventBus {
 		console.log(`Event emitted: ${event.type}`, event.payload);
 		const handlers = this.listeners[event.type] || [];
 		await Promise.all(handlers.map(handler => handler(event)));
+
+		const onceHandlers = this.onceListeners[event.type] || [];
+		if (onceHandlers.length === 0) return;
+		await Promise.all(onceHandlers.map(handler => handler(event)));
+		this.onceListeners[event.type] = [];
+	}
+
+	public once(eventType: GameEventType, handler: EventHandler): void {
+		if (!this.onceListeners[eventType]) {
+			this.onceListeners[eventType] = [];
+		}
+		this.onceListeners[eventType].push(handler);
 	}
 
 	public on(eventType: GameEventType, handler: EventHandler): void {

@@ -34,7 +34,7 @@ export class GameManager {
 	public currentRival: string | null = null;
 
 	public constructor() {
-		this.uiManager.removeCache();
+		this.uiManager.resetCache();
 	}
 
 	private configureTournament(tournamentMode: boolean, tournamentCode?: string): void {
@@ -45,55 +45,38 @@ export class GameManager {
 		}
 	}
 
-	//todo listen once?
-	private async listenModeSelectorButtons(): Promise<void> {
-		let status: GameStatus = { currentGameStarted: false, game_mode: null, finalMatch: this.gameStatus.finalMatch };
-
-		const btnVsComp = document.getElementById("btn-vs-computer")!;
-		const btnFindRival = document.getElementById("btn-find-rival")!;
-		const diffDiv = document.getElementById("difficulty")!;
-		const btnLocal = document.getElementById("btn-local")!;
-
+	private async waitForModeSelection(): Promise<void> {
 		return new Promise<void>((resolve) => {
-			btnVsComp.addEventListener("click", () => {
+			GameEventBus.getInstance().once('GAME_MODE_CHOSEN', (event) => {
+				this.gameStatus = {
+					currentGameStarted: false,
+					game_mode: event.payload.mode,
+					finalMatch: this.gameStatus.finalMatch
+				};
+
+				if (event.payload.mode !== 'vsAI') {
+					resolve();
+					return;
+				}
+
 				this.uiManager.onDifficultyShown();
 				this.uiManager.onMenuHidden();
-			});
-
-			diffDiv.querySelectorAll("button").forEach(btn => {
-				btn.addEventListener("click", async () => {
-					const level = (btn as HTMLButtonElement).dataset.level!;
-					status.game_mode = 'vsAI';
-					status.level = level;
-					this.gameStatus = status;
+				GameEventBus.getInstance().once('AI_DIFFICULTY_CHOSEN', (event) => {
+					this.gameStatus.level = event.payload.level;
 					resolve();
 				});
-			});
-
-			btnFindRival.addEventListener("click", async () => {
-				status.game_mode = 'remoteGame';
-				this.gameStatus = status;
-				resolve();
-			});
-
-			btnLocal.addEventListener("click", async () => {
-				status.game_mode = 'localGame';
-				this.gameStatus = status;
-				resolve();
 			});
 		});
 	}
 
 	private configure = async () => {
-		if (this.gameStatus.game_mode === 'tournament') {
-			return
-		}
+		if (this.gameStatus.game_mode === 'tournament') 
+			return;
 
-		if (!this.gameStatus.currentGameStarted) {
-			await this.listenModeSelectorButtons();
-			return
-		}
-		throw new Error("Mode could not selected: " + this.gameStatus);
+		if (this.gameStatus.currentGameStarted) 
+			throw new Error("Game is already started: " + JSON.stringify(this.gameStatus));
+		
+		await this.waitForModeSelection();
 	};
 
 	private enterWaittingPhase = async (status: GameStatus): Promise<void> => {
@@ -166,17 +149,6 @@ export class GameManager {
 		}, 1000);
 	}
 
-	public startRejoinProcess(tournamentMode: boolean, tournamentCode?: string): void {
-		WebSocketClient.getInstance().connect("http://localhost:3001")
-		this.configureTournament(tournamentMode, tournamentCode);
-		this.uiManager.cacheDOMElements();
-
-		listenStateUpdates(this.gameInfo!)
-		waitGameStart(this.gameInfo!)
-			.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }))
-			.then(() => this.requestRejoin())
-	}
-
 	public finalize() {
 		this.uiManager.scene?.dispose();
 		this.uiManager.engine?.dispose();
@@ -187,7 +159,11 @@ export class GameManager {
 			.forEach(event => WebSocketClient.getInstance().off(event));
 
 		this.gameInfo = null;
-		this.gameStatus.currentGameStarted = false;
+		this.gameStatus = {
+			currentGameStarted: false,
+			game_mode: null,
+			finalMatch: false
+		};
 	}
 
 	public handleNetworkPause(): void {
@@ -224,24 +200,12 @@ export class GameManager {
 				gameInstance.uiManager.engine = undefined;
 				gameInstance.gameInfo = null;
 				gameInstance.gameStatus.currentGameStarted = false;
-				gameInstance.uiManager.removeCache();
+				gameInstance.uiManager.resetCache();
 				setTimeout(() => Router.getInstance().go('/'), 1000);
 			}
 		});
 
 		WebSocketClient.getInstance().emit("rejoin");
-	}
-
-	public saveUserInGame():void {
-		localStorage.setItem("inGame", "true");
-	}
-
-	public removeUserInGame():void {
-		localStorage.removeItem("inGame");
-	}
-
-	public wasUserInGame(): boolean {
-		return localStorage.getItem("inGame") === "true";
 	}
 }
 

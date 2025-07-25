@@ -1,6 +1,7 @@
 import { exmp } from '../languageMeneger';
 import { gameInstance } from './play';
 import { Page, Router } from '../router';
+import { GameEventBus } from './game-section/gameEventBus';
 
 function getMenu(): string {
   const buttonData = [
@@ -92,7 +93,7 @@ function getDifficulty(): string {
         <h3 class="text-white text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Zorluk Seviyesi Seçin</h3>
         <div class="w-24 h-1 bg-gradient-to-r from-cyan-400 to-blue-400 mx-auto mt-2 rounded-full" style="box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);"></div>
       </div>
-      <button data-level="easy" class="modern-difficulty-button easy group relative w-[80%] h-[15%] text-white text-xl font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer overflow-hidden" style="
+      <button id="difficulty-easy" class="modern-difficulty-button easy group relative w-[80%] h-[15%] text-white text-xl font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer overflow-hidden" style="
 		background: linear-gradient(135deg, rgba(0, 255, 0, 0.15), rgba(0, 200, 100, 0.15));
 		border: 1px solid rgba(0, 255, 100, 0.4);
 		box-shadow: 0 0 20px rgba(0, 255, 100, 0.3), inset 0 0 20px rgba(0, 255, 100, 0.05);
@@ -101,7 +102,7 @@ function getDifficulty(): string {
         <div class="absolute inset-0 bg-gradient-to-r from-green-400/10 to-emerald-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <span class="relative z-10 text-green-200">${exmp.getLang("game.vs-compiter-difficulty-b-easy")}</span>
       </button>
-      <button data-level="medium" class="modern-difficulty-button medium group relative w-[80%] h-[15%] text-white text-xl font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer overflow-hidden" style="
+      <button id="difficulty-medium" class="modern-difficulty-button medium group relative w-[80%] h-[15%] text-white text-xl font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer overflow-hidden" style="
 		background: linear-gradient(135deg, rgba(255, 200, 0, 0.15), rgba(255, 150, 0, 0.15));
 		border: 1px solid rgba(255, 200, 0, 0.4);
 		box-shadow: 0 0 20px rgba(255, 200, 0, 0.3), inset 0 0 20px rgba(255, 200, 0, 0.05);
@@ -110,7 +111,7 @@ function getDifficulty(): string {
         <div class="absolute inset-0 bg-gradient-to-r from-yellow-400/10 to-orange-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <span class="relative z-10 text-yellow-200">${exmp.getLang("game.vs-compiter-difficulty-b-medium")}</span>
       </button>
-      <button data-level="hard" class="modern-difficulty-button hard group relative w-[80%] h-[15%] text-white text-xl font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer overflow-hidden" style="
+      <button id="difficulty-hard" class="modern-difficulty-button hard group relative w-[80%] h-[15%] text-white text-xl font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer overflow-hidden" style="
 		background: linear-gradient(135deg, rgba(255, 0, 100, 0.15), rgba(255, 0, 150, 0.15));
 		border: 1px solid rgba(255, 0, 100, 0.4);
 		box-shadow: 0 0 20px rgba(255, 0, 100, 0.3), inset 0 0 20px rgba(255, 0, 100, 0.05);
@@ -129,13 +130,47 @@ export class PlayPage implements Page {
 	}
 
 	public onLoad(): void {
+		console.log("PlayPage loaded");
 		gameInstance.preparePlayProcess(false)
 			.then(() => {
 				Router.getInstance().go("/game");
 				requestAnimationFrame(() => {
+					Router.getInstance().invalidatePage('/play');
 					gameInstance.startPlayProcess();
 				});
 			});
+	}
+
+	public onUnload(): void {
+		console.log("PlayPage unloaded");
+	}
+
+	private chooseMode(mode: string) {
+		GameEventBus.getInstance().emit({ type: 'GAME_MODE_CHOSEN', payload: { mode } });
+	}
+
+	private chooseAIDifficulty(level: string) {
+		GameEventBus.getInstance().emit({ type: 'AI_DIFFICULTY_CHOSEN', payload: { level } });
+	}
+
+	public onButtonClick(buttonId: string): void {
+		switch (buttonId) {
+			case 'btn-vs-computer':
+				return this.chooseMode('vsAI');
+			case 'btn-find-rival':
+				return this.chooseMode('remoteGame');
+			case 'btn-local':
+				return this.chooseMode('localGame');
+			case 'difficulty-easy':
+				return this.chooseAIDifficulty('easy');
+			case 'difficulty-medium':
+				return this.chooseAIDifficulty('medium');
+			case 'difficulty-hard':
+				return this.chooseAIDifficulty('hard');
+			default:
+				console.warn(`Unknown button clicked: ${buttonId}`);
+				break;
+		}
 	}
 }
 
