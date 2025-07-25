@@ -13,7 +13,7 @@ Socket.io's connection errors has special channel named `connection_error`.
 ### Network bandwidth
 ~5 MB/hour on an active play.
 
-## Communication
+## Communication of standard game
 
 Client sends HTTPS request (with JWT) to the server.
 If server accepts connection, connection upgrade to WSS.
@@ -62,3 +62,15 @@ Server sends first packet of the game.
 **note**: "bu" means "ball update".
 
 When all of these packets recieved by client at once, a game will start at client side.
+
+## Unexpected communication cases
+
+### Phase 3, timeout of approvement
+When rival client sent ready packet, the client must send ready packet in 20 seconds. If
+it didn't, rival and the client will recieve `match-cancelled` message and their ready
+messages will dropped.
+
+| Mode | Way  | Channel       | Message |
+|------|------|---------------|---------|
+| remote  | S->C | match-cancelled | `{...}` |
+| tournament  | S->C | match-cancelled | `{...}` |
