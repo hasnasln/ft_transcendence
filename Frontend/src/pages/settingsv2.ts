@@ -1,5 +1,5 @@
 import { IApiSetSettings, _apiManager } from "../api/APIManager";
-import { exmp } from "../languageMeneger";
+import { exmp } from "../languageManager";
 
 export class Settingsv2 {
 	private isOpen = false;

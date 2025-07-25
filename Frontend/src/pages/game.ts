@@ -1,4 +1,4 @@
-import { exmp } from "../languageMeneger";
+import { exmp } from "../languageManager";
 import { Page, Router } from "../router";
 import { retroGridBackground } from "./play-page";
 

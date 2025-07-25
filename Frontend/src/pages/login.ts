@@ -1,6 +1,6 @@
 import { _apiManager } from "../api/APIManager";
 import { Router } from "../router";
-import { exmp } from "../languageMeneger";
+import { exmp } from "../languageManager";
 import { Page } from '../router';
 
 export class LoginPage implements Page {

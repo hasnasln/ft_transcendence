@@ -1,4 +1,4 @@
-import { exmp } from "../languageMeneger";
+import { exmp } from "../languageManager";
 import {_apiManager } from "../api/APIManager";
 import type { IApiRegister } from "../api/APIManager";
 import { Router, Page } from "../router";

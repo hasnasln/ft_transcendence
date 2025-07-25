@@ -1,6 +1,6 @@
 import { Settingsv2 } from './settingsv2';
 import { ProfileSettings } from './profile';
-import { exmp } from '../languageMeneger';
+import { exmp } from '../languageManager';
 import { Router, Page } from '../router';
 
 export class HomePage implements Page {

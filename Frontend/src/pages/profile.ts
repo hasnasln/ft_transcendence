@@ -1,5 +1,5 @@
 import { _apiManager } from '../api/APIManager';
-import { exmp } from '../languageMeneger';
+import { exmp } from '../languageManager';
 
 const AVAILABLE_AVATARS = [
 	'bear.png', 'cat.png', 'chick.png', 'duck.png', 'koala.png',

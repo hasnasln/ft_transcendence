@@ -1,4 +1,4 @@
-import { exmp } from '../languageMeneger';
+import { exmp } from '../languageManager';
 import { gameInstance } from './play';
 import { Page, Router } from '../router';
 import { GameEventBus } from './game-section/gameEventBus';

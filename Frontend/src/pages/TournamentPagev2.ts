@@ -1,4 +1,4 @@
-import { exmp } from '../languageMeneger';
+import { exmp } from '../languageManager';
 import { _apiManager } from '../api/APIManager';
 import { ITournament } from '../api/types';
 import { PlayPage } from './play-page';
