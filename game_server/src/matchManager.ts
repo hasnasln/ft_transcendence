@@ -5,6 +5,7 @@ import { LocalPlayerInput, RemotePlayerInput, AIPlayerInput } from "./inputProvi
 import { GameMode, GameStatus } from "./server";
 import { getTournament, findMyMatch, joinMatchByCode } from "./tournament";
 import { emitError } from "./errorHandling";
+import { GameEmitter } from "./gameEmitter";
 
 export interface Player {
 	socket: Socket;
@@ -371,11 +372,12 @@ export class MatchManager {
 
 		match.players.find(p => p.username !== player.username)!.socket.emit("opponent-reconnected");
 		match.resume();
-		match.game.exportGameConstants();
-		match.game.exportBallState();
-		match.game.exportPaddleState();
-		match.game.exportGameState();
-		match.game.exportSetState();
+
+		GameEmitter.getInstance().emitGameConstants(match.game);
+		GameEmitter.getInstance().emitBallState(match.game);
+		GameEmitter.getInstance().emitPaddleState(match.game);
+		GameEmitter.getInstance().emitGameState(match.game);
+		GameEmitter.getInstance().emitSetState(match.game);
 	}
 
 	clearMatch(match: Match) {

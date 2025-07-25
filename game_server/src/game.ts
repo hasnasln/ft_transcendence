@@ -1,14 +1,14 @@
 import { Server } from "socket.io";
 import { InputProvider } from "./inputProviders";
-import { GameMode, matchManager } from "./server";
-import { pushWinnerToTournament } from "./tournament";
+import { GameMode } from "./server";
 import { Match } from "./matchManager";
-import { emitError } from "./errorHandling";
+import { PhysicsEngine } from "./engine";
+import { GameEmitter } from "./gameEmitter";
 
 const FPS = 60; 
 type Side = 'leftPlayer' | 'rightPlayer';
 
-interface GameConstants {
+export interface GameConstants {
 	groundWidth: number;
 	groundHeight: number;
 	ballRadius: number;
@@ -16,7 +16,7 @@ interface GameConstants {
 	paddleHeight: number;
 }
 
-interface GameState {
+export interface GameState {
 	matchOver: boolean;
 	setOver: boolean;
 	isPaused: boolean;
@@ -25,12 +25,12 @@ interface GameState {
 	roundNumber?: number;
 }
 
-interface PaddleState {
+export interface PaddleState {
 	p1y: number;
 	p2y: number;
 }
 
-interface Position {
+export interface Position {
 	x: number;
 	y: number;
 }
@@ -149,15 +149,15 @@ export class Game {
 		this.lastUpdatedTime = undefined;
 		this.setOver = true;
 
-		this.exportBallState();
-		this.exportSetState();
-		this.exportGameState();
+		GameEmitter.getInstance().emitBallState(this);
+		GameEmitter.getInstance().emitSetState(this);
+		GameEmitter.getInstance().emitGameState(this);
 
 		setTimeout(() => {
 			this.resetScores();
 			this.setOver = false;
-			this.exportGameState();
-			this.exportSetState();
+			GameEmitter.getInstance().emitGameState(this);
+			GameEmitter.getInstance().emitSetState(this);
 			this.lastUpdatedTime = Date.now();
 		}, 3000);
 	}
@@ -171,6 +171,7 @@ export class Game {
 		this.ball.position = { x: 0, y: Math.random() * (0.8 * this.ground.height) - 0.4 * this.ground.height };
 
 		setTimeout(() => {
+			/* here some math of odtü */
 			const angle = lastScorer == 'leftPlayer' ? (Math.random() * 2 - 1) * Math.PI / 6 : Math.PI - (Math.random() * 2 - 1) * Math.PI / 6;
 
 			this.ball.velocity = { x: Math.cos(angle) * this.ball.firstSpeedFactor, y: Math.sin(angle) * this.ball.firstSpeedFactor };
@@ -210,8 +211,8 @@ export class Game {
 		this.resetBall(winner);
 		this.matchOver = true;
 		this.matchWinner = winner;
-		this.exportBallState();
-		this.exportGameState();
+		GameEmitter.getInstance().emitBallState(this);
+		GameEmitter.getInstance().emitGameState(this);
 	}
 
 	public pauseGameLoop() {
@@ -222,66 +223,17 @@ export class Game {
 			clearInterval(this.interval);
 			this.interval = undefined;
 		}
-		//console.log(`maç pause edildi: ${this.leftInput.getUsername()}_vs_${this.rightInput.getUsername()}`);
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game paused.`);
 	}
 
 	public resumeGameLoop() {
 		this.isPaused = false;
 		if (!this.interval) {
-			this.interval = setInterval(() => update(this), 1000 / 120);
+			this.interval = setInterval(() => PhysicsEngine.getInstance().update(this), 1000 / 120);
 		}
 
 		this.lastUpdatedTime = Date.now();
-		//console.log(`durdurulmuş maç resume edildi: ${this.leftInput.getUsername()}_vs_${this.rightInput.getUsername()}`);
-	}
-
-	public exportGameConstants() {
-		const gameConstants: GameConstants = {
-			groundWidth: this.ground.width / this.unitConversionFactor,
-			groundHeight: this.ground.height / this.unitConversionFactor,
-			ballRadius: this.ball.radius / this.unitConversionFactor,
-			paddleWidth: this.paddle1.width / this.unitConversionFactor,
-			paddleHeight: this.paddle1.height / this.unitConversionFactor
-		};
-
-		this.io.to(this.roomId).emit("init", gameConstants);
-	}
-
-	public exportGameState() {
-		const gameState: GameState =
-		{
-			matchOver: this.matchOver,
-			setOver: this.setOver,
-			isPaused: this.isPaused,
-			matchWinner: this.matchWinner,
-			matchDisconnection: this.matchDisconnection,
-			roundNumber: this.match.tournament?.roundNo,
-		};
-
-		this.io.to(this.roomId).emit("gameState", gameState);
-	}
-
-	public exportSetState() {
-		const setState = {
-			points: this.points,
-			sets: this.sets,
-			usernames: { left: this.leftInput.getUsername(), right: this.rightInput.getUsername() }
-		};
-
-		this.io.to(this.roomId).emit("updateState", setState);
-	}
-
-	public exportBallState() {
-		const x = this.ball.position.x / this.unitConversionFactor;
-		const y = this.ball.position.y / this.unitConversionFactor;
-
-		if (isNaN(x) || isNaN(y)) {
-			console.error(`Invalid ball coordinates: x=${x}, y=${y}`);
-			return;
-		}
-
-		//+05.91:-21.33
-		this.io.to(this.roomId).emit("bu", `${x.toFixed(2)}:${y.toFixed(2)}`);
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game resume now.`);
 	}
 
 	public finishIncompleteMatch(username?: string) {
@@ -291,32 +243,18 @@ export class Game {
 		this.matchOver = true;
 		this.matchWinner = inCompleteWinner;
 		this.matchDisconnection = true;
-		this.exportGameState();
-	}
-
-	public exportPaddleState() {
-		const paddleState: PaddleState =
-		{
-			p1y: this.paddle1.position.y / this.unitConversionFactor,
-			p2y: this.paddle2.position.y / this.unitConversionFactor
-		}
-
-		if (this.lastPaddleUpdate && this.lastPaddleUpdate.p1y === paddleState.p1y && this.lastPaddleUpdate.p2y === paddleState.p2y) {
-			return; 
-		}
-		this.lastPaddleUpdate = paddleState;
-		this.io.to(this.roomId).emit("paddleUpdate", paddleState);
+		GameEmitter.getInstance().emitGameState(this);
 	}
 
 	public startGameLoop() {
-		this.exportGameConstants();
-		this.exportSetState();
+		GameEmitter.getInstance().emitGameConstants(this);
+		GameEmitter.getInstance().emitSetState(this);
 
 		this.matchOver = false;
 		this.setOver = false;
 		this.isPaused = false;
 
-		this.exportGameState();
+		GameEmitter.getInstance().emitGameState(this);		
 
 		const sides = [
 			{ socket: typeof this.leftInput.getSocket === 'function' ? this.leftInput.getSocket()! : null },
@@ -338,174 +276,7 @@ export class Game {
 			Math.random() <= 0.5 ? this.resetBall('leftPlayer') : this.resetBall('rightPlayer');
 		}
 
-		this.interval = setInterval(() => update(this), 1000 / FPS); // 60 FPS
+		this.interval = setInterval(() => PhysicsEngine.getInstance().update(this), 1000 / FPS); // 60 FPS
 	}
 }
 
-type Middleware = (g: Game, dt: number) => boolean;
-
-const skipIfMatchOver: Middleware = (g, _dt) => {
-	if (g.matchOver) {
-		if (g.gameMode === 'tournament') {
-			const winnerInput = g.matchWinner === 'leftPlayer' ? g.leftInput : g.rightInput;
-			const uuid = winnerInput.getUuid();
-			const username = winnerInput.getUsername();
-			try {
-				pushWinnerToTournament(g.match.tournament?.code as string, g.match.tournament?.roundNo as number, { uuid, username });
-			} catch (err: any) {
-				emitError(err.message, g.roomId, g.io);
-			}
-		}
-		g.pauseGameLoop();
-		g.exportGameState();
-
-		if (g.match.gameMode === 'localGame' || g.match.gameMode === 'vsAI')
-			matchManager.clearMatch(g.match);
-		//console.log(`maç bitirildi: ${g.leftInput.getUsername()}_vs_${g.rightInput.getUsername()}`);
-		g.match.end();
-		return false;
-	}
-	return true;
-};
-
-const skipIfSetOrPausedOver: Middleware = (g, _dt) => !(g.setOver || g.isPaused);
-
-const moveBall: Middleware = (g, dt) => {
-	g.ball.position.x += g.ball.velocity.x * dt;
-	g.ball.position.y += g.ball.velocity.y * dt;
-	return true;
-};
-
-const movePaddles: Middleware = (g, _dt) => {
-	const upperBound = g.ground.height / 2 - g.paddle1.height / 2 + (1.5 * g.paddle1.width);
-	const d1 = g.leftInput.getPaddleDelta() * g.paddleSpeed * _dt;
-	const d2 = g.rightInput.getPaddleDelta() * g.paddleSpeed * _dt;
-	if (Math.abs(g.paddle1.position.y + d1) <= upperBound) g.paddle1.position.y += d1;
-	if (Math.abs(g.paddle2.position.y + d2) <= upperBound) g.paddle2.position.y += d2;
-	return true;
-};
-
-const handleWallBounce: Middleware = (g, _dt) => {
-	const hitTop = g.ball.position.y > (g.ground.height / 2 - g.ball.radius) && g.ball.velocity.y > 0;
-	const hitBottom = g.ball.position.y < -(g.ground.height / 2 - g.ball.radius) && g.ball.velocity.y < 0;
-	if ((hitTop || hitBottom) && Math.abs(g.ball.position.x) <= g.ground.width / 2 + g.ball.radius) {
-		g.ball.velocity.y *= -1;
-	}
-	return true;
-};
-
-const handlePaddleBounce: Middleware = (g, _dt) => {
-	const paddles = [
-		{ paddle: g.paddle1, direction: 1 },
-		{ paddle: g.paddle2, direction: -1 }
-	];
-
-	paddles.forEach(({ paddle, direction }) => {
-		const relativeX = g.ball.position.x - paddle.position.x;
-		const xThreshold = g.ball.radius + paddle.width + 1;
-		if (Math.abs(relativeX) < xThreshold &&  // pedala yeteri kadar yakında mı ?
-			g.ball.velocity.x * direction < 0 && // pedala doğru hareket ediyor mu ?
-			relativeX * direction > 0)           // pedalın önünde mi ?
-		{
-			const relativeY = g.ball.position.y - paddle.position.y;
-			const yThreshold = (paddle.height + g.ball.radius) / 2 + 1;
-			const cornerLimit = paddle.height / 2 + g.ball.radius + 1;
-
-			// Face hit
-			if (Math.abs(relativeY) < yThreshold) {
-				g.ball.velocity.x *= -1;
-				g.ball.velocity.y += relativeY * 0.05;
-				if (g.ball.firstPedalHit++) {
-					g.ball.speedIncreaseFactor = 1.2;
-					g.ball.minimumSpeed = 0.25 * g.unitConversionFactor;
-				}
-				g.ball.velocity.x *= g.ball.speedIncreaseFactor;
-				g.ball.velocity.y *= g.ball.speedIncreaseFactor;
-			}
-			// Corner hit
-			else if (Math.abs(relativeY) <= cornerLimit && relativeY * g.ball.velocity.y < 0) {
-				g.ball.velocity.y *= -1;
-			}
-		}
-	});
-
-	return true;
-};
-
-const applyAirResistance: Middleware = (g, _dt) => {
-	g.ball.velocity.x *= g.ball.airResistanceFactor;
-	g.ball.velocity.y *= g.ball.airResistanceFactor;
-	return true;
-};
-
-const enforceSpeedLimits: Middleware = (g, _dt) => {
-	const speed = Math.hypot(g.ball.velocity.x, g.ball.velocity.y);
-	if (speed < g.ball.minimumSpeed) {
-		g.ball.velocity.x *= 1.02;
-		g.ball.velocity.y *= 1.02;
-	} else if (speed > g.ball.maximumSpeed) {
-		g.ball.velocity.x /= 1.02;
-		g.ball.velocity.y /= 1.02;
-	}
-	//Oyun zig-zag a dönmesin kontrolü
-	if (g.ball.velocity.x !== 0 && Math.abs(g.ball.velocity.y / g.ball.velocity.x) > 2)
-		g.ball.velocity.y /= 1.02;
-	return true;
-};
-
-const isBallOutOfBounds = (g: Game): number => {
-	if (g.ball.position.x > g.ground.width / 2 + 5 * g.unitConversionFactor)
-		return -1;
-	if (g.ball.position.x < -g.ground.width / 2 - 5 * g.unitConversionFactor)
-		return 1;
-	return 0;
-}
-
-const handleScoring: Middleware = (g, _dt) => {
-	const ballArea = isBallOutOfBounds(g);
-	if (ballArea === 0) {
-		return true;
-	}
-
-	if (ballArea === -1) {
-		g.scorePoint('leftPlayer');
-	} else {
-		g.scorePoint('rightPlayer');
-	}
-	g.exportSetState();
-
-	return false;
-};
-
-const exportStates: Middleware = (g, _dt) => {
-	g.exportBallState();
-	g.exportPaddleState();
-	return true;
-};
-
-const middlewareChain: Middleware[] = [
-	skipIfMatchOver,
-	skipIfSetOrPausedOver,
-	moveBall,
-	movePaddles,
-	handleWallBounce,
-	handlePaddleBounce,
-	applyAirResistance,
-	enforceSpeedLimits,
-	handleScoring,
-	exportStates
-];
-
-function update(game: Game): void {
-	let dt = 1;
-	const now = Date.now();
-	if (game.lastUpdatedTime !== undefined) {
-		dt = ((now - game.lastUpdatedTime) * 60) / 1000;
-	}
-
-	game.lastUpdatedTime = now;
-
-	for (const mw of middlewareChain) {
-		if (!mw(game, dt)) break;
-	}
-}
