@@ -7,7 +7,6 @@ import { WebSocketClient } from "./wsclient";
 export type GameEventType =
 	| 'SET_COMPLETED'
 	| 'MATCH_ENDED'
-	| 'SCENE_DISPOSED'
 	| 'GAME_PAUSED'
 	| 'GAME_RESUMED'
 	| 'RIVAL_FOUND'
