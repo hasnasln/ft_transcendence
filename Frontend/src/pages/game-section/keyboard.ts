@@ -49,7 +49,7 @@ export class KeyboardInputHandler {
 		}
 	}
 		
-	/** returns should event cancelled */
+	/** returns 'should event cancelled' */
 	public keyDown(key: string): boolean {
 		const event = this.keyToDirectionAndSide(key);
 		if (!event) return false;
@@ -64,7 +64,7 @@ export class KeyboardInputHandler {
 		return true;
 	}
 
-	/** returns should event cancelled */
+	/** returns 'should event cancelled' */
 	public keyUp(key: string): boolean {
 		const event = this.keyToDirectionAndSide(key);
 		if (!event) return false;

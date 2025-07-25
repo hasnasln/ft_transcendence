@@ -194,17 +194,10 @@ export class GameManager {
 				console.log("Rejoin rejected, redirecting to play page.");
 				gameInstance.uiManager.onInfoShown("Izin verilmedi. Ana sayfaya dönülüyor...");
 				GameLoop.getInstance().stop();
-				gameInstance.uiManager.scene?.dispose();
-				gameInstance.uiManager.engine?.dispose();
-				gameInstance.uiManager.scene = undefined;
-				gameInstance.uiManager.engine = undefined;
-				gameInstance.gameInfo = null;
-				gameInstance.gameStatus.currentGameStarted = false;
-				gameInstance.uiManager.resetCache();
+				this.finalize();
 				setTimeout(() => Router.getInstance().go('/'), 1000);
 			}
 		});
-
 		WebSocketClient.getInstance().emit("rejoin");
 	}
 }

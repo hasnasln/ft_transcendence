@@ -275,7 +275,6 @@ function getScoreBoard(): string {
   `;
 }
 
-
 function getSetBoard(): string {
     return `
     <div id="setboard" class="absolute bottom-[3%] left-1/2 transform -translate-x-1/2 mt-[0.3vw] hidden flex flex-col justify-center items-center px-[2vw] py-0 bg-gradient-to-br from-[#1e1e1e] to-[#2c2c2c] border border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.4vw] text-[#eee] z-10">

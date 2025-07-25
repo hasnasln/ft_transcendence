@@ -130,7 +130,6 @@ export class PlayPage implements Page {
 	}
 
 	public onLoad(): void {
-		console.log("PlayPage loaded");
 		gameInstance.preparePlayProcess(false)
 			.then(() => {
 				Router.getInstance().go("/game");
@@ -139,10 +138,6 @@ export class PlayPage implements Page {
 					gameInstance.startPlayProcess();
 				});
 			});
-	}
-
-	public onUnload(): void {
-		console.log("PlayPage unloaded");
 	}
 
 	private chooseMode(mode: string) {
