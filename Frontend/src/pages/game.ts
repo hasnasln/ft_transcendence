@@ -159,21 +159,24 @@ export class GamePage implements Page {
         });
     }
 
+    onUnload(): void {
+        console.log("Game page unloaded");
+    }
+
     public hiddenButtons() {
         return `<canvas id="game-canvas" class="w-[90%]"></canvas>
-                <div id="no-game-welcomer" class="absolute text-center">
-                    <div class="mx-auto w-full justify-center flex mb-8">
-                        ${GamePage.illustration}
-                    </div>
-                    <div class="text-white text-3xl lg:text-5xl mx-8 font-semibold mb-4">No game found</div>
-                    <div class="text-gray-300 text-xl lg:text-2xl mx-8">Maybe you don't lose, but you are lost right now.</div>
-                    <button id="go-play-page" class="mt-16 modern-game-button px-4 py-2 text-md text-white border-none rounded-lg cursor-pointer transition-all transform hover:scale-105">
-                        Go to Play Page
-                    </button>
-                </div>
+        <div id="no-game-welcomer" class="absolute text-center">
+            <div class="mx-auto w-full justify-center flex mb-8">
+                ${GamePage.illustration}
+            </div>
+            <div class="text-white text-3xl lg:text-5xl mx-8 font-semibold mb-4">No game found</div>
+            <div class="text-gray-300 text-xl lg:text-2xl mx-8">Maybe you don't lose, but you are lost right now.</div>
+            <button id="go-play-page" class="mt-16 modern-game-button px-4 py-2 text-md text-white border-none rounded-lg cursor-pointer transition-all transform hover:scale-105">
+                Go to Play Page
+            </button>
+        </div>
 
-                <div id="roundDiv" class="absolute top-[5%] left-[67%] -translate-x-1/2 hidden flex justify-center items-center px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.2vw] text-[#eee] z-10">
-                </div>
+        <div id="roundDiv" class="absolute top-[5%] left-[67%] -translate-x-1/2 hidden flex justify-center items-center px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.2vw] text-[#eee] z-10"></div>
 				<div id="set-toast" class="absolute bottom-[20%] left-1/2 -translate-x-1/2 bg-black text-white text-[1.5vw] px-[2vw] py-[1vw] rounded-[8px] z-10 hidden"></div>
 				<div id="end-message" class="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white text-[2vw] px-[4vw] py-[2vw] rounded-[12px] z-10 hidden"></div>
 				<div id="info" class="absolute top-[20%] left-1/2 -translate-x-1/2 text-white text-[1.8vw] px-[2vw] py-[1vw] rounded-2xl z-10 hidden" style="

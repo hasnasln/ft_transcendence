@@ -44,7 +44,7 @@ export class GameUI {
 		this.info = document.getElementById("info");
 	}
 
-	public removeCache(): void {
+	public resetCache(): void {
 		this.startButton = null;
 		this.scoreBoard = null;
 		this.roundDiv = null;
