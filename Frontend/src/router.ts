@@ -2,8 +2,8 @@ import { gameInstance } from "./pages/play";
 
 export interface Page {
 	onButtonClick?(buttonId: string): void;
-    evaluate(): string;
-    onLoad?(): void;
+	evaluate(): string;
+	onLoad?(): void;
 	onUnload?(): void;
 }
 
@@ -139,7 +139,7 @@ export class NotFoundPage implements Page {
 		</svg>`;
 
 	public evaluate(): string {
-	    return `
+		return `
 	    <section class="bg-white dark:bg-gray-900">
 	      <div class="container flex items-center justify-center min-h-screen px-6 py-12 mx-auto">
 	        <div class="flex flex-col items-center max-w-lg text-center">
@@ -384,7 +384,7 @@ export class ServerErrorPage implements Page {
 		</svg>`;
 
 	public evaluate(): string {
-	    return `
+		return `
 	    <section class="bg-white dark:bg-gray-900">
 	      <div class="container flex items-center justify-center min-h-screen px-6 py-12 mx-auto">
 	        <div class="flex flex-col items-center max-w-lg text-center">
@@ -417,9 +417,15 @@ export class Router {
 	private constructor() {
 		this.currentPath = window.location.pathname;
 		window.addEventListener('popstate', async () => {
-			if (this.currentPath === "/play"
-				&& gameInstance.gameStatus.currentGameStarted
-				&& !window.confirm("Are you sure you want to leave the game?")) {
+			if (this.currentPath === "/game" && gameInstance.gameStatus.currentGameStarted) {
+				history.pushState(null, '', this.currentPath);
+				askUser("Are you sure you want to leave the page?")
+					.then((result) => {
+						if (result) {
+							gameInstance.finalize();
+							this.go(window.location.pathname, true);
+						}
+					});
 				return;
 			}
 			this.go(window.location.pathname, true);
@@ -528,7 +534,7 @@ export class Router {
 		}
 
 		if (legacyPagePath) {
-			contentContainer.id = 'hidden-page-'+legacyPagePath;
+			contentContainer.id = 'hidden-page-' + legacyPagePath;
 			contentContainer.classList.add('hidden');
 		} else {
 			// non-indexed page, do not cache.
@@ -565,7 +571,7 @@ export class Router {
 	public invalidateAllPages(): void {
 		this.activePages.clear();
 	}
-	
+
 	public go(path: string, force: boolean = false): void {
 		if (!force && this.currentPath === path && this.currentPage !== null) {
 			console.warn(`Router skipped routing because already on ${path} and page is loaded.`);
@@ -598,4 +604,44 @@ function buttonAgent(e: MouseEvent, page: Page): void {
 		return;
 
 	page.onButtonClick(buttonId);
+}
+
+
+async function askUser(message: string): Promise<boolean> {
+	const html = `
+    <div id="confirmation-dialog" class="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50" style="z-index:10000;">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-sm w-full mx-4 p-6 text-center">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          ${message}
+        </h3>
+        <button id="confirmation-dialog-accept" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none">
+          Ayrıl
+        </button>
+        <button id="confirmation-dialog-cancel" class="px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700 focus:outline-none">
+          Vazgeç
+        </button>
+      </div>
+    </div>`;
+
+	Router.getInstance().rootContainer().insertAdjacentHTML('beforeend', html);
+
+	const cleanup = () => {
+		const dialog = document.getElementById('confirmation-dialog');
+		if (dialog) dialog.remove();
+	};
+
+	return new Promise<boolean>((resolve) => {
+		const accept = document.querySelector('#confirmation-dialog-accept') as HTMLButtonElement;
+		const cancel = document.querySelector('#confirmation-dialog-cancel') as HTMLButtonElement;
+
+		accept.addEventListener('click', () => {
+			cleanup();
+			resolve(true);
+		});
+
+		cancel.addEventListener('click', () => {
+			cleanup();
+			resolve(false);
+		});
+	});
 }
