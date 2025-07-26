@@ -7,7 +7,7 @@ function getMenu(): string {
   const buttonData = [
     { 
       id: 'btn-vs-computer', 
-      text: exmp.getLang("game.vs-compiter-b"), 
+      key: exmp.getLang("game.vs-compiter-b"), 
       icon: '<svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v5m-3 0h6M4 11h16M5 15h14a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1Z"/></svg>', 
       gradient: 'from-blue-500/20 to-cyan-500/20', 
       hover: 'hover:from-blue-500/30 hover:to-cyan-500/30', 
@@ -16,7 +16,7 @@ function getMenu(): string {
     },
     { 
       id: 'btn-find-rival', 
-      text: exmp.getLang("game.find-reval-b"), 
+      key: exmp.getLang("game.find-reval-b"), 
       icon: '<svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 10.5h.01m-4.01 0h.01M8 10.5h.01M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-6.6a1 1 0 0 0-.69.275l-2.866 2.723A.5.5 0 0 1 8 18.635V17a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/></svg>', 
       gradient: 'from-purple-500/20 to-pink-500/20', 
       hover: 'hover:from-purple-500/30 hover:to-pink-500/30', 
@@ -25,7 +25,7 @@ function getMenu(): string {
     },
     { 
       id: 'btn-local', 
-      text: exmp.getLang("game.local-game"), 
+      key: exmp.getLang("game.local-game"), 
       icon: '<svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/></svg>', 
       gradient: 'from-green-500/20 to-emerald-500/20', 
       hover: 'hover:from-green-500/30 hover:to-emerald-500/30', 
@@ -61,7 +61,9 @@ function getMenu(): string {
 		  ">
             <div class="absolute inset-0 bg-gradient-to-r from-cyan-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <span class="text-2xl filter drop-shadow-lg">${icon}</span>
-            <span class="relative z-10 text-cyan-100">${text}</span>
+            <span
+			data-lanm-key=""
+			class="relative z-10 text-cyan-100">${text}</span>
             <div class="absolute right-4 transform translate-x-2 group-hover:translate-x-0 transition-transform duration-300 opacity-0 group-hover:opacity-100">
               <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -100,7 +102,9 @@ function getDifficulty(): string {
 		backdrop-filter: blur(10px);
 	  ">
         <div class="absolute inset-0 bg-gradient-to-r from-green-400/10 to-emerald-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <span class="relative z-10 text-green-200">${exmp.getLang("game.vs-compiter-difficulty-b-easy")}</span>
+        <span
+		data-langm-key=""
+		class="relative z-10 text-green-200">${exmp.getLang("game.vs-compiter-difficulty-b-easy")}</span>
       </button>
       <button id="difficulty-medium" class="modern-difficulty-button medium group relative w-[80%] h-[15%] text-white text-xl font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer overflow-hidden" style="
 		background: linear-gradient(135deg, rgba(255, 200, 0, 0.15), rgba(255, 150, 0, 0.15));

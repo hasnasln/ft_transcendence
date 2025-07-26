@@ -1,3 +1,5 @@
+import { Button } from "@babylonjs/gui";
+
 const en = {
 	"singin": {
 		"register-b": "Register",
@@ -346,11 +348,25 @@ const tr  = {
 		"local-game": "Yerel Oyun",
 		
 		"tournament": "Turnuva",
+		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		"strat": "__Oyunu Başlat",
+		"continue": "Oyuna Devam Et",
+		"new": "Yeni Oyun Başlat",
+		"goHome": "Ana Sayfaya Dön"
+	},
+	"play" :{
+		"Menu": {
+			"title": "Pong Arena",
+			"subTitle" : "Oyun Modunu Seçin",
+			"Play-Button": {
+				"AI": "Yapay Zekaya Karşı",
+				"Local": "Yerel Oyun",
+				"Online": "Çevrim İçi Oyun"
+			},
+		},
+		"Difficulty":{
 
-		"stratt-game": "Oyunu Başlat",
-		"continue-game": "Oyuna Devam Et",
-		"new-game": "Yeni Oyun Başlat",
-		"sets": "SETLER",
+		}
 	},
 	"toast": {
 		"success": {
