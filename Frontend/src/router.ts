@@ -428,6 +428,7 @@ export class Router {
 					});
 				return;
 			}
+
 			this.go(window.location.pathname, true);
 		});
 
@@ -627,7 +628,7 @@ async function askUser(message: string): Promise<boolean> {
 
 	const cleanup = () => {
 		const dialog = document.getElementById('confirmation-dialog');
-		if (dialog) dialog.remove();
+		dialog?.remove();
 	};
 
 	return new Promise<boolean>((resolve) => {

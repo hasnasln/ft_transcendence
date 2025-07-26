@@ -53,19 +53,19 @@ export class Match {
 	}
 
 	pause() {
-		//console.log(`Pausing match in room ${this.roomId}`);
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} paused.`);
 		this.state = 'paused';
 		this.game!.pauseGameLoop();
 	}
 
 	resume() {
-		//console.log(`Resuming match in room ${this.roomId}`);
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} resumes.`);
 		this.state = 'in-progress';
 		this.game!.resumeGameLoop();
 	}
 
 	finishIncompleteMatch(username?: string) {
-		//console.log(`Finishing incomplete match for ${username}`);
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} finishes incomplete match.`);
 		this.state = 'completed';
 		if (this.game) {
 			this.game.finishIncompleteMatch(username);

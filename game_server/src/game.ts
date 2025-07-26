@@ -54,36 +54,45 @@ export interface Paddle {
 }
 
 export class Game {
+	// Constants
+	public UCF = 40; // Unit Conversion Factor
+	public groundWidth = 20 * this.UCF;
+	public paddleSpeed: number;
+
+	// Entities
 	public ball: Ball;
 	public paddle1: Paddle;
 	public paddle2: Paddle;
-	public lastPaddleUpdate: PaddleState | undefined = undefined;
-	public paddleSpeed: number;
 	public ground: { width: number; height: number };
-	public points: { leftPlayer: number, rightPlayer: number };
-	public sets: { leftPlayer: number, rightPlayer: number };
-	public unitConversionFactor = 40;
-	public groundWidth = 20 * this.unitConversionFactor;
+
+	// Game Status
 	public matchOver = true;
 	public setOver = true;
 	public isPaused = true;
-	public lastUpdatedTime: number | undefined = undefined; /* ms */
-	public gameMode: GameMode;
-	public roomId: string;
-	public io: Server;
-	public interval!: NodeJS.Timeout | undefined;
 	public matchWinner: Side | undefined = undefined;
 	public matchDisconnection: boolean = false;
+	public lastUpdatedTime: number | undefined = undefined;
+
+	// Score
+	public points: { leftPlayer: number; rightPlayer: number };
+	public sets: { leftPlayer: number; rightPlayer: number };
+
+	//  Meta
+	public io: Server;
+	public roomId: string;
+	public gameMode: GameMode;
 	public match: Match;
+	public interval!: NodeJS.Timeout | undefined;
+	public lastPaddleUpdate: PaddleState | undefined = undefined;
 
 	constructor(public leftInput: InputProvider, public rightInput: InputProvider, io: Server, roomId: string, gameMode: GameMode, match: Match) {
 		this.gameMode = gameMode;
 		this.ball = {
-			firstSpeedFactor: 0.18 * this.unitConversionFactor,
+			firstSpeedFactor: 0.18 * this.UCF,
 			airResistanceFactor: 0.998,
-			minimumSpeed: 0.18 * this.unitConversionFactor,
-			maximumSpeed: 0.4 * this.unitConversionFactor,
-			radius: 0.25 * this.unitConversionFactor,
+			minimumSpeed: 0.18 * this.UCF,
+			maximumSpeed: 0.4 * this.UCF,
+			radius: 0.25 * this.UCF,
 			speedIncreaseFactor: 1.7,
 			firstPedalHit: 0,
 			position: { x: 0, y: 0 },
@@ -95,7 +104,7 @@ export class Game {
 			height: this.groundWidth * (152.5) / 274,
 		};
 
-		const w = 0.2 * this.unitConversionFactor;
+		const w = 0.2 * this.UCF;
 		this.paddle1 = {
 			width: w,
 			height: this.ground.height * (0.3),
@@ -106,7 +115,7 @@ export class Game {
 		};
 
 		this.paddle2 = {
-			width: 0.2 * this.unitConversionFactor,
+			width: 0.2 * this.UCF,
 			height: this.ground.height * (0.3),
 			position: {
 				x: this.groundWidth / 2 - this.paddle1.width,
@@ -114,7 +123,7 @@ export class Game {
 			}
 		};
 
-		this.paddleSpeed = 0.2 * this.unitConversionFactor;
+		this.paddleSpeed = 0.2 * this.UCF;
 
 		this.points = { leftPlayer: 0, rightPlayer: 0 };
 		this.sets = { leftPlayer: 0, rightPlayer: 0 };
@@ -262,18 +271,18 @@ export class Game {
 		];
 
 		sides.forEach(({ socket }) => {
-			if (socket) {
-				socket.on("pause-resume", (data: { status: string }) => {
-					if (data.status === "pause" && !this.isPaused)
-						this.pauseGameLoop();
-					else if (data.status === "resume" && this.isPaused)
-						this.resumeGameLoop();
-				});
-			}
+			if (!socket) return;
+			socket.on("pause-resume", (data: { status: string }) => {
+				if (data.status === "pause" && !this.isPaused)
+					this.pauseGameLoop();
+				else if (data.status === "resume" && this.isPaused)
+					this.resumeGameLoop();
+			});
 		});
 
 		if (!this.isPaused) {
-			Math.random() <= 0.5 ? this.resetBall('leftPlayer') : this.resetBall('rightPlayer');
+			const initialPlayer = Math.random() < 0.5 ? 'leftPlayer' : 'rightPlayer';
+			this.resetBall(initialPlayer);
 		}
 
 		this.interval = setInterval(() => PhysicsEngine.getInstance().update(this), 1000 / FPS); // 60 FPS

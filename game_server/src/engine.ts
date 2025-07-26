@@ -119,7 +119,7 @@ function handlePaddleBounce(g: Game, _dt: number): boolean {
 				g.ball.velocity.y += relativeY * 0.05;
 				if (g.ball.firstPedalHit++) {
 					g.ball.speedIncreaseFactor = 1.2;
-					g.ball.minimumSpeed = 0.25 * g.unitConversionFactor;
+					g.ball.minimumSpeed = 0.25 * g.UCF;
 				}
 				g.ball.velocity.x *= g.ball.speedIncreaseFactor;
 				g.ball.velocity.y *= g.ball.speedIncreaseFactor;
@@ -156,9 +156,9 @@ function enforceSpeedLimits(g: Game, _dt: number): boolean {
 }
 
 function isBallOutOfBounds(g: Game): number {
-	if (g.ball.position.x > g.ground.width / 2 + 5 * g.unitConversionFactor)
+	if (g.ball.position.x > g.ground.width / 2 + 5 * g.UCF)
 		return -1;
-	if (g.ball.position.x < -g.ground.width / 2 - 5 * g.unitConversionFactor)
+	if (g.ball.position.x < -g.ground.width / 2 - 5 * g.UCF)
 		return 1;
 	return 0;
 }
