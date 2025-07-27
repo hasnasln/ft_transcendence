@@ -38,15 +38,6 @@ export class GameEmitter {
 	}
 
 	public emitSetState(game: Game): void {
-		/*
-		const setState = {
-			points: game.points,
-			sets: game.sets,
-			usernames: {
-				left: game.leftInput.getUsername(),
-				right: game.rightInput.getUsername(),
-			},
-		};*/
 		const setState = {
 			points: game.scoringManager.getScores(),
 			sets: game.scoringManager.getSets(),
