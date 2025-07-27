@@ -117,15 +117,19 @@ export class GameManager {
 	}
 
 	public startPlayProcess(): void {
+		this.uiManager.cacheDOMElements();
+		GamePage.enablePage();
+		GameEventBus.getInstance().emit({ type: 'CONNECTING_TO_SERVER' });
 		WebSocketClient.getInstance().connect("http://localhost:3001")
-			.catch(err => 	console.error("WebSocket connection error:", err))
+			.catch(err => {
+				GameEventBus.getInstance().emit({ type: 'CONNECTING_TO_SERVER_FAILED', payload: { error: err } });
+				throw new Error("WebSocket connection failed.");
+			})
 			.then(() => {
+				GameEventBus.getInstance().emit({ type: 'CONNECTED_TO_SERVER' })
 				if (Router.getInstance().getCurrentPath() !== '/game') {
 					throw new Error("GameManager should be started from /game path, but current path is: " + Router.getInstance().getCurrentPath());
 				}
-
-				this.uiManager.cacheDOMElements();
-				GamePage.enablePage();
 
 				if (this.gameStatus.game_mode === 'localGame' || this.gameStatus.game_mode === 'vsAI')
 					this.uiManager.onStartButtonShown();
