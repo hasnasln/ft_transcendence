@@ -4,9 +4,10 @@ import { GameMode } from "./server";
 import { Match } from "./matchManager";
 import { PhysicsEngine } from "./engine";
 import { GameEmitter } from "./gameEmitter";
+import { ScoringManager } from "./scoringManager";
 
 const FPS = 60; 
-type Side = 'leftPlayer' | 'rightPlayer';
+export type Side = 'leftPlayer' | 'rightPlayer';
 
 export interface GameConstants {
 	groundWidth: number;
@@ -67,15 +68,12 @@ export class Game {
 
 	// Game Status
 	public matchOver = true;
-	public setOver = true;
+	public scoringManager: ScoringManager = new ScoringManager();
+
 	public isPaused = true;
 	public matchWinner: Side | undefined = undefined;
 	public matchDisconnection: boolean = false;
 	public lastUpdatedTime: number | undefined = undefined;
-
-	// Score
-	public points: { leftPlayer: number; rightPlayer: number };
-	public sets: { leftPlayer: number; rightPlayer: number };
 
 	//  Meta
 	public io: Server;
@@ -125,9 +123,6 @@ export class Game {
 
 		this.paddleSpeed = 0.2 * this.UCF;
 
-		this.points = { leftPlayer: 0, rightPlayer: 0 };
-		this.sets = { leftPlayer: 0, rightPlayer: 0 };
-
 		this.io = io;
 		this.roomId = roomId;
 		this.match = match;
@@ -149,22 +144,15 @@ export class Game {
 		return this.paddle2;
 	}
 
-	public resetScores() {
-		this.points.leftPlayer = 0;
-		this.points.rightPlayer = 0;
-	}
-
 	public startNextSet() {
 		this.lastUpdatedTime = undefined;
-		this.setOver = true;
 
 		GameEmitter.getInstance().emitBallState(this);
 		GameEmitter.getInstance().emitSetState(this);
 		GameEmitter.getInstance().emitGameState(this);
 
 		setTimeout(() => {
-			this.resetScores();
-			this.setOver = false;
+			this.scoringManager.resetSet();
 			GameEmitter.getInstance().emitGameState(this);
 			GameEmitter.getInstance().emitSetState(this);
 			this.lastUpdatedTime = Date.now();
@@ -188,39 +176,30 @@ export class Game {
 		}, 1000);
 	}
 
-	public isSetOver(): boolean {
-		const p1 = this.points.leftPlayer;
-		const p2 = this.points.rightPlayer;
-		return (p1 >= 3 || p2 >= 3) && Math.abs(p1 - p2) >= 2;
-	}
-
 	public scorePoint(winner: Side) {
 		if (this.matchOver || this.isPaused) return;
 
-		this.points[winner]++;
+		this.scoringManager.onScore(winner); 
 
-		if (!this.isSetOver()) {
+		if (!this.scoringManager.isSetOver()) {
 			this.resetBall(winner);
-			return;
-		}
-
-		if (this.points.leftPlayer > this.points.rightPlayer) {
-			this.sets.leftPlayer++;
-		} else {
-			this.sets.rightPlayer++;
-		}
-
-		const shouldMatchEnded = (this.sets.leftPlayer === 3 || this.sets.rightPlayer === 3);
-		if (!shouldMatchEnded){
+		} else if (!this.scoringManager.continueNewRound()) {
 			this.startNextSet();
 			this.resetBall(winner);
-			return;
+		} else {
+			this.matchOver = true;
+			this.matchWinner = this.scoringManager.getMatchWinner();
+			GameEmitter.getInstance().emitGameState(this); 
 		}
-		
-		this.resetBall(winner);
+	}
+
+	public finishIncompleteMatch(username?: string) {
+		let inCompleteWinner: Side | undefined = undefined;
+		if (username)
+			inCompleteWinner = (username === this.leftInput.getUsername() ? 'leftPlayer' : 'rightPlayer') as Side;
 		this.matchOver = true;
-		this.matchWinner = winner;
-		GameEmitter.getInstance().emitBallState(this);
+		this.matchWinner = inCompleteWinner;
+		this.matchDisconnection = true;
 		GameEmitter.getInstance().emitGameState(this);
 	}
 
@@ -238,21 +217,11 @@ export class Game {
 	public resumeGameLoop() {
 		this.isPaused = false;
 		if (!this.interval) {
-			this.interval = setInterval(() => PhysicsEngine.getInstance().update(this), 1000 / 120);
+			this.interval = setInterval(() => PhysicsEngine.getInstance().update(this), 1000 / FPS);
 		}
 
 		this.lastUpdatedTime = Date.now();
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game resume now.`);
-	}
-
-	public finishIncompleteMatch(username?: string) {
-		let inCompleteWinner: Side | undefined = undefined;
-		if (username)
-			inCompleteWinner = (username === this.leftInput.getUsername() ? 'leftPlayer' : 'rightPlayer') as Side;
-		this.matchOver = true;
-		this.matchWinner = inCompleteWinner;
-		this.matchDisconnection = true;
-		GameEmitter.getInstance().emitGameState(this);
 	}
 
 	public startGameLoop() {
@@ -260,7 +229,8 @@ export class Game {
 		GameEmitter.getInstance().emitSetState(this);
 
 		this.matchOver = false;
-		this.setOver = false;
+		this.scoringManager.isSetOver();
+		this.scoringManager.setSetOver(false); //todo not sure if needed
 		this.isPaused = false;
 
 		GameEmitter.getInstance().emitGameState(this);		

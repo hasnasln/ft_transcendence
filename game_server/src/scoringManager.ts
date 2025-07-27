@@ -4,11 +4,9 @@ export class ScoringManager {
 
 	private scores: { [side in Side]: number } = { leftPlayer: 0, rightPlayer: 0 };
 	private sets: { [side in Side]: number } = { leftPlayer: 0, rightPlayer: 0 };
-	private setOver: boolean = true;
+	private setOver: boolean = false;
 
-	public constructor() {
-
-	}
+	public constructor() {}
 
 	public onScore(side: Side): void {
 		this.scores[side]++;
@@ -37,11 +35,24 @@ export class ScoringManager {
 		return this.sets.leftPlayer >= 3 || this.sets.rightPlayer >= 3;
 	}
 
+	public getMatchWinner(): Side | undefined {
+		if (this.continueNewRound()) return undefined;
+		return this.sets.leftPlayer > this.sets.rightPlayer ? 'leftPlayer' : 'rightPlayer';
+	}
+
 	public getScores(): { [side in Side]: number } {
 		return this.scores;
 	}
 
 	public getSets(): { [side in Side]: number } {
 		return this.sets;
+	}
+
+	public isSetOver(): boolean {
+		return this.setOver;
+	}
+
+	public setSetOver(value: boolean): void {
+		this.setOver = value;
 	}
 }

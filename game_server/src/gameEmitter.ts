@@ -27,7 +27,7 @@ export class GameEmitter {
 	public emitGameState(game: Game): void {
 		const gameState: GameState = {
 			matchOver: game.matchOver,
-			setOver: game.setOver,
+			setOver: game.scoringManager.isSetOver(),
 			isPaused: game.isPaused,
 			matchWinner: game.matchWinner,
 			matchDisconnection: game.matchDisconnection,
@@ -38,9 +38,18 @@ export class GameEmitter {
 	}
 
 	public emitSetState(game: Game): void {
+		/*
 		const setState = {
 			points: game.points,
 			sets: game.sets,
+			usernames: {
+				left: game.leftInput.getUsername(),
+				right: game.rightInput.getUsername(),
+			},
+		};*/
+		const setState = {
+			points: game.scoringManager.getScores(),
+			sets: game.scoringManager.getSets(),
 			usernames: {
 				left: game.leftInput.getUsername(),
 				right: game.rightInput.getUsername(),

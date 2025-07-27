@@ -57,7 +57,6 @@ function skipIfMatchOver(g: Game, _dt: number): boolean {
 			}
 		}
 		g.pauseGameLoop();
-		//g.exportGameState();
         GameEmitter.getInstance().emitGameState(g);
 
 		if (g.match.gameMode === 'localGame' || g.match.gameMode === 'vsAI')
@@ -69,7 +68,7 @@ function skipIfMatchOver(g: Game, _dt: number): boolean {
 }
 
 function skipIfSetOrPausedOver(g: Game, _dt: number): boolean {
-	return !(g.setOver || g.isPaused);
+	return !(g.scoringManager.isSetOver() || g.isPaused);
 }
 
 function moveBall(g: Game, dt: number): boolean {
