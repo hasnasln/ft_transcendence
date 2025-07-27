@@ -32,10 +32,8 @@ export class Match {
 	roomId: string;
 	players: [Player, Player];
 	state: 'waiting' | 'in-progress' | 'paused' | 'completed' = 'waiting';
-	startTime: number | null = null;
 	game: Game | null = null;
 	gameMode: GameMode | null = null;
-	level?: string;
 	reMatch = false;
 	readyTimeout: NodeJS.Timeout | null = null;
 	tournament?: { code: string, roundNo: number, finalMatch: boolean }
@@ -48,7 +46,6 @@ export class Match {
 	start() {
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} started.`);
 		this.state = 'in-progress';
-		this.startTime = Date.now();
 		this.game!.startGameLoop();
 	}
 
@@ -117,7 +114,6 @@ export class MatchManager {
 		const roomId = `room_${human.username}_vs_AI_${level}`;
 		const match = new Match(roomId, human, human);
 		match.gameMode = 'vsAI';
-		match.level = level;
 		this.matchesByRoom.set(roomId, match);
 		this.roomsByUsername.set(human.username, roomId);
 		human.socket.join(roomId);
@@ -403,12 +399,3 @@ export class MatchManager {
 		return undefined;
 	}
 }
-
-function mapShift<K, V>(map: Map<K, V>): V | undefined {
-	const firstKeyValuCouple = map.entries().next();
-	if (firstKeyValuCouple.done) return undefined;
-	const [key, val] = firstKeyValuCouple.value;
-	map.delete(key);
-	return val;
-}
-
