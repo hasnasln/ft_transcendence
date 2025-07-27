@@ -1,0 +1,145 @@
+import { MatchManager, Player } from "./matchManager";
+import { Server, Socket } from "socket.io";
+import { apiCall, GameStatus, HTTPMethod, User } from "./server";
+import { emitError } from "./errorHandling";
+import { createServer } from "http";
+
+export class ConnectionHandler {
+
+    private static _instance: ConnectionHandler;
+
+    private connectedPlayersMap: Map<string, Player> = new Map();
+    private io: Server = undefined as any;
+
+    private constructor() {
+        
+    }
+
+    public static getInstance(): ConnectionHandler {
+        if (!ConnectionHandler._instance) {
+            ConnectionHandler._instance = new ConnectionHandler();
+        }
+        return ConnectionHandler._instance;
+    }
+
+    public init() {
+        const httpServer = createServer();
+        this.io = new Server(httpServer, {
+            cors: { origin: "*" },
+            pingInterval: 1000,
+            pingTimeout: 2000
+        });
+        
+        const PORT = 3001;
+        httpServer.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+
+        this.io.use(async (socket, next) => {
+            const error = await this.acceptInitialConnection(socket);
+            if (error)
+                return next(error);
+            next();
+        });
+
+        this.io.on("connect", socket => this.handleConnectionRequest(socket));
+    }
+
+    public async acceptInitialConnection(socket: Socket): Promise<Error | null> {
+        const token = socket.handshake.auth?.token;
+        if (!token) {
+            //console.log(`[Server] Token gönderilmedi. ID: ${socket.id}`);
+            return new Error("Authentication error: token missing");
+        }
+    
+        const response = await apiCall('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined, token);
+        const body = await response.json();
+    
+        if (!response.ok) {
+            return new Error("Token validation error: " + body.error);
+        }
+    
+        const user: User = { uuid: body.data.uuid, username: body.data.username, token: token };
+        (socket as any).user = user;
+    
+        if (MatchManager.getInstance().connectedPlayers.has(user.username)) {
+            return new Error("Existing session found.");
+        }
+        // note: do not assume player is connected here.
+        return null;
+    }
+
+    public acceptConnection(socket: Socket, player: Player): boolean {
+        if (this.connectedPlayersMap.has(player.username)) {
+            emitError("Şu anda oyun sunucusuna başka bir oturumdan bağlandınız. Yalnızca bir oturumdan oynayabilirsiniz!", socket.id, ConnectionHandler.getInstance().getServer());
+            socket.disconnect(true);
+            return false;
+        }
+        
+        this.connectedPlayersMap.set(player.username, player);
+        return true;
+    }
+
+    public handleConnectionRequest(socket: Socket): void {
+        const user = (socket as any).user;
+        const username = user.username;
+        const uuid = user.uuid;
+        const token = user.token;
+        let player: Player = { socket, username, uuid, token, socketReady: false };
+
+        if (!this.acceptConnection(socket, player)) {
+            return;
+        }
+
+        console.log(`[${new Date().toISOString()}] ${username.padStart(10)} connected.`);
+        socket.on("rejoin", () => {
+            console.log(`[${new Date().toISOString()}] ${username.padStart(10)} 'rejoin' message received.`);
+            const match = MatchManager.getInstance().getMatchByPlayer(player.username);
+            if (!match || (match.gameMode !== 'remoteGame' && match.gameMode !== 'tournament') || (match.state !== 'in-progress' && match.state !== 'paused')) {
+                socket.emit("rejoin-response", {status: "rejected"});
+                return;
+            }
+
+            try {
+                MatchManager.getInstance().handleReconnect(player, match);
+            } catch (err: any) {
+                emitError(err.message, socket.id,  ConnectionHandler.getInstance().getServer());
+                socket.disconnect(true);
+                console.log(err);
+                return;
+            }
+        });
+
+        socket.on("create", async (gameStatus: GameStatus) => {
+            console.log(`[${new Date().toISOString()}] ${username.padStart(10)} 'create' message received.`);
+            MatchManager.getInstance().handleMatchRequest(player, gameStatus);
+        });
+
+        socket.on("reset-match", () => {
+            console.log(`[${new Date().toISOString()}] ${username.padStart(10)} 'reset-match' message received.`);
+            const activeMatch = MatchManager.getInstance().getMatchByPlayer(player.username);
+            if (activeMatch) {
+                activeMatch.finishIncompleteMatch();
+                MatchManager.getInstance().clearMatch(activeMatch);
+            }
+        });
+
+        socket.on("disconnect", () => {
+            console.log(`[${new Date().toISOString()}] ${username.padStart(10)} 'disconnect' message received.`);
+            MatchManager.getInstance().handleDisconnect(player);
+            ConnectionHandler.getInstance().onDisconnection(player);
+        });
+    }
+
+    public getServer(): Server {
+        return this.io;
+    }
+
+    public onDisconnection(player: Player): void {
+		this.connectedPlayersMap.delete(player.username);
+
+    }
+
+
+
+}
