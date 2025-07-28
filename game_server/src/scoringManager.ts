@@ -1,12 +1,16 @@
-import { Side } from './game';
+import { Game, Side } from './game';
+import { GameEmitter } from './gameEmitter';
 
 export class ScoringManager {
 
 	private scores: { [side in Side]: number } = { leftPlayer: 0, rightPlayer: 0 };
 	private sets: { [side in Side]: number } = { leftPlayer: 0, rightPlayer: 0 };
 	private setOver: boolean = false;
+	private game: Game;
 
-	public constructor() {}
+	public constructor(game: Game) {
+		this.game = game;
+	}
 
 	public onScore(side: Side): void {
 		this.scores[side]++;
@@ -23,6 +27,19 @@ export class ScoringManager {
 	private completeSet(winner: Side): void {
 		this.sets[winner]++;
 		this.setOver = true;
+		if (this.continueNewRound()) {
+			this.startNextSet();
+		}
+	}
+
+	private startNextSet(): void {
+		this.game.lastUpdatedTime = undefined;
+		setTimeout(() => {
+			this.resetSet();
+			GameEmitter.getInstance().emitGameState(this.game);
+			GameEmitter.getInstance().emitSetState(this.game);
+			this.game.lastUpdatedTime = Date.now();
+		}, 3000);
 	}
 
 	public resetSet(): void {
@@ -32,7 +49,7 @@ export class ScoringManager {
 
 	/** returns true if new round should start */
 	public continueNewRound(): boolean {
-		return this.sets.leftPlayer >= 3 || this.sets.rightPlayer >= 3;
+		return this.sets.leftPlayer < 3 && this.sets.rightPlayer < 3;
 	}
 
 	public getMatchWinner(): Side | undefined {

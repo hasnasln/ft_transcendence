@@ -1,3 +1,4 @@
+import { ConnectionHandler } from "./connection";
 import { GameConstants, GameState, PaddleState, Game } from "./game";
 
 export class GameEmitter {
@@ -21,7 +22,7 @@ export class GameEmitter {
 			paddleHeight: game.paddle1.height / game.UCF,
 		};
 
-		game.io.to(game.roomId).emit("init", gameConstants);
+		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("init", gameConstants);
 	}
 
 	public emitGameState(game: Game): void {
@@ -31,10 +32,10 @@ export class GameEmitter {
 			isPaused: game.isPaused,
 			matchWinner: game.matchWinner,
 			matchDisconnection: game.matchDisconnection,
-			roundNumber: game.match.tournament?.roundNo,
+			roundNumber: game.tournament?.roundNo,
 		};
 
-		game.io.to(game.roomId).emit("gameState", gameState);
+		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("gameState", gameState);
 	}
 
 	public emitSetState(game: Game): void {
@@ -42,12 +43,12 @@ export class GameEmitter {
 			points: game.scoringManager.getScores(),
 			sets: game.scoringManager.getSets(),
 			usernames: {
-				left: game.leftInput.getUsername(),
-				right: game.rightInput.getUsername(),
+				left: game.leftInput!.getUsername(),
+				right: game.rightInput!.getUsername(),
 			},
 		};
 
-		game.io.to(game.roomId).emit("updateState", setState);
+		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("updateState", setState);
 	}
 
 	public emitBallState(game: Game): void {
@@ -59,7 +60,7 @@ export class GameEmitter {
 			return;
 		}
 
-		game.io.to(game.roomId).emit("bu", `${x.toFixed(2)}:${y.toFixed(2)}`);
+		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("bu", `${x.toFixed(2)}:${y.toFixed(2)}`);
 	}
 
 	public emitPaddleState(game: Game): void {
@@ -77,6 +78,6 @@ export class GameEmitter {
 		}
 
 		game.lastPaddleUpdate = paddleState;
-		game.io.to(game.roomId).emit("paddleUpdate", paddleState);
+		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("paddleUpdate", paddleState);
 	}
 }

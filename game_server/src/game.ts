@@ -1,7 +1,6 @@
-import { Server } from "socket.io";
 import { InputProvider } from "./inputProviders";
 import { GameMode } from "./server";
-import { Match } from "./matchManager";
+import { Player } from "./matchManager";
 import { GameEmitter } from "./gameEmitter";
 import { ScoringManager } from "./scoringManager";
 import { GameOrchestrator } from "./orchestrator";
@@ -67,7 +66,7 @@ export class Game {
 
 	// Game Status
 	public matchOver = true;
-	public scoringManager: ScoringManager = new ScoringManager();
+	public scoringManager: ScoringManager = new ScoringManager(this);
 
 	public isPaused = true;
 	public matchWinner: Side | undefined = undefined; //todo encapsulate this to scoring manager
@@ -75,14 +74,23 @@ export class Game {
 	public lastUpdatedTime: number | undefined = undefined;
 
 	//  Meta
-	public io: Server;
 	public roomId: string;
-	public gameMode: GameMode;
-	public match: Match;
+	public gameMode: GameMode | undefined = undefined;
 	public lastPaddleUpdate: PaddleState | undefined = undefined;
 
-	constructor(public leftInput: InputProvider, public rightInput: InputProvider, io: Server, roomId: string, gameMode: GameMode, match: Match) {
-		this.gameMode = gameMode;
+	public leftInput: InputProvider | undefined;
+	public rightInput: InputProvider | undefined;
+
+	
+	public state: 'waiting' | 'in-progress' | 'paused' | 'completed' = 'waiting';
+	public reMatch: boolean = false; //todo: this is a temporary solution to handle rematch requests. It should be handled in MatchManager.
+
+	public players: [Player, Player];
+	public tournament?: { code: string, roundNo: number, finalMatch: boolean }
+	public readyTimeout: NodeJS.Timeout | null = null;
+
+	constructor(roomId: string, player1: Player, player2: Player) {
+		this.players = [player1, player2];
 		this.ball = {
 			firstSpeedFactor: 0.18 * this.UCF,
 			airResistanceFactor: 0.998,
@@ -121,9 +129,7 @@ export class Game {
 
 		this.paddleSpeed = 0.2 * this.UCF;
 
-		this.io = io;
 		this.roomId = roomId;
-		this.match = match;
 	}
 
 	public getBall() {
@@ -140,22 +146,6 @@ export class Game {
 
 	public getPaddle2() {
 		return this.paddle2;
-	}
-
-	//todo encapsulate this to scoring manager
-	public startNextSet() {
-		this.lastUpdatedTime = undefined;
-
-		GameEmitter.getInstance().emitBallState(this);
-		GameEmitter.getInstance().emitSetState(this);
-		GameEmitter.getInstance().emitGameState(this);
-
-		setTimeout(() => {
-			this.scoringManager.resetSet();
-			GameEmitter.getInstance().emitGameState(this);
-			GameEmitter.getInstance().emitSetState(this);
-			this.lastUpdatedTime = Date.now();
-		}, 3000);
 	}
 
 	public resetBall(lastScorer: "leftPlayer" | "rightPlayer") {
@@ -180,22 +170,24 @@ export class Game {
 
 		this.scoringManager.onScore(winner); 
 
-		if (!this.scoringManager.isSetOver()) {
-			this.resetBall(winner);
-		} else if (!this.scoringManager.continueNewRound()) {
-			this.startNextSet();
+		if (this.scoringManager.continueNewRound()) {
 			this.resetBall(winner);
 		} else {
 			this.matchOver = true;
-			this.matchWinner = this.scoringManager.getMatchWinner();
-			GameEmitter.getInstance().emitGameState(this); 
+			this.matchWinner = this.scoringManager.getMatchWinner()!;
 		}
+
+		GameEmitter.getInstance().emitBallState(this);
+		GameEmitter.getInstance().emitSetState(this);
+		GameEmitter.getInstance().emitGameState(this);
 	}
 
 	public finishIncompleteMatch(username?: string) {
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} finishes incomplete match.`);
+		this.state = 'completed';
 		let inCompleteWinner: Side | undefined = undefined;
 		if (username)
-			inCompleteWinner = (username === this.leftInput.getUsername() ? 'leftPlayer' : 'rightPlayer') as Side;
+			inCompleteWinner = (username === this.leftInput!.getUsername() ? 'leftPlayer' : 'rightPlayer') as Side;
 		this.matchOver = true;
 		this.matchWinner = inCompleteWinner;
 		this.matchDisconnection = true;
@@ -230,8 +222,8 @@ export class Game {
 		GameEmitter.getInstance().emitGameState(this);		
 
 		const sides = [
-			{ socket: typeof this.leftInput.getSocket === 'function' ? this.leftInput.getSocket()! : null },
-			{ socket: typeof this.rightInput.getSocket === 'function' ? this.rightInput.getSocket()! : null }
+			{ socket: typeof this.leftInput!.getSocket === 'function' ? this.leftInput!.getSocket()! : null },
+			{ socket: typeof this.rightInput!.getSocket === 'function' ? this.rightInput!.getSocket()! : null }
 		];
 
 		sides.forEach(({ socket }) => {
@@ -250,6 +242,31 @@ export class Game {
 		}
 
 		GameOrchestrator.getInstance().add(this);
+	}
+
+	//--
+
+	start() {
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} started.`);
+		this.state = 'in-progress';
+		this!.startGameLoop();
+	}
+
+	pause() {
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} paused.`);
+		this.state = 'paused';
+		this!.pauseGameLoop();
+	}
+
+	resume() {
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} resumes.`);
+		this.state = 'in-progress';
+		this!.resumeGameLoop();
+	}
+
+	end() {
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} ended.`);
+		this.state = 'completed';
 	}
 }
 

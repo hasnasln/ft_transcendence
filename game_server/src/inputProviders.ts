@@ -33,8 +33,13 @@ export class AIPlayerInput implements InputProvider {
 	private lastDecisionTime = 0;
 	private targetY = 0;
 	private refreshTime: number = 1500; //ms
+	public game: Game;
+	public paddle: Paddle;
 
-	constructor(private readonly getGame: () => Game, private readonly getPaddle: () => Paddle, level: string) {
+
+	constructor(game: Game, paddle: Paddle, level: string) {
+		this.game = game;
+		this.paddle = paddle;
 		const aiNames = ["Hamza (AI)", "Hasan (AI)", "Fatma (AI)", "Ayhan (AI)", "Batuhan (AI)"];
 		this.username = aiNames[Math.floor(Math.random() * aiNames.length)];
 
@@ -65,6 +70,14 @@ export class AIPlayerInput implements InputProvider {
 		if (Math.abs(diff) < paddleSpeed)
 			return 0;
 		return diff > 0 ? 1 : -1;
+	}
+
+	public getGame(): Game {
+		return this.game;
+	}
+
+	public getPaddle(): Paddle {
+		return this.paddle;
 	}
 
 	getUsername() { return this.username; }

@@ -71,7 +71,7 @@ export class ConnectionHandler {
 
     public acceptConnection(socket: Socket, player: Player): boolean {
         if (this.connectedPlayersMap.has(player.username)) {
-            emitError("Şu anda oyun sunucusuna başka bir oturumdan bağlandınız. Yalnızca bir oturumdan oynayabilirsiniz!", socket.id, ConnectionHandler.getInstance().getServer());
+            emitError("Şu anda oyun sunucusuna başka bir oturumdan bağlandınız. Yalnızca bir oturumdan oynayabilirsiniz!", socket.id);
             socket.disconnect(true);
             return false;
         }
@@ -94,16 +94,16 @@ export class ConnectionHandler {
         console.log(`[${new Date().toISOString()}] ${username.padStart(10)} connected.`);
         socket.on("rejoin", () => {
             console.log(`[${new Date().toISOString()}] ${username.padStart(10)} 'rejoin' message received.`);
-            const match = MatchManager.getInstance().getMatchByPlayer(player.username);
-            if (!match || (match.gameMode !== 'remoteGame' && match.gameMode !== 'tournament') || (match.state !== 'in-progress' && match.state !== 'paused')) {
+            const game = MatchManager.getInstance().getMatchByPlayer(player.username);
+            if (!game || (game.gameMode !== 'remoteGame' && game.gameMode !== 'tournament') || (game.state !== 'in-progress' && game.state !== 'paused')) {
                 socket.emit("rejoin-response", {status: "rejected"});
                 return;
             }
 
             try {
-                MatchManager.getInstance().handleReconnect(player, match);
+                MatchManager.getInstance().handleReconnect(player, game);
             } catch (err: any) {
-                emitError(err.message, socket.id,  ConnectionHandler.getInstance().getServer());
+                emitError(err.message, socket.id);
                 socket.disconnect(true);
                 console.log(err);
                 return;

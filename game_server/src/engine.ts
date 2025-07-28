@@ -48,20 +48,20 @@ function skipIfMatchOver(g: Game, _dt: number): boolean {
 	if (g.matchOver) {
 		if (g.gameMode === 'tournament') {
 			const winnerInput = g.matchWinner === 'leftPlayer' ? g.leftInput : g.rightInput;
-			const uuid = winnerInput.getUuid();
-			const username = winnerInput.getUsername();
+			const uuid = winnerInput!.getUuid();
+			const username = winnerInput!.getUsername();
 			try {
-				pushWinnerToTournament(g.match.tournament?.code as string, g.match.tournament?.roundNo as number, { uuid, username });
+				pushWinnerToTournament(g.tournament?.code as string, g.tournament?.roundNo as number, { uuid, username });
 			} catch (err: any) {
-				emitError(err.message, g.roomId, g.io);
+				emitError(err.message, g.roomId);
 			}
 		}
 		g.pauseGameLoop();
         GameEmitter.getInstance().emitGameState(g);
 
-		if (g.match.gameMode === 'localGame' || g.match.gameMode === 'vsAI')
-			matchManager.clearMatch(g.match);
-		g.match.end();
+		if (g.gameMode === 'localGame' || g.gameMode === 'vsAI')
+			matchManager.clearMatch(g);
+		g.end();
 		return false;
 	}
 	return true;
@@ -79,8 +79,8 @@ function moveBall(g: Game, dt: number): boolean {
 
 function movePaddles(g: Game, _dt: number): boolean {
 	const upperBound = g.ground.height / 2 - g.paddle1.height / 2 + (1.5 * g.paddle1.width);
-	const d1 = g.leftInput.getPaddleDelta() * g.paddleSpeed * _dt;
-	const d2 = g.rightInput.getPaddleDelta() * g.paddleSpeed * _dt;
+	const d1 = g.leftInput!.getPaddleDelta() * g.paddleSpeed * _dt;
+	const d2 = g.rightInput!.getPaddleDelta() * g.paddleSpeed * _dt;
 	if (Math.abs(g.paddle1.position.y + d1) <= upperBound) g.paddle1.position.y += d1;
 	if (Math.abs(g.paddle2.position.y + d2) <= upperBound) g.paddle2.position.y += d2;
 	return true;
