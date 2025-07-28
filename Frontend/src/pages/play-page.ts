@@ -7,7 +7,7 @@ function getMenu(): string {
   const buttonData = [
     { 
       id: 'btn-vs-computer', 
-      key: exmp.getLang("game.vs-compiter-b"), 
+      key: "play.Menu.Button.AI", 
       icon: '<svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v5m-3 0h6M4 11h16M5 15h14a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1Z"/></svg>', 
       gradient: 'from-blue-500/20 to-cyan-500/20', 
       hover: 'hover:from-blue-500/30 hover:to-cyan-500/30', 
@@ -16,7 +16,7 @@ function getMenu(): string {
     },
     { 
       id: 'btn-find-rival', 
-      key: exmp.getLang("game.find-reval-b"), 
+      key: "play.Menu.Button.Online",
       icon: '<svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 10.5h.01m-4.01 0h.01M8 10.5h.01M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-6.6a1 1 0 0 0-.69.275l-2.866 2.723A.5.5 0 0 1 8 18.635V17a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/></svg>', 
       gradient: 'from-purple-500/20 to-pink-500/20', 
       hover: 'hover:from-purple-500/30 hover:to-pink-500/30', 
@@ -25,7 +25,7 @@ function getMenu(): string {
     },
     { 
       id: 'btn-local', 
-      key: exmp.getLang("game.local-game"), 
+      key: "play.Menu.Button.Local", 
       icon: '<svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/></svg>', 
       gradient: 'from-green-500/20 to-emerald-500/20', 
       hover: 'hover:from-green-500/30 hover:to-emerald-500/30', 
@@ -50,10 +50,14 @@ function getMenu(): string {
 		animation: borderGlow 3s ease-in-out infinite;
 	">
       <div class="text-center mb-6">
-        <h2 class="text-white text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-3">PONG ARENA</h2>
-        <p class="text-cyan-200/80 text-lg mt-3 font-medium">Oyun modunu seçin</p>
+        <h2
+		data-langm-key="play.Menu.title"
+		class="text-white text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-3">!_!</h2>
+        <p
+  		data-langm-key="play.Menu.subTitle"
+		class="text-cyan-200/80 text-lg mt-3 font-medium">!_!</p>
       </div>
-      ${buttonData.map(({id, text, icon, gradient, hover, border, shadow}) => `
+      ${buttonData.map(({id, key, icon, gradient, hover, border, shadow}) => `
         <div class="group relative w-full max-w-md">
           <button id="${id}" class="modern-menu-button relative w-full h-16 bg-gradient-to-r ${gradient} ${hover} text-white text-xl font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer backdrop-blur-sm shadow-lg ${shadow} overflow-hidden flex items-center justify-center gap-3" style="
 			border: 1px solid rgba(0, 255, 255, 0.3);
@@ -62,8 +66,8 @@ function getMenu(): string {
             <div class="absolute inset-0 bg-gradient-to-r from-cyan-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <span class="text-2xl filter drop-shadow-lg">${icon}</span>
             <span
-			data-lanm-key=""
-			class="relative z-10 text-cyan-100">${text}</span>
+			data-langm-key="${key}"
+			class="relative z-10 text-cyan-100">!_!</span>
             <div class="absolute right-4 transform translate-x-2 group-hover:translate-x-0 transition-transform duration-300 opacity-0 group-hover:opacity-100">
               <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -92,7 +96,9 @@ function getDifficulty(): string {
 		animation: borderGlow 3s ease-in-out infinite;
 	">
       <div class="text-center mb-4">
-        <h3 class="text-white text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Zorluk Seviyesi Seçin</h3>
+        <h3
+		data-langm-key="play.Difficulty.title"
+		class="text-white text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">!_!</h3>
         <div class="w-24 h-1 bg-gradient-to-r from-cyan-400 to-blue-400 mx-auto mt-2 rounded-full" style="box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);"></div>
       </div>
       <button id="difficulty-easy" class="modern-difficulty-button easy group relative w-[80%] h-[15%] text-white text-xl font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer overflow-hidden" style="
@@ -103,8 +109,8 @@ function getDifficulty(): string {
 	  ">
         <div class="absolute inset-0 bg-gradient-to-r from-green-400/10 to-emerald-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <span
-		data-langm-key=""
-		class="relative z-10 text-green-200">${exmp.getLang("game.vs-compiter-difficulty-b-easy")}</span>
+		data-langm-key="play.Difficulty.Button.easy"
+		class="relative z-10 text-green-200">!_!</span>
       </button>
       <button id="difficulty-medium" class="modern-difficulty-button medium group relative w-[80%] h-[15%] text-white text-xl font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer overflow-hidden" style="
 		background: linear-gradient(135deg, rgba(255, 200, 0, 0.15), rgba(255, 150, 0, 0.15));
@@ -113,7 +119,9 @@ function getDifficulty(): string {
 		backdrop-filter: blur(10px);
 	  ">
         <div class="absolute inset-0 bg-gradient-to-r from-yellow-400/10 to-orange-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <span class="relative z-10 text-yellow-200">${exmp.getLang("game.vs-compiter-difficulty-b-medium")}</span>
+        <span
+		data-langm-key="play.Difficulty.Button.medium"
+		class="relative z-10 text-yellow-200">!_!</span>
       </button>
       <button id="difficulty-hard" class="modern-difficulty-button hard group relative w-[80%] h-[15%] text-white text-xl font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer overflow-hidden" style="
 		background: linear-gradient(135deg, rgba(255, 0, 100, 0.15), rgba(255, 0, 150, 0.15));
@@ -122,7 +130,9 @@ function getDifficulty(): string {
 		backdrop-filter: blur(10px);
 	  ">
         <div class="absolute inset-0 bg-gradient-to-r from-red-400/10 to-pink-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <span class="relative z-10 text-red-200">${exmp.getLang("game.vs-compiter-difficulty-b-hard")}</span>
+        <span
+		data-langm-key="play.Difficulty.Button.hard"
+		class="relative z-10 text-red-200">!_!</span>
       </button>
     </div>`;
 }
@@ -142,6 +152,7 @@ export class PlayPage implements Page {
 					gameInstance.startPlayProcess();
 				});
 			});
+		exmp.applyLanguage();
 	}
 
 	private chooseMode(mode: string) {

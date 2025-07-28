@@ -17,15 +17,15 @@ export class TournamentActionHandler {
     }
     async createTournament(tournamentName: string): Promise<{ success: boolean; data?: ITournament; message: string }> {
         try {
-            if (localStorage.getItem('tdata') !== null) {
-                const existingData = JSON.parse(localStorage.getItem('tdata')!);
-                existingData.name = tournamentName;
-                return {
-                    success: true,
-                    data: existingData,
-                    message: '✅ Turnuva adı güncellendi!'
-                };
-            }
+            // if (localStorage.getItem('tdata') !== null) {
+            //     const existingData = JSON.parse(localStorage.getItem('tdata')!);
+            //     existingData.name = tournamentName;
+            //     return {
+            //         success: true,
+            //         data: existingData,
+            //         message: '✅ Turnuva adı güncellendi!'
+            //     };
+            // }
             const response = await _apiManager.createTournament(tournamentName);
             if (response.success === false) {
                 return {
@@ -38,7 +38,7 @@ export class TournamentActionHandler {
                 code: response.data.code,
                 name: response.data.name,
                 admin_id: response.data.admin_id,
-                users: response.data.participants || []
+                participants: response.data.participants || []
             };
             return {
                 success: true,
@@ -75,7 +75,7 @@ export class TournamentActionHandler {
                     code: tournamentResponse.data.code,
                     name: tournamentResponse.data.name,
                     admin_id: tournamentResponse.data.admin_id,
-                    users: tournamentResponse.data.participants
+                    participants: tournamentResponse.data.participants
                 };
                 return {
                     success: true,
@@ -148,7 +148,7 @@ export class TournamentActionHandler {
                 code: response.data.code || this.data.code,
                 name: response.data.name || this.data.name,
                 admin_id: response.data.admin_id || this.data.admin_id,
-                users: response.data.participants || response.data.users || []
+                participants: response.data.participants || response.data.users || []
             };
             return {
                 success: true,

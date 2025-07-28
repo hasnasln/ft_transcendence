@@ -1,7 +1,7 @@
 import { TournamentIcons } from './IconsHelper';
 
 export class TournamentUIManager {
-    createSuccessOverlayHTML(message: string, iconType: 'success' | 'create' | 'join'): string {
+    createSuccessOverlayHTML(key: string, iconType: 'success' | 'create' | 'join'): string {
         const icon = this.getIconByType(iconType);
         return `
             <div class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
@@ -10,8 +10,12 @@ export class TournamentUIManager {
                         <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                             ${icon}
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-4">İşlem Başarılı!</h3>
-                        <p class="text-gray-300 text-sm">${message}</p>
+                        <h3
+                        data-langm-key="overlays.Tournament.first_page.create.success.title"
+                        class="text-xl font-bold text-white mb-4">İşlem Başarılı!</h3>
+                        <p
+                        data-langm-key=${key}"
+                        class="text-gray-300 text-sm">!_!</p>
                         <div class="mt-6 flex items-center justify-center">
                             <div class="w-8 h-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
                         </div>

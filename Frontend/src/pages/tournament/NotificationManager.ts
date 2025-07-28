@@ -15,7 +15,7 @@ export class TournamentNotificationManager {
             if (overlay) {
                 document.body.removeChild(overlay);
             }
-        }, 3000);
+        }, 2000);
     }
 
     showJoinSuccess(): void {

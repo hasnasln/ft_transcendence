@@ -27,8 +27,8 @@ export interface IApiTournament {
 }
 
 export interface IApiResponseWrapper {
-	code: number; // HTTP status code
-	success: boolean;
+	code?: number; // HTTP status code
+	success?: boolean;
 	message?: string;
 	data?: any; // Data can be of any type, depending on the API response
 }
@@ -45,7 +45,8 @@ export class APIManager {
 		this.baseUrl = baseUrl;
 		this.t_url = url_altarnetive;
 		if (token === null) {
-			this.token = localStorage.getItem('token') || null; 
+			this.token = localStorage.getItem('token') || null;
+			this.uuid = localStorage.getItem('uuid') || null;
 		} else {
 			this.token = token;
 		}
@@ -388,6 +389,31 @@ export class APIManager {
 			console.error('Error in getTournament:', error);
 			throw error;
 		}
+	}
+
+	public async haveTournament(): Promise<IApiResponseWrapper> {
+		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		try {
+			const response = await this.apiCall(`${this.t_url}`, HTTPMethod.GET, {
+				'Content-Type': 'application/json',
+			});
+			if (!response.ok){
+				result.success = false;
+				result.message = 'No tournament found for this user';
+				result.code = response.status;
+			}
+			else if (response.ok) {
+				const x = await response.json();
+				result.data = x.data;
+				result.success = true;
+				result.message = x.message;
+				result.code = response.status;
+			}
+			return result;
+		} catch {
+			console.error('Error in haveTournament:');
+			throw new Error('Error in haveTournament');
+		}	
 	}
 
 	public async startTournament(tournamentId: string): Promise<IApiResponseWrapper> {
