@@ -1,8 +1,9 @@
 import { MatchManager, Player } from "./matchManager";
 import { Server, Socket } from "socket.io";
-import { apiCall, GameStatus, HTTPMethod, User } from "./server";
+import { GameStatus } from "./game";
 import { emitError } from "./errorHandling";
 import { createServer } from "http";
+import { apiCall, HTTPMethod } from "./httpApiManager";
 
 export class ConnectionHandler {
 
@@ -48,7 +49,6 @@ export class ConnectionHandler {
     public async acceptInitialConnection(socket: Socket): Promise<Error | null> {
         const token = socket.handshake.auth?.token;
         if (!token) {
-            //console.log(`[Server] Token gönderilmedi. ID: ${socket.id}`);
             return new Error("Authentication error: token missing");
         }
     
@@ -59,7 +59,7 @@ export class ConnectionHandler {
             return new Error("Token validation error: " + body.error);
         }
     
-        const user: User = { uuid: body.data.uuid, username: body.data.username, token: token };
+        const user: any = { uuid: body.data.uuid, username: body.data.username, token: token };
         (socket as any).user = user;
     
         if (MatchManager.getInstance().connectedPlayers.has(user.username)) {
@@ -81,19 +81,16 @@ export class ConnectionHandler {
     }
 
     public handleConnectionRequest(socket: Socket): void {
-        const user = (socket as any).user;
-        const username = user.username;
-        const uuid = user.uuid;
-        const token = user.token;
-        let player: Player = { socket, username, uuid, token, socketReady: false };
+        const user: any = (socket as any).user;
+        let player: Player = { ...user, socket, socketReady: false };
 
         if (!this.acceptConnection(socket, player)) {
             return;
         }
 
-        console.log(`[${new Date().toISOString()}] ${username.padStart(10)} connected.`);
+        console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} connected.`);
         socket.on("rejoin", () => {
-            console.log(`[${new Date().toISOString()}] ${username.padStart(10)} 'rejoin' message received.`);
+            console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} 'rejoin' message received.`);
             const game = MatchManager.getInstance().getMatchByPlayer(player.username);
             if (!game || (game.gameMode !== 'remoteGame' && game.gameMode !== 'tournament') || (game.state !== 'in-progress' && game.state !== 'paused')) {
                 socket.emit("rejoin-response", {status: "rejected"});
@@ -111,12 +108,12 @@ export class ConnectionHandler {
         });
 
         socket.on("create", async (gameStatus: GameStatus) => {
-            console.log(`[${new Date().toISOString()}] ${username.padStart(10)} 'create' message received.`);
+            console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} 'create' message received.`);
             MatchManager.getInstance().handleMatchRequest(player, gameStatus);
         });
 
         socket.on("reset-match", () => {
-            console.log(`[${new Date().toISOString()}] ${username.padStart(10)} 'reset-match' message received.`);
+            console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} 'reset-match' message received.`);
             const activeMatch = MatchManager.getInstance().getMatchByPlayer(player.username);
             if (activeMatch) {
                 activeMatch.finishIncompleteMatch();
@@ -125,7 +122,7 @@ export class ConnectionHandler {
         });
 
         socket.on("disconnect", () => {
-            console.log(`[${new Date().toISOString()}] ${username.padStart(10)} 'disconnect' message received.`);
+            console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} 'disconnect' message received.`);
             MatchManager.getInstance().handleDisconnect(player);
             ConnectionHandler.getInstance().onDisconnection(player);
         });
