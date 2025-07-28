@@ -4,6 +4,7 @@ import { Player } from "./matchManager";
 import { GameEmitter } from "./gameEmitter";
 import { ScoringManager } from "./scoringManager";
 import { GameOrchestrator } from "./orchestrator";
+import { Ball, DEFAULT_GAME_ENTITY_CONFIG, GameEntityFactory, Ground, Paddle } from "./gameEntity";
 
 export type Side = 'leftPlayer' | 'rightPlayer';
 
@@ -34,35 +35,11 @@ export interface Position {
 	y: number;
 }
 
-export interface Ball {
-	readonly firstSpeedFactor: number;
-	readonly airResistanceFactor: number;
-	readonly radius: number;
-	minimumSpeed: number;
-	maximumSpeed: number;
-	speedIncreaseFactor: number;
-	firstPedalHit: number;
-	position: Position;
-	velocity: Position;
-}
-
-export interface Paddle {
-	readonly width: number;
-	readonly height: number;
-	position: Position;
-}
-
 export class Game {
-	// Constants
-	public UCF = 40; // Unit Conversion Factor
-	public groundWidth = 20 * this.UCF;
-	public paddleSpeed: number;
-
-	// Entities
 	public ball: Ball;
-	public paddle1: Paddle;
-	public paddle2: Paddle;
-	public ground: { width: number; height: number };
+	public leftPaddle: Paddle;
+	public rightPaddle: Paddle;
+	public ground: Ground;
 
 	// Game Status
 	public matchOver = true;
@@ -80,7 +57,6 @@ export class Game {
 
 	public leftInput: InputProvider | undefined;
 	public rightInput: InputProvider | undefined;
-
 	
 	public state: 'waiting' | 'in-progress' | 'paused' | 'completed' = 'waiting';
 	public reMatch: boolean = false; //todo: this is a temporary solution to handle rematch requests. It should be handled in MatchManager.
@@ -90,62 +66,13 @@ export class Game {
 	public readyTimeout: NodeJS.Timeout | null = null;
 
 	constructor(roomId: string, player1: Player, player2: Player) {
+		const config = DEFAULT_GAME_ENTITY_CONFIG;
 		this.players = [player1, player2];
-		this.ball = {
-			firstSpeedFactor: 0.18 * this.UCF,
-			airResistanceFactor: 0.998,
-			minimumSpeed: 0.18 * this.UCF,
-			maximumSpeed: 0.4 * this.UCF,
-			radius: 0.25 * this.UCF,
-			speedIncreaseFactor: 1.7,
-			firstPedalHit: 0,
-			position: { x: 0, y: 0 },
-			velocity: { x: 0, y: 0 },
-		};
-
-		this.ground = {
-			width: this.groundWidth,
-			height: this.groundWidth * (152.5) / 274,
-		};
-
-		const w = 0.2 * this.UCF;
-		this.paddle1 = {
-			width: w,
-			height: this.ground.height * (0.3),
-			position: {
-				x: -this.groundWidth / 2 + w,
-				y: 0
-			}
-		};
-
-		this.paddle2 = {
-			width: 0.2 * this.UCF,
-			height: this.ground.height * (0.3),
-			position: {
-				x: this.groundWidth / 2 - this.paddle1.width,
-				y: 0
-			}
-		};
-
-		this.paddleSpeed = 0.2 * this.UCF;
-
+		this.ball = GameEntityFactory.getInstance().createDefaultBall(config);
+		this.leftPaddle = GameEntityFactory.getInstance().createDefaultLeftPaddle(config);
+		this.rightPaddle = GameEntityFactory.getInstance().createDefaultRightPaddle(config);
+		this.ground = GameEntityFactory.getInstance().createDefaultGround(config);
 		this.roomId = roomId;
-	}
-
-	public getBall() {
-		return this.ball;
-	}
-
-	public getGround() {
-		return this.ground;
-	}
-
-	public getPaddleSpeed() {
-		return this.paddleSpeed;
-	}
-
-	public getPaddle2() {
-		return this.paddle2;
 	}
 
 	public resetBall(lastScorer: "leftPlayer" | "rightPlayer") {
@@ -226,6 +153,7 @@ export class Game {
 			{ socket: typeof this.rightInput!.getSocket === 'function' ? this.rightInput!.getSocket()! : null }
 		];
 
+		//todo handle this in a global way. and gracefully off it.
 		sides.forEach(({ socket }) => {
 			if (!socket) return;
 			socket.on("pause-resume", (data: { status: string }) => {
@@ -268,5 +196,22 @@ export class Game {
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} ended.`);
 		this.state = 'completed';
 	}
+
+	public getBall() {
+		return this.ball;
+	}
+
+	public getGround() {
+		return this.ground;
+	}
+
+	public getPaddleSpeed() {
+		return DEFAULT_GAME_ENTITY_CONFIG.paddleSpeed * GameEntityFactory.UCF;
+	}
+
+	public getPaddle2() {
+		return this.rightPaddle;
+	}
+
 }
 

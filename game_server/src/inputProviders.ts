@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
-import { Game, Paddle } from "./game";
+import { Game } from "./game";
+import { Paddle } from "./gameEntity";
 import { predictBallY } from "./aiPlayer";
 import { Player } from "./matchManager";
 
