@@ -58,12 +58,10 @@ export function isFinalMatch(activeRound: Round): boolean {
 
 export function findMyMatch(tournament: TournamentData, participantId: string): { roundNumber: number, match_id: string | null, finalMatch: boolean } {
     if (tournament.status === TournamentStatus.CREATED) {
-
         throw new Error(`Tournament ${tournament.name} is not ONGOING yet`);
     }
 
     if (tournament.status === TournamentStatus.COMPLETED) {
-
         throw new Error(`Tournament ${tournament.name} is COMPLETED already`);
     }
 
@@ -113,13 +111,14 @@ export async function getTournament(tournamentCode: string): Promise<IApiRespons
     try {
         const response = await apiCall(`http://tournament.transendence.com/api/tournament/${tournamentCode}`, HTTPMethod.GET, {
             'Content-Type': 'application/json',
-            'bypass': 'bypassauth'
+            'x-api-key': 'bypassauth' // i never heard about envs
         });
-        if (!response.ok) {
-            //console.log("getmedi");
-        }
+
         const data = await response.json();
-        //console.log("gelen:", JSON.stringify(data, null, 2));
+        if (!response.ok) {
+            result.message = data.error;
+            return result;
+        }
         result.success = true;
         result.message = data.message;
         result.data = data.data;

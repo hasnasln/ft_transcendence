@@ -57,13 +57,14 @@ function createInfoPanel(tdata: ITournament): string {
     `;
 }
 function createDetailsCard(tdata: ITournament): string {
+    console.log("----fatna---->", tdata);
     return `
         <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 lg:p-8 shadow-xl">
             ${createCardHeader()}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 ${createInfoCard('IdCard', tdata.code, TournamentIcons.getTournamentIdIcon(), 'from-purple-500 to-indigo-500')}
-                ${createInfoCard('Creater', tdata.users[0]?.username || 'Unknown', TournamentIcons.getUserIcon(), 'from-blue-500 to-cyan-500')}
-                ${createInfoCard('ActivePlayer', `${tdata.users.length} / 10`, TournamentIcons.getPlayersIcon(), 'from-green-500 to-emerald-500')}
+                ${createInfoCard('Creater', tdata.participants[0]?.username || 'Unknown', TournamentIcons.getUserIcon(), 'from-blue-500 to-cyan-500')}
+                ${createInfoCard('ActivePlayer', `${tdata.participants.length} / 10`, TournamentIcons.getPlayersIcon(), 'from-green-500 to-emerald-500')}
                 ${createInfoCard('Status', 'Aktif', TournamentIcons.getStatusIcon(), 'from-pink-500 to-rose-500')}
             </div>
         </div>
@@ -139,7 +140,7 @@ function createAdminPanel(tdata: ITournament): string {
     if (tdata.admin_id !== localStorage.getItem('uuid')) {
         return '';
     }
-    const playerCount = tdata.users.length;
+    const playerCount = tdata.participants.length;
     const minPlayers = 2;
     const maxPlayers = 10;
     const canStart = playerCount >= minPlayers && playerCount <= maxPlayers;
@@ -304,15 +305,15 @@ export function listPlayers(container: HTMLElement, tdata: ITournament): void {
     container.innerHTML = createPlayersListHTML(tdata);
 }
 function createPlayersListHTML(tdata: ITournament): string {
-    if (tdata.users.length === 0) {
+    if (tdata.participants.length === 0) {
         return createEmptyPlayersState();
     }
-    const playersHTML = tdata.users.map((player, index) => 
+    const playersHTML = tdata.participants.map((player, index) => 
         createPlayerCard(player, index, tdata.admin_id)
     ).join('');
     return `
         ${playersHTML}
-        ${createCapacityIndicator(tdata.users.length)}
+        ${createCapacityIndicator(tdata.participants.length)}
     `;
 }
 

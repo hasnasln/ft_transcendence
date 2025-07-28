@@ -1,8 +1,9 @@
 import { Game } from "./game";
-import { matchManager } from "./server";
+import {GameEntityFactory} from "./gameEntity";
 import { pushWinnerToTournament } from "./tournament";
 import { emitError } from "./errorHandling";
 import { GameEmitter } from "./gameEmitter";
+import { MatchManager } from "./matchManager";
 
 type Middleware = (g: Game, dt: number) => boolean;
 
@@ -41,35 +42,33 @@ export class PhysicsEngine {
             if (!mw(game, dt)) break;
         }
     }
-
 }
 
 function skipIfMatchOver(g: Game, _dt: number): boolean {
 	if (g.matchOver) {
 		if (g.gameMode === 'tournament') {
 			const winnerInput = g.matchWinner === 'leftPlayer' ? g.leftInput : g.rightInput;
-			const uuid = winnerInput.getUuid();
-			const username = winnerInput.getUsername();
+			const uuid = winnerInput!.getUuid();
+			const username = winnerInput!.getUsername();
 			try {
-				pushWinnerToTournament(g.match.tournament?.code as string, g.match.tournament?.roundNo as number, { uuid, username });
+				pushWinnerToTournament(g.tournament?.code as string, g.tournament?.roundNo as number, { uuid, username });
 			} catch (err: any) {
-				emitError(err.message, g.roomId, g.io);
+				emitError(err.message, g.roomId);
 			}
 		}
 		g.pauseGameLoop();
-		//g.exportGameState();
         GameEmitter.getInstance().emitGameState(g);
 
-		if (g.match.gameMode === 'localGame' || g.match.gameMode === 'vsAI')
-			matchManager.clearMatch(g.match);
-		g.match.end();
+		if (g.gameMode === 'localGame' || g.gameMode === 'vsAI')
+			MatchManager.getInstance().clearMatch(g);
+		g.end();
 		return false;
 	}
 	return true;
 }
 
 function skipIfSetOrPausedOver(g: Game, _dt: number): boolean {
-	return !(g.setOver || g.isPaused);
+	return !(g.scoringManager.isSetOver() || g.isPaused);
 }
 
 function moveBall(g: Game, dt: number): boolean {
@@ -79,11 +78,11 @@ function moveBall(g: Game, dt: number): boolean {
 }
 
 function movePaddles(g: Game, _dt: number): boolean {
-	const upperBound = g.ground.height / 2 - g.paddle1.height / 2 + (1.5 * g.paddle1.width);
-	const d1 = g.leftInput.getPaddleDelta() * g.paddleSpeed * _dt;
-	const d2 = g.rightInput.getPaddleDelta() * g.paddleSpeed * _dt;
-	if (Math.abs(g.paddle1.position.y + d1) <= upperBound) g.paddle1.position.y += d1;
-	if (Math.abs(g.paddle2.position.y + d2) <= upperBound) g.paddle2.position.y += d2;
+	const upperBound = g.ground.height / 2 - g.leftPaddle.height / 2 + (1.5 * g.leftPaddle.width);
+	const d1 = g.leftInput!.getPaddleDelta() * g.getPaddleSpeed() * _dt;
+	const d2 = g.rightInput!.getPaddleDelta() * g.getPaddleSpeed() * _dt;
+	if (Math.abs(g.leftPaddle.position.y + d1) <= upperBound) g.leftPaddle.position.y += d1;
+	if (Math.abs(g.rightPaddle.position.y + d2) <= upperBound) g.rightPaddle.position.y += d2;
 	return true;
 }
 
@@ -98,8 +97,8 @@ function handleWallBounce(g: Game, _dt: number): boolean {
 
 function handlePaddleBounce(g: Game, _dt: number): boolean {
 	const paddles = [
-		{ paddle: g.paddle1, direction: 1 },
-		{ paddle: g.paddle2, direction: -1 }
+		{ paddle: g.leftPaddle, direction: 1 },
+		{ paddle: g.rightPaddle, direction: -1 }
 	];
 
 	paddles.forEach(({ paddle, direction }) => {
@@ -119,7 +118,7 @@ function handlePaddleBounce(g: Game, _dt: number): boolean {
 				g.ball.velocity.y += relativeY * 0.05;
 				if (g.ball.firstPedalHit++) {
 					g.ball.speedIncreaseFactor = 1.2;
-					g.ball.minimumSpeed = 0.25 * g.UCF;
+					g.ball.minimumSpeed = 0.25 * GameEntityFactory.UCF;
 				}
 				g.ball.velocity.x *= g.ball.speedIncreaseFactor;
 				g.ball.velocity.y *= g.ball.speedIncreaseFactor;
@@ -156,9 +155,9 @@ function enforceSpeedLimits(g: Game, _dt: number): boolean {
 }
 
 function isBallOutOfBounds(g: Game): number {
-	if (g.ball.position.x > g.ground.width / 2 + 5 * g.UCF)
+	if (g.ball.position.x > g.ground.width / 2 + 5 * GameEntityFactory.UCF)
 		return -1;
-	if (g.ball.position.x < -g.ground.width / 2 - 5 * g.UCF)
+	if (g.ball.position.x < -g.ground.width / 2 - 5 * GameEntityFactory.UCF)
 		return 1;
 	return 0;
 }

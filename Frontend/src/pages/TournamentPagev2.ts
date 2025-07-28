@@ -1,8 +1,7 @@
 import { exmp } from '../languageManager';
-import { _apiManager } from '../api/APIManager';
+import { IApiResponseWrapper, _apiManager } from '../api/APIManager';
 import { ITournament } from '../api/types';
-import { PlayPage } from './play-page';
-import { Page } from '../router';
+import { Page, Router } from '../router';
 import { t_first_section } from './tournament/FormComponents';
 import { ShowTournament, getTournamentFormat, getOptimalTournamentSize, calculateByes, listPlayers} from './tournament/MainRenderer';
 import { TournamentActionHandler } from './tournament/ActionHandler';
@@ -14,57 +13,56 @@ import { TournamentTreeManager } from './tournament/TreeManager';
 import { TournamentGameManager } from './tournament/GameManager';
 import { TournamentStateManager } from './tournament/StateManager';
 import { TournamentNotificationManager } from './tournament/NotificationManager';
-import { gameInstance } from './play';
 
+
+// read
 export class TournamentPage implements Page {
-    private data: ITournament;
+    private data: ITournament | null = null;
     private status: boolean = false;
-    private actionHandler: TournamentActionHandler;
-    private loadingManager: TournamentLoadingManager;
-    private eventHandler: TournamentEventHandler;
-    private validation: TournamentValidation;
-    private uiManager: TournamentUIManager;
-    private treeManager: TournamentTreeManager;
-    private gameManager: TournamentGameManager;
-    private stateManager: TournamentStateManager;
-    private notificationManager: TournamentNotificationManager;
+    private actionHandler!: TournamentActionHandler;
+    private loadingManager!: TournamentLoadingManager;
+    private eventHandler!: TournamentEventHandler;
+    private validation!: TournamentValidation;
+    private uiManager!: TournamentUIManager;
+    private treeManager!: TournamentTreeManager;
+    private gameManager!: TournamentGameManager;
+    private stateManager!: TournamentStateManager;
+    private notificationManager!: TournamentNotificationManager;
     private performanceObserver: PerformanceObserver | null = null;
 
     constructor() {
-        const defaultData: ITournament = {
-            id: -1,
-            code: '',
-            name: '',
-            admin_id: '',
-            users: [],
-        };
         
-        this.data = this.loadTournamentData(defaultData);
         
-        this.actionHandler = new TournamentActionHandler(this.data, this.status);
-        this.loadingManager = new TournamentLoadingManager();
-        this.eventHandler = new TournamentEventHandler();
-        this.validation = new TournamentValidation();
-        this.uiManager = new TournamentUIManager();
-        this.treeManager = new TournamentTreeManager(this.data, this.uiManager);
-        this.gameManager = new TournamentGameManager(this.data, this.status, this.validation, this.uiManager);
-        this.stateManager = new TournamentStateManager(this.data, this.status, this.uiManager, this.loadingManager);
-        this.notificationManager = new TournamentNotificationManager(this.uiManager);
+        // this.data = this.loadTournamentData(defaultData);
+        
+        // this.actionHandler = new TournamentActionHandler(this.data, this.status);
+        // this.loadingManager = new TournamentLoadingManager();
+        // this.eventHandler = new TournamentEventHandler();
+        // this.validation = new TournamentValidation();
+        // this.uiManager = new TournamentUIManager();
+        // this.treeManager = new TournamentTreeManager(this.data, this.uiManager);
+        // this.gameManager = new TournamentGameManager(this.data, this.status, this.validation, this.uiManager);
+        // this.stateManager = new TournamentStateManager(this.data, this.status, this.uiManager, this.loadingManager);
+        // this.notificationManager = new TournamentNotificationManager(this.uiManager);
     }
 
-    private loadTournamentData(defaultData: ITournament): ITournament {
+    private loadTournamentData(defaultData: ITournament ): ITournament {
         try {
             const storedData = localStorage.getItem('tdata');
             if (!storedData || storedData === '{}' || storedData === 'null') {
+                console.log("-->1");
                 return defaultData;
             }
-            
+            console.log("--------->" + storedData);
             const parsedData = JSON.parse(storedData);
             if (!parsedData || typeof parsedData !== 'object' || !parsedData.code) {
                 console.warn('Invalid tournament data in localStorage, using defaults');
+                console.log("-->2")
                 return defaultData;
             }
-            
+
+            console.log("-->3")
+            console.log("parse data ->" , parsedData);
             return parsedData;
         } catch (error) {
             console.error('Error parsing localStorage tournament data:', error);
@@ -74,14 +72,8 @@ export class TournamentPage implements Page {
     }
 
     evaluate(): string {
-        if (localStorage.getItem('tdata') === null) {
-            return this.renderFirstSection();
-        } else {
-            const tdata: ITournament = JSON.parse(localStorage.getItem('tdata')!);
-            return this.renderTournament(tdata);
-        }
+        return `<div>Yükleniyor </div>`
     }
-
     private renderFirstSection(): string {
         const tempDiv = document.createElement('div');
         tempDiv.id = "tournament-main";
@@ -99,15 +91,60 @@ export class TournamentPage implements Page {
     }
 
     public onLoad(): void {
-        document.removeEventListener('click', this.handleClick);
-        document.addEventListener('click', this.handleClick);
-        setTimeout(() => {
-            this.init();
-        }, 100);
-        exmp.applyLanguage()
+        _apiManager.haveTournament()
+        .then((resposeWraper) => {
+            console.log(resposeWraper);
+            if (resposeWraper.success === false)localStorage.removeItem('tdata');                                           // tournament verisi yoksa localStorage'dan sil
+            else if (resposeWraper.success === true) localStorage.setItem('tdata', JSON.stringify(resposeWraper.data));     // tournament verisi varsa localStorage'a kaydet
+            return resposeWraper;
+        })
+        .then((responseWraper) => {
+            const defaultData: ITournament = {
+                id: -1,
+                code: '',
+                name: '',
+                admin_id: '',
+                participants: [],
+            };
+            this.data = this.loadTournamentData(defaultData);
+            console.log("bakın--->", this.data)
+
+            this.actionHandler = new TournamentActionHandler(this.data, this.status);
+            this.loadingManager = new TournamentLoadingManager();
+            this.eventHandler = new TournamentEventHandler();
+            this.validation = new TournamentValidation();
+            this.uiManager = new TournamentUIManager();
+            this.treeManager = new TournamentTreeManager(this.data, this.uiManager);
+            this.gameManager = new TournamentGameManager(this.data, this.status, this.validation, this.uiManager);
+            this.stateManager = new TournamentStateManager(this.data, this.status, this.uiManager, this.loadingManager);
+            this.notificationManager = new TournamentNotificationManager(this.uiManager);
+            return responseWraper;
+        })
+        .then((responseWraper) => {
+            let htmlcontent;
+            if (localStorage.getItem('tdata') === null) {
+                htmlcontent = this.renderFirstSection();
+            } else {
+                const tdata: ITournament = JSON.parse(localStorage.getItem('tdata')!);
+                htmlcontent = this.renderTournament(tdata);
+            }
+            return htmlcontent;
+        })
+        .then((x) => {
+            Router.getInstance().rootContainer().innerHTML = x;
+        })
+        .then(() => {
+            document.removeEventListener('click', this.handleClick);
+            document.addEventListener('click', this.handleClick);
+            setTimeout(() => {
+                this.init();
+            }, 100);
+            exmp.applyLanguage()
+        });
     }
 
     public onUnload(): void {
+       
         document.removeEventListener('click', this.handleClick);
         if (this.performanceObserver) {
             this.performanceObserver.disconnect();
@@ -275,7 +312,7 @@ export class TournamentPage implements Page {
 
     private async handleStartTournament(): Promise<void> {
         try {
-            const validationResult = this.validation.validateTournamentStart(this.data.users.length);
+            const validationResult = this.validation.validateTournamentStart(this.data!.participants.length);
             if (!validationResult.isValid) {
                 this.notificationManager.showStartError(validationResult.message);
                 return;
@@ -290,7 +327,7 @@ export class TournamentPage implements Page {
             const startResult = await this.actionHandler.startTournament();
             
             if (startResult.success) {
-                this.notificationManager.showStartSuccess(startResult.message, this.data.users.length);
+                this.notificationManager.showStartSuccess(startResult.message, this.data!.participants.length);
                 await this.stateManager.handleStartSuccess(startResult.message);
                 this.updateManagersStatus(true);
             } else {
@@ -344,24 +381,24 @@ export class TournamentPage implements Page {
         }
     }
     private setupPerformanceMonitoring(): void {
-        if ('PerformanceObserver' in window && !this.performanceObserver) {
-            this.performanceObserver = new PerformanceObserver((list) => {
-                const entries = list.getEntries();
-                entries.forEach(entry => {
-                    if (entry.duration > 1000) {
-                        console.warn(`Slow operation detected: ${entry.name} took ${entry.duration}ms`);
-                    }
+            if ('PerformanceObserver' in window && !this.performanceObserver) {
+                this.performanceObserver = new PerformanceObserver((list) => {
+                    const entries = list.getEntries();
+                    entries.forEach(entry => {
+                        if (entry.duration > 1000) {
+                            console.warn(`Slow operation detected: ${entry.name} took ${entry.duration}ms`);
+                        }
+                    });
                 });
-            });
-            
-            try {
-                this.performanceObserver.observe({ entryTypes: ['measure', 'navigation'] });
-            } catch (error) {
-                console.warn('Performance monitoring not supported:', error);
-                this.performanceObserver = null;
+                
+                try {
+                    this.performanceObserver.observe({ entryTypes: ['measure', 'navigation'] });
+                } catch (error) {
+                    console.warn('Performance monitoring not supported:', error);
+                    this.performanceObserver = null;
+                }
             }
         }
-    }
     private isButtonDisabled(button: HTMLElement): boolean {
         return button.hasAttribute('disabled') || 
                button.classList.contains('disabled') ||
@@ -415,12 +452,12 @@ export class TournamentPage implements Page {
         element.dataset.animationId = animationId.toString();
     }
     private async getStartConfirmation(): Promise<boolean> {
-        const playerCount = this.data.users.length;
+        const playerCount = this.data!.participants.length;
         const confirmationMessage = this.validation.createStartConfirmationMessage(playerCount);
         return confirm(confirmationMessage);
     }
     private async getExitConfirmation(): Promise<{ confirmed: boolean; isAdmin: boolean }> {
-        const isAdmin = this.data.admin_id === localStorage.getItem('uuid');
+        const isAdmin = this.data!.admin_id === localStorage.getItem('uuid');
         const confirmationMessage = this.validation.createExitConfirmationMessage(isAdmin);
         const confirmed = confirm(confirmationMessage);
         return { confirmed, isAdmin };
@@ -435,7 +472,7 @@ export class TournamentPage implements Page {
     }
     private handleStartError(errorMessage: string): void {
         this.loadingManager.removeLoadingOverlay('start');
-        const playerCount = this.data.users.length;
+        const playerCount = this.data!.participants.length;
         const canStart = playerCount >= 2 && playerCount <= 10;
         this.notificationManager.resetStartButton(canStart, this.uiManager);
         this.notificationManager.showStartError(errorMessage);
@@ -458,8 +495,8 @@ export class TournamentPage implements Page {
     }
     private updateManagersStatus(newStatus: boolean): void {
         this.status = newStatus;
-        this.actionHandler.updateData(this.data, newStatus);
-        this.gameManager.updateData(this.data, newStatus);
+        this.actionHandler.updateData(this.data!, newStatus);
+        this.gameManager.updateData(this.data!, newStatus);
         this.stateManager.updateStatus(newStatus);
     }
 }

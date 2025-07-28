@@ -1,83 +1,89 @@
+import { Button } from "@babylonjs/gui";
+
 const en = {
 	"singin": {
-		"register-b": "Register",
-		"email-or-nickname-i": "Email or Nickname",
-		"passwor-i": "Password",
-		"login-b": "Login",
-		"no-account": "Don't have an account?"
+	  "register-b": "Register",
+	  "email-or-nickname-i": "Email or Nickname",
+	  "passwor-i": "Password",
+	  "login-b": "Log In",
+	  "no-account": "Don’t have an account?"
 	},
-	"singin-success": "Login successful! Redirecting...",
+	"singin-success": "Login successful! Redirecting…",
 	"singin-errors": {
-		"required": {
-			"email": "Email or Nickname is required",
-			"password": "Password is required"
-		},
-		"invalid": {
-			"email": "Invalid email format"
-		},
-		"INVALID_CREDENTIALS": "Invalid email/nickname or password",
-		"networkError": "Network connection error, please check your internet connection"
+	  "required": {
+		"email": "Email or nickname required",
+		"password": "Password required"
+	  },
+	  "invalid": {
+		"email": "Invalid email format"
+	  },
+	  "INVALID_CREDENTIALS": "Invalid email/nickname or password",
+	  "networkError": "Network error, please check your internet connection"
 	},
 	"register": {
-		"title": "Register",
-		"signin-b": "Sign In",
-		"name": "Enter Name",
-		"surname": "Enter Surname",
-		"username": "Enter Username",
-		"email": "Enter Email",
-		"password": "Enter Password",
-		"confirmPassword": "Confirm Password",
-		"register": "Register"
+	  "title": "Register",
+	  "singin-b": "Log In",
+	  "name": "Enter first name",
+	  "surname": "Enter last name",
+	  "username": "Enter username",
+	  "email": "Enter email",
+	  "password": "Enter password",
+	  "confirmPassword": "Confirm password",
+	  "register": "Register"
 	},
 	"register-success": "Registration successful! Please log in.",
 	"register-errors": {
-		"required": {
-			"name": "Name is required",
-			"surname": "Surname is required",
-			"username": "Username is required",
-			"email": "Email is required",
-			"password": "Password is required",
-			"confirmPassword": "Confirm Password is required"
-		},
-		"minlength": {
-			"name": "Name must be at least 3 characters",
-			"surname": "Surname must be at least 3 characters",
-			"username": "Username must be at least 3 characters",
-			"password": "Password must be at least 6 characters",
-			"confirmPassword": "Confirm Password must be at least 6 characters"
-		},
-		"maxlength": {
-			"username": "Username must be at most 20 characters",
-			"password": "Password must be at most 20 characters"
-		},
-		"invalidCharacters": {
-			"username": "Invalid username characters (a-zA-Z0-9_.)",
-			"email": "Invalid email format"
-		},
-		"passwordMismatch": "Passwords do not match",
-		"exists": {
-			"username": "This username is already taken",
-			"email": "This email is already registered"
-		},
-		"registerFailed": "Registration failed",
-		"networkError": "Network connection error, please check your internet connection"
+	  "required": {
+		"name": "First name required",
+		"surname": "Last name required",
+		"username": "Username required",
+		"email": "Email required",
+		"password": "Password required",
+		"confirmPassword": "Please confirm password"
+	  },
+	  "minlength": {
+		"name": "First name must be at least 3 characters",
+		"surname": "Last name must be at least 3 characters",
+		"username": "Username must be at least 3 characters",
+		"password": "Password must be at least 6 characters",
+		"confirmPassword": "Confirm password must be at least 6 characters"
+	  },
+	  "maxlength": {
+		"username": "Username must be at most 20 characters",
+		"password": "Password must be at most 20 characters"
+	  },
+	  "invalidCharacters": {
+		"username": "Invalid username characters (a‑z A‑Z 0‑9 _ .)",
+		"email": "Invalid email format"
+	  },
+	  "passwordMismatch": "Passwords do not match",
+	  "exists": {
+		"username": "This username is already taken",
+		"email": "This email is already registered"
+	  },
+	  "USERNAME_ALREADY_EXISTS": "This username is already taken",
+	  "EMAIL_ALREADY_EXISTS": "This email is already registered",
+	  "WEAK_PASSWORD": "Password too weak, please choose a stronger password",
+	  "registerFailed": "Registration failed",
+	  "serverError": "Server error, please try again later",
+	  "networkError": "Network error, please check your connection"
 	},
 	"home": {
-		"play-b": "Play Now",
-		"settings-b": "Settings",
-		"profile-b": "Profile",
-		"tournament-b": "Tournament",
-		"logout-b": "Logout"
+	  "play-b": "Play Now",
+	  "settings-b": "Settings",
+	  "profile-b": "Profile",
+	  "tournament-b": "Tournament",
+	  "logout-b": "Log Out"
 	},
 	"settings": {
-		"title": "Settings",
-		"ball-color": "Ball Color",
-		"language-select": "Language Selection",
-		"save-button": "Save Settings"
+	  "title": "Settings",
+	  "ball-color": "Ball Color",
+	  "language-select": "Language Selection",
+	  "save-button": "Save Settings"
 	},
 	"profile": {
-		"title": "Profile Settings",
-		"username": "Username"
+	  "title": "Profile Settings",
+	  "username": "Username"
 	},
 	"profile-avatar-change-hint": "Click to change avatar",
 	"profile-avatar-select-title": "Select Avatar",
@@ -87,76 +93,134 @@ const en = {
 	"profile-info-title": "Profile Information",
 	"profile-info-settings-title": "Profile Settings",
 	"profile-settings": {
-		"username": "Username",
-		"username-placeholder": "New Username",
-		"email": "Email",
-		"email-placeholder": "New Email",
-		"password": "Password",
-		"password-placeholder": "New Password",
-		"old-Password": "Old Password",
-		"old-password-placeholder": "Old Password",
-		"update": "Update"
+	  "username": "Username",
+	  "username-placeholder": "New Username",
+	  "email": "Email",
+	  "email-placeholder": "New Email",
+	  "password": "Password",
+	  "password-placeholder": "New Password",
+	  "old-Password": "Old Password",
+	  "old-password-placeholder": "Old Password",
+	  "update": "Update"
 	},
 	"tournament-first-page": {
-		"join-title": "Join Tournament",
-		"join-placeholder": "Enter Tournament ID",
-		"join-button": "Join Tournament",
-		"create-title": "Create Tournament",
-		"create-placeholder": "Enter Tournament Name",
-		"create-button": "Create Tournament",
-		"m-title-for-showjoin": "Create Tournament",
-		"m-title-for-showcreate": "Join Tournament",
-		"m-join-button": "--->",
-		"m-create-button": "<---"
+	  "join-title": "Join Tournament",
+	  "join-placeholder": "Enter tournament ID",
+	  "join-button": "Join Tournament",
+	  "create-title": "Create Tournament",
+	  "create-placeholder": "Enter tournament name",
+	  "create-button": "Create Tournament",
+	  "m-title-for-showjoin": "Create Tournament",
+	  "m-title-for-showcreate": "Join Tournament",
+	  "m-join-button": "--->",
+	  "m-create-button": "<---"
 	},
 	"tournament-second-page": {
-		
-		"exit": "Exit Tournament",
-		"tournament-id": "Tournament ID",
-		"tournament-name": "Tournament Name",
-		"tournament-creater": "Tournament Creator",
-		"tournament-total-players": "Total Players",
-		"tournament-joined-players": "Joined Players",
-		"play": "Play"
+	  "DetailsCard": {
+		"header": "Tournament Details",
+		"header2": "Detailed statistics",
+		"button": {
+		  "refresh": "--Refresh",
+		  "tree": "--Tournament Bracket",
+		  "exit": "--Exit"
+		},
+		"IdCard": "Tournament ID",
+		"IdCard-description": "Unique code to join the tournament",
+		"Creater": "Tournament creator",
+		"Creater-description": "Person organizing the tournament",
+		"ActivePlayer": "Active players",
+		"ActivePlayer-description": "Current number of participants and capacity",
+		"Status": "Status",
+		"Status-description": "Current status of the tournament"
+	  },
+	  "AdminPanel": {
+		"title": "--Admin Panel",
+		"Button": {
+		  "active": "START TOURNAMENT",
+		  "deactive-1": "WAITING FOR PLAYERS (1/2)",
+		  "deactive-2": "TOURNAMENT FULL (10/10)"
+		},
+		"Button2": {
+		  "active": "Can Start",
+		  "deactive-1": "More players needed",
+		  "deactive-2": "Tournament full",
+		  "description-1": "At least 2 players needed",
+		  "description-2": "Maximum 10 players"
+		}
+	  },
+	  "PlayersPanel": {
+		"title": "--Participants",
+		"title2": "--Tournament players",
+		"PlayerCard": {
+		  "Role": {
+			"Admin": "Admin",
+			"Player": "Player"
+		  }
+		},
+		"CapacityIndicator": {
+		  "capacity": "Capacity",
+		  "min": "Min: 2",
+		  "max": "Max: 10"
+		},
+		"PlayButton": "START GAME"
+	  },
+	  "title": "Tournament Control Panel",
+	  "exit": "Leave Tournament",
+	  "tournament-id": "Tournament ID",
+	  "tournament-name": "Tournament Name",
+	  "tournament-creater": "Tournament Creator",
+	  "tournament-total-players": "Total Players",
+	  "tournament-joined-players": "Joined Players",
+	  "play": "Play"
 	},
 	"game": {
-		"loading": "Game Page Loading...",
-		"vs-compiter-b": "Play vs Computer",
-		"vs-compiter-difficulty-b-easy": "Easy",
-		"vs-compiter-difficulty-b-medium": "Medium",
-		"vs-compiter-difficulty-b-hard": "Hard",
-		"find-reval-b": "Find Opponent",
-		"find-reval-waiting": "Waiting for Opponent...",
-		"local-game": "Local Game",
-		"tournament": "Tournament",
-		"stratt-game": "Start Game",
-		"continue-game": "Continue Game",
-		"new-game": "Start New Game",
-		"sets": "SETS!"
+	  "strat": "__Start Game",
+	  "continue": "Continue Game",
+	  "new": "Start New Game",
+	  "goHome": "Return Home"
 	},
-	toast: {
-		success: {
-			"username-updated": "Username updated successfully! ✨",
-			"email-updated": "Email updated successfully! 📧",
-			"password-updated": "Password updated successfully! 🔒"
-		},
-		error: {
-			"field-required": "Please enter a value!",
-			"old-password-field-missing": "Old password field not found!",
-			"new-password-field-missing": "New password field not found!",
-			"old-password-required": "Please enter your old password!",
-			"new-password-required": "Please enter your new password!",
-			"password-min-length": "New password must be at least 3 characters!",
-			"old-password-incorrect": "Old password is incorrect!",
-			"username-update-failed": "Username could not be updated!",
-			"email-update-failed": "Email could not be updated!",
-			"password-update-failed": "Password could not be updated!",
-			"update-error": "An error occurred during update!",
-			"password-update-error": "An error occurred while updating password!"
+	"play": {
+	  "Menu": {
+		"title": "Pong Arena",
+		"subTitle": "Select Game Mode",
+		"Button": {
+		  "AI": "_Play vs AI",
+		  "Local": "_Local Play",
+		  "Online": "_Online Play"
 		}
+	  },
+	  "Difficulty": {
+		"title": "Select Difficulty",
+		"Button": {
+		  "easy": "_Easy",
+		  "medium": "_Medium",
+		  "hard": "_Hard"
+		}
+	  }
+	},
+	"toast": {
+	  "success": {
+		"username-updated": "Username updated successfully! ✨",
+		"email-updated": "Email updated successfully! 📧",
+		"password-updated": "Password updated successfully! 🔒"
+	  },
+	  "error": {
+		"field-required": "Please enter a value!",
+		"old-password-field-missing": "Old password field not found!",
+		"new-password-field-missing": "New password field not found!",
+		"old-password-required": "Please enter your old password!",
+		"new-password-required": "Please enter a new password!",
+		"password-min-length": "New password must be at least 3 characters!",
+		"old-password-incorrect": "Old password is incorrect!",
+		"username-update-failed": "Username update failed!",
+		"email-update-failed": "Email update failed!",
+		"password-update-failed": "Password update failed!",
+		"update-error": "Error during update!",
+		"password-update-error": "Error during password update!"
+	  }
 	}
-}
-
+  }
+  
 const tr  = {
 	"singin": {
 		"register-b": "Kayıt Ol",
@@ -333,24 +397,50 @@ const tr  = {
 		"play": "Oyna"
 	},
 	"game":{
-		"loading": "Oyun Sayfası Yükleniyor...",
+		"strat": "__Oyunu Başlat",
+		"continue": "Oyuna Devam Et",
+		"new": "Yeni Oyun Başlat",
+		"goHome": "Ana Sayfaya Dön"
+	},
+	"play" :{
+		"Menu": {
+			"title": "Pong Arena",
+			"subTitle" : "Oyun Modunu Seçin",
+			"Button": {
+				"AI": "_Yapay Zekaya Karşı",
+				"Local": "_Yerel Oyun",
+				"Online": "_Çevrim İçi Oyun"
+			},
+		},
+		"Difficulty":{
+			"title": "Zorluk Seviyesini Seçin",
+			"Button": {
+				"easy": "_Kolay",
+				"medium": "_Orta",
+				"hard": "_Zor"
+			}
+		}
+	},
+	"overlays":{
+		"Tournament": {
+			"first_page":{
+				"create": {
+					"success": {
+						"title":"İşlem Başarılı !",
+						"message":{
+							
+						}
+					},
+					"fail": {
+						
+					}
+				}
 
-		"vs-compiter-b":"Bilgisayara Karşı Oyna",
-		"vs-compiter-difficulty-b-easy": "Kolay",
-		"vs-compiter-difficulty-b-medium": "Orta",
-		"vs-compiter-difficulty-b-hard": "Zor",
+			},
+			"second_page": {
 
-		"find-reval-b": "Rakip Bul",
-		"find-reval-waiting": "Rakip Bekleniyor...",
-		
-		"local-game": "Yerel Oyun",
-		
-		"tournament": "Turnuva",
-
-		"stratt-game": "Oyunu Başlat",
-		"continue-game": "Oyuna Devam Et",
-		"new-game": "Yeni Oyun Başlat",
-		"sets": "SETLER",
+			},
+		}
 	},
 	"toast": {
 		"success": {
@@ -378,165 +468,225 @@ const tr  = {
 
 const fr = {
 	"singin": {
-		"register-b": "S'inscrire",
-		"email-or-nickname-i": "E-mail ou Pseudo",
-		"passwor-i": "Mot de passe",
-		"login-b": "Se connecter",
-		"no-account": "Vous n'avez pas de compte ?"
+	  "register-b": "S’inscrire",
+	  "email-or-nickname-i": "E‑mail ou pseudo",
+	  "passwor-i": "Mot de passe",
+	  "login-b": "Se connecter",
+	  "no-account": "Vous n’avez pas de compte?"
 	},
-	"singin-success": "Connexion réussie ! Redirection...",
+	"singin-success": "Connexion réussie ! Redirection…",
 	"singin-errors": {
-		"required": {
-			"email": "E-mail ou Pseudo requis",
-			"password": "Mot de passe requis"
-		},
-		"invalid": {
-			"email": "Format d'e-mail invalide"
-		},
-		"INVALID_CREDENTIALS": "E-mail/pseudo ou mot de passe invalide",
-		"networkError": "Erreur de connexion réseau, vérifiez votre connexion internet"
+	  "required": {
+		"email": "E‑mail ou pseudo requis",
+		"password": "Mot de passe requis"
+	  },
+	  "invalid": {
+		"email": "Format d’e‑mail invalide"
+	  },
+	  "INVALID_CREDENTIALS": "E‑mail/pseudo ou mot de passe invalide",
+	  "networkError": "Erreur réseau, veuillez vérifier votre connexion Internet"
 	},
 	"register": {
-		"title": "S'inscrire",
-		"singin-b": "Se connecter",
-		"name": "Entrez votre nom",
-		"surname": "Entrez votre prénom",
-		"username": "Entrez votre nom d'utilisateur",
-		"email": "Entrez votre e-mail",
-		"password": "Entrez votre mot de passe",
-		"confirmPassword": "Confirmez le mot de passe",
-		"register": "S'inscrire"
+	  "title": "S’inscrire",
+	  "singin-b": "Se connecter",
+	  "name": "Entrez le prénom",
+	  "surname": "Entrez le nom",
+	  "username": "Entrez le nom d’utilisateur",
+	  "email": "Entrez l’e‑mail",
+	  "password": "Entrez le mot de passe",
+	  "confirmPassword": "Confirmez le mot de passe",
+	  "register": "S’inscrire"
 	},
-	"register-success": "Inscription réussie ! Veuillez vous connecter.",
+	"register-success": "Inscription réussie ! Veuillez vous connecter.",
 	"register-errors": {
-		"required": {
-			"name": "Le nom est requis",
-			"surname": "Le prénom est requis",
-			"username": "Le nom d'utilisateur est requis",
-			"email": "L'e-mail est requis",
-			"password": "Le mot de passe est requis",
-			"confirmPassword": "La confirmation du mot de passe est requise"
-		},
-		"minlength": {
-			"name": "Le nom doit contenir au moins 3 caractères",
-			"surname": "Le prénom doit contenir au moins 3 caractères",
-			"username": "Le nom d'utilisateur doit contenir au moins 3 caractères",
-			"password": "Le mot de passe doit contenir au moins 6 caractères",
-			"confirmPassword": "La confirmation du mot de passe doit contenir au moins 6 caractères"
-		},
-		"maxlength": {
-			"username": "Le nom d'utilisateur doit contenir au plus 20 caractères",
-			"password": "Le mot de passe doit contenir au plus 20 caractères"
-		},
-		"invalidCharacters": {
-			"username": "Caractères invalides pour le nom d'utilisateur (a-zA-Z0-9_.)",
-			"email": "Format d'e-mail invalide"
-		},
-		"passwordMismatch": "Les mots de passe ne correspondent pas",
-		"exists": {
-			"username": "Ce nom d'utilisateur est déjà pris",
-			"email": "Cet e-mail est déjà enregistré"
-		},
-		"USERNAME_ALREADY_EXISTS": "Ce nom d'utilisateur est déjà pris",
-		"EMAIL_ALREADY_EXISTS": "Cet e-mail est déjà enregistré",
-		"WEAK_PASSWORD": "Le mot de passe est trop faible, choisissez un mot de passe plus fort",
-		"registerFailed": "Échec de l'inscription",
-		"serverError": "Erreur serveur, veuillez réessayer plus tard",
-		"networkError": "Erreur de connexion réseau, vérifiez votre connexion internet"
+	  "required": {
+		"name": "Prénom requis",
+		"surname": "Nom requis",
+		"username": "Nom d’utilisateur requis",
+		"email": "E‑mail requis",
+		"password": "Mot de passe requis",
+		"confirmPassword": "Veuillez confirmer le mot de passe"
+	  },
+	  "minlength": {
+		"name": "Le prénom doit contenir au moins 3 caractères",
+		"surname": "Le nom doit contenir au moins 3 caractères",
+		"username": "Le nom d’utilisateur doit contenir au moins 3 caractères",
+		"password": "Le mot de passe doit contenir au moins 6 caractères",
+		"confirmPassword": "La confirmation du mot de passe doit contenir au moins 6 caractères"
+	  },
+	  "maxlength": {
+		"username": "Le nom d’utilisateur doit contenir au maximum 20 caractères",
+		"password": "Le mot de passe doit contenir au maximum 20 caractères"
+	  },
+	  "invalidCharacters": {
+		"username": "Caractères invalides pour le nom d’utilisateur (a‑z A‑Z 0‑9 _ .)",
+		"email": "Format d’e‑mail invalide"
+	  },
+	  "passwordMismatch": "Les mots de passe ne correspondent pas",
+	  "exists": {
+		"username": "Ce nom d’utilisateur est déjà pris",
+		"email": "Cet e‑mail est déjà enregistré"
+	  },
+	  "USERNAME_ALREADY_EXISTS": "Ce nom d’utilisateur est déjà pris",
+	  "EMAIL_ALREADY_EXISTS": "Cet e‑mail est déjà enregistré",
+	  "WEAK_PASSWORD": "Mot de passe trop faible, veuillez choisir un mot plus sécurisé",
+	  "registerFailed": "Échec de l’inscription",
+	  "serverError": "Erreur serveur, veuillez réessayer plus tard",
+	  "networkError": "Erreur réseau, veuillez vérifier votre connexion"
 	},
 	"home": {
-		"play-b": "Jouer maintenant",
-		"settings-b": "Paramètres",
-		"profile-b": "Profil",
-		"tournament-b": "Tournoi",
-		"logout-b": "Déconnexion"
+	  "play-b": "Jouer maintenant",
+	  "settings-b": "Paramètres",
+	  "profile-b": "Profil",
+	  "tournament-b": "Tournoi",
+	  "logout-b": "Se déconnecter"
 	},
 	"settings": {
-		"title": "Paramètres",
-		"ball-color": "Couleur de la balle",
-		"language-select": "Sélection de la langue",
-		"save-button": "Enregistrer les paramètres"
+	  "title": "Paramètres",
+	  "ball-color": "Couleur de la balle",
+	  "language-select": "Sélection de la langue",
+	  "save-button": "Enregistrer les paramètres"
 	},
 	"profile": {
-		"title": "Paramètres de profil",
-		"username": "Nom d'utilisateur"
+	  "title": "Paramètres du profil",
+	  "username": "Nom d’utilisateur"
 	},
-	"profile-avatar-change-hint": "Cliquez pour changer d'avatar",
-	"profile-avatar-select-title": "Sélectionner un avatar",
+	"profile-avatar-change-hint": "Cliquez pour changer l’avatar",
+	"profile-avatar-select-title": "Sélectionnez un avatar",
 	"profile-avatar-select-subtitle": "Choisissez votre avatar préféré",
 	"profile-avatar-cancel": "Annuler",
-	"profile-avatar-success": "Avatar changé avec succès!",
+	"profile-avatar-success": "Avatar changé avec succès !",
 	"profile-info-title": "Informations de profil",
-	"profile-info-settings-title": "Paramètres de profil",
+	"profile-info-settings-title": "Paramètres du profil",
 	"profile-settings": {
-		username: "Nom d'utilisateur",
-		usernamePlaceholder: "Nouveau nom d'utilisateur",
-		email: "E-mail",
-		emailPlaceholder: "Nouvel e-mail",
-		password: "Mot de passe",
-		passwordPlaceholder: "Nouveau mot de passe",
-		"old-Password": "Ancien mot de passe",
-		"old-password-placeholder": "Ancien mot de passe",
-		update: "Mettre à jour"
+	  "username": "Nom d’utilisateur",
+	  "username-placeholder": "Nouveau nom d’utilisateur",
+	  "email": "E‑mail",
+	  "email-placeholder": "Nouvel e‑mail",
+	  "password": "Mot de passe",
+	  "password-placeholder": "Nouveau mot de passe",
+	  "old-Password": "Ancien mot de passe",
+	  "old-password-placeholder": "Ancien mot de passe",
+	  "update": "Mettre à jour"
 	},
 	"tournament-first-page": {
-		"join-title": "Rejoindre un tournoi",
-		"join-placeholder": "Entrez l'ID du tournoi",
-		"join-button": "Rejoindre le tournoi",
-		"create-title": "Créer un tournoi",
-		"create-placeholder": "Entrez le nom du tournoi",
-		"create-button": "Créer un tournoi",
-		"m-title-for-showjoin": "Créer un tournoi",
-		"m-title-for-showcreate": "Rejoindre un tournoi",
-		"m-join-button": "--->",
-		"m-create-button": "<---"
+	  "join-title": "Rejoindre le tournoi",
+	  "join-placeholder": "Entrez l’ID du tournoi",
+	  "join-button": "Rejoindre le tournoi",
+	  "create-title": "Créer un tournoi",
+	  "create-placeholder": "Entrez le nom du tournoi",
+	  "create-button": "Créer le tournoi",
+	  "m-title-for-showjoin": "Créer un tournoi",
+	  "m-title-for-showcreate": "Rejoindre le tournoi",
+	  "m-join-button": "--->",
+	  "m-create-button": "<---"
 	},
 	"tournament-second-page": {
-		"exit": "Quitter le tournoi",
-		"tournament-id": "ID du tournoi",
-		"tournament-name": "Nom du tournoi",
-		"tournament-creater": "Créateur du tournoi",
-		"tournament-total-players": "Joueurs totaux",
-		"tournament-joined-players": "Joueurs inscrits",
-		"play": "Jouer"
+	  "DetailsCard": {
+		"header": "Détails du tournoi",
+		"header2": "Statistiques détaillées",
+		"button": {
+		  "refresh": "--Rafraîchir",
+		  "tree": "--Arbre du tournoi",
+		  "exit": "--Quitter"
+		},
+		"IdCard": "ID du tournoi",
+		"IdCard-description": "Code unique pour rejoindre le tournoi",
+		"Creater": "Créateur du tournoi",
+		"Creater-description": "Personne organisant le tournoi",
+		"ActivePlayer": "Joueurs actifs",
+		"ActivePlayer-description": "Nombre actuel de participants et capacité",
+		"Status": "Statut",
+		"Status-description": "Statut actuel du tournoi"
+	  },
+	  "AdminPanel": {
+		"title": "--Panneau Admin",
+		"Button": {
+		  "active": "DÉMARRER LE TOURNOI",
+		  "deactive-1": "EN ATTENTE DE JOUEURS (1/2)",
+		  "deactive-2": "TOURNOI COMPLET (10/10)"
+		},
+		"Button2": {
+		  "active": "Peut démarrer",
+		  "deactive-1": "Plus de joueurs nécessaires",
+		  "deactive-2": "Tournoi complet",
+		  "description-1": "Au moins 2 joueurs nécessaires",
+		  "description-2": "Maximum 10 joueurs"
+		}
+	  },
+	  "PlayersPanel": {
+		"title": "--Participants",
+		"title2": "--Joueurs du tournoi",
+		"PlayerCard": {
+		  "Role": {
+			"Admin": "Admin",
+			"Player": "Joueur"
+		  }
+		},
+		"CapacityIndicator": {
+		  "capacity": "Capacité",
+		  "min": "Min : 2",
+		  "max": "Max : 10"
+		},
+		"PlayButton": "DÉMARRER LE JEU"
+	  },
+	  "title": "Panneau de contrôle du tournoi",
+	  "exit": "Quitter le tournoi",
+	  "tournament-id": "ID du tournoi",
+	  "tournament-name": "Nom du tournoi",
+	  "tournament-creater": "Créateur du tournoi",
+	  "tournament-total-players": "Nombre total de joueurs",
+	  "tournament-joined-players": "Joueurs inscrits",
+	  "play": "Jouer"
 	},
 	"game": {
-		"loading": "Chargement de la page de jeu...",
-		"vs-compiter-b": "Jouer contre l'ordinateur",
-		"vs-compiter-difficulty-b-easy": "Facile",
-		"vs-compiter-difficulty-b-medium": "Moyen",
-		"vs-compiter-difficulty-b-hard": "Difficile",
-		"find-reval-b": "Trouver un adversaire",
-		"find-reval-waiting": "En attente d'un adversaire...",
-		"local-game": "Jeu local",
-		"tournament": "Tournoi",
-		"stratt-game": "Démarrer le jeu",
-		"continue-game": "Continuer le jeu",
-		"new-game": "Démarrer une nouvelle partie",
-		"sets": "MANCHES !"
+	  "strat": "__Démarrer le jeu",
+	  "continue": "Continuer le jeu",
+	  "new": "Commencer un nouveau jeu",
+	  "goHome": "Retour à l’accueil"
 	},
-	toast: {
-		success: {
-			"username-updated": "Nom d'utilisateur mis à jour avec succès ! ✨",
-			"email-updated": "E-mail mis à jour avec succès ! 📧",
-			"password-updated": "Mot de passe mis à jour avec succès ! 🔒"
-		},
-		error: {
-			"field-required": "Veuillez saisir une valeur !",
-			"old-password-field-missing": "Champ de l'ancien mot de passe introuvable !",
-			"new-password-field-missing": "Champ du nouveau mot de passe introuvable !",
-			"old-password-required": "Veuillez saisir votre ancien mot de passe !",
-			"new-password-required": "Veuillez saisir votre nouveau mot de passe !",
-			"password-min-length": "Le nouveau mot de passe doit contenir au moins 3 caractères !",
-			"old-password-incorrect": "L'ancien mot de passe est incorrect !",
-			"username-update-failed": "Le nom d'utilisateur n'a pas pu être mis à jour !",
-			"email-update-failed": "L'e-mail n'a pas pu être mis à jour !",
-			"password-update-failed": "Le mot de passe n'a pas pu être mis à jour !",
-			"update-error": "Une erreur s'est produite lors de la mise à jour !",
-			"password-update-error": "Une erreur s'est produite lors de la mise à jour du mot de passe !"
+	"play": {
+	  "Menu": {
+		"title": "Pong Arena",
+		"subTitle": "Sélectionnez le mode de jeu",
+		"Button": {
+		  "AI": "_Jouer contre l’IA",
+		  "Local": "_Jeu local",
+		  "Online": "_Jeu en ligne"
 		}
+	  },
+	  "Difficulty": {
+		"title": "Choisissez la difficulté",
+		"Button": {
+		  "easy": "_Facile",
+		  "medium": "_Moyen",
+		  "hard": "_Difficile"
+		}
+	  }
+	},
+	"toast": {
+	  "success": {
+		"username-updated": "Nom d’utilisateur mis à jour avec succès ! ✨",
+		"email-updated": "E‑mail mis à jour avec succès ! 📧",
+		"password-updated": "Mot de passe mis à jour avec succès ! 🔒"
+	  },
+	  "error": {
+		"field-required": "Veuillez entrer une valeur !",
+		"old-password-field-missing": "Champ ancien mot de passe introuvable !",
+		"new-password-field-missing": "Champ nouveau mot de passe introuvable !",
+		"old-password-required": "Veuillez entrer votre ancien mot de passe !",
+		"new-password-required": "Veuillez entrer un nouveau mot de passe !",
+		"password-min-length": "Le nouveau mot de passe doit contenir au moins 3 caractères !",
+		"old-password-incorrect": "Ancien mot de passe incorrect !",
+		"username-update-failed": "Échec de la mise à jour du nom d’utilisateur !",
+		"email-update-failed": "Échec de la mise à jour de l’e‑mail !",
+		"password-update-failed": "Échec de la mise à jour du mot de passe !",
+		"update-error": "Erreur lors de la mise à jour !",
+		"password-update-error": "Erreur lors de la mise à jour du mot de passe !"
+	  }
 	}
-}
+  }
+  
 
 
 type TranslationObject = {

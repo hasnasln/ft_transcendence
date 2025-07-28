@@ -1,5 +1,5 @@
-import { Server } from "socket.io";
+import { ConnectionHandler } from "./connection";
 
-export function emitError(errorMessage: string, socketId: string, io: Server) {
-    io.to(socketId).emit("gameServerError", errorMessage);
+export function emitError(errorMessage: string, socketId: string) {
+    ConnectionHandler.getInstance().getServer().to(socketId).emit("gameServerError", errorMessage);
 }

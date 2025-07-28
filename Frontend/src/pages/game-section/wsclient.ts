@@ -20,6 +20,16 @@ export class WebSocketClient {
         return this.socket;
     }
 
+    public reset() {
+        if (this.socket) {
+            this.socket.removeAllListeners();
+            this.socket.disconnect();
+            this.socket = null;
+        }
+        this.hasConnectedOnce = false;
+        console.log("WebSocketClient reset.");
+    }
+
     public emit(event: string, data?: any): void {
         if (!this.socket) {
             console.error("Event could not emitted. Socket is not initialized: event: '" + event + "' data: '", data + "'");
@@ -49,22 +59,17 @@ export class WebSocketClient {
         this.socket?.off(event);
     }
 
-    public async connect(url: string): Promise<Socket> {
+    public async connect(url: string): Promise<void> {
         console.log("Connecting to WebSocket server at:", url);
-        if (this.socket) {
-            this.socket.removeAllListeners();
-            this.socket.disconnect();
-            this.socket = null;
-        }
-        this.hasConnectedOnce = false;
+        this.reset();
         return new Promise((resolve, reject) => {
             if (this.socket) {
-                reject("socket already exists")
+                reject("socket already exists");
             }
 
             const token = _apiManager.getToken();
             if (!token) {
-                reject("No token found. Try login again.");
+                reject("No token found. Try logging in again.");
                 return;
             }
 
@@ -73,13 +78,25 @@ export class WebSocketClient {
                 autoConnect: true,
                 rememberUpgrade: true,
                 reconnection: true,
-                reconnectionAttempts: 2 * 15, // 15 seconds
-                reconnectionDelay: 500, // 500ms
+                reconnectionAttempts: 5,
+                reconnectionDelay: 200, // 200ms
                 randomizationFactor: 0,
                 timeout: 20_000,
             });
+
+            const onConnectError = () => {
+                this.reset();
+                reject("Server could not be reached.");
+            };
+
+            this.socket.io.once('reconnect_failed', onConnectError);
+
+            this.socket.once('connect', () => {
+                this.socket?.io.off('reconnect_failed', onConnectError);
+                resolve();
+            });
+
             this.listenEvents();
-            resolve(this.socket);
         });
     }
 
@@ -117,7 +134,7 @@ export class WebSocketClient {
         this.socket.io.on("reconnect_error", (err) => GameEventBus.getInstance().emit({ type: 'RECONNECTION_ATTEMPT_FAILED', payload: { reason: err.message } }));
         this.socket.io.on("reconnect", (n) => GameEventBus.getInstance().emit({ type: 'RECONNECTED', payload: { attempts: n } }));
         this.socket.io.on("reconnect_failed", () => GameEventBus.getInstance().emit({ type: 'RECONNECTION_GAVE_UP' }));
-        this.socket.on('connect_error', (err) => GameEventBus.getInstance().emit({ type: 'CONNECTION_ERROR', payload: { reason: err.message } }));
+        this.socket.on("connect_error", (err) => GameEventBus.getInstance().emit({ type: 'CONNECTION_ERROR', payload: { reason: err.message } }));
 
         this.socket.on('gameServerError', (errorMessage: string) => {
             console.error("Game server error:", errorMessage);

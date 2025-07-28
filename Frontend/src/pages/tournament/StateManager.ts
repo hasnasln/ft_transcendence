@@ -17,7 +17,7 @@ export class TournamentStateManager {
     }
 
     async handleRefreshSuccess(updatedData: ITournament): Promise<void> {
-        this.data.users = updatedData.users;
+        this.data.participants = updatedData.participants;
         localStorage.setItem('tdata', JSON.stringify(updatedData));
         const response = await _apiManager.getTournament(this.data.code);
         const tournamentStarted = response.data?.tournament_start || false;
@@ -131,7 +131,7 @@ export class TournamentStateManager {
     updateTournamentInfo(): void {
         const startButton = document.getElementById('start-button');
         const startInfo = document.querySelector('.tournament-start-info');
-        const playerCount = this.data.users.length;
+        const playerCount = this.data.participants.length;
         const minPlayers = 2;
         const maxPlayers = 10;
         

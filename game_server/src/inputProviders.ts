@@ -1,11 +1,12 @@
 import { Socket } from "socket.io";
-import { Game, Paddle } from "./game";
+import { Game } from "./game";
+import { Paddle } from "./gameEntity";
 import { predictBallY } from "./aiPlayer";
 import { Player } from "./matchManager";
 
 export interface InputProvider {
 	//Returns +1 for move up, -1 for move down, or 0 for no movement
-	getPaddleDelta(): number;
+	getPaddleDelta(): -1 | 0 | 1;
 	getUsername(): string;
 	getSocket?(): Socket;
 	getUuid(): string;
@@ -13,7 +14,7 @@ export interface InputProvider {
 
 //RemotePlayerInput listens to socket events for keydown/keyup
 export class RemotePlayerInput implements InputProvider {
-	private delta = 0;
+	private delta: -1 | 0 | 1 = 0;
 	private player: Player;
 	constructor(player: Player) {
 		this.player = player;
@@ -33,8 +34,13 @@ export class AIPlayerInput implements InputProvider {
 	private lastDecisionTime = 0;
 	private targetY = 0;
 	private refreshTime: number = 1500; //ms
+	public game: Game;
+	public paddle: Paddle;
 
-	constructor(private readonly getGame: () => Game, private readonly getPaddle: () => Paddle, level: string) {
+
+	constructor(game: Game, paddle: Paddle, level: string) {
+		this.game = game;
+		this.paddle = paddle;
 		const aiNames = ["Hamza (AI)", "Hasan (AI)", "Fatma (AI)", "Ayhan (AI)", "Batuhan (AI)"];
 		this.username = aiNames[Math.floor(Math.random() * aiNames.length)];
 
@@ -46,7 +52,7 @@ export class AIPlayerInput implements InputProvider {
 			this.refreshTime = 1000;
 	}
 
-	getPaddleDelta(): number {
+	getPaddleDelta(): -1 | 0 | 1 {
 		const ball = this.getGame().getBall();
 		const groundWidth = this.getGame().getGround().width;
 		const groundHeight = this.getGame().getGround().height;
@@ -67,13 +73,21 @@ export class AIPlayerInput implements InputProvider {
 		return diff > 0 ? 1 : -1;
 	}
 
+	public getGame(): Game {
+		return this.game;
+	}
+
+	public getPaddle(): Paddle {
+		return this.paddle;
+	}
+
 	getUsername() { return this.username; }
 	getUuid() { return (''); }
 }
 
 
 export class LocalPlayerInput implements InputProvider {
-	private delta = 0;
+	private delta: -1 | 0 | 1 = 0;
 	private player: Player;
 	private side: string;
 

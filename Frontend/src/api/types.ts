@@ -90,11 +90,7 @@ export interface IProfileSettingsUpdateRequest {
 
 //#region TOURNAMENT SECTION
 
-export interface ITournament {
-	/*
-	?????
-	 */
-}
+
 
 /*
 ! burada token dan userı direk çeker kullanırız
@@ -161,8 +157,5 @@ export interface ITournament{
 	code: string; // Tournament code
 	name: string; // Tournament name
 	admin_id: string; // Admin user ID
-	users: ITournamentUser[]; // Users in the tournament
+	participants: ITournamentUser[]; // Users in the tournament
 }
-
-
-

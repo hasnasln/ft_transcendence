@@ -30,6 +30,9 @@ export type GameEventType =
 	| 'RECONNECTED'
 	| 'GAME_MODE_CHOSEN'
 	| 'AI_DIFFICULTY_CHOSEN'
+	| 'CONNECTING_TO_SERVER'
+	| 'CONNECTING_TO_SERVER_FAILED'
+	| 'CONNECTED_TO_SERVER'
 ;
 
 export interface GameEvent {
@@ -86,6 +89,18 @@ export class GameEventBus {
 		this.listeners[eventType] = this.listeners[eventType].filter(h => h !== handler);
 	}
 }
+
+GameEventBus.getInstance().on('CONNECTING_TO_SERVER', async (event) => {
+	gameInstance.uiManager.onInfoShown("...");
+});
+
+GameEventBus.getInstance().on('CONNECTING_TO_SERVER_FAILED', async (event) => {
+	gameInstance.uiManager.onInfoShown("Sunucuya bağlanma başarısız oldu: " + event.payload.error);
+});
+
+GameEventBus.getInstance().on('CONNECTED_TO_SERVER', async () => {
+	gameInstance.uiManager.onInfoShown("Bağlantı hazır.");
+});
 
 GameEventBus.getInstance().on('SET_COMPLETED', async () => {
 	updateScoreBoard();

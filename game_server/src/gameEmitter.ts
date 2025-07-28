@@ -1,7 +1,10 @@
+import { ConnectionHandler } from "./connection";
 import { GameConstants, GameState, PaddleState, Game } from "./game";
+import { GameEntityFactory } from "./gameEntity";
 
 export class GameEmitter {
 	private static _instance: GameEmitter;
+	private readonly ucf: number = GameEntityFactory.UCF;
 
 	private constructor() {}
 
@@ -14,58 +17,58 @@ export class GameEmitter {
 
 	public emitGameConstants(game: Game): void {
 		const gameConstants: GameConstants = {
-			groundWidth: game.ground.width / game.UCF,
-			groundHeight: game.ground.height / game.UCF,
-			ballRadius: game.ball.radius / game.UCF,
-			paddleWidth: game.paddle1.width / game.UCF,
-			paddleHeight: game.paddle1.height / game.UCF,
+			groundWidth: game.ground.width / this.ucf,
+			groundHeight: game.ground.height / this.ucf,
+			ballRadius: game.ball.radius / this.ucf,
+			paddleWidth: game.leftPaddle.width / this.ucf,
+			paddleHeight: game.leftPaddle.height / this.ucf,
 		};
 
-		game.io.to(game.roomId).emit("init", gameConstants);
+		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("init", gameConstants);
 	}
 
 	public emitGameState(game: Game): void {
 		const gameState: GameState = {
 			matchOver: game.matchOver,
-			setOver: game.setOver,
+			setOver: game.scoringManager.isSetOver(),
 			isPaused: game.isPaused,
 			matchWinner: game.matchWinner,
 			matchDisconnection: game.matchDisconnection,
-			roundNumber: game.match.tournament?.roundNo,
+			roundNumber: game.tournament?.roundNo,
 		};
 
-		game.io.to(game.roomId).emit("gameState", gameState);
+		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("gameState", gameState);
 	}
 
 	public emitSetState(game: Game): void {
 		const setState = {
-			points: game.points,
-			sets: game.sets,
+			points: game.scoringManager.getScores(),
+			sets: game.scoringManager.getSets(),
 			usernames: {
-				left: game.leftInput.getUsername(),
-				right: game.rightInput.getUsername(),
+				left: game.leftInput!.getUsername(),
+				right: game.rightInput!.getUsername(),
 			},
 		};
 
-		game.io.to(game.roomId).emit("updateState", setState);
+		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("updateState", setState);
 	}
 
 	public emitBallState(game: Game): void {
-		const x = game.ball.position.x / game.UCF;
-		const y = game.ball.position.y / game.UCF;
+		const x = game.ball.position.x / this.ucf;
+		const y = game.ball.position.y / this.ucf;
 
 		if (isNaN(x) || isNaN(y)) {
 			console.error(`Invalid ball coordinates: x=${x}, y=${y}`);
 			return;
 		}
 
-		game.io.to(game.roomId).emit("bu", `${x.toFixed(2)}:${y.toFixed(2)}`);
+		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("bu", `${x.toFixed(2)}:${y.toFixed(2)}`);
 	}
 
 	public emitPaddleState(game: Game): void {
 		const paddleState: PaddleState = {
-			p1y: game.paddle1.position.y / game.UCF,
-			p2y: game.paddle2.position.y / game.UCF,
+			p1y: game.leftPaddle.position.y / this.ucf,
+			p2y: game.rightPaddle.position.y / this.ucf,
 		};
 
 		if (
@@ -77,6 +80,6 @@ export class GameEmitter {
 		}
 
 		game.lastPaddleUpdate = paddleState;
-		game.io.to(game.roomId).emit("paddleUpdate", paddleState);
+		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("paddleUpdate", paddleState);
 	}
 }
