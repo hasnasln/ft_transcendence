@@ -100,9 +100,6 @@ GameEventBus.getInstance().on('CONNECTING_TO_SERVER_FAILED', async (event) => {
 
 GameEventBus.getInstance().on('CONNECTED_TO_SERVER', async () => {
 	gameInstance.uiManager.onInfoShown("Bağlantı hazır.");
-	setTimeout(() => {
-		gameInstance.uiManager.onInfoHidden();
-	}, 1000);
 });
 
 GameEventBus.getInstance().on('SET_COMPLETED', async () => {
