@@ -1,8 +1,8 @@
 import { Game } from "./game";
-import { matchManager } from "./server";
 import { pushWinnerToTournament } from "./tournament";
 import { emitError } from "./errorHandling";
 import { GameEmitter } from "./gameEmitter";
+import { MatchManager } from "./matchManager";
 
 type Middleware = (g: Game, dt: number) => boolean;
 
@@ -60,7 +60,7 @@ function skipIfMatchOver(g: Game, _dt: number): boolean {
         GameEmitter.getInstance().emitGameState(g);
 
 		if (g.gameMode === 'localGame' || g.gameMode === 'vsAI')
-			matchManager.clearMatch(g);
+			MatchManager.getInstance().clearMatch(g);
 		g.end();
 		return false;
 	}

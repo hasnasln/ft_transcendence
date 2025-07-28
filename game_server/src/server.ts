@@ -40,19 +40,17 @@ export class HTTPMethod extends String {
 ConnectionHandler.getInstance().init();
 GameOrchestrator.getInstance().start(60);
 
-export const matchManager = new MatchManager();
-
 setInterval(() => {
 	const now = Date.now();
-	for (const [username, disconnectEvent] of matchManager.disconnectTimestamps) {
+	for (const [username, disconnectEvent] of MatchManager.getInstance().disconnectTimestamps) {
 		if (now - disconnectEvent.timestamp > 15_000) {
-			matchManager.disconnectTimestamps.delete(username);
+			MatchManager.getInstance().disconnectTimestamps.delete(username);
 			const {player,game} = disconnectEvent;
 			if (game.state === 'in-progress' || game.state === 'paused') {
 				const opponent = game.players.find(p => p.username !== player.username)!;
 				game.finishIncompleteMatch(opponent.username);
 			}
-			matchManager.clearMatch(game);
+			MatchManager.getInstance().clearMatch(game);
 		}
 	}
 }, 1000);

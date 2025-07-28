@@ -29,7 +29,7 @@ export interface DisconnectionEvent {
 }
 
 export class MatchManager {
-	public static instance: MatchManager;
+	private static instance: MatchManager;
 
 	public connectedPlayers: Map<string, Player> = new Map();
 	public disconnectTimestamps: Map<string, DisconnectionEvent> = new Map();
@@ -38,12 +38,14 @@ export class MatchManager {
 	private queuedPlayers: Player[] = [];
 	private waitingTournamentMatches: Map<string, Map<string, Player>> = new Map();
 
-	constructor() {
-		MatchManager.instance = this;
+	private constructor() {
 	}
 
 	public static getInstance(): MatchManager {
-		return MatchManager.instance!;
+		if (!MatchManager.instance) {
+			MatchManager.instance = new MatchManager();
+		}
+		return MatchManager.instance;
 	}
 
 	public handleMatchRequest(player: Player, status: GameStatus) {
