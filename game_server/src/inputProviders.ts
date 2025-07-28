@@ -5,7 +5,7 @@ import { Player } from "./matchManager";
 
 export interface InputProvider {
 	//Returns +1 for move up, -1 for move down, or 0 for no movement
-	getPaddleDelta(): number;
+	getPaddleDelta(): -1 | 0 | 1;
 	getUsername(): string;
 	getSocket?(): Socket;
 	getUuid(): string;
@@ -13,7 +13,7 @@ export interface InputProvider {
 
 //RemotePlayerInput listens to socket events for keydown/keyup
 export class RemotePlayerInput implements InputProvider {
-	private delta = 0;
+	private delta: -1 | 0 | 1 = 0;
 	private player: Player;
 	constructor(player: Player) {
 		this.player = player;
@@ -46,7 +46,7 @@ export class AIPlayerInput implements InputProvider {
 			this.refreshTime = 1000;
 	}
 
-	getPaddleDelta(): number {
+	getPaddleDelta(): -1 | 0 | 1 {
 		const ball = this.getGame().getBall();
 		const groundWidth = this.getGame().getGround().width;
 		const groundHeight = this.getGame().getGround().height;
@@ -73,7 +73,7 @@ export class AIPlayerInput implements InputProvider {
 
 
 export class LocalPlayerInput implements InputProvider {
-	private delta = 0;
+	private delta: -1 | 0 | 1 = 0;
 	private player: Player;
 	private side: string;
 
