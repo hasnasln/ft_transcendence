@@ -1,5 +1,4 @@
 import { InputProvider } from "./inputProviders";
-import { GameMode } from "./server";
 import { Player } from "./matchManager";
 import { GameEmitter } from "./gameEmitter";
 import { ScoringManager } from "./scoringManager";
@@ -7,6 +6,17 @@ import { GameOrchestrator } from "./orchestrator";
 import { Ball, DEFAULT_GAME_ENTITY_CONFIG, GameEntityFactory, Ground, Paddle } from "./gameEntity";
 
 export type Side = 'leftPlayer' | 'rightPlayer';
+export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament';
+
+export interface GameStatus {
+	currentGameStarted: boolean;
+	game_mode: GameMode;
+	level?: string;
+	tournamentCode?: string;
+	tournamentName?: string;
+	roundNo?: number;
+	finalMatch?: boolean
+};
 
 export interface GameConstants {
 	groundWidth: number;
@@ -77,11 +87,7 @@ export class Game {
 
 	public resetBall(lastScorer: "leftPlayer" | "rightPlayer") {
 		this.lastUpdatedTime = undefined;
-		this.ball.firstPedalHit = 0;
-		this.ball.speedIncreaseFactor = 1.7;
-		this.ball.minimumSpeed = this.ball.firstSpeedFactor;
-		this.ball.velocity = { x: 0, y: 0 };
-		this.ball.position = { x: 0, y: Math.random() * (0.8 * this.ground.height) - 0.4 * this.ground.height };
+		this.ball.reset();
 
 		setTimeout(() => {
 			this.ball.shove(lastScorer);
@@ -168,8 +174,6 @@ export class Game {
 
 		GameOrchestrator.getInstance().add(this);
 	}
-
-	//--
 
 	start() {
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} started.`);

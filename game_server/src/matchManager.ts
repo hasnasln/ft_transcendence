@@ -1,7 +1,7 @@
 import { Socket } from "socket.io";
 import { Game } from "./game";
 import { LocalPlayerInput, RemotePlayerInput, AIPlayerInput } from "./inputProviders";
-import { GameStatus } from "./server";
+import { GameStatus } from "./game";
 import { getTournament, findMyMatch, joinMatchByCode, Match } from "./tournament";
 import { emitError } from "./errorHandling";
 import { GameEmitter } from "./gameEmitter";

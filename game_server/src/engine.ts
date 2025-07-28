@@ -42,7 +42,6 @@ export class PhysicsEngine {
             if (!mw(game, dt)) break;
         }
     }
-
 }
 
 function skipIfMatchOver(g: Game, _dt: number): boolean {
