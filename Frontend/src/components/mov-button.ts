@@ -2,7 +2,7 @@ import { gameInstance} from '../pages/play';
 
 export function moveButton(container: HTMLElement, p: string): void
 {
-	const width = window.innerWidth;
+	/*const width = window.innerWidth;
 	const height = window.innerHeight;
 
 	if (width > 800 && height > 600) {
@@ -107,6 +107,6 @@ export function moveButton(container: HTMLElement, p: string): void
 
 	controler_container.appendChild(up_b);
 	controler_container.appendChild(down_b);
-	container.appendChild(controler_container);
+	container.appendChild(controler_container); */
 }
 
