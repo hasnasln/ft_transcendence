@@ -78,7 +78,7 @@ export class Match {
 }
 
 export class MatchManager {
-	public static instance: MatchManager | null = null;
+	public static instance: MatchManager;
 
 	public connectedPlayers: Map<string, Player> = new Map();
 	public disconnectTimestamps: Map<string, DisconnectionEvent> = new Map();
@@ -93,8 +93,8 @@ export class MatchManager {
 		MatchManager.instance = this;
 	}
 
-	public static getInstance(): MatchManager | null {
-		return MatchManager.instance;
+	public static getInstance(): MatchManager {
+		return MatchManager.instance!;
 	}
 
 	public handleMatchRequest(player: Player, status: GameStatus) {
@@ -302,7 +302,8 @@ export class MatchManager {
 			this.tryCreatingRemoteMatches(Array.from(myMatchMap.values()), tournament);
 		}
 		catch (err: any) {
-			console.error("Hata kodu:", err.message);
+			// print stack trace
+			console.error("Hata kodu:", err);
 			emitError(err.message, player.socket.id, this.io);
 		}
 	}
@@ -390,7 +391,7 @@ export class MatchManager {
 		return this.matchesByRoom.get(roomId);
 	}
 
-	getMatchByPlayer(username: string): Match | undefined {
+	public getMatchByPlayer(username: string): Match | undefined {
 		for (const match of this.matchesByRoom.values()) {
 			if (match.players?.some(p => p?.username === username)) {
 				return match;
