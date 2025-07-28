@@ -1,17 +1,5 @@
 import { Position } from "./game";
 
-export interface Ball {
-    readonly firstSpeedFactor: number;
-    readonly airResistanceFactor: number;
-    readonly radius: number;
-    minimumSpeed: number;
-    maximumSpeed: number;
-    speedIncreaseFactor: number;
-    firstPedalHit: number;
-    position: Position;
-    velocity: Position;
-}
-
 export interface Paddle {
     readonly width: number;
     readonly height: number;
@@ -77,17 +65,7 @@ export class GameEntityFactory {
     }
 
     public createDefaultBall(config: GameEntityConfig): Ball {
-        return {
-            firstSpeedFactor: config.ballFirstSpeedFactor * GameEntityFactory.UCF,
-            airResistanceFactor: config.ballAirResistanceFactor,
-            minimumSpeed: config.ballMinimumSpeed * GameEntityFactory.UCF,
-            maximumSpeed: config.ballMaximumSpeed * GameEntityFactory.UCF,
-            radius: config.ballRadius * GameEntityFactory.UCF,
-            speedIncreaseFactor: config.ballSpeedIncreaseFactor,
-            firstPedalHit: 0,
-            position: { x: 0, y: 0 },
-            velocity: { x: 0, y: 0 },
-        };
+        return new Ball(config);
     }
 
     public createDefaultLeftPaddle(config: GameEntityConfig): Paddle {
@@ -122,4 +100,45 @@ export class GameEntityFactory {
             height: config.groundHeight * GameEntityFactory.UCF
         }
     }
+}
+
+export class Ball {
+    public readonly firstSpeedFactor: number;
+    public readonly airResistanceFactor: number;
+    public readonly radius: number;
+    public minimumSpeed: number;
+    public maximumSpeed: number;
+    public speedIncreaseFactor: number;
+    public firstPedalHit: number;
+    public position: Position;
+    public velocity: Position;
+    private groundHeight: number;
+
+    constructor(config: GameEntityConfig) {
+        this.firstSpeedFactor = config.ballFirstSpeedFactor * GameEntityFactory.UCF;
+        this.airResistanceFactor = config.ballAirResistanceFactor;
+        this.radius = config.ballRadius * GameEntityFactory.UCF;
+        this.minimumSpeed = config.ballMinimumSpeed * GameEntityFactory.UCF;
+        this.maximumSpeed = config.ballMaximumSpeed * GameEntityFactory.UCF;
+        this.speedIncreaseFactor = config.ballSpeedIncreaseFactor;
+        this.firstPedalHit = 0;
+        this.position = { x: 0, y: 0 };
+        this.velocity = { x: 0, y: 0 };
+        this.groundHeight = config.groundHeight;
+    }
+
+    public reset() {
+        this.firstPedalHit = 0;
+		this.speedIncreaseFactor = 1.7;
+		this.minimumSpeed = this.firstSpeedFactor;
+		this.velocity = { x: 0, y: 0 };
+		this.position = { x: 0, y: Math.random() * (0.8 * this.groundHeight) - 0.4 * this.groundHeight };
+    }
+
+    public shove(lastScorer: "leftPlayer" | "rightPlayer") {
+        const random = (Math.random() * 2 - 1) * Math.PI / 6;
+        const angle = lastScorer == 'leftPlayer' ? random : Math.PI - random;
+
+        this.velocity = { x: Math.cos(angle) * this.firstSpeedFactor, y: Math.sin(angle) * this.firstSpeedFactor };
+	}
 }

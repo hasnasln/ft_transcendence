@@ -84,10 +84,7 @@ export class Game {
 		this.ball.position = { x: 0, y: Math.random() * (0.8 * this.ground.height) - 0.4 * this.ground.height };
 
 		setTimeout(() => {
-			/* here some math of odtü */
-			const angle = lastScorer == 'leftPlayer' ? (Math.random() * 2 - 1) * Math.PI / 6 : Math.PI - (Math.random() * 2 - 1) * Math.PI / 6;
-
-			this.ball.velocity = { x: Math.cos(angle) * this.ball.firstSpeedFactor, y: Math.sin(angle) * this.ball.firstSpeedFactor };
+			this.ball.shove(lastScorer);
 			this.lastUpdatedTime = Date.now();
 		}, 1000);
 	}
