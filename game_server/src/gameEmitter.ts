@@ -2,9 +2,9 @@ import { ConnectionHandler } from "./connection";
 import { GameConstants, GameState, PaddleState, Game } from "./game";
 import { GameEntityFactory } from "./gameEntity";
 
-
 export class GameEmitter {
 	private static _instance: GameEmitter;
+	private readonly ucf: number = GameEntityFactory.UCF;
 
 	private constructor() {}
 
@@ -17,11 +17,11 @@ export class GameEmitter {
 
 	public emitGameConstants(game: Game): void {
 		const gameConstants: GameConstants = {
-			groundWidth: game.ground.width / GameEntityFactory.UCF,
-			groundHeight: game.ground.height / GameEntityFactory.UCF,
-			ballRadius: game.ball.radius / GameEntityFactory.UCF,
-			paddleWidth: game.leftPaddle.width / GameEntityFactory.UCF,
-			paddleHeight: game.leftPaddle.height / GameEntityFactory.UCF,
+			groundWidth: game.ground.width / this.ucf,
+			groundHeight: game.ground.height / this.ucf,
+			ballRadius: game.ball.radius / this.ucf,
+			paddleWidth: game.leftPaddle.width / this.ucf,
+			paddleHeight: game.leftPaddle.height / this.ucf,
 		};
 
 		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("init", gameConstants);
@@ -54,8 +54,8 @@ export class GameEmitter {
 	}
 
 	public emitBallState(game: Game): void {
-		const x = game.ball.position.x / GameEntityFactory.UCF;
-		const y = game.ball.position.y / GameEntityFactory.UCF;
+		const x = game.ball.position.x / this.ucf;
+		const y = game.ball.position.y / this.ucf;
 
 		if (isNaN(x) || isNaN(y)) {
 			console.error(`Invalid ball coordinates: x=${x}, y=${y}`);
@@ -67,8 +67,8 @@ export class GameEmitter {
 
 	public emitPaddleState(game: Game): void {
 		const paddleState: PaddleState = {
-			p1y: game.leftPaddle.position.y / GameEntityFactory.UCF,
-			p2y: game.rightPaddle.position.y / GameEntityFactory.UCF,
+			p1y: game.leftPaddle.position.y / this.ucf,
+			p2y: game.rightPaddle.position.y / this.ucf,
 		};
 
 		if (
