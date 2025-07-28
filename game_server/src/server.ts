@@ -1,5 +1,6 @@
 import { MatchManager } from "./matchManager";
 import { ConnectionHandler } from "./connection";
+import { GameOrchestrator } from "./orchestrator";
 
 export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament';
 
@@ -37,6 +38,7 @@ export class HTTPMethod extends String {
 }
 
 ConnectionHandler.getInstance().init();
+GameOrchestrator.getInstance().start(60);
 
 export const matchManager = new MatchManager(ConnectionHandler.getInstance().getServer());
 

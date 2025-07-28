@@ -2,11 +2,10 @@ import { Server } from "socket.io";
 import { InputProvider } from "./inputProviders";
 import { GameMode } from "./server";
 import { Match } from "./matchManager";
-import { PhysicsEngine } from "./engine";
 import { GameEmitter } from "./gameEmitter";
 import { ScoringManager } from "./scoringManager";
+import { GameOrchestrator } from "./orchestrator";
 
-const FPS = 60; 
 export type Side = 'leftPlayer' | 'rightPlayer';
 
 export interface GameConstants {
@@ -71,7 +70,7 @@ export class Game {
 	public scoringManager: ScoringManager = new ScoringManager();
 
 	public isPaused = true;
-	public matchWinner: Side | undefined = undefined;
+	public matchWinner: Side | undefined = undefined; //todo encapsulate this to scoring manager
 	public matchDisconnection: boolean = false;
 	public lastUpdatedTime: number | undefined = undefined;
 
@@ -80,7 +79,6 @@ export class Game {
 	public roomId: string;
 	public gameMode: GameMode;
 	public match: Match;
-	public interval!: NodeJS.Timeout | undefined;
 	public lastPaddleUpdate: PaddleState | undefined = undefined;
 
 	constructor(public leftInput: InputProvider, public rightInput: InputProvider, io: Server, roomId: string, gameMode: GameMode, match: Match) {
@@ -144,6 +142,7 @@ export class Game {
 		return this.paddle2;
 	}
 
+	//todo encapsulate this to scoring manager
 	public startNextSet() {
 		this.lastUpdatedTime = undefined;
 
@@ -207,19 +206,14 @@ export class Game {
 		if (!this.matchOver)
 			this.isPaused = true;
 		this.lastUpdatedTime = undefined;
-		if (this.interval) {
-			clearInterval(this.interval);
-			this.interval = undefined;
-		}
+		GameOrchestrator.getInstance().remove(this);
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game paused.`);
 	}
 
 	public resumeGameLoop() {
 		this.isPaused = false;
-		if (!this.interval) {
-			this.interval = setInterval(() => PhysicsEngine.getInstance().update(this), 1000 / FPS);
-		}
-
+		
+		GameOrchestrator.getInstance().add(this);
 		this.lastUpdatedTime = Date.now();
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game resume now.`);
 	}
@@ -255,7 +249,7 @@ export class Game {
 			this.resetBall(initialPlayer);
 		}
 
-		this.interval = setInterval(() => PhysicsEngine.getInstance().update(this), 1000 / FPS); // 60 FPS
+		GameOrchestrator.getInstance().add(this);
 	}
 }
 
