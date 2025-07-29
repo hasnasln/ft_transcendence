@@ -6,6 +6,7 @@ import { getTournament, findMyMatch, joinMatchByCode, Match } from "./tournament
 import { emitError } from "./errorHandling";
 import { GameEmitter } from "./gameEmitter";
 import { ConnectionHandler } from "./connection";
+import { GameBuilder } from "./gamebuilder";
 
 export interface Player {
 	socket: Socket;
@@ -90,37 +91,30 @@ export class MatchManager {
 		this.matchesByRoom.set(roomId, game);
 		this.roomsByUsername.set(player1.username, roomId);
 		player1.socket.join(roomId);
-
-		player1.socket.on("ready", () => {
-			const leftInput = new LocalPlayerInput(player1, "left");
-			const rightInput = new LocalPlayerInput(player1, "right");
-			game.leftInput = leftInput;
-			game.rightInput = rightInput;
-			game.gameMode = 'localGame';
-			game.start();
-		});
+		player1.socket.on("ready", () => game.start());
 	}
 
 	private enqueue(player: Player) {
+		if (this.queuedPlayers.some(p => p.username === player.username)) {
+			console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} is already in the queue.`);
+			return;
+		}
+
 		this.queuedPlayers.push(player);
 		console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} enqueued for remote match.`);
-		this.tryCreatingRemoteMatches(this.queuedPlayers);
+		this.tryCreatingRemoteMatch(this.queuedPlayers);
 	}
 
 	private dequeue(player: Player) {
 		this.queuedPlayers = this.queuedPlayers.filter(p => p !== player);
 	}
 
-	private tryCreatingRemoteMatches(queuedPlayers: Player[], tournament?: { code: string, roundNo: number, finalMatch: boolean }) {
+	private tryCreatingRemoteMatch(queuedPlayers: Player[], tournament?: { code: string, roundNo: number, finalMatch: boolean }) {
 		if (queuedPlayers.length < 2)
 			return;
 
-		const player1 = queuedPlayers.shift();
-		const player2 = queuedPlayers.shift();
-		if (!player1 || !player2 || player1 === player2) {
-			console.log(`[${new Date().toISOString()}] Player1 and Player2 can't play together: ${JSON.stringify({ player1, player2 })}`);
-			return;
-		}
+		const player1 = queuedPlayers.shift()!;
+		const player2 = queuedPlayers.shift()!;
 
 		const roomId = `room_${player1.username}_${player2.username}`;
 		const gameBuilder = new GameBuilder()
@@ -152,6 +146,13 @@ export class MatchManager {
 		ConnectionHandler.getInstance().getServer().to(roomId).emit("match-ready", matchPlayers);
 		this.waitForRemoteMatchApproval(player1);
 		this.waitForRemoteMatchApproval(player2);
+		if (!game.readyTimeout) {
+			game.readyTimeout = setTimeout(() => {
+				this.cancelRemoteMatch(game, "approval timeout");
+				this.dequeue(player1);
+				this.dequeue(player2);
+			}, 20_000);
+		}
 	}
 
 	public waitForRemoteMatchApproval(player: Player) {
@@ -178,20 +179,15 @@ export class MatchManager {
 				ConnectionHandler.getInstance().getServer().to(other.socket.id).emit("waitingRematch", other.username);
 			}
 
-			if (!game.readyTimeout) {
-				game.readyTimeout = setTimeout(() => {
-					this.cancelRemoteMatch(other.socket.id, game, "waiting approval");
-				}, 20_000);
-			}
-
-			if (other.socketReady && player.socketReady)
+			if (other.socketReady && player.socketReady) {
 				this.startRemoteMatch(game);
+			}
 		});
 
 		player.socket.on("cancel", () => {
 			clearTimeout(game.readyTimeout!);
 			game.readyTimeout = null;
-			this.cancelRemoteMatch(player.socket.id, game, 'refuse');
+			this.cancelRemoteMatch(game, 'refuse');
 		});
 	}
 
@@ -206,20 +202,13 @@ export class MatchManager {
 		if (game.state === 'in-progress' || game.state === 'paused' || !player1.socketReady || !player2.socketReady)
 			return;
 
-		const leftInput = new RemotePlayerInput(player1);
-		const rightInput = new RemotePlayerInput(player2);
-
-		game.leftInput = leftInput;
-		game.rightInput = rightInput;
-		game.gameMode = game.tournament ? 'tournament' : 'remoteGame';
-
 		game.start();
 		game.reMatch = true;
-		player1.socketReady = false;
+		player1.socketReady = false; // todo hmm...
 		player2.socketReady = false;
 	}
 
-	public cancelRemoteMatch(cancellerId: string, game: Game, cancelMode: string) {
+	public cancelRemoteMatch(game: Game, cancelMode: string) {
 		console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} thought to cancel the match.`);
 		if (!game.readyTimeout) {
 			return;
@@ -228,10 +217,11 @@ export class MatchManager {
 		game.readyTimeout = null;
 		if (game.state !== 'waiting')
 			return;
-		const data: { cancellerId: string, rematch: boolean, mode: string } = { cancellerId: cancellerId, rematch: game.reMatch, mode: cancelMode };
-		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("match-cancelled", data);
+		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("match-cancelled", {});
+		game.players.forEach(player => {
+			player.socket.leave(game.roomId);
+		});
 		this.clearMatch(game);
-		console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} cancelled: mode: ${cancelMode}, cancellerId: ${cancellerId}`);
 	}
 
 	private async handleTournamentMatch(player: Player, tournamentCode: string) {
@@ -260,7 +250,7 @@ export class MatchManager {
 			const finalMatch = findMyMatch(response.data, player.uuid).finalMatch;
 			const tournament = { code: tournamentCode, roundNo: roundNumber, finalMatch: finalMatch };
 
-			this.tryCreatingRemoteMatches(Array.from(myMatchMap.values()), tournament);
+			this.tryCreatingRemoteMatch(Array.from(myMatchMap.values()), tournament);
 		}
 		catch (err: any) {
 			// print stack trace
@@ -286,7 +276,7 @@ export class MatchManager {
 		const opponent = player.username === game.players[0].username ? game.players[1] : game.players[0];
 		switch (game.state) {
 			case 'waiting':
-				this.cancelRemoteMatch(player.socket.id, game, 'disconnect');
+				this.cancelRemoteMatch(game, 'disconnect');
 				break;
 			case 'in-progress':
 			case 'paused':
@@ -346,10 +336,6 @@ export class MatchManager {
 		this.roomsByUsername.delete(player2.username);
 		player1.socketReady = false;
 		player2.socketReady = false;
-	}
-
-	public getMatchByRoom(roomId: string): Game | undefined {
-		return this.matchesByRoom.get(roomId);
 	}
 
 	public getMatchByPlayer(username: string): Game | undefined {
