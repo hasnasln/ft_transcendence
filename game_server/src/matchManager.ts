@@ -62,20 +62,24 @@ export class MatchManager {
 			console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} requested for game mode ${status.game_mode}, but it is not supported.`);
 	}
 
-	private createMatchWithAI(human: Player, level: string) {
-		const roomId = `room_${human.username}_vs_AI_${level}`;
+	private registerPlayerToNonOnlineGame(player: Player, game: Game) {
+		this.matchesByRoom.set(game.roomId, game);
+		this.roomsByUsername.set(player.username, game.roomId);
+		player.socket.join(game.roomId);
+		player.socket.on("ready", () => game.start());
+	}
+
+	private createMatchWithAI(player1: Player, level: string) {
+		const roomId = `room_${player1.username}_vs_AI_${level}`;
 		const game = new GameBuilder()
 			.withRoomId(roomId)
-			.withPlayers(human, human)
+			.withPlayers(player1, player1)
 			.withGameMode("vsAI")
-			.withLeftInput(() => new RemotePlayerInput(human))
+			.withLeftInput(() => new RemotePlayerInput(player1))
 			.withRightInput((g) => new AIPlayerInput(g, g.getPaddle2(), level))
 			.build();
 
-		this.matchesByRoom.set(roomId, game);
-		this.roomsByUsername.set(human.username, roomId);
-		human.socket.join(roomId);
-		human.socket.on("ready", () => game.start());
+		this.registerPlayerToNonOnlineGame(player1, game);
 	}
 
 	private createLocalMatch(player1: Player) {
@@ -88,10 +92,7 @@ export class MatchManager {
 			.withRightInput(() => new LocalPlayerInput(player1, "right"))
 			.build();
 
-		this.matchesByRoom.set(roomId, game);
-		this.roomsByUsername.set(player1.username, roomId);
-		player1.socket.join(roomId);
-		player1.socket.on("ready", () => game.start());
+		this.registerPlayerToNonOnlineGame(player1, game);
 	}
 
 	private enqueue(player: Player) {
@@ -102,22 +103,23 @@ export class MatchManager {
 
 		this.queuedPlayers.push(player);
 		console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} enqueued for remote match.`);
-		this.tryCreatingRemoteMatch(this.queuedPlayers);
+
+		if (this.queuedPlayers.length < 2)
+			return;
+
+		const player1 = this.queuedPlayers.shift()!;
+		const player2 = this.queuedPlayers.shift()!;
+
+		this.createRemoteMatch(player1, player2);
 	}
 
 	private dequeue(player: Player) {
 		this.queuedPlayers = this.queuedPlayers.filter(p => p !== player);
 	}
 
-	private tryCreatingRemoteMatch(queuedPlayers: Player[], tournament?: { code: string, roundNo: number, finalMatch: boolean }) {
-		if (queuedPlayers.length < 2)
-			return;
-
-		const player1 = queuedPlayers.shift()!;
-		const player2 = queuedPlayers.shift()!;
-
+	private createRemoteMatch(player1: Player, player2: Player, tournament?: { code: string, roundNo: number, finalMatch: boolean }) {
 		const roomId = `room_${player1.username}_${player2.username}`;
-		const gameBuilder = new GameBuilder()
+		const builder = new GameBuilder()
 			.withRoomId(roomId)
 			.withPlayers(player1, player2)
 			.withGameMode(tournament ? 'tournament' : 'remoteGame')
@@ -125,10 +127,11 @@ export class MatchManager {
 			.withRightInput(() => new RemotePlayerInput(player2));
 
 		if (tournament) {
-			gameBuilder.withTournament(tournament.code, tournament.roundNo, tournament.finalMatch);
+			builder.withTournament(tournament.code, tournament.roundNo, tournament.finalMatch);
 		}
 
-		const game = gameBuilder.build();
+		const game = builder.build();
+
 		this.matchesByRoom.set(roomId, game);
 		this.roomsByUsername.set(player1.username, roomId);
 		this.roomsByUsername.set(player2.username, roomId);
@@ -146,6 +149,7 @@ export class MatchManager {
 		ConnectionHandler.getInstance().getServer().to(roomId).emit("match-ready", matchPlayers);
 		this.waitForRemoteMatchApproval(player1);
 		this.waitForRemoteMatchApproval(player2);
+
 		if (!game.readyTimeout) {
 			game.readyTimeout = setTimeout(() => {
 				this.cancelRemoteMatch(game, "approval timeout");
@@ -160,7 +164,8 @@ export class MatchManager {
 		if (!game)
 			return;
 		const other = player.username === game.players[0].username ? game.players[1] : game.players[0];
-		player.socket.on("ready", () => {
+		
+		player.socket.once("ready", () => {
 			if (game.state !== 'completed' && game.state !== 'waiting') {
 				return;
 			}
@@ -184,7 +189,7 @@ export class MatchManager {
 			}
 		});
 
-		player.socket.on("cancel", () => {
+		player.socket.once("cancel", () => {
 			clearTimeout(game.readyTimeout!);
 			game.readyTimeout = null;
 			this.cancelRemoteMatch(game, 'refuse');
@@ -250,7 +255,11 @@ export class MatchManager {
 			const finalMatch = findMyMatch(response.data, player.uuid).finalMatch;
 			const tournament = { code: tournamentCode, roundNo: roundNumber, finalMatch: finalMatch };
 
-			this.tryCreatingRemoteMatch(Array.from(myMatchMap.values()), tournament);
+			const iter = myMatchMap.values();
+			const player1 = iter.next().value!;
+			const player2 = iter.next().value!;
+
+			this.createRemoteMatch(player1, player2, tournament);
 		}
 		catch (err: any) {
 			// print stack trace
