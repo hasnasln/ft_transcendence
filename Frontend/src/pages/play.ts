@@ -150,6 +150,7 @@ export class GameManager {
 		setTimeout(() => {
 			Router.getInstance().invalidatePage("/play");
 			Router.getInstance().go('/play');
+			Router.getInstance().invalidatePage("/game");
 		}, 1000);
 	}
 
