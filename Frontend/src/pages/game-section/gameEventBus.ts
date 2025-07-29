@@ -148,6 +148,7 @@ GameEventBus.getInstance().on('ENTER_READY_PHASE', () => {
 
 	gameInstance.uiManager.hide(gameInstance.uiManager.newmatchButton);
 	gameInstance.uiManager.hide(gameInstance.uiManager.turnToHomePage);
+	gameInstance.uiManager.hideProgressBar();
 });
 
 GameEventBus.getInstance().on('ENTER_PLAYING_PHASE',  async () => {
