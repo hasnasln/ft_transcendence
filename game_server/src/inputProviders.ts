@@ -10,6 +10,7 @@ export interface InputProvider {
 	getUsername(): string;
 	getSocket?(): Socket;
 	getUuid(): string;
+	init?(): void;
 }
 
 //RemotePlayerInput listens to socket events for keydown/keyup
@@ -18,11 +19,20 @@ export class RemotePlayerInput implements InputProvider {
 	private player: Player;
 	constructor(player: Player) {
 		this.player = player;
-		player.socket.on("player-move", 
-			({ direction }: { direction: "up" | "down" | "stop" }) => {
-			this.delta = direction === "up" ? +1 : direction === "down" ? -1 : 0;
+	}
+
+	init(): void {
+		this.player.socket.on("player-move", (data: { direction: "up" | "down" | "stop" }) => {
+			if (data.direction === "up") {
+				this.delta = 1;
+			} else if (data.direction === "down") {
+				this.delta = -1;
+			} else {
+				this.delta = 0;
+			}
 		});
 	}
+
 	getPaddleDelta() { return this.delta; }
 	getUsername() { return this.player.username; }
 	getSocket() { return this.player.socket; }
@@ -47,7 +57,7 @@ export class AIPlayerInput implements InputProvider {
 		if (level === 'easy')
 			this.refreshTime = 2000;
 		else if (level === 'medium')
-			this.refreshTime = 1500; 
+			this.refreshTime = 1500;
 		else if (level === 'hard')
 			this.refreshTime = 1000;
 	}
@@ -94,12 +104,16 @@ export class LocalPlayerInput implements InputProvider {
 	constructor(player: Player, side: string) {
 		this.player = player;
 		this.side = side;
-		player.socket.on("local-input", ({ player_side, direction }: { player_side: "left" | "right", direction: "up" | "down" | "stop" }) => {
+	}
 
-			if ((player_side === "left" && this.side === "left") || (player_side === "right" && this.side === "right"))
-				this.delta = direction === "up" ? +1 : direction === "down" ? -1 : 0;
+	init(): void {
+		this.player.socket.on("local-input", ({ player_side, direction }: { player_side: "left" | "right", direction: "up" | "down" | "stop" }) => {
+			if ((player_side === "left" && this.side === "left")
+			|| (player_side === "right" && this.side === "right"))
+				this.delta = direction === "up" ? + 1 : direction === "down" ? -1 : 0;
 
 		});
+
 	}
 
 	getPaddleDelta() {

@@ -63,25 +63,30 @@ export class MatchManager {
 
 	private createMatchWithAI(human: Player, level: string) {
 		const roomId = `room_${human.username}_vs_AI_${level}`;
-		const game = new Game(roomId, human, human);
+		const game = new GameBuilder()
+			.withRoomId(roomId)
+			.withPlayers(human, human)
+			.withGameMode("vsAI")
+			.withLeftInput(() => new RemotePlayerInput(human))
+			.withRightInput((g) => new AIPlayerInput(g, g.getPaddle2(), level))
+			.build();
+
 		this.matchesByRoom.set(roomId, game);
 		this.roomsByUsername.set(human.username, roomId);
 		human.socket.join(roomId);
-
-		human.socket.on("ready", () => {
-			const leftInput = new RemotePlayerInput(human);
-			const rightInput = new AIPlayerInput(game, game.getPaddle2(), level);
-
-			game.leftInput = leftInput;
-			game.rightInput = rightInput;
-			game.gameMode = 'vsAI';
-			game.start();
-		});
+		human.socket.on("ready", () => game.start());
 	}
 
 	private createLocalMatch(player1: Player) {
 		const roomId = `game_${player1.socket.id}_vs_friend`;
-		const game = new Game(roomId, player1, player1);
+		const game = new GameBuilder()
+			.withRoomId(roomId)
+			.withPlayers(player1, player1)
+			.withGameMode("localGame")
+			.withLeftInput(() => new LocalPlayerInput(player1, "left"))
+			.withRightInput(() => new LocalPlayerInput(player1, "right"))
+			.build();
+
 		this.matchesByRoom.set(roomId, game);
 		this.roomsByUsername.set(player1.username, roomId);
 		player1.socket.join(roomId);
@@ -118,9 +123,18 @@ export class MatchManager {
 		}
 
 		const roomId = `room_${player1.username}_${player2.username}`;
-		const game = new Game(roomId, player1, player2);
-		game.tournament = tournament;
-		game.gameMode = tournament ? 'tournament' : 'remoteGame';
+		const gameBuilder = new GameBuilder()
+			.withRoomId(roomId)
+			.withPlayers(player1, player2)
+			.withGameMode(tournament ? 'tournament' : 'remoteGame')
+			.withLeftInput(() => new RemotePlayerInput(player1))
+			.withRightInput(() => new RemotePlayerInput(player2));
+
+		if (tournament) {
+			gameBuilder.withTournament(tournament.code, tournament.roundNo, tournament.finalMatch);
+		}
+
+		const game = gameBuilder.build();
 		this.matchesByRoom.set(roomId, game);
 		this.roomsByUsername.set(player1.username, roomId);
 		this.roomsByUsername.set(player2.username, roomId);

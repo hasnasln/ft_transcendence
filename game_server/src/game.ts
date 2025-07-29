@@ -62,7 +62,7 @@ export class Game {
 
 	//  Meta
 	public roomId: string;
-	public gameMode: GameMode | undefined = undefined;
+	public gameMode: GameMode;
 	public lastPaddleUpdate: PaddleState | undefined = undefined;
 
 	public leftInput: InputProvider | undefined;
@@ -75,7 +75,7 @@ export class Game {
 	public tournament?: { code: string, roundNo: number, finalMatch: boolean }
 	public readyTimeout: NodeJS.Timeout | null = null;
 
-	constructor(roomId: string, player1: Player, player2: Player) {
+	constructor(roomId: string, player1: Player, player2: Player, gameMode: GameMode) {
 		const config = DEFAULT_GAME_ENTITY_CONFIG;
 		this.players = [player1, player2];
 		this.ball = GameEntityFactory.getInstance().createDefaultBall(config);
@@ -83,6 +83,7 @@ export class Game {
 		this.rightPaddle = GameEntityFactory.getInstance().createDefaultRightPaddle(config);
 		this.ground = GameEntityFactory.getInstance().createDefaultGround(config);
 		this.roomId = roomId;
+		this.gameMode = gameMode;
 	}
 
 	public resetBall(lastScorer: "leftPlayer" | "rightPlayer") {
@@ -148,6 +149,9 @@ export class Game {
 		this.scoringManager.isSetOver();
 		this.scoringManager.setSetOver(false); //todo not sure if needed
 		this.isPaused = false;
+
+		this.leftInput?.init?.();
+		this.rightInput?.init?.();
 
 		GameEmitter.getInstance().emitGameState(this);		
 
@@ -215,4 +219,6 @@ export class Game {
 	}
 
 }
+
+export { Ball };
 
