@@ -1,4 +1,4 @@
-import { Settingsv2 } from './settingsv2';
+import { Settingsv3 } from './settingsv3';
 import { ProfileSettings } from './profile';
 import { exmp } from '../languageManager';
 import { Router, Page } from '../router';
@@ -131,7 +131,7 @@ export class HomePage implements Page {
 			return;
 		}
 		
-		new Settingsv2().show();
+		new Settingsv3().onLoad();
 	}
 
 	handleProfile(): void {

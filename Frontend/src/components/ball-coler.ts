@@ -11,18 +11,6 @@ function hexToRgb(hex: string): [number, number, number] {
 
 export function activeBallColor(): [number, number, number]
 {
-	const settings = localStorage.getItem('settings');
-	if (settings) {
-		try {
-			const parsedSettings = JSON.parse(settings);
-			if (parsedSettings.ball_color && parsedSettings.ball_color.startsWith('#')) {
-				return hexToRgb(parsedSettings.ball_color);
-			}
-		} catch (e) {
-			console.warn('Settings parse error:', e);
-		}
-	}
-
 	const color = localStorage.getItem('ballColor');
 	if (color && color.startsWith('#')) {
 		return hexToRgb(color);
