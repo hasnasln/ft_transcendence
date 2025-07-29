@@ -22,6 +22,9 @@ export class GameUI {
 	public info: HTMLElement | null = null;
 	public canvas: HTMLCanvasElement | null = null;
 
+	public progressContainer: HTMLElement | null = null;
+	public progressBar: HTMLElement | null = null;
+
 	public groundSize: { width: number, height: number } | null = null;
 	public ground: Mesh | null = null;
 	public paddle1: Mesh | null = null;
@@ -42,6 +45,8 @@ export class GameUI {
 		this.newmatchButton = document.getElementById("newmatch-button");
 		this.turnToHomePage = document.getElementById("turnHomePage-button");
 		this.info = document.getElementById("info");
+		this.progressContainer = document.getElementById("progress-container");
+		this.progressBar = document.getElementById("progress-bar");
 	}
 
 	public resetCache(): void {
@@ -64,6 +69,21 @@ export class GameUI {
 		this.paddle1 = null;
 		this.paddle2 = null;
 		this.ball = null;
+	}
+
+	public showProgressBar(): void {
+		this.progressContainer!.classList.remove("hidden");
+	}
+
+	public hideProgressBar(): void {
+		this.progressContainer!.classList.add("hidden");
+	}
+
+	public updateProgressBar(percentage: number): void {
+		percentage = Math.max(0, Math.min(100, percentage));
+		if (this.progressBar) {
+			this.progressBar.style.width = `${percentage}%`;
+		}
 	}
 
 	public onMenuHidden(): void {
@@ -134,6 +154,8 @@ export class GameUI {
 			this.onInfoShown(`${rival} ile eşleştin`);
 		}
 		this.startButton!.innerHTML = `${rival} maçını oyna !`;
+		this.showProgressBar();
+		setTimeout(() => this.updateProgressBar(0), 50);
 		setTimeout(() => this.startButton?.classList.remove("hidden"), 500);
 	}
 
