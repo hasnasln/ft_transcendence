@@ -1,4 +1,4 @@
-import { IApiResponseWrapper, HTTPMethod, apiCall } from "./server";
+import { IApiResponseWrapper, HTTPMethod, apiCall } from "./httpApiManager";
 
 export type Participant = {
     uuid: string;
