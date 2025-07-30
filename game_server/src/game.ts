@@ -73,7 +73,6 @@ export class Game {
 
 	public players: [Player, Player];
 	public tournament?: { code: string, roundNo: number, finalMatch: boolean }
-	public readyTimeout: NodeJS.Timeout | null = null;
 
 	constructor(roomId: string, player1: Player, player2: Player, gameMode: GameMode) {
 		const config = DEFAULT_GAME_ENTITY_CONFIG;
@@ -91,6 +90,7 @@ export class Game {
 		this.ball.reset();
 
 		setTimeout(() => {
+			if (this.matchOver || this.isPaused) return;
 			this.ball.shove(lastScorer);
 			this.lastUpdatedTime = Date.now();
 		}, 1000);
@@ -126,14 +126,25 @@ export class Game {
 	}
 
 	public pauseGameLoop() {
-		if (!this.matchOver)
-			this.isPaused = true;
+		if (this.matchOver) {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game cannot be paused, it is either over or already in progress.`);
+			return;
+		}
+		this.isPaused = true;
 		this.lastUpdatedTime = undefined;
 		GameOrchestrator.getInstance().remove(this);
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game paused.`);
 	}
 
+	public stopGameLoop() {
+		GameOrchestrator.getInstance().remove(this);
+	}
+
 	public resumeGameLoop() {
+		if (this.matchOver) {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game cannot be resumed, it is either over or already in progress.`);
+			return;
+		}
 		this.isPaused = false;
 		
 		GameOrchestrator.getInstance().add(this);
@@ -216,8 +227,12 @@ export class Game {
 		return DEFAULT_GAME_ENTITY_CONFIG.paddleSpeed * GameEntityFactory.UCF;
 	}
 
-	public getPaddle2() {
+	public getRightPaddle() {
 		return this.rightPaddle;
+	}
+
+	public getLeftPaddle() {
+		return this.leftPaddle;
 	}
 
 }
