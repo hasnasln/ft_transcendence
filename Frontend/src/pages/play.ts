@@ -155,6 +155,7 @@ export class GameManager {
 	}
 
 	public finalize() {
+		GameLoop.getInstance().stop();
 		this.uiManager.scene?.dispose();
 		this.uiManager.engine?.dispose();
 		this.uiManager.scene = undefined;
