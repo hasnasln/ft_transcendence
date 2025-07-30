@@ -44,8 +44,10 @@ export class PhysicsEngine {
     }
 }
 
+//todo it is not engine's responsibility 
 function skipIfMatchOver(g: Game, _dt: number): boolean {
 	if (g.matchOver) {
+		g.stopGameLoop();
 		if (g.gameMode === 'tournament') {
 			const winnerInput = g.matchWinner === 'leftPlayer' ? g.leftInput : g.rightInput;
 			const uuid = winnerInput!.getUuid();
@@ -56,7 +58,6 @@ function skipIfMatchOver(g: Game, _dt: number): boolean {
 				emitError(err.message, g.roomId);
 			}
 		}
-		g.pauseGameLoop();
         GameEmitter.getInstance().emitGameState(g);
 
 		if (g.gameMode === 'localGame' || g.gameMode === 'vsAI')
@@ -77,10 +78,10 @@ function moveBall(g: Game, dt: number): boolean {
 	return true;
 }
 
-function movePaddles(g: Game, _dt: number): boolean {
+function movePaddles(g: Game, dt: number): boolean {
 	const upperBound = g.ground.height / 2 - g.leftPaddle.height / 2 + (1.5 * g.leftPaddle.width);
-	const d1 = g.leftInput!.getPaddleDelta() * g.getPaddleSpeed() * _dt;
-	const d2 = g.rightInput!.getPaddleDelta() * g.getPaddleSpeed() * _dt;
+	const d1 = g.leftInput!.getPaddleDelta() * g.getPaddleSpeed() * dt;
+	const d2 = g.rightInput!.getPaddleDelta() * g.getPaddleSpeed() * dt;
 	if (Math.abs(g.leftPaddle.position.y + d1) <= upperBound) g.leftPaddle.position.y += d1;
 	if (Math.abs(g.rightPaddle.position.y + d2) <= upperBound) g.rightPaddle.position.y += d2;
 	return true;
@@ -116,7 +117,7 @@ function handlePaddleBounce(g: Game, _dt: number): boolean {
 			if (Math.abs(relativeY) < yThreshold) {
 				g.ball.velocity.x *= -1;
 				g.ball.velocity.y += relativeY * 0.05;
-				if (g.ball.firstPedalHit++) {
+				if (g.ball.firstPedalHit++ === 0) {
 					g.ball.speedIncreaseFactor = 1.2;
 					g.ball.minimumSpeed = 0.25 * GameEntityFactory.UCF;
 				}
@@ -133,24 +134,24 @@ function handlePaddleBounce(g: Game, _dt: number): boolean {
 	return true;
 }
 
-function applyAirResistance(g: Game, _dt: number): boolean {
-	g.ball.velocity.x *= g.ball.airResistanceFactor;
-	g.ball.velocity.y *= g.ball.airResistanceFactor;
+function applyAirResistance(g: Game, dt: number): boolean {
+	g.ball.velocity.x *= g.ball.airResistanceFactor * dt;
+	g.ball.velocity.y *= g.ball.airResistanceFactor * dt;
 	return true;
 }
 
-function enforceSpeedLimits(g: Game, _dt: number): boolean {
+function enforceSpeedLimits(g: Game, dt: number): boolean {
 	const speed = Math.hypot(g.ball.velocity.x, g.ball.velocity.y);
 	if (speed < g.ball.minimumSpeed) {
-		g.ball.velocity.x *= 1.02;
-		g.ball.velocity.y *= 1.02;
+		g.ball.velocity.x *= 1.02 * dt;
+		g.ball.velocity.y *= 1.02 * dt;
 	} else if (speed > g.ball.maximumSpeed) {
-		g.ball.velocity.x /= 1.02;
-		g.ball.velocity.y /= 1.02;
+		g.ball.velocity.x /= 1.02 * dt;
+		g.ball.velocity.y /= 1.02 * dt;
 	}
 	//Oyun zig-zag a dönmesin kontrolü
 	if (g.ball.velocity.x !== 0 && Math.abs(g.ball.velocity.y / g.ball.velocity.x) > 2)
-		g.ball.velocity.y /= 1.02;
+		g.ball.velocity.y /= 1.02 * dt;
 	return true;
 }
 
