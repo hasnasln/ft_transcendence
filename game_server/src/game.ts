@@ -160,16 +160,18 @@ export class Game {
 			{ socket: typeof this.rightInput!.getSocket === 'function' ? this.rightInput!.getSocket()! : null }
 		];
 
-		//todo handle this in a global way. and gracefully off it.
-		sides.forEach(({ socket }) => {
-			if (!socket) return;
-			socket.on("pause-resume", (data: { status: string }) => {
-				if (data.status === "pause" && !this.isPaused)
-					this.pauseGameLoop();
-				else if (data.status === "resume" && this.isPaused)
-					this.resumeGameLoop();
+		if (this.gameMode === 'vsAI' || this.gameMode === 'localGame') {
+			//todo handle this in a global way. and gracefully off it.
+			sides.forEach(({ socket }) => {
+				if (!socket) return;
+				socket.on("pause-resume", (data: { status: string }) => {
+					if (data.status === "pause" && !this.isPaused)
+						this.pauseGameLoop();
+					else if (data.status === "resume" && this.isPaused)
+						this.resumeGameLoop();
+				});
 			});
-		});
+		}
 
 		if (!this.isPaused) {
 			const initialPlayer = Math.random() < 0.5 ? 'leftPlayer' : 'rightPlayer';
