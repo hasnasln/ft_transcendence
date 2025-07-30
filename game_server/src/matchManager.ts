@@ -2,11 +2,12 @@ import { Socket } from "socket.io";
 import { Game } from "./game";
 import { LocalPlayerInput, RemotePlayerInput, AIPlayerInput } from "./inputProviders";
 import { GameStatus } from "./game";
-import { getTournament, findMyMatch, joinMatchByCode, Match } from "./tournament";
+import { getTournament, findMyMatch } from "./tournament";
 import { emitError } from "./errorHandling";
 import { GameEmitter } from "./gameEmitter";
 import { ConnectionHandler } from "./connection";
-import { GameBuilder } from "./gamebuilder";
+import { GameBuilder } from "./gameBuilder";
+import { GameQueue } from "./queueManager";
 
 export interface Player {
 	socket: Socket;
@@ -14,13 +15,6 @@ export interface Player {
 	uuid: string;
 	token: string;
 	socketReady: boolean;
-}
-
-interface MatchPlayers {
-	left: { socketId: string, username: string };
-	right: { socketId: string, username: string };
-	roundNo?: number;
-	finalMatch?: boolean
 }
 
 export interface DisconnectionEvent {
@@ -34,9 +28,8 @@ export class MatchManager {
 
 	public connectedPlayers: Map<string, Player> = new Map();
 	public disconnectTimestamps: Map<string, DisconnectionEvent> = new Map();
-	private matchesByRoom: Map<string, Game> = new Map();
+	public matchesByRoom: Map<string, Game> = new Map();
 	public roomsByUsername: Map<string, string> = new Map();
-	private queuedPlayers: Player[] = [];
 	private waitingTournamentMatches: Map<string, Map<string, Player>> = new Map();
 
 	private constructor() {
@@ -55,18 +48,11 @@ export class MatchManager {
 		else if (status.game_mode === "localGame")
 			this.createLocalMatch(player);
 		else if (status.game_mode === "remoteGame")
-			this.enqueue(player);
+			GameQueue.getInstance().enqueue(player);
 		else if (status.game_mode === 'tournament')
 			this.handleTournamentMatch(player, status.tournamentCode!);
 		else
 			console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} requested for game mode ${status.game_mode}, but it is not supported.`);
-	}
-
-	private registerPlayerToNonOnlineGame(player: Player, game: Game) {
-		this.matchesByRoom.set(game.roomId, game);
-		this.roomsByUsername.set(player.username, game.roomId);
-		player.socket.join(game.roomId);
-		player.socket.on("ready", () => game.start());
 	}
 
 	private createMatchWithAI(player1: Player, level: string) {
@@ -79,7 +65,10 @@ export class MatchManager {
 			.withRightInput((g) => new AIPlayerInput(g, g.getPaddle2(), level))
 			.build();
 
-		this.registerPlayerToNonOnlineGame(player1, game);
+		this.matchesByRoom.set(game.roomId, game);
+		this.roomsByUsername.set(player1.username, game.roomId);
+		player1.socket.join(game.roomId);
+		player1.socket.on("ready", () => game.start());
 	}
 
 	private createLocalMatch(player1: Player) {
@@ -92,109 +81,12 @@ export class MatchManager {
 			.withRightInput(() => new LocalPlayerInput(player1, "right"))
 			.build();
 
-		this.registerPlayerToNonOnlineGame(player1, game);
+		this.matchesByRoom.set(game.roomId, game);
+		this.roomsByUsername.set(player1.username, game.roomId);
+		player1.socket.join(game.roomId);
+		player1.socket.on("ready", () => game.start());
 	}
 
-	private enqueue(player: Player) {
-		if (this.queuedPlayers.some(p => p.username === player.username)) {
-			console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} is already in the queue.`);
-			return;
-		}
-
-		this.queuedPlayers.push(player);
-		console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} enqueued for remote match.`);
-
-		if (this.queuedPlayers.length < 2)
-			return;
-
-		const player1 = this.queuedPlayers.shift()!;
-		const player2 = this.queuedPlayers.shift()!;
-
-		this.createRemoteMatch(player1, player2);
-	}
-
-	private dequeue(player: Player) {
-		this.queuedPlayers = this.queuedPlayers.filter(p => p !== player);
-	}
-
-	private createRemoteMatch(player1: Player, player2: Player, tournament?: { code: string, roundNo: number, finalMatch: boolean }) {
-		const roomId = `room_${player1.username}_${player2.username}`;
-		const builder = new GameBuilder()
-			.withRoomId(roomId)
-			.withPlayers(player1, player2)
-			.withGameMode(tournament ? 'tournament' : 'remoteGame')
-			.withLeftInput(() => new RemotePlayerInput(player1))
-			.withRightInput(() => new RemotePlayerInput(player2));
-
-		if (tournament) {
-			builder.withTournament(tournament.code, tournament.roundNo, tournament.finalMatch);
-		}
-
-		const game = builder.build();
-
-		this.matchesByRoom.set(roomId, game);
-		this.roomsByUsername.set(player1.username, roomId);
-		this.roomsByUsername.set(player2.username, roomId);
-		console.log(`[${new Date().toISOString()}] ${player1.username.padStart(10)} and ${player2.username.padStart(10)} matched. Waiting for approval...`);
-
-		const matchPlayers: MatchPlayers = {
-			left: { socketId: player1.socket.id, username: player1.username },
-			right: { socketId: player2.socket.id, username: player2.username },
-			roundNo: tournament?.roundNo,
-			finalMatch: tournament?.finalMatch
-		};
-
-		player1.socket.join(roomId);
-		player2.socket.join(roomId);
-		ConnectionHandler.getInstance().getServer().to(roomId).emit("match-ready", matchPlayers);
-		this.waitForRemoteMatchApproval(player1);
-		this.waitForRemoteMatchApproval(player2);
-
-		if (!game.readyTimeout) {
-			game.readyTimeout = setTimeout(() => {
-				this.cancelRemoteMatch(game, "approval timeout");
-				this.dequeue(player1);
-				this.dequeue(player2);
-			}, 20_000);
-		}
-	}
-
-	public waitForRemoteMatchApproval(player: Player) {
-		const game = this.getMatchByPlayer(player.username);
-		if (!game)
-			return;
-		const other = player.username === game.players[0].username ? game.players[1] : game.players[0];
-		
-		player.socket.once("ready", () => {
-			if (game.state !== 'completed' && game.state !== 'waiting') {
-				return;
-			}
-			
-			console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} sent 'ready' message.`);
-			player.socketReady = true;
-			if (game.gameMode === 'tournament') {
-				try {
-					joinMatchByCode(player.token, game.tournament?.code as string, game.tournament?.roundNo as number, { uuid: player.uuid, username: player.username });
-				} catch (err: any) {
-					emitError(err.message, game.roomId);
-				}
-			}
-
-			if (game.reMatch && game.gameMode === 'remoteGame' && !other.socketReady) {
-				ConnectionHandler.getInstance().getServer().to(other.socket.id).emit("waitingRematch", other.username);
-			}
-
-			if (other.socketReady && player.socketReady) {
-				this.startRemoteMatch(game);
-			}
-		});
-
-		player.socket.once("cancel", () => {
-			clearTimeout(game.readyTimeout!);
-			game.readyTimeout = null;
-			this.cancelRemoteMatch(game, 'refuse');
-		});
-	}
 
 	public startRemoteMatch(game: Game) {
 		console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} starting...`);
@@ -213,8 +105,12 @@ export class MatchManager {
 		player2.socketReady = false;
 	}
 
-	public cancelRemoteMatch(game: Game, cancelMode: string) {
-		console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} thought to cancel the match.`);
+	public cancelRemoteMatch(game?: Game, cancelMode?: string) {
+		if (!game) {
+			console.log(`[${new Date().toISOString()}] No game to cancel.`);
+			return;
+		}
+		console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} thought to cancel the match: ${cancelMode}`);
 		if (!game.readyTimeout) {
 			return;
 		}
@@ -235,7 +131,9 @@ export class MatchManager {
 			if (!response.success)
 				throw new Error(`Could not get the tournament with code : ${tournamentCode}`);
 
-			const match_id = findMyMatch(response.data, player.uuid).match_id;
+			const match = findMyMatch(response.data, player.uuid);
+
+			const match_id = match.match_id;
 			if (!match_id) {
 				ConnectionHandler.getInstance().getServer().to(player.socket.id).emit("goToNextRound");
 				return;
@@ -251,19 +149,17 @@ export class MatchManager {
 
 			if (myMatchMap.size > 2)
 				throw new Error(`Bir şeyler ters gitti ! myMatchMap.size 2 den büyük olamaz, şu an ${myMatchMap.size}`);
-			const roundNumber = findMyMatch(response.data, player.uuid).roundNumber;
-			const finalMatch = findMyMatch(response.data, player.uuid).finalMatch;
+			const roundNumber = match.roundNumber;
+			const finalMatch = match.finalMatch;
 			const tournament = { code: tournamentCode, roundNo: roundNumber, finalMatch: finalMatch };
 
 			const iter = myMatchMap.values();
 			const player1 = iter.next().value!;
 			const player2 = iter.next().value!;
 
-			this.createRemoteMatch(player1, player2, tournament);
-		}
-		catch (err: any) {
-			// print stack trace
-			console.error("Hata kodu:", err);
+			GameQueue.getInstance().createRemoteMatch(player1, player2, tournament);
+		} catch (err: any) {
+			console.error("Tournament match error:", err);
 			emitError(err.message, player.socket.id);
 		}
 	}
@@ -272,7 +168,7 @@ export class MatchManager {
 		this.connectedPlayers.delete(player.username);
 		const game = this.getMatchByPlayer(player.username);
 		if (!game) {
-			this.dequeue(player);
+			GameQueue.getInstance().dequeue(player);
 			return;
 		}
 
