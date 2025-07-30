@@ -98,30 +98,35 @@ function onKeyUp(event: KeyboardEvent) {
 	}
 }
 
-function listenPauseInputs(gameInfo: GameInfo) {
+function listenPauseInputs() {
 	const resumeButton = document.getElementById("resume-button") as HTMLButtonElement;
 	document.addEventListener("keydown", (event) => {
-		if (event.code === "Space" && gameInstance.uiManager.startButton!.classList.contains("hidden")) {
-			
-			gameInfo.state!.isPaused = !gameInfo.state!.isPaused;
-			console.log("Game paused status: ", gameInfo.state!.isPaused);
-			if (gameInfo.state!.isPaused) {
-				GameEventBus.getInstance().emit({ type: 'GAME_PAUSED', payload: gameInfo });
-				WebSocketClient.getInstance().emit("pause-resume", { status: "pause" });
-				resumeButton.classList.remove("hidden");
-				gameInstance.uiManager.newmatchButton!.classList.remove("hidden");
-				gameInstance.uiManager.turnToHomePage!.classList.remove("hidden");
-			} else {
-				GameEventBus.getInstance().emit({ type: 'GAME_RESUMED', payload: gameInfo });
-				WebSocketClient.getInstance().emit("pause-resume", { status: "resume" });
-				resumeButton.classList.add("hidden");
-				gameInstance.uiManager.newmatchButton!.classList.add("hidden");
-				gameInstance.uiManager.turnToHomePage!.classList.add("hidden");
-			}
+		const gameInfo = gameInstance.gameInfo;
+		if (!gameInfo) return;
+		if (gameInfo.mode !== 'vsAI' && gameInfo.mode !== 'localGame') return;
+		if (event.code !== "Space") return;
+		if (!gameInstance.uiManager.startButton!.classList.contains("hidden")) return; //hmm
+
+		gameInfo.state!.isPaused = !gameInfo.state!.isPaused;
+		console.log("Game paused status: ", gameInfo.state!.isPaused);
+		if (gameInfo.state!.isPaused) {
+			GameEventBus.getInstance().emit({ type: 'GAME_PAUSED', payload: gameInfo });
+			WebSocketClient.getInstance().emit("pause-resume", { status: "pause" });
+			resumeButton.classList.remove("hidden");
+			gameInstance.uiManager.newmatchButton!.classList.remove("hidden");
+			gameInstance.uiManager.turnToHomePage!.classList.remove("hidden");
+		} else {
+			GameEventBus.getInstance().emit({ type: 'GAME_RESUMED', payload: gameInfo });
+			WebSocketClient.getInstance().emit("pause-resume", { status: "resume" });
+			resumeButton.classList.add("hidden");
+			gameInstance.uiManager.newmatchButton!.classList.add("hidden");
+			gameInstance.uiManager.turnToHomePage!.classList.add("hidden");
 		}
 	});
 
 	resumeButton?.addEventListener("click", () => {
+		const gameInfo = gameInstance.gameInfo;
+		if (!gameInfo) return;
 		GameEventBus.getInstance().emit({ type: 'GAME_RESUMED', payload: gameInfo });
 		gameInfo.state!.isPaused = false;
 		WebSocketClient.getInstance().emit("pause-resume", { status: "resume" });
@@ -140,9 +145,8 @@ export function listenPlayerInputs(gameInfo: GameInfo) {
 	KeyboardInputHandler.getInstance().listen();
 
 	const resumeButton = document.getElementById("resume-button") as HTMLButtonElement;
-	if (gameInfo.mode !== 'remoteGame' && gameInfo.mode !== 'tournament') {
-		listenPauseInputs(gameInfo);
-	}
+
+	listenPauseInputs();
 
 	gameInstance.uiManager.newmatchButton!.addEventListener("click", () => {
 		console.log(`yeni maça başlaya tıklandı, içerik : ${gameInstance.uiManager.newmatchButton!.innerText}`);
