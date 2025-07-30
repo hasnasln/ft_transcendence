@@ -14,7 +14,7 @@ export interface Player {
 	username: string;
 	uuid: string;
 	token: string;
-	socketReady: boolean;
+	readyToStart: boolean;
 }
 
 export interface DisconnectionEvent {
@@ -96,13 +96,13 @@ export class MatchManager {
 			clearTimeout(game.readyTimeout);
 			game.readyTimeout = null;
 		}
-		if (game.state === 'in-progress' || game.state === 'paused' || !player1.socketReady || !player2.socketReady)
+		if (game.state === 'in-progress' || game.state === 'paused' || !player1.readyToStart || !player2.readyToStart)
 			return;
 
 		game.start();
 		game.reMatch = true;
-		player1.socketReady = false; // todo hmm...
-		player2.socketReady = false;
+		player1.readyToStart = false;
+		player2.readyToStart = false;
 	}
 
 	public cancelRemoteMatch(game?: Game, cancelMode?: string) {
@@ -239,8 +239,8 @@ export class MatchManager {
 		this.matchesByRoom.delete(game.roomId);
 		this.roomsByUsername.delete(player1.username);
 		this.roomsByUsername.delete(player2.username);
-		player1.socketReady = false;
-		player2.socketReady = false;
+		player1.readyToStart = false;
+		player2.readyToStart = false;
 	}
 
 	public getMatchByPlayer(username: string): Game | undefined {

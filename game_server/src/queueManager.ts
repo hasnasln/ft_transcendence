@@ -109,7 +109,7 @@ export class GameQueue {
                     resolve(false);
                 } else {
                     console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} sent 'ready' message.`);
-                    player.socketReady = true;
+                    player.readyToStart = true;
                     resolve(true);
                 }
             });

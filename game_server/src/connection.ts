@@ -82,7 +82,7 @@ export class ConnectionHandler {
 
     public handleConnectionRequest(socket: Socket): void {
         const user: any = (socket as any).user;
-        let player: Player = { ...user, socket, socketReady: false };
+        let player: Player = { ...user, socket, readyToStart: false };
 
         if (!this.acceptConnection(socket, player)) {
             return;
