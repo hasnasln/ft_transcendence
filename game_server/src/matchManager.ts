@@ -62,7 +62,7 @@ export class MatchManager {
 			.withPlayers(player1, player1)
 			.withGameMode("vsAI")
 			.withLeftInput(() => new RemotePlayerInput(player1))
-			.withRightInput((g) => new AIPlayerInput(g, g.getPaddle2(), level))
+			.withRightInput((g) => new AIPlayerInput(g, g.getRightPaddle(), level))
 			.build();
 
 		this.matchesByRoom.set(game.roomId, game);
@@ -92,10 +92,6 @@ export class MatchManager {
 		console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} starting...`);
 		const player1 = game.players[0];
 		const player2 = game.players[1]!;
-		if (game.readyTimeout) {
-			clearTimeout(game.readyTimeout);
-			game.readyTimeout = null;
-		}
 		if (game.state === 'in-progress' || game.state === 'paused' || !player1.readyToStart || !player2.readyToStart)
 			return;
 
@@ -111,17 +107,13 @@ export class MatchManager {
 			return;
 		}
 		console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} thought to cancel the match: ${cancelMode}`);
-		if (!game.readyTimeout) {
-			return;
-		}
-		clearTimeout(game.readyTimeout);
-		game.readyTimeout = null;
 		if (game.state !== 'waiting')
 			return;
 		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("match-cancelled", {});
 		game.players.forEach(player => {
 			player.socket.leave(game.roomId);
 		});
+		
 		this.clearMatch(game);
 	}
 
@@ -149,6 +141,9 @@ export class MatchManager {
 
 			if (myMatchMap.size > 2)
 				throw new Error(`Bir şeyler ters gitti ! myMatchMap.size 2 den büyük olamaz, şu an ${myMatchMap.size}`);
+			if (myMatchMap.size < 2) {
+				throw new Error(`Bir şeyler ters gitti ! myMatchMap.size 2 den küçük olamaz, şu an ${myMatchMap.size}`);
+			}
 			const roundNumber = match.roundNumber;
 			const finalMatch = match.finalMatch;
 			const tournament = { code: tournamentCode, roundNo: roundNumber, finalMatch: finalMatch };
@@ -184,8 +179,8 @@ export class MatchManager {
 				this.cancelRemoteMatch(game, 'disconnect');
 				break;
 			case 'in-progress':
-			case 'paused':
 				game.pause();
+			case 'paused':
 				ConnectionHandler.getInstance().getServer().to(opponent.socket.id).emit("opponent-disconnected");
 				this.disconnectTimestamps.set(player.username, { player, game, timestamp: Date.now() });
 				break;
@@ -201,11 +196,14 @@ export class MatchManager {
 
 	public handleReconnect(player: Player, game: Game) {
 		const roomId = this.roomsByUsername.get(player.username);
+		if (!roomId) {
+			player.socket.emit("rejoin-response", {status: "rejected"});
+			return;
+		}
 
 		const playersIndex = player.username === game.players[0].username ? 0 : 1;
 		game.players[playersIndex] = player;
-		player.socket = player.socket;
-		player.socket.join(roomId!);
+		player.socket.join(roomId);
 
 		if (!game) {
 			throw new Error(`Match game is not initialized for player ${player.username} in room ${roomId}`);
@@ -234,13 +232,12 @@ export class MatchManager {
 	}
 
 	public clearMatch(game: Game) {
-		const player1 = game.players[0];
-		const player2 = game.players[1];
 		this.matchesByRoom.delete(game.roomId);
-		this.roomsByUsername.delete(player1.username);
-		this.roomsByUsername.delete(player2.username);
-		player1.readyToStart = false;
-		player2.readyToStart = false;
+		for (const player of new Set(game.players)) {
+			this.roomsByUsername.delete(player.username);
+			player.socket.leave(game.roomId);
+			player.readyToStart = false;
+		}
 	}
 
 	public getMatchByPlayer(username: string): Game | undefined {
