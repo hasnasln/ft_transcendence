@@ -4,6 +4,7 @@ import { GameLoop } from "./gameLoop";
 import { MatchPlayers } from "./network";
 import { updateScoreBoard, showEndMessage, startNextSet } from "./ui";
 import { WebSocketClient } from "./wsclient";
+import { Router } from "../../router";
 export type GameEventType =
 	| 'SET_COMPLETED'
 	| 'MATCH_ENDED'
@@ -111,6 +112,7 @@ GameEventBus.getInstance().on('SET_COMPLETED', async () => {
 });
 
 GameEventBus.getInstance().on('MATCH_ENDED', () => {
+	gameInstance.uiManager.onInfoHidden();
 	updateScoreBoard();
 	showEndMessage();
 });
@@ -191,6 +193,17 @@ GameEventBus.getInstance().on('RECONNECTED', () => {
 	if (!gameInstance.gameStatus.currentGameStarted || !gameInstance.uiManager.isSceneReady()) return;
 	console.log("Reconnected to the game server.");
 	gameInstance.requestRejoin();
+});
+
+GameEventBus.getInstance().on('RECONNECTION_GAVE_UP', (event) => {
+	if (gameInstance.gameStatus.currentGameStarted) {
+		gameInstance.uiManager.onInfoShown("Oyun sunucusuna yeniden bağlanma başarısız oldu.");
+		WebSocketClient.getInstance().reset();
+		setTimeout(() => {
+			Router.getInstance().invalidatePage("/game");
+			Router.getInstance().go('/');
+		}, 1000);
+	}
 });
 
 GameEventBus.getInstance().on('CONNECTION_ERROR', (event) => {
