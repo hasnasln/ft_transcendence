@@ -12,9 +12,7 @@ export class ConnectionHandler {
     private connectedPlayersMap: Map<string, Player> = new Map();
     private io: Server = undefined as any;
 
-    private constructor() {
-        
-    }
+    private constructor() {}
 
     public static getInstance(): ConnectionHandler {
         if (!ConnectionHandler._instance) {
@@ -83,7 +81,7 @@ export class ConnectionHandler {
 
     public handleConnectionRequest(socket: Socket): void {
         const user: any = (socket as any).user;
-        let player: Player = { ...user, socket, readyToStart: false };
+        let player: Player = { ...user, socket };
 
         if (!this.acceptConnection(socket, player)) {
             return;
@@ -137,7 +135,4 @@ export class ConnectionHandler {
 		this.connectedPlayersMap.delete(player.username);
 
     }
-
-
-
 }

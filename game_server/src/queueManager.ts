@@ -67,10 +67,9 @@ export class GameQueue {
         }
 
         const game = builder.build();
+		MatchManager.getInstance().playersGamesMap.set(player1.username, game);
+		MatchManager.getInstance().playersGamesMap.set(player2.username, game);
 
-        MatchManager.getInstance().matchesByRoom.set(roomId, game);
-        MatchManager.getInstance().roomsByUsername.set(player1.username, roomId);
-        MatchManager.getInstance().roomsByUsername.set(player2.username, roomId);
         console.log(`[${new Date().toISOString()}] ${player1.username.padStart(10)} and ${player2.username.padStart(10)} matched. Waiting for approval...`);
 
         const matchPlayers: MatchPlayers = {
@@ -109,7 +108,6 @@ export class GameQueue {
                     resolve(false);
                 } else {
                     console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} sent 'ready' message.`);
-                    player.readyToStart = true;
                     resolve(true);
                 }
             });
@@ -135,6 +133,7 @@ export class GameQueue {
             ConnectionHandler.getInstance().getServer().to(other.socket.id).emit("waitingRematch", other.username);
         }*/
 
-        MatchManager.getInstance().startRemoteMatch(game);
+        game.start();
+        game.reMatch = true;
     }
 }

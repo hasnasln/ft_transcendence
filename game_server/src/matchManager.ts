@@ -13,7 +13,6 @@ export interface Player {
 	socket: Socket;
 	username: string;
 	uuid: string;
-	readyToStart: boolean;
 }
 
 export interface DisconnectionEvent {
@@ -26,12 +25,10 @@ export class MatchManager {
 	private static instance: MatchManager;
 
 	public disconnectTimestamps: Map<string, DisconnectionEvent> = new Map();
-	public matchesByRoom: Map<string, Game> = new Map();
-	public roomsByUsername: Map<string, string> = new Map();
+	public playersGamesMap: Map<string, Game> = new Map();
 	private waitingTournamentMatches: Map<string, Map<string, Player>> = new Map();
 
-	private constructor() {
-	}
+	private constructor() {}
 
 	public static getInstance(): MatchManager {
 		if (!MatchManager.instance) {
@@ -63,8 +60,7 @@ export class MatchManager {
 			.withRightInput((g) => new AIPlayerInput(g, g.getRightPaddle(), level))
 			.build();
 
-		this.matchesByRoom.set(game.roomId, game);
-		this.roomsByUsername.set(player1.username, game.roomId);
+		this.playersGamesMap.set(player1.username, game);
 		player1.socket.join(game.roomId);
 		player1.socket.on("ready", () => game.start());
 	}
@@ -79,39 +75,17 @@ export class MatchManager {
 			.withRightInput(() => new LocalPlayerInput(player1, "right"))
 			.build();
 
-		this.matchesByRoom.set(game.roomId, game);
-		this.roomsByUsername.set(player1.username, game.roomId);
+		this.playersGamesMap.set(player1.username, game);
 		player1.socket.join(game.roomId);
 		player1.socket.on("ready", () => game.start());
 	}
 
-
-	public startRemoteMatch(game: Game) {
-		console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} starting...`);
-		const player1 = game.players[0];
-		const player2 = game.players[1]!;
-		if (game.state === 'in-progress' || game.state === 'paused' || !player1.readyToStart || !player2.readyToStart)
-			return;
-
-		game.start();
-		game.reMatch = true;
-		player1.readyToStart = false;
-		player2.readyToStart = false;
-	}
-
-	public cancelRemoteMatch(game?: Game, cancelMode?: string) {
-		if (!game) {
-			console.log(`[${new Date().toISOString()}] No game to cancel.`);
-			return;
-		}
+	public cancelRemoteMatch(game: Game, cancelMode?: string) {
 		console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} thought to cancel the match: ${cancelMode}`);
 		if (game.state !== 'waiting')
 			return;
 		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("match-cancelled", {});
-		game.players.forEach(player => {
-			player.socket.leave(game.roomId);
-		});
-		
+		game.players.forEach(player => player.socket.leave(game.roomId));
 		this.clearMatch(game);
 	}
 
@@ -177,6 +151,7 @@ export class MatchManager {
 				break;
 			case 'in-progress':
 				game.pause();
+				/* fall through */
 			case 'paused':
 				ConnectionHandler.getInstance().getServer().to(opponent.socket.id).emit("opponent-disconnected");
 				this.disconnectTimestamps.set(player.username, { player, game, timestamp: Date.now() });
@@ -192,19 +167,11 @@ export class MatchManager {
 	}
 
 	public handleReconnect(player: Player, game: Game) {
-		const roomId = this.roomsByUsername.get(player.username);
-		if (!roomId) {
-			player.socket.emit("rejoin-response", {status: "rejected"});
-			return;
-		}
-
+		const roomId = game.roomId;
 		const playersIndex = player.username === game.players[0].username ? 0 : 1;
 		game.players[playersIndex] = player;
 		player.socket.join(roomId);
 
-		if (!game) {
-			throw new Error(`Match game is not initialized for player ${player.username} in room ${roomId}`);
-		}
 		if (!this.disconnectTimestamps.has(player.username)) {
 			throw new Error(`Disconnection event not found for player ${player.username}`);
 		}
@@ -218,7 +185,9 @@ export class MatchManager {
 			game.rightInput = input;
 		}
 
-		game.players.find(p => p.username !== player.username)!.socket.emit("opponent-reconnected");
+		game.players
+			.filter(p => p.username !== player.username)
+			.forEach(p => p.socket.emit("opponent-reconnected"));
 		game.resume();
 
 		GameEmitter.getInstance().emitGameConstants(game);
@@ -229,20 +198,13 @@ export class MatchManager {
 	}
 
 	public clearMatch(game: Game) {
-		this.matchesByRoom.delete(game.roomId);
 		for (const player of new Set(game.players)) {
-			this.roomsByUsername.delete(player.username);
+			this.playersGamesMap.delete(player.username);
 			player.socket.leave(game.roomId);
-			player.readyToStart = false;
 		}
 	}
 
 	public getMatchByPlayer(username: string): Game | undefined {
-		for (const match of this.matchesByRoom.values()) {
-			if (match.players?.some(p => p?.username === username)) {
-				return match;
-			}
-		}
-		return undefined;
+		return this.playersGamesMap.get(username);
 	}
 }

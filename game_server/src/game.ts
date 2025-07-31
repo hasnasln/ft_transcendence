@@ -97,6 +97,7 @@ export class Game {
 	}
 
 	public scorePoint(winner: Side) {
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} scored point for ${winner}.`);
 		if (this.matchOver || this.isPaused) return;
 
 		this.scoringManager.onScore(winner); 
