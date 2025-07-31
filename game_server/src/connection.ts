@@ -53,16 +53,17 @@ export class ConnectionHandler {
         }
     
         const response = await apiCall('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined, token);
+        
+        if (!response.ok) {
+            return new Error("Token validation error: " + await response.text());
+        }
+        
         const body = await response.json();
     
-        if (!response.ok) {
-            return new Error("Token validation error: " + body.error);
-        }
-    
-        const user: any = { uuid: body.data.uuid, username: body.data.username, token: token };
+        const user: any = { uuid: body.data.uuid, username: body.data.username};
         (socket as any).user = user;
-    
-        if (MatchManager.getInstance().connectedPlayers.has(user.username)) {
+
+        if (ConnectionHandler.getInstance().connectedPlayersMap.has(user.username)) {
             return new Error("Existing session found.");
         }
         // note: do not assume player is connected here.
