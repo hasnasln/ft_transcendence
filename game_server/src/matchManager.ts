@@ -13,7 +13,6 @@ export interface Player {
 	socket: Socket;
 	username: string;
 	uuid: string;
-	token: string;
 	readyToStart: boolean;
 }
 
@@ -26,7 +25,6 @@ export interface DisconnectionEvent {
 export class MatchManager {
 	private static instance: MatchManager;
 
-	public connectedPlayers: Map<string, Player> = new Map();
 	public disconnectTimestamps: Map<string, DisconnectionEvent> = new Map();
 	public matchesByRoom: Map<string, Game> = new Map();
 	public roomsByUsername: Map<string, string> = new Map();
@@ -160,7 +158,6 @@ export class MatchManager {
 	}
 
 	public handleDisconnect(player: Player) {
-		this.connectedPlayers.delete(player.username);
 		const game = this.getMatchByPlayer(player.username);
 		if (!game) {
 			GameQueue.getInstance().dequeue(player);
