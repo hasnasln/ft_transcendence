@@ -1,4 +1,5 @@
 import { _apiManager } from '../../api/APIManager';
+import { ModernOverlay } from './ModernOverlay';
 import { ITournament } from '../../api/types';
 import { PlayPage } from '../play-page';
 import { gameInstance } from '../play';
@@ -91,11 +92,11 @@ export class TournamentGameManager {
     }
 
     private showValidationError(message: string): void {
-        alert(message);
+        ModernOverlay.show(message, 'error');
     }
 
     private showGameError(message: string): void {
-        alert(message);
+        ModernOverlay.show(message, 'error');
     }
 
     updateData(newData: ITournament, newStatus: boolean): void {

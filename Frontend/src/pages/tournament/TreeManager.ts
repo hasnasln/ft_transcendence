@@ -1,4 +1,5 @@
 import { _apiManager } from '../../api/APIManager';
+import { ModernOverlay } from './ModernOverlay';
 import { ITournament } from '../../api/types';
 import { getTournamentTree } from './BracketRenderer';
 import { TournamentIcons } from './IconsHelper';
@@ -203,7 +204,7 @@ export class TournamentTreeManager {
     }
 
     private showTreeError(errorMessage: string): void {
-        alert(errorMessage);
+        ModernOverlay.show(errorMessage, 'error');
     }
 
     private delay(ms: number): Promise<void> {

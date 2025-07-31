@@ -1,4 +1,5 @@
 import { TournamentIcons } from './IconsHelper';
+import { ModernOverlay } from './ModernOverlay';
 
 export class TournamentNotificationManager {
     private uiManager: any;
@@ -53,16 +54,16 @@ export class TournamentNotificationManager {
 
     showCreateError(errorMessage: string): void {
         this.showInputError('create', errorMessage);
-        alert(errorMessage);
+        ModernOverlay.show(errorMessage, 'error');
     }
 
     showJoinError(errorMessage: string): void {
         this.showInputError('join', errorMessage);
-        alert(errorMessage);
+        ModernOverlay.show(errorMessage, 'error');
     }
 
     showStartError(errorMessage: string): void {
-        alert(errorMessage);
+        ModernOverlay.show(errorMessage, 'error');
     }
 
     showRefreshError(errorMessage: string): void {
@@ -73,11 +74,11 @@ export class TournamentNotificationManager {
                 refreshButton.innerHTML = TournamentIcons.getRefreshIcon();
             }, 2000);
         }
-        alert(errorMessage);
+        ModernOverlay.show(errorMessage, 'error');
     }
 
     showExitError(errorMessage: string): void {
-        alert(errorMessage);
+        ModernOverlay.show(errorMessage, 'error');
     }
 
     showInputError(inputType: 'join' | 'create', message: string): void {
