@@ -154,7 +154,7 @@ export async function pushWinnerToTournament(tournamentCode: string, roundNumber
 }
 
 
-export async function joinMatchByCode(token: string, tournamentCode: string, roundNumber: number, participant: Participant): Promise<Result> {
+export async function joinMatchByCode(tournamentCode: string, roundNumber: number, participant: Participant): Promise<Result> {
     const url = `http://tournament.transendence.com/api/tournament/${tournamentCode}/join-match`;
     const body = { round_number: roundNumber, participant: participant };
 
@@ -163,7 +163,7 @@ export async function joinMatchByCode(token: string, tournamentCode: string, rou
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
+                "x-api-key": "bypassauth" // i never heard about envs
             },
             body: JSON.stringify(body)
         });

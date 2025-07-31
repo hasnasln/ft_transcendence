@@ -124,8 +124,8 @@ export class GameQueue {
         
         if (game.gameMode === 'tournament') {
             try {
-                joinMatchByCode(player1.token, game.tournament?.code as string, game.tournament?.roundNo as number, { uuid: player1.uuid, username: player1.username });
-                joinMatchByCode(player2.token, game.tournament?.code as string, game.tournament?.roundNo as number, { uuid: player2.uuid, username: player2.username });
+                joinMatchByCode(game.tournament?.code as string, game.tournament?.roundNo as number, { uuid: player1.uuid, username: player1.username });
+                joinMatchByCode(game.tournament?.code as string, game.tournament?.roundNo as number, { uuid: player2.uuid, username: player2.username });
             } catch (err: any) {
                 emitError(err.message, game.roomId);
             }
