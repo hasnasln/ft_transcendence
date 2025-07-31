@@ -443,67 +443,55 @@ export class Settingsv3 implements Page{
 		`;
 	}
 
-	private createLanguageDropdownV2(): string {
-		let optionsHTML = '';
-		exmp.getLanguageChoises().forEach((lang) => {
-			optionsHTML += `
-				<button class="w-full p-3 flex items-center gap-3 hover:bg-gray-50/90 hover:backdrop-blur-sm
-					transition-all duration-200 ease-out text-left border-b border-gray-100/60 
-					last:border-b-0 group hover:scale-[1.01] hover:shadow-sm min-h-[48px]
-					${lang === this.selectedLanguage ? 'bg-blue-50/90 border-blue-200/50' : ''}"
-					data-lang="${lang}"
-					type="button"
-				>
-					<div class="text-xl group-hover:scale-110 transition-transform duration-300">${this.langFlags[lang] || "🌐"}</div>
-					<div class="flex-1">
-						<div class="font-bold text-gray-800 text-sm group-hover:text-gray-900">${this.langNames[lang] || lang}</div>
-						<div class="text-xs text-gray-500 font-medium">${lang.toUpperCase()}</div>
-					</div>
-					${lang === this.selectedLanguage ? `
-						<div class="w-6 h-6 rounded-full bg-gradient-to-br from-green-500 to-blue-600 
-							flex items-center justify-center shadow-md">
-							<svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-								<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-							</svg>
-						</div>
-					` : ''}
-				</button>
-			`;
-		});
-		const dropdownHTML = `
-			<div id="dropdownHTML" class="relative z-[100] dropdown-container">
-				<button type="button"
-					class="w-full bg-white/90 backdrop-blur-sm border-2 border-gray-300/80 
-					rounded-3xl p-4 flex items-center justify-between hover:bg-white hover:border-gray-400 
-					hover:shadow-lg hover:scale-[1.02] transition-all duration-300 ease-out
-					cursor-pointer group shadow-md min-h-[56px] relative z-10"
-					id="current-lang-btn"
-				>
-					<div class="flex items-center gap-3">
-						<div class="text-xl group-hover:scale-110 transition-transform duration-300">${this.langFlags[this.selectedLanguage] || "🌐"}</div>
-						<div class="text-left">
-							<div class="font-bold text-gray-800 text-sm">${this.langNames[this.selectedLanguage] || this.selectedLanguage}</div>
-							<div class="text-xs text-gray-500 font-medium">${this.selectedLanguage.toUpperCase()}</div>
-						</div>
-					</div>
-					<svg class="w-5 h-5 text-gray-400 transform transition-all duration-300 group-hover:text-gray-600 group-hover:rotate-180" 
-						fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-					</svg>
-				</button>
-				<div class="absolute top-full left-0 right-0 mt-3 z-[99999]
-					bg-white/95 backdrop-blur-xl border-2 border-gray-300/50 
-					rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.35)] 
-					max-h-48 overflow-hidden hidden opacity-0 transform translate-y-2 scale-95
-					transition-all duration-300 ease-out dropdown-menu"
-					id="dropdown-menu-lang"
-				>
-					${optionsHTML}
-				</div>
-			</div>
-		`;
-	return dropdownHTML;
-	}
+   private createLanguageDropdownV2(): string {
+	   const renderLangOption = (lang: string) => `
+		   <button class="w-full p-3 flex items-center gap-3 hover:bg-gray-50/90 hover:backdrop-blur-sm
+			   transition-all duration-200 ease-out text-left border-b border-gray-100/60 
+			   last:border-b-0 group hover:scale-[1.01] hover:shadow-sm min-h-[48px]
+			   ${lang === this.selectedLanguage ? 'bg-blue-50/90 border-blue-200/50' : ''}"
+			   data-lang="${lang}"
+			   type="button">
+			   <div class="text-xl group-hover:scale-110 transition-transform duration-300">${this.langFlags[lang] || "🌐"}</div>
+			   <div class="flex-1">
+				   <div class="font-bold text-gray-800 text-sm group-hover:text-gray-900">${this.langNames[lang] || lang}</div>
+				   <div class="text-xs text-gray-500 font-medium">${lang.toUpperCase()}</div>
+			   </div>
+			   ${lang === this.selectedLanguage ? `
+				   <div class="w-6 h-6 rounded-full bg-gradient-to-br from-green-500 to-blue-600 
+					   flex items-center justify-center shadow-md">
+					   <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+						   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+					   </svg>
+				   </div>
+			   ` : ''}
+		   </button>
+	   `;
+
+	   const optionsHTML = exmp.getLanguageChoises().map(renderLangOption).join('');
+	   const dropdownHTML = `
+		   <div id="dropdownHTML" class="relative z-[100] dropdown-container">
+			   <button type="button"
+				   class="w-full bg-white/90 backdrop-blur-sm border-2 border-gray-300/80 
+				   rounded-3xl p-4 flex items-center justify-between hover:bg-white hover:border-gray-400 
+				   hover:shadow-lg hover:scale-[1.02] transition-all duration-300 ease-out
+				   cursor-pointer group shadow-md min-h-[56px] relative z-10"
+				   id="current-lang-btn"
+			   >
+				   ${this.updateLanguageDisplay(this.selectedLanguage, this.langFlags, this.langNames)}
+			   </button>
+			   <div class="absolute top-full left-0 right-0 mt-3 z-[99999]
+				   bg-white/95 backdrop-blur-xl border-2 border-gray-300/50 
+				   rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.35)] 
+				   max-h-48 overflow-hidden hidden opacity-0 transform translate-y-2 scale-95
+				   transition-all duration-300 ease-out dropdown-menu"
+				   id="dropdown-menu-lang"
+			   >
+				   ${optionsHTML}
+			   </div>
+		   </div>
+	   `;
+	   return dropdownHTML;
+   }
 	
 	private selectColor(color: string, grid: HTMLElement, colors: string[]): void {
 		this.selectedColor = color;
@@ -557,20 +545,44 @@ export class Settingsv3 implements Page{
 		if (arrow) arrow.style.transform = 'rotate(90deg)';
 	}
 
-	private selectLanguage(lang: string, currentBtn: HTMLElement, dropdownMenu: HTMLElement, flags: any, names: any, langs: string[]): void {
-		
-		// animasyonu incele 1 saliselik bir animasyon bence gerek yok- beraber karakr verelim
-		const clickedOption = event?.currentTarget as HTMLElement;
-		if (clickedOption) {
-			clickedOption.style.transform = 'scale(0.98)';
-			setTimeout(() => {
-				clickedOption.style.transform = '';
-			}, 100);
-		}
-		this.selectedLanguage = lang;
-		currentBtn.innerHTML = this.updateLanguageDisplay(lang, flags, names);
-		this.closeDropdown(dropdownMenu, currentBtn);
-	}
+   private selectLanguage(lang: string, currentBtn: HTMLElement, dropdownMenu: HTMLElement, flags: any, names: any, langs: string[]): void {
+	   this.selectedLanguage = lang;
+	   localStorage.setItem('language', lang);
+	   currentBtn.innerHTML = this.updateLanguageDisplay(lang, flags, names);
+	   let optionsHTML = '';
+	   langs.forEach((l) => {
+		   optionsHTML += `
+			   <button class="w-full p-3 flex items-center gap-3 hover:bg-gray-50/90 hover:backdrop-blur-sm
+				   transition-all duration-200 ease-out text-left border-b border-gray-100/60 
+				   last:border-b-0 group hover:scale-[1.01] hover:shadow-sm min-h-[48px]
+				   ${l === lang ? 'bg-blue-50/90 border-blue-200/50' : ''}"
+				   data-lang="${l}"
+				   type="button">
+				   <div class="text-xl group-hover:scale-110 transition-transform duration-300">${flags[l] || "🌐"}</div>
+				   <div class="flex-1">
+					   <div class="font-bold text-gray-800 text-sm group-hover:text-gray-900">${names[l] || l}</div>
+					   <div class="text-xs text-gray-500 font-medium">${l.toUpperCase()}</div>
+				   </div>
+				   ${l === lang ? `
+					   <div class="w-6 h-6 rounded-full bg-gradient-to-br from-green-500 to-blue-600 
+						   flex items-center justify-center shadow-md">
+						   <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+							   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+						   </svg>
+					   </div>
+				   ` : ''}
+			   </button>
+		   `;
+	   });
+	   dropdownMenu.innerHTML = optionsHTML;
+	   dropdownMenu.querySelectorAll('button[data-lang]').forEach((btn) => {
+		   btn.addEventListener('click', () => {
+			   this.tmpLanguage = (btn as HTMLElement).getAttribute('data-lang')!;
+			   this.selectLanguage(this.tmpLanguage, currentBtn, dropdownMenu, flags, names, langs);
+		   });
+	   });
+	   this.closeDropdown(dropdownMenu, currentBtn);
+   }
 
 	private updateLanguageDisplay(lang: string, flags: any, names: any): string {
 		return `
