@@ -135,23 +135,23 @@ function handlePaddleBounce(g: Game, _dt: number): boolean {
 }
 
 function applyAirResistance(g: Game, dt: number): boolean {
-	g.ball.velocity.x *= g.ball.airResistanceFactor * dt;
-	g.ball.velocity.y *= g.ball.airResistanceFactor * dt;
+	g.ball.velocity.x *= g.ball.airResistanceFactor;
+	g.ball.velocity.y *= g.ball.airResistanceFactor;
 	return true;
 }
 
 function enforceSpeedLimits(g: Game, dt: number): boolean {
 	const speed = Math.hypot(g.ball.velocity.x, g.ball.velocity.y);
 	if (speed < g.ball.minimumSpeed) {
-		g.ball.velocity.x *= 1.02 * dt;
-		g.ball.velocity.y *= 1.02 * dt;
+		g.ball.velocity.x *= 1.02;
+		g.ball.velocity.y *= 1.02;
 	} else if (speed > g.ball.maximumSpeed) {
-		g.ball.velocity.x /= 1.02 * dt;
-		g.ball.velocity.y /= 1.02 * dt;
+		g.ball.velocity.x /= 1.02;
+		g.ball.velocity.y /= 1.02;
 	}
 	//Oyun zig-zag a dönmesin kontrolü
 	if (g.ball.velocity.x !== 0 && Math.abs(g.ball.velocity.y / g.ball.velocity.x) > 2)
-		g.ball.velocity.y /= 1.02 * dt;
+		g.ball.velocity.y /= 1.02;
 	return true;
 }
 
