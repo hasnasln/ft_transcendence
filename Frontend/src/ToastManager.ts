@@ -104,11 +104,6 @@ export class ToastManager {
 						class="text-gray-800 font-semibold text-sm leading-relaxed">!_!</p>
 					</div>
 					<!-- Close button -->
-					<button class="flex-shrink-0 w-8 h-8 rounded-lg bg-white/60 hover:bg-white/80 flex items-center justify-center transition-colors duration-200 text-gray-500 hover:text-gray-700">
-						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-						</svg>
-					</button>
 				</div>
 				<!-- Progress bar -->
 				<div class="absolute bottom-0 left-0 h-1 bg-gradient-to-r ${accentColor} transform scale-x-0 origin-left transition-transform duration-${duration} ease-linear"></div>
@@ -135,11 +130,6 @@ export class ToastManager {
 		});
 
 		if (this.container) {
-			this.container.addEventListener('click', (event) => {
-				if ((event.target as HTMLElement).tagName === 'BUTTON') {
-					this.hideToast(toastElemet);
-				}
-			});
 
 			setTimeout(() => {
 				this.hideToast(toastElemet);

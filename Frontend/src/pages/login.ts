@@ -7,7 +7,7 @@ export class LoginPage implements Page {
     evaluate(): string {
         return `
         <div class="min-h-screen flex items-center justify-center bg-animated-gradient">
-            <main class="glass-container p-10 max-w-md w-full relative animate-fadeIn">
+            <main id="login-main" class="glass-container p-10 max-w-md w-full relative animate-fadeIn">
                 <section id="section-login" class="animate-fadeIn">
                     <form id="login-form" class="flex flex-col space-y-8" autocomplete="off" novalidate>
                         <h2 class="text-4xl font-extrabold text-center mb-8 title-gradient">
@@ -451,8 +451,10 @@ function addFlagLangDropdown(container: HTMLElement)
 	</ul>
 `;
 
-    container.appendChild(btn);
-    container.appendChild(menu);
+    const login_form = document.getElementById('login-main')
+    login_form!.appendChild(btn);
+    login_form!.appendChild(menu);
+
 
     btn.addEventListener('click', () => {
         menu.classList.toggle('hidden');
