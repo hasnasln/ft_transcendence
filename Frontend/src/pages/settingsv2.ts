@@ -749,7 +749,7 @@ export class Settingsv2 {
 				ball_color: this.selectedColor,
 				language: this.selectedLanguage
 			};
-			await _apiManager.updateSettings(settingsData);
+			// await _apiManager.updateSettings(settingsData);
 			
 			console.log('Settings saved successfully');
 		} catch (error) {

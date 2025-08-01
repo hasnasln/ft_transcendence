@@ -41,15 +41,11 @@ export class APIManager {
 	private active_pass: string | null = null; // aktif pass tutulacak
 	private uuid: string | null = null; // uuid tutulacak, register ve login sonrası gelecek
 
-	private constructor(baseUrl: string, url_altarnetive: string, token: string | null = null) {
+	private constructor(baseUrl: string, url_altarnetive: string) {
 		this.baseUrl = baseUrl;
 		this.t_url = url_altarnetive;
-		if (token === null) {
-			this.token = localStorage.getItem('token') || null;
-			this.uuid = localStorage.getItem('uuid') || null;
-		} else {
-			this.token = token;
-		}
+		this.token = localStorage.getItem('token') || null;
+		this.uuid = localStorage.getItem('uuid') || null;
 	}
 
 	public static getInstance(baseUrl: string, url_altarnetive: string): APIManager {
@@ -133,7 +129,6 @@ export class APIManager {
 				localStorage.setItem('username', data.username);
 				localStorage.setItem('uuid', data.uuid);
 				localStorage.setItem('email', data.email);
-				localStorage.setItem('avatar', data.uuid.at(-1) + '.png'); // Example avatar logic, can be customized
 			} else {
 				result.success = false;
 				result.message = data.error || 'Token not found in response';
@@ -162,62 +157,6 @@ export class APIManager {
 			return response;
 		} catch (error) {
 			console.error('Error in logout:', error);
-			throw error;
-		}
-	}
-
-	public async getSettings(): Promise<any> {
-		try {
-			const response = await this.apiCall(`${this.baseUrl}/settings`, HTTPMethod.GET, {
-				'Content-Type': 'application/json',
-			});
-			if (!response.ok) {
-				throw new Error('Settings failed');
-			}
-			const data = await response.json();
-			localStorage.setItem('settings', JSON.stringify(data));
-			console.log("Settings data:", data);
-			return data;
-		} catch (error) {
-			console.error('Error in settings:', error);
-			throw error;
-		}
-	}
-
-	public async updateSettings(choises: IApiSetSettings): Promise<any> {
-		try {
-			const response = await this.apiCall(`${this.baseUrl}/settings`, HTTPMethod.POST, {
-				'Content-Type': 'application/json',
-			}, JSON.stringify(choises));
-			if (!response.ok) {
-				throw new Error('Settings failed');
-			}
-			const data = await response.json();
-			localStorage.setItem('settings', JSON.stringify(data));
-			return data;
-		} catch (error) {
-			console.error('Error in settings:', error);
-			throw error;
-		}
-	}
-
-	public async getMe(): Promise<any> {
-		try {
-			const response = await this.apiCall(`${this.baseUrl}/me`, HTTPMethod.GET, {
-				'Content-Type': 'application/json',
-			});
-			if (!response.ok) {
-				throw new Error('Get ME failed');
-			}
-			const data = await response.json();
-			localStorage.setItem('name', data.user.name);
-			localStorage.setItem('surname', data.user.surname);
-			localStorage.setItem('username', data.user.username);
-			localStorage.setItem('email', data.user.email);
-			localStorage.setItem('avatar', data.user.avatar);
-			return data;
-		} catch (error) {
-			console.error('Error in getME:', error);
 			throw error;
 		}
 	}
@@ -279,10 +218,9 @@ export class APIManager {
 				this.setToken(dataResponse.token);
 				this.uuid = dataResponse.uuid;
 				localStorage.setItem('token', dataResponse.token);
-				localStorage.setItem('uuid', JSON.stringify(dataResponse.uuid));
-				localStorage.setItem('username', JSON.stringify(dataResponse.username));
+				localStorage.setItem('username', dataResponse.username);
+				localStorage.setItem('uuid', dataResponse.uuid);
 				localStorage.setItem('email', dataResponse.email);
-				localStorage.setItem('avatar', dataResponse.uuid.at(-1) + '.png'); // Example avatar logic, can be customized
 			} else {
 				const msg= dataResponse.error || 'Token not found in response';
 				throw new Error(msg);
