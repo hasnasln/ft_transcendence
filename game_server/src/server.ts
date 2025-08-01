@@ -11,7 +11,7 @@ setInterval(() => {
 		if (now - disconnectEvent.timestamp > 15_000) {
 			MatchManager.getInstance().disconnectTimestamps.delete(username);
 			const {player,game} = disconnectEvent;
-			if (game.state === 'in-progress' || game.state === 'paused') {
+			if (game.state === 'playing') {
 				const opponent = game.players.find(p => p.username !== player.username)!;
 				game.finishIncompleteMatch(opponent.username);
 			}

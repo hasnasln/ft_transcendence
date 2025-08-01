@@ -140,6 +140,13 @@ export function listenGameBusEvents() {
 	});
 
 	GameEventBus.getInstance().on('MATCH_ENDED', () => {
+		console.log("Match is over, loop stop.");
+		GameLoop.getInstance().stop();
+		if (!gameInstance.gameInfo || !gameInstance.gameInfo.state)
+			throw new Error("Game state is not initialized.");
+
+		console.log(`game phase: ${gameInstance.gameStatus.phase} => completed`);
+		gameInstance.gameStatus.phase = "completed";
 		gameInstance.uiManager.onInfoHidden();
 		updateScoreBoard();
 		showEndMessage();
@@ -173,7 +180,15 @@ export function listenGameBusEvents() {
 		gameInstance.uiManager.updateUIForRivalFound(matchPlayers, rival);
 	});
 
+	GameEventBus.getInstance().on('ENTER_WAITING_PHASE', () => {
+		console.log(`game phase: ${gameInstance.gameStatus.phase} => waiting`);
+		gameInstance.gameStatus.phase = "waiting";
+	})
+
 	GameEventBus.getInstance().on('ENTER_READY_PHASE', () => {
+		console.log(`game phase: ${gameInstance.gameStatus.phase} => ready`);
+		gameInstance.gameStatus.phase = "ready";
+
 		gameInstance.uiManager.onStartButtonHidden();
 		gameInstance.uiManager.hide(gameInstance.uiManager.endMsg ?? document.getElementById("end-message"));
 
@@ -189,6 +204,8 @@ export function listenGameBusEvents() {
 	});
 
 	GameEventBus.getInstance().on('ENTER_PLAYING_PHASE',  async () => {
+		console.log(`game phase: ${gameInstance.gameStatus.phase} => playing`);
+		gameInstance.gameStatus.phase = "playing";
 		await gameInstance.uiManager.setupScene();
 		listenPlayerInputs(gameInstance.gameInfo!);
 		console.log("Game Loop started due to playing phase entry.");
@@ -264,5 +281,8 @@ export function listenGameBusEvents() {
 			Router.getInstance().go('/');
 		}*/
 	});
+
+
+
 }
 

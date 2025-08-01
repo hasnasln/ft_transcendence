@@ -1,9 +1,6 @@
 import { Game } from "./game";
 import {GameEntityFactory} from "./gameEntity";
-import { pushWinnerToTournament } from "./tournament";
-import { emitError } from "./errorHandling";
 import { GameEmitter } from "./gameEmitter";
-import { MatchManager } from "./matchManager";
 
 type Middleware = (g: Game, dt: number) => boolean;
 
@@ -11,7 +8,7 @@ export class PhysicsEngine {
     private static instance: PhysicsEngine;
     private static readonly middlewareChain: Middleware[] = [
         skipIfMatchOver,
-        skipIfSetOrPausedOver,
+        skipIfSetPausedOrOver,
         moveBall,
         movePaddles,
         handleWallBounce,
@@ -46,29 +43,10 @@ export class PhysicsEngine {
 
 //todo it is not engine's responsibility 
 function skipIfMatchOver(g: Game, _dt: number): boolean {
-	if (g.matchOver) {
-		g.stopGameLoop();
-		if (g.gameMode === 'tournament') {
-			const winnerInput = g.matchWinner === 'leftPlayer' ? g.leftInput : g.rightInput;
-			const uuid = winnerInput!.getUuid();
-			const username = winnerInput!.getUsername();
-			try {
-				pushWinnerToTournament(g.tournament?.code as string, g.tournament?.roundNo as number, { uuid, username });
-			} catch (err: any) {
-				emitError(err.message, g.roomId);
-			}
-		}
-        GameEmitter.getInstance().emitGameState(g);
-
-		if (g.gameMode === 'localGame' || g.gameMode === 'vsAI')
-			MatchManager.getInstance().clearGame(g);
-		g.end();
-		return false;
-	}
-	return true;
+	return g.state === 'playing';
 }
 
-function skipIfSetOrPausedOver(g: Game, _dt: number): boolean {
+function skipIfSetPausedOrOver(g: Game, _dt: number): boolean {
 	return !(g.scoringManager.isSetOver() || g.isPaused);
 }
 

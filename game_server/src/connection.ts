@@ -91,7 +91,7 @@ export class ConnectionHandler {
         socket.on("rejoin", () => {
             console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} 'rejoin' message received.`);
             const game = MatchManager.getInstance().getMatchByPlayer(player.username);
-            if (!game || (game.gameMode !== 'remoteGame' && game.gameMode !== 'tournament') || (game.state !== 'in-progress' && game.state !== 'paused')) {
+            if (!game || (game.gameMode !== 'remoteGame' && game.gameMode !== 'tournament') || game.state !== "playing") {
                 socket.emit("rejoin-response", {status: "rejected"});
                 return;
             }
@@ -114,7 +114,7 @@ export class ConnectionHandler {
         socket.on("reset-match", () => {
             console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} 'reset-match' message received.`);
             const activeMatch = MatchManager.getInstance().getMatchByPlayer(player.username);
-            if (activeMatch) {
+            if (activeMatch && (activeMatch.gameMode === 'localGame' || activeMatch.gameMode === 'vsAI')) {
                 activeMatch.finishIncompleteMatch();
                 MatchManager.getInstance().clearGame(activeMatch);
             }

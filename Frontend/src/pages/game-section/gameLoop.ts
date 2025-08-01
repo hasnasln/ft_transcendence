@@ -1,7 +1,7 @@
-import { Vector3 } from "@babylonjs/core/Maths/math.vector";
-import { updateScoreBoard } from "./ui";
-import { gameInstance } from "../play";
-import { GameEventBus } from "./gameEventBus";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {updateScoreBoard} from "./ui";
+import {gameInstance} from "../play";
+import {GameEventBus} from "./gameEventBus";
 
 export class GameLoop {
 	private static instance: GameLoop;
@@ -17,12 +17,11 @@ export class GameLoop {
 	}
 
 	private updateBallPosition(): void {
-		const vector = new Vector3(
+		gameInstance.uiManager.ball!.ball.position = new Vector3(
 			gameInstance.gameInfo!.ballPosition?.x,
 			gameInstance.gameInfo!.ballPosition?.y,
 			-gameInstance.gameInfo!.constants?.ballRadius!
 		);
-		gameInstance.uiManager.ball!.ball.position = vector;
 	}
 
 	private updatePaddlePositions(): void {
@@ -32,17 +31,11 @@ export class GameLoop {
 
 	private handleGameTick = (): void => {
 		const gameInfo = gameInstance.gameInfo!;
-		if (gameInfo.state?.matchOver) {
-			console.log("Match is over, loop stop.");
-			this.stop();
-			GameEventBus.getInstance().emit({ type: 'MATCH_ENDED', payload: gameInfo.state?.matchWinner });
-			return;
-		}
 
 		if (gameInfo.state?.setOver) {
 			console.log("Set is over, loop stop.");
 			this.stop();
-			GameEventBus.getInstance().emit({ type: 'SET_COMPLETED', payload: gameInfo.state?.matchWinner });
+			GameEventBus.getInstance().emit({ type: 'SET_COMPLETED', payload: gameInfo.gameEndInfo?.matchWinner });
 			return;
 		}
 
@@ -72,5 +65,3 @@ export class GameLoop {
 		this.gameLoopRunning = false;
 	}
 }
-
-export const gameLoop = GameLoop.getInstance();

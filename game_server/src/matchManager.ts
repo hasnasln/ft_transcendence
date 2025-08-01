@@ -141,9 +141,7 @@ export class MatchManager {
 			if (matchedPlayers.size !== 2)
 				throw new Error(`an incomplete match found: match_id = ${match.match_id}, players = ${Array.from(matchedPlayers.keys()).join(', ')}`);
 
-			const roundNumber = match.roundNumber;
-			const finalMatch = match.finalMatch;
-			const tournament = { code: tournamentCode, roundNo: roundNumber, finalMatch: finalMatch };
+			const tournament = { code: tournamentCode, roundNo: match.roundNumber, finalMatch: match.finalMatch };
 
 			const iter = matchedPlayers.values();
 			const player1 = iter.next().value!;
@@ -175,10 +173,8 @@ export class MatchManager {
 			case 'waiting':
 				this.cancelGame(game, 'disconnect');
 				break;
-			case 'in-progress':
+			case 'playing':
 				game.pause();
-				/* fall through */
-			case 'paused':
 				ConnectionHandler.getInstance().getServer().to(opponent.socket.id).emit("opponent-disconnected");
 				this.disconnectTimestamps.set(player.username, { player, game, timestamp: Date.now() });
 				break;
@@ -273,7 +269,6 @@ export class MatchManager {
 
 		const timeout = new Promise<ApprovalAnswer>((resolve) => {
 			setTimeout(() => {
-				console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} did not respond in time.`);
 				resolve('timeout');
 			}, this.readyTimeout + 100 /* 100ms buffer */);
 		});

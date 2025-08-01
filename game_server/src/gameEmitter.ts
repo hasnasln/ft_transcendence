@@ -1,5 +1,5 @@
 import { ConnectionHandler } from "./connection";
-import { GameConstants, GameState, PaddleState, Game } from "./game";
+import {GameConstants, GameState, PaddleState, Game, GameEndInfo} from "./game";
 import { GameEntityFactory } from "./gameEntity";
 
 export class GameEmitter {
@@ -29,12 +29,10 @@ export class GameEmitter {
 
 	public emitGameState(game: Game): void {
 		const gameState: GameState = {
-			matchOver: game.matchOver,
 			setOver: game.scoringManager.isSetOver(),
 			isPaused: game.isPaused,
-			matchWinner: game.matchWinner,
-			matchDisconnection: game.matchDisconnection,
 			roundNumber: game.tournament?.roundNo,
+			phase: game.state
 		};
 
 		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("gameState", gameState);
@@ -71,8 +69,7 @@ export class GameEmitter {
 			p2y: game.rightPaddle.position.y / this.ucf,
 		};
 
-		if (
-			game.lastPaddleUpdate &&
+		if (game.lastPaddleUpdate &&
 			game.lastPaddleUpdate.p1y === paddleState.p1y &&
 			game.lastPaddleUpdate.p2y === paddleState.p2y
 		) {
@@ -81,5 +78,14 @@ export class GameEmitter {
 
 		game.lastPaddleUpdate = paddleState;
 		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("paddleUpdate", paddleState);
+	}
+
+	public emitGameFinish(game: Game): void {
+		const gameEndInfo: GameEndInfo = {
+			matchWinner: game.matchWinner,
+			endReason: game.aPlayerDisconnected ? 'disconnection' : 'normal',
+		};
+
+		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("gameEndInfo", gameEndInfo);
 	}
 }

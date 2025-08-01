@@ -1,7 +1,8 @@
-import { gameInstance, GameMode, GameManager} from "../play";
+import {gameInstance, GameMode, GameManager, GamePhase} from "../play";
 import { _apiManager } from '../../api/APIManager';
 import { GameEventBus } from "./gameEventBus";
 import { WebSocketClient } from "./wsclient";
+import {GameLoop} from "./gameLoop";
 
 export interface MatchPlayers {
 	left: {socketId: string, username: string};
@@ -20,13 +21,12 @@ interface GameConstants {
 	paddleHeight: number;
 }
 
-interface GameState {
+export interface GameState {
 	matchOver: boolean;
 	setOver: boolean;
 	isPaused: boolean;
-	matchWinner?: Side;
-	matchDisconnection: boolean;
 	roundNumber?: number;
+	phase: GamePhase;
 }
 
 interface SetState {
@@ -45,9 +45,15 @@ interface PaddleState {
 	p2y: number;
 }
 
+export interface GameEndInfo {
+	matchWinner?: Side;
+	endReason: 'normal' | 'disconnection' | 'unknown';
+}
+
 export class GameInfo {
 	public constants: GameConstants | null = null;
 	public state: GameState | null = null;
+	public gameEndInfo: GameEndInfo | null = null;
 	public paddle: PaddleState | null = null;
 	public mode: GameMode;
 	public ballPosition: BallPosition | null = null;
@@ -109,6 +115,11 @@ export function listenStateUpdates(gameInfo: GameInfo): void {
 	WebSocketClient.getInstance().on("opponent-reconnected", () => {
 		GameEventBus.getInstance().emit({ type: 'RIVAL_RECONNECTED', payload: {} });
 	});
+
+	WebSocketClient.getInstance().on("gameEndInfo", (gameEndInfo: GameEndInfo) => {
+		gameInfo.gameEndInfo = gameEndInfo;
+		GameEventBus.getInstance().emit({ type: 'MATCH_ENDED', payload: gameEndInfo });
+	})
 }
 
 export function waitGameStart(gameInfo: GameInfo): Promise<void> {

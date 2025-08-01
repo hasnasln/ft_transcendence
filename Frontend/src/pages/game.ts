@@ -343,7 +343,7 @@ function newMatchButtonClick(): void {
     gameInstance.uiManager.turnToHomePage?.classList.add("hidden");
     gameInstance.uiManager.startButton?.classList.add("hidden");
 
-    if (!gameInfo.state?.matchOver)
+    if (gameInfo.state?.phase === 'playing')
         WebSocketClient.getInstance().emit("reset-match");
     Router.getInstance().go("/play");
     Router.getInstance().invalidatePage('/game');
@@ -357,7 +357,7 @@ function turnToHomePageButtonClick(): void {
     gameInstance.uiManager.turnToHomePage?.classList.add("hidden");
     gameInstance.uiManager.startButton?.classList.add("hidden");
 
-    if (!gameInfo.state?.matchOver)
+    if (gameInfo.state?.phase === 'playing')
         WebSocketClient.getInstance().emit("reset-match");
 
     const toPage = gameInfo.mode === 'tournament' ? '/tournament' : '/';
