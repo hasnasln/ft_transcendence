@@ -87,12 +87,12 @@ export class GameManager {
 		WebSocketClient.getInstance().once("match-cancelled", handleMatchCancellation, 20_000);
 		WebSocketClient.getInstance().emit("create", this.gameStatus);
 
-		let rival: string | null = null;
 		if (this.gameStatus.game_mode === "remoteGame" || this.gameStatus.game_mode === 'tournament') {
 			await GameEventBus.getInstance().emit({ type: 'WAITING_FOR_RIVAL' })
 			const matchPlayers: MatchPlayers = await waitForMatchReady();
 			this.abortHandler?.throwIfAborted();
 			await GameEventBus.getInstance().emit({ type: 'RIVAL_FOUND', payload: { matchPlayers } });
+			this.currentRival = matchPlayers.left.socketId === WebSocketClient.getInstance().getSocket()!.id ? matchPlayers.right.username : matchPlayers.left.username;
 		}
 
 		gameInstance.uiManager.showProgressBar();
@@ -101,7 +101,7 @@ export class GameManager {
 			gameInstance.uiManager.updateProgressBar(0, 20_000);
 		}, 50);
 
-		this.currentRival = rival;
+		
 	};
 
 	private enterReadyPhase = async () => {
@@ -111,7 +111,7 @@ export class GameManager {
 		}
 
 		if (this.gameStatus.game_mode === "remoteGame" && this.reMatch) {
-			let approval = await waitForRematchApproval(this.currentRival as string)
+			let approval = await waitForRematchApproval()
 			this.abortHandler?.throwIfAborted();
 			await GameEventBus.getInstance().emit({ type: 'REMATCH_APPROVAL', payload: { approval } })
 			if (!approval)
@@ -192,11 +192,6 @@ export class GameManager {
 			finalMatch: false
 		};
 		
-		/* remove start button listeners */
-		if (this.uiManager.startButton) {
-			var newElement = this.uiManager.startButton.cloneNode(true);
-			this.uiManager.startButton.parentNode?.replaceChild(newElement, this.uiManager.startButton);
-		}
 		this.uiManager.resetCache();
 		GamePage.disablePage();
 	}
