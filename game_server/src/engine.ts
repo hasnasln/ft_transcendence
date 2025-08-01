@@ -117,7 +117,7 @@ function handlePaddleBounce(g: Game, _dt: number): boolean {
 			if (Math.abs(relativeY) < yThreshold) {
 				g.ball.velocity.x *= -1;
 				g.ball.velocity.y += relativeY * 0.05;
-				if (g.ball.firstPedalHit++ === 0) {
+				if (g.ball.firstPedalHit++) {
 					g.ball.speedIncreaseFactor = 1.2;
 					g.ball.minimumSpeed = 0.25 * GameEntityFactory.UCF;
 				}
