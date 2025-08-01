@@ -238,7 +238,6 @@ export class GameManager {
 
 	public requestRejoin() {
 		if (!this.gameStatus.currentGameStarted || (this.gameStatus.game_mode !== 'tournament' && this.gameStatus.game_mode !== 'remoteGame')) {
-			console.error("Game info is not ready to start, cannot request rejoin.");
 			return;
 		}
 		console.log("Requesting rejoin to the game server.");

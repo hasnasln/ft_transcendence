@@ -36,11 +36,11 @@ export class GameEmitter {
 
 	public emitGameConstants(game: Game): void {
 		const gameConstants: GameConstants = {
-			groundWidth: game.ground.width / this.ucf,
-			groundHeight: game.ground.height / this.ucf,
-			ballRadius: game.ball.radius / this.ucf,
-			paddleWidth: game.leftPaddle.width / this.ucf,
-			paddleHeight: game.leftPaddle.height / this.ucf,
+			groundWidth: game.environment.ground.width / this.ucf,
+			groundHeight: game.environment.ground.height / this.ucf,
+			ballRadius: game.environment.ball.radius / this.ucf,
+			paddleWidth: game.environment.leftPaddle.width / this.ucf,
+			paddleHeight: game.environment.leftPaddle.height / this.ucf,
 		};
 
 		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("init", gameConstants);
@@ -71,8 +71,8 @@ export class GameEmitter {
 	}
 
 	public emitBallState(game: Game): void {
-		const x = game.ball.position.x / this.ucf;
-		const y = game.ball.position.y / this.ucf;
+		const x = game.environment.ball.position.x / this.ucf;
+		const y = game.environment.ball.position.y / this.ucf;
 
 		if (isNaN(x) || isNaN(y)) {
 			console.error(`Invalid ball coordinates: x=${x}, y=${y}`);
@@ -84,8 +84,8 @@ export class GameEmitter {
 
 	public emitPaddleState(game: Game): void {
 		const paddleState: PaddleState = {
-			p1y: game.leftPaddle.position.y / this.ucf,
-			p2y: game.rightPaddle.position.y / this.ucf,
+			p1y: game.environment.leftPaddle.position.y / this.ucf,
+			p2y: game.environment.rightPaddle.position.y / this.ucf,
 		};
 
 		this.emitWithCache("paddleUpdate", paddleState, game.roomId);
@@ -98,5 +98,9 @@ export class GameEmitter {
 		};
 
 		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("gameEndInfo", gameEndInfo);
+	}
+
+	public invalidateCache(roomId: string) {
+		this.caches.delete(roomId);
 	}
 }

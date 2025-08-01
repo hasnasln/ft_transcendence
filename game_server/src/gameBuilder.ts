@@ -1,6 +1,7 @@
 import { Game, GameMode } from "./game";
 import { InputProvider } from "./inputProviders";
 import { Player } from "./matchManager";
+import {DEFAULT_GAME_ENTITY_CONFIG, GameEnvironment} from "./gameEntity";
 
 export class GameBuilder {
     private _roomId!: string;
@@ -54,7 +55,7 @@ export class GameBuilder {
             throw new Error("GameBuilder: both input providers must be specified.");
         }
 
-        const game = new Game(this._roomId, this._players, this._gameMode);
+        const game = new Game(this._roomId, this._players, this._gameMode, new GameEnvironment(DEFAULT_GAME_ENTITY_CONFIG));
 
         if (this._tournament) {
             game.tournament = this._tournament;

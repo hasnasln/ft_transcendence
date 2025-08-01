@@ -3,7 +3,7 @@ import {MatchManager, Player} from "./matchManager";
 import { GameEmitter } from "./gameEmitter";
 import { ScoringManager } from "./scoringManager";
 import { GameOrchestrator } from "./orchestrator";
-import { Ball, DEFAULT_GAME_ENTITY_CONFIG, GameEntityFactory, Ground, Paddle } from "./gameEntity";
+import { Ball, DEFAULT_GAME_ENTITY_CONFIG, GameEntityFactory, GameEnvironment } from "./gameEntity";
 import {pushWinnerToTournament} from "./tournament";
 import {emitError} from "./errorHandling";
 
@@ -52,51 +52,39 @@ export interface Position {
 }
 
 export class Game {
-	public ball: Ball;
-	public leftPaddle: Paddle;
-	public rightPaddle: Paddle;
-	public ground: Ground;
-
-	// Game Status
+	public environment: GameEnvironment;
 	public scoringManager: ScoringManager = new ScoringManager(this);
 
 	public isPaused = true;
-	public winner: Side | undefined = undefined; //todo encapsulate this to scoring manager
+	public winner: Side | undefined = undefined;
 	public aPlayerDisconnected: boolean = false;
 	public lastUpdatedTime: number | undefined = undefined;
-
-	//  Meta
-	public roomId: string;
-	public gameMode: GameMode;
+	public tournament?: { code: string, roundNo: number, finalMatch: boolean }
 
 	public leftInput: InputProvider | undefined;
 	public rightInput: InputProvider | undefined;
-	
+	public players: Player[];
+
+	public roomId: string;
+	public gameMode: GameMode;
 	public state: GamePhase = 'waiting';
 
-	public players: Player[];
-	public tournament?: { code: string, roundNo: number, finalMatch: boolean }
-
-	constructor(roomId: string, players: Player[], gameMode: GameMode) {
+	constructor(roomId: string, players: Player[], gameMode: GameMode, environment: GameEnvironment) {
 		if (players.length === 0) {
 			throw new Error("Game constructor: players must be specified.");
 		}
-		const config = DEFAULT_GAME_ENTITY_CONFIG;
 		this.players = players;
-		this.ball = GameEntityFactory.getInstance().createDefaultBall(config);
-		this.leftPaddle = GameEntityFactory.getInstance().createDefaultLeftPaddle(config);
-		this.rightPaddle = GameEntityFactory.getInstance().createDefaultRightPaddle(config);
-		this.ground = GameEntityFactory.getInstance().createDefaultGround(config);
 		this.roomId = roomId;
 		this.gameMode = gameMode;
+		this.environment = environment;
 	}
 
 	public resetBall(lastScorer: "leftPlayer" | "rightPlayer") {
 		this.lastUpdatedTime = undefined;
-		this.ball.reset();
+		this.environment.ball.reset();
 
 		setTimeout(() => {
-			this.ball.shove(lastScorer);
+			this.environment.ball.shove(lastScorer);
 			this.lastUpdatedTime = Date.now();
 		}, 1000);
 	}
@@ -110,28 +98,7 @@ export class Game {
 		if (this.scoringManager.continueNewRound()) {
 			this.resetBall(winner);
 		} else {
-			//todo extract here to a method
-			this.stopGameLoop();
-			this.end();
-
-			if (this.gameMode === 'tournament') {
-				const winnerInput = this.winner === 'leftPlayer' ? this.leftInput : this.rightInput;
-				const uuid = winnerInput!.getUuid();
-				const username = winnerInput!.getUsername();
-				try {
-					pushWinnerToTournament(this.tournament?.code as string, this.tournament?.roundNo as number, { uuid, username });
-				} catch (err: any) {
-					emitError(err.message, this.roomId);
-				}
-			}
-
-			this.winner = this.scoringManager.getMatchWinner()!;
-
-			GameEmitter.getInstance().emitGameState(this);
-			GameEmitter.getInstance().emitGameFinish(this);
-
-			if (this.gameMode === 'localGame' || this.gameMode === 'vsAI')
-				MatchManager.getInstance().clearGame(this);
+			this.finalize();
 		}
 
 		GameEmitter.getInstance().emitBallState(this);
@@ -217,6 +184,30 @@ export class Game {
 		GameOrchestrator.getInstance().add(this);
 	}
 
+	private finalize() {
+		this.stopGameLoop();
+		this.end();
+
+		if (this.gameMode === 'tournament') {
+			const winnerInput = this.winner === 'leftPlayer' ? this.leftInput : this.rightInput;
+			const uuid = winnerInput!.getUuid();
+			const username = winnerInput!.getUsername();
+			try {
+				pushWinnerToTournament(this.tournament?.code as string, this.tournament?.roundNo as number, { uuid, username });
+			} catch (err: any) {
+				emitError(err.message, this.roomId);
+			}
+		}
+
+		this.winner = this.scoringManager.getMatchWinner()!;
+
+		GameEmitter.getInstance().emitGameState(this);
+		GameEmitter.getInstance().emitGameFinish(this);
+
+		if (this.gameMode === 'localGame' || this.gameMode === 'vsAI')
+			MatchManager.getInstance().clearGame(this);
+	}
+
 	public start() {
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} started.`);
 		this.state = 'playing';
@@ -236,14 +227,15 @@ export class Game {
 	public end() {
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} ended.`);
 		this.state = 'completed';
+		GameEmitter.getInstance().invalidateCache(this.roomId);
 	}
 
 	public getBall() {
-		return this.ball;
+		return this.environment.ball;
 	}
 
 	public getGround() {
-		return this.ground;
+		return this.environment.ground;
 	}
 
 	public getPaddleSpeed() {
@@ -251,11 +243,11 @@ export class Game {
 	}
 
 	public getRightPaddle() {
-		return this.rightPaddle;
+		return this.environment.rightPaddle;
 	}
 
 	public getLeftPaddle() {
-		return this.leftPaddle;
+		return this.environment.leftPaddle;
 	}
 }
 

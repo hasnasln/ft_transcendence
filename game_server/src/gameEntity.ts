@@ -102,17 +102,31 @@ export class GameEntityFactory {
     }
 }
 
+export class GameEnvironment {
+    public ball: Ball;
+    public leftPaddle: Paddle;
+    public rightPaddle: Paddle;
+    public ground: Ground;
+
+    public constructor(config: GameEntityConfig) {
+        this.ball = GameEntityFactory.getInstance().createDefaultBall(config);
+        this.leftPaddle = GameEntityFactory.getInstance().createDefaultLeftPaddle(config);
+        this.rightPaddle = GameEntityFactory.getInstance().createDefaultRightPaddle(config);
+        this.ground = GameEntityFactory.getInstance().createDefaultGround(config);
+    }
+}
+
 export class Ball {
     public readonly firstSpeedFactor: number;
     public readonly airResistanceFactor: number;
     public readonly radius: number;
+    private groundHeight: number;
     public minimumSpeed: number;
     public maximumSpeed: number;
     public speedIncreaseFactor: number;
     public firstPedalHit: number;
     public position: Position;
     public velocity: Position;
-    private groundHeight: number;
 
     constructor(config: GameEntityConfig) {
         this.firstSpeedFactor = config.ballFirstSpeedFactor * GameEntityFactory.UCF;
