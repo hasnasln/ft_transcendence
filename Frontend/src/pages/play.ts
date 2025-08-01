@@ -1,23 +1,42 @@
 import '@babylonjs/core/Rendering/edgesRenderer'
-import { GameInfo, listenStateUpdates, waitForMatchReady, waitForRematchApproval, waitGameStart, MatchPlayers } from "./game-section/network";
-import { GameUI } from "./game-section/ui";
-import { GameEventBus } from "./game-section/gameEventBus";
-import { Router } from '../router';
-import { WebSocketClient } from './game-section/wsclient';
-import { GamePage } from './game';
-import { GameLoop } from './game-section/gameLoop';
-import { GameInputHandler } from './game-section/keyboard';
+import {
+	GameInfo,
+	listenStateUpdates,
+	MatchPlayers,
+	waitForMatchReady,
+	waitForRematchApproval,
+	waitGameStart
+} from "./game-section/network";
+import {GameUI} from "./game-section/ui";
+import {GameEventBus} from "./game-section/gameEventBus";
+import {Router} from '../router';
+import {WebSocketClient} from './game-section/wsclient';
+import {GamePage} from './game';
+import {GameLoop} from './game-section/gameLoop';
+import {GameInputHandler} from './game-section/keyboard';
 
-export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament' | null;
+export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament';
+export type GamePhase = 'unset' | 'waiting' | 'ready' | 'playing' | 'completed';
 
 export interface GameStatus {
 	currentGameStarted: boolean;
-	game_mode: GameMode;
+	game_mode?: GameMode;
+	phase: GamePhase;
 	level?: string;
 	tournamentCode?: string;
 	tournamentName?: string;
 	roundNo?: number;
-	finalMatch?: boolean
+	finalMatch?: boolean;
+}
+
+export interface AIGameStatus extends GameStatus {
+	level: string;
+}
+
+export interface TournamentGameStatus extends GameStatus {
+	tournamentCode: string;
+	roundNo: number;
+	finalMatch: boolean;
 }
 
 export class GameManager {
@@ -25,8 +44,7 @@ export class GameManager {
 	public gameInfo: GameInfo | null = null;
 	public gameStatus: GameStatus = {
 		currentGameStarted: false,
-		game_mode: null,
-		finalMatch: false
+		phase: 'unset',
 	};
 	public reMatch: boolean = false;
 	public username: string | null = null;
@@ -44,7 +62,14 @@ export class GameManager {
 		this.tournamentMode = tournamentMode;
 		if (tournamentMode) {
 			this.tournamentCode = tournamentCode!;
-			this.gameStatus = { currentGameStarted: false, game_mode: 'tournament', tournamentCode: this.tournamentCode, finalMatch: this.gameStatus.finalMatch };
+			this.gameStatus = {
+				currentGameStarted: false,
+				phase: "unset",
+				game_mode: 'tournament',
+				tournamentCode: this.tournamentCode,
+				finalMatch: false,
+				roundNo: 0,
+			} satisfies TournamentGameStatus;
 		}
 	}
 
@@ -53,8 +78,8 @@ export class GameManager {
 			GameEventBus.getInstance().once('GAME_MODE_CHOSEN', (event) => {
 				this.gameStatus = {
 					currentGameStarted: false,
+					phase: "unset",
 					game_mode: event.payload.mode,
-					finalMatch: this.gameStatus.finalMatch
 				};
 
 				if (event.payload.mode !== 'vsAI') {
@@ -82,7 +107,7 @@ export class GameManager {
 		await this.waitForModeSelection();
 	};
 
-	private enterWaittingPhase = async (status: GameStatus): Promise<void> => {
+	private enterWaitingPhase = async (status: GameStatus): Promise<void> => {
 		this.gameStatus = status;
 		WebSocketClient.getInstance().once("match-cancelled", handleMatchCancellation, 20_000);
 		WebSocketClient.getInstance().emit("create", this.gameStatus);
@@ -117,10 +142,9 @@ export class GameManager {
 		}
 
 		WebSocketClient.getInstance().emit("ready", {});
-		this.gameInfo = new GameInfo(this.gameStatus.game_mode);
+		this.gameInfo = new GameInfo(this.gameStatus.game_mode!);
 		return;
 	};
-
 
 	public preparePlayProcess(tournamentMode: boolean, tournamentCode?: string): Promise<void> {
 		this.configureTournament(tournamentMode, tournamentCode);
@@ -157,14 +181,14 @@ export class GameManager {
 				new AbortablePromise(this.abortHandler!)
 				.then(() => GameEventBus.getInstance().emit({ type: 'CONNECTED_TO_SERVER' }))
 				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_WAITING_PHASE' }))
-				.then(() => this.enterWaittingPhase(this.gameStatus)) // wait for rival finding
+				.then(() => this.enterWaitingPhase(this.gameStatus)) // wait for rival finding
 				.then(() => this.uiManager.onStartButtonShown())
 				.then(() => new Promise<void>((resolve) => {
 					GameEventBus.getInstance().once('READY_BUTTON_CLICK', () => resolve(), "game");
 				})) // wait for start click
 				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_READY_PHASE' }))
 				.then(() => this.enterReadyPhase())
-				.then(() => listenStateUpdates(this.gameInfo!)) // start listening the game server
+				.then(() => listenStateUpdates(this.gameInfo!)) // start listening to the game server
 				.then(() => waitGameStart(this.gameInfo!)) // wait game server for start the game
 				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }));
 			});
@@ -186,8 +210,8 @@ export class GameManager {
 		this.gameInfo = null;
 		this.gameStatus = {
 			currentGameStarted: false,
-			game_mode: null,
-			finalMatch: false
+			finalMatch: false,
+			phase: "unset"
 		};
 		
 		this.uiManager.resetCache();
@@ -195,7 +219,7 @@ export class GameManager {
 	}
 
 	public handleNetworkPause(): void {
-		if (this.gameInfo?.state?.matchOver || !this.gameStatus.currentGameStarted)
+		if (this.gameInfo?.state?.phase !== 'playing' || !this.gameStatus.currentGameStarted)
 			return;
 
 		if (this.gameStatus.game_mode === 'localGame' || this.gameStatus.game_mode === 'vsAI') {
@@ -277,10 +301,10 @@ export class AbortHandler {
 
 export class AbortablePromise<C, P> implements PromiseLike<P> {
 	
-	private abortHandler: AbortHandler;
-	private callback: ((value: C | undefined) => P) | undefined;
+	private readonly abortHandler: AbortHandler;
+	private readonly callback: ((value: C | undefined) => P) | undefined;
 	private value!: P;
-	private isFullfilled: boolean = false;
+	private isFulfilled: boolean = false;
 	private next: AbortablePromise<P, unknown> | null = null;
 
 	public constructor(abortHandler: AbortHandler, callback: ((value: C | undefined) => P) | undefined = undefined, first: boolean = true) {
@@ -288,7 +312,7 @@ export class AbortablePromise<C, P> implements PromiseLike<P> {
 		this.abortHandler = abortHandler;
 		if (first) {
 			this.run(undefined as unknown as C);
-			this.isFullfilled = true;
+			this.isFulfilled = true;
 		}
 	}
 
@@ -300,14 +324,14 @@ export class AbortablePromise<C, P> implements PromiseLike<P> {
 		if (this.callback) {
 			try {
 				this.value = await this.callback(val);
-				this.isFullfilled = true;
+				this.isFulfilled = true;
 			} catch (error) {
 				this.abortHandler.abort(error);
 				return;
 			}
 		}
 
-		if (this.next && this.isFullfilled) {
+		if (this.next && this.isFulfilled) {
 			this.next.run(this.value);
 		}
 	}
@@ -315,7 +339,7 @@ export class AbortablePromise<C, P> implements PromiseLike<P> {
 	public then<TResult1 = P>(cb: (value: P | undefined) => TResult1): AbortablePromise<P, any> {
 		this.next = new AbortablePromise<P, any>(this.abortHandler, cb, false);
 
-		if (this.isFullfilled) {
+		if (this.isFulfilled) {
 			this.next.run(this.value);
 		}
 		return this.next;

@@ -100,7 +100,6 @@ export class GameUI {
 
 	public updateProgressBar(percentage: number, duration: number): void {
 		if (this.progressBar) {
-			console.log(`bar set to ${percentage}% in ${duration}ms`);
 			percentage = Math.max(0, Math.min(100, percentage));
 			this.progressBar.style.transitionDuration = `${duration}ms`;
 			this.progressBar.style.width = `${percentage}%`;
@@ -297,12 +296,12 @@ export async function startNextSet() {
 
 export function showEndMessage() {
 	if (!gameInstance.gameInfo) return;
-	let winnerName = gameInstance.gameInfo.state?.matchWinner === 'leftPlayer' ? gameInstance.gameInfo.setState?.usernames.left : gameInstance.gameInfo.setState?.usernames.right;
+	let winnerName = gameInstance.gameInfo.gameEndInfo?.matchWinner === 'leftPlayer' ? gameInstance.gameInfo.setState?.usernames.left : gameInstance.gameInfo.setState?.usernames.right;
 	gameInstance.uiManager.endMsg!.textContent = `${winnerName} maçı kazandı !`;
 	if (gameInstance.gameInfo.mode === 'tournament' && gameInstance.gameStatus.finalMatch == true)
 		gameInstance.uiManager.endMsg!.textContent = `${winnerName} ${gameInstance.gameStatus.tournamentCode} turnuvasını kazandı !   Tebrikler !`;
 
-	if (gameInstance.gameInfo.state?.matchDisconnection) {
+	if (gameInstance.gameInfo.gameEndInfo?.endReason === 'disconnection') {
 		if (gameInstance.gameInfo.mode === 'localGame' || gameInstance.gameInfo.mode === 'vsAI')
 			gameInstance.uiManager.endMsg!.textContent = `Bağlantısı kesildi. Maç bitti !`;
 		if (gameInstance.gameInfo.mode === 'remoteGame' || gameInstance.gameInfo.mode === 'tournament')
@@ -317,7 +316,7 @@ export function showEndMessage() {
 			gameInstance.uiManager.turnToHomePage!.textContent = "Turnuva sayfasına Dön";
 			gameInstance.uiManager.turnToHomePage!.classList.remove("hidden");
 		} else {
-			if (gameInstance.uiManager.startButton && !gameInstance.gameInfo?.state?.matchDisconnection) {
+			if (gameInstance.uiManager.startButton && gameInstance.gameInfo?.gameEndInfo?.endReason !== 'disconnection' ) {
 				gameInstance.uiManager.startButton.textContent = "Aynı Maçı Tekrar Oyna";
 				gameInstance.uiManager.startButton.classList.remove("hidden");
 			}

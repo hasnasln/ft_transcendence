@@ -27,7 +27,6 @@ export class WebSocketClient {
             this.socket = null;
         }
         this.hasConnectedOnce = false;
-        console.log("WebSocketClient reset.");
     }
 
     public emit(event: string, data?: any): void {
