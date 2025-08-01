@@ -71,12 +71,15 @@ export class Game {
 	public state: 'waiting' | 'in-progress' | 'paused' | 'completed' = 'waiting';
 	public reMatch: boolean = false; //todo: this is a temporary solution to handle rematch requests. It should be handled in MatchManager.
 
-	public players: [Player, Player];
+	public players: Player[];
 	public tournament?: { code: string, roundNo: number, finalMatch: boolean }
 
-	constructor(roomId: string, player1: Player, player2: Player, gameMode: GameMode) {
+	constructor(roomId: string, players: Player[], gameMode: GameMode) {
+		if (players.length === 0) {
+			throw new Error("Game constructor: players must be specified.");
+		}
 		const config = DEFAULT_GAME_ENTITY_CONFIG;
-		this.players = [player1, player2];
+		this.players = players;
 		this.ball = GameEntityFactory.getInstance().createDefaultBall(config);
 		this.leftPaddle = GameEntityFactory.getInstance().createDefaultLeftPaddle(config);
 		this.rightPaddle = GameEntityFactory.getInstance().createDefaultRightPaddle(config);
