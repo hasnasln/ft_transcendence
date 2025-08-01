@@ -3,8 +3,7 @@ import { _apiManager } from '../../api/APIManager';
 import { GameEventBus } from "./gameEventBus";
 import { WebSocketClient } from "./wsclient";
 
-export interface MatchPlayers
-{
+export interface MatchPlayers {
 	left: {socketId: string, username: string};
 	right: {socketId: string, username: string};
 	roundNo?: number;

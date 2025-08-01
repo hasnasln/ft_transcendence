@@ -100,8 +100,6 @@ export class GameManager {
 		gameInstance.runAfter(() => {
 			gameInstance.uiManager.updateProgressBar(0, 20_000);
 		}, 50);
-
-		
 	};
 
 	private enterReadyPhase = async () => {
@@ -204,6 +202,7 @@ export class GameManager {
 			this.uiManager.onInfoShown("Ağ bağlantısı koptu. Maçınız bitirilecek ...");
 			gameInstance.runAfter(() => {
 				this.uiManager.onInfoHidden();
+				Router.getInstance().invalidatePage("/game");
 				Router.getInstance().go('/play');
 			}, 2000);
 			return;
@@ -214,6 +213,11 @@ export class GameManager {
 	}
 
 	public requestRejoin() {
+		if (!this.gameStatus.currentGameStarted || (this.gameStatus.game_mode !== 'tournament' && this.gameStatus.game_mode !== 'remoteGame')) {
+			console.error("Game info is not ready to start, cannot request rejoin.");
+			return;
+		}
+		console.log("Requesting rejoin to the game server.");
 		gameInstance.uiManager.onInfoShown("Yeniden bağlandı. Oyuna katılma izni isteniyor...");
 		WebSocketClient.getInstance().once("rejoin-response", (response: { status: string }) => {
 			if (response.status === "approved") {
