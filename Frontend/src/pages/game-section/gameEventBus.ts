@@ -219,6 +219,12 @@ export function listenGameBusEvents() {
 	GameEventBus.getInstance().on('DISCONNECTED', (event) => {
 		if (gameInstance.gameStatus.currentGameStarted)
 			gameInstance.handleNetworkPause();
+		else {
+			gameInstance.finalize();
+			Router.getInstance().invalidatePage("/game");
+			Router.getInstance().invalidatePage("/play");
+			Router.getInstance().go('/play');
+		}
 		if (event.payload.reason === 'io server disconnect') {
 			gameInstance.uiManager.onInfoShown("Oyun sunucusu bağlantınızı reddetti. Başka bir oturum açık.");
 		}
