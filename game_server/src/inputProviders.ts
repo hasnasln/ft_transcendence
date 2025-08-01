@@ -40,10 +40,10 @@ export class RemotePlayerInput implements InputProvider {
 }
 
 export class AIPlayerInput implements InputProvider {
-	private username: string;
+	private readonly username: string;
+	private readonly refreshTime: number = 1500; //ms
 	private lastDecisionTime = 0;
 	private targetY = 0;
-	private refreshTime: number = 1500; //ms
 	public game: Game;
 	public paddle: Paddle;
 
