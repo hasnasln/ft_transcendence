@@ -47,6 +47,7 @@ export class LoginPage implements Page {
 						<button 
 							id="show-register"
 							data-langm-key="singin.register-b"
+							data-action="register"
 							
 							type="button"class="inline-block link-premium ml-2">
 							!_!
