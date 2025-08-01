@@ -60,6 +60,15 @@ export class MatchManager {
 			console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} requested for game mode ${status.game_mode}, but it is not supported.`);
 	}
 
+	private buildMatchPlayersInfo(game: Game): MatchPlayers {
+		return {
+			left: { socketId: game.players[0].socket.id, username: game.players[0].username },
+			right: { socketId: game.players[1].socket.id, username: game.players[1].username },
+			roundNo: game.tournament?.roundNo,
+			finalMatch: game.tournament?.finalMatch
+		};
+	}
+
 	private startPlayProcess(game: Game) {
 		game.players.forEach(player => {
 			this.playersGamesMap.set(player.username, game);
@@ -74,6 +83,10 @@ export class MatchManager {
 				}
 				this.onGameApproved(game);		
 			});
+
+		if (game.gameMode === 'tournament' || game.gameMode === 'localGame') {
+			ConnectionHandler.getInstance().getServer().to(game.roomId).emit("match-ready", this.buildMatchPlayersInfo(game));
+		}
 	}
 
 	private createMatchWithAI(player: Player, level: string) {
@@ -113,15 +126,8 @@ export class MatchManager {
         const game = builder.build();
 
         console.log(`[${new Date().toISOString()}] ${player1.username.padStart(10)} and ${player2.username.padStart(10)} matched. Waiting for approval...`);
-        const matchPlayers: MatchPlayers = {
-            left: { socketId: player1.socket.id, username: player1.username },
-            right: { socketId: player2.socket.id, username: player2.username },
-            roundNo: tournament?.roundNo,
-            finalMatch: tournament?.finalMatch
-        };
-
 		this.startPlayProcess(game);
-        ConnectionHandler.getInstance().getServer().to(game.roomId).emit("match-ready", matchPlayers);
+        
 	}
 
 	public async waitForApprovals(game: Game): Promise<boolean> {
