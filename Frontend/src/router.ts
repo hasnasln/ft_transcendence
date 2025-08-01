@@ -418,12 +418,13 @@ export class Router {
 		this.currentPath = window.location.pathname;
 		window.addEventListener('popstate', async () => {
 			if (this.currentPath === "/game" && gameInstance.gameStatus.currentGameStarted) {
+				const target = window.location.pathname;
 				history.pushState(null, '', this.currentPath);
 				askUser("Are you sure you want to leave the page?")
 					.then((result) => {
 						if (result) {
-							gameInstance.finalize();
-							this.go(window.location.pathname, true);
+							this.invalidatePage("/game");
+							this.go(target, true);
 						}
 					});
 				return;
@@ -585,6 +586,9 @@ export class Router {
 			return;
 		}
 
+		if (!this.activePages.has(this.currentPath)) {
+			this.rootContainer()?.remove();
+		}
 		if (this.activePages.has(path)) {
 			this.loadExistingPage(path);
 		} else {

@@ -6,6 +6,7 @@ import { Router } from '../router';
 import { WebSocketClient } from './game-section/wsclient';
 import { GamePage } from './game';
 import { GameLoop } from './game-section/gameLoop';
+import { GameInputHandler } from './game-section/keyboard';
 
 export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament' | null;
 
@@ -32,6 +33,8 @@ export class GameManager {
 	public tournamentMode: boolean = false;
 	public tournamentCode?: string;
 	public currentRival: string | null = null;
+	public timers: NodeJS.Timeout[] = [];
+	public abortHandler: AbortHandler | undefined = undefined;
 
 	public constructor() {
 		this.uiManager.resetCache();
@@ -64,31 +67,40 @@ export class GameManager {
 				GameEventBus.getInstance().once('AI_DIFFICULTY_CHOSEN', (event) => {
 					this.gameStatus.level = event.payload.level;
 					resolve();
-				});
-			});
+				}, 'game');
+			}, 'game');
 		});
 	}
 
 	private configure = async () => {
-		if (this.gameStatus.game_mode === 'tournament') 
+		if (this.gameStatus.game_mode === 'tournament')
 			return;
 
-		if (this.gameStatus.currentGameStarted) 
+		if (this.gameStatus.currentGameStarted)
 			throw new Error("Game is already started: " + JSON.stringify(this.gameStatus));
-		
+
 		await this.waitForModeSelection();
 	};
 
 	private enterWaittingPhase = async (status: GameStatus): Promise<void> => {
 		this.gameStatus = status;
+		WebSocketClient.getInstance().once("match-cancelled", handleMatchCancellation, 20_000);
 		WebSocketClient.getInstance().emit("create", this.gameStatus);
 
 		let rival: string | null = null;
 		if (this.gameStatus.game_mode === "remoteGame" || this.gameStatus.game_mode === 'tournament') {
-			await GameEventBus.getInstance().emit({ type: 'WAITING_FOR_RIVAL' });
+			await GameEventBus.getInstance().emit({ type: 'WAITING_FOR_RIVAL' })
 			const matchPlayers: MatchPlayers = await waitForMatchReady();
+			this.abortHandler?.throwIfAborted();
 			await GameEventBus.getInstance().emit({ type: 'RIVAL_FOUND', payload: { matchPlayers } });
 		}
+
+		gameInstance.uiManager.showProgressBar();
+		gameInstance.uiManager.updateProgressBar(100, 0);
+		gameInstance.runAfter(() => {
+			gameInstance.uiManager.updateProgressBar(0, 20_000);
+		}, 50);
+
 		this.currentRival = rival;
 	};
 
@@ -99,13 +111,14 @@ export class GameManager {
 		}
 
 		if (this.gameStatus.game_mode === "remoteGame" && this.reMatch) {
-			const approval = await waitForRematchApproval(this.currentRival as string);
-			GameEventBus.getInstance().emit({ type: 'REMATCH_APPROVAL', payload: { approval } });
+			let approval = await waitForRematchApproval(this.currentRival as string)
+			this.abortHandler?.throwIfAborted();
+			await GameEventBus.getInstance().emit({ type: 'REMATCH_APPROVAL', payload: { approval } })
 			if (!approval)
 				return;
 		}
 
-		WebSocketClient.getInstance().emit("ready", {}); //false or true doesnt matter here. server ignores.
+		WebSocketClient.getInstance().emit("ready", {});
 		this.gameInfo = new GameInfo(this.gameStatus.game_mode);
 		return;
 	};
@@ -117,6 +130,21 @@ export class GameManager {
 	}
 
 	public startPlayProcess(): void {
+		this.abortHandler?.abort();
+		this.abortHandler = new AbortHandler();
+		this.abortHandler.onAbort = (error) => {
+			console.log("GameManager aborted.");
+			if (error) {
+				console.error("GameManager aborted with error: ", error);
+				this.uiManager.onInfoShown("Bir hata oluştu! Lütfen sayfayı yenileyin.");
+				return;
+			}
+		};
+
+		if (Router.getInstance().getCurrentPath() !== '/game') {
+			throw new Error("GameManager should be started from /game path, but current path is: " + Router.getInstance().getCurrentPath());
+		}
+
 		this.uiManager.cacheDOMElements();
 		GamePage.enablePage();
 		GameEventBus.getInstance().emit({ type: 'CONNECTING_TO_SERVER' });
@@ -126,16 +154,16 @@ export class GameManager {
 				throw new Error("WebSocket connection failed.");
 			})
 			.then(() => {
-				GameEventBus.getInstance().emit({ type: 'CONNECTED_TO_SERVER' })
-				if (Router.getInstance().getCurrentPath() !== '/game') {
-					throw new Error("GameManager should be started from /game path, but current path is: " + Router.getInstance().getCurrentPath());
-				}
-
-				if (this.gameStatus.game_mode === 'localGame' || this.gameStatus.game_mode === 'vsAI')
-					this.uiManager.onStartButtonShown();
-				GameEventBus.getInstance().emit({ type: 'ENTER_WAITING_PHASE' })
+				if (!this.abortHandler || this.abortHandler.isAborted())
+					return;
+				new AbortablePromise(this.abortHandler!)
+				.then(() => GameEventBus.getInstance().emit({ type: 'CONNECTED_TO_SERVER' }))
+				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_WAITING_PHASE' }))
 				.then(() => this.enterWaittingPhase(this.gameStatus)) // wait for rival finding
-				.then(() => onClickedTo(this.uiManager.startButton!)) // wait for start click
+				.then(() => this.uiManager.onStartButtonShown())
+				.then(() => new Promise<void>((resolve) => {
+					GameEventBus.getInstance().once('READY_BUTTON_CLICK', () => resolve(), "game");
+				})) // wait for start click
 				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_READY_PHASE' }))
 				.then(() => this.enterReadyPhase())
 				.then(() => listenStateUpdates(this.gameInfo!)) // start listening the game server
@@ -144,32 +172,33 @@ export class GameManager {
 			});
 	}
 
-	public handleMatchCancellation() {
-		this.uiManager.onInfoShown("Maç iptal edildi. Ana sayfaya yönlendiriliyor...");
-		this.finalize();
-		setTimeout(() => {
-			Router.getInstance().invalidatePage("/play");
-			Router.getInstance().go('/play');
-			Router.getInstance().invalidatePage("/game");
-		}, 1000);
-	}
-
 	public finalize() {
+		this.abortHandler?.abort();
+		this.abortHandler = undefined;
+
+		this.timers.forEach(timer => clearTimeout(timer)); /* assume timers are not async */
+		this.timers = [];
+
 		GameLoop.getInstance().stop();
-		this.uiManager.scene?.dispose();
-		this.uiManager.engine?.dispose();
-		this.uiManager.scene = undefined;
-		this.uiManager.engine = undefined;
+		WebSocketClient.getInstance().reset();
+		GameInputHandler.getInstance().reset();
+		GameEventBus.getInstance().offAllByLabel("game");
 
-		["init", "gameState", "bu", "paddleUpdate", "ready", "rematch-ready", "player-move", "local-input", "pause-resume", "reset-match"]
-			.forEach(event => WebSocketClient.getInstance().off(event));
-
+		this.uiManager.finalizeUI();
 		this.gameInfo = null;
 		this.gameStatus = {
 			currentGameStarted: false,
 			game_mode: null,
 			finalMatch: false
 		};
+		
+		/* remove start button listeners */
+		if (this.uiManager.startButton) {
+			var newElement = this.uiManager.startButton.cloneNode(true);
+			this.uiManager.startButton.parentNode?.replaceChild(newElement, this.uiManager.startButton);
+		}
+		this.uiManager.resetCache();
+		GamePage.disablePage();
 	}
 
 	public handleNetworkPause(): void {
@@ -178,7 +207,7 @@ export class GameManager {
 
 		if (this.gameStatus.game_mode === 'localGame' || this.gameStatus.game_mode === 'vsAI') {
 			this.uiManager.onInfoShown("Ağ bağlantısı koptu. Maçınız bitirilecek ...");
-			setTimeout(() => {
+			gameInstance.runAfter(() => {
 				this.uiManager.onInfoHidden();
 				Router.getInstance().go('/play');
 			}, 2000);
@@ -195,33 +224,104 @@ export class GameManager {
 			if (response.status === "approved") {
 				console.log("Rejoin approved, resuming game.");
 				gameInstance.uiManager.onInfoShown("Izin verildi. Oyuna katılınıyor...");
-				setTimeout(() => gameInstance.uiManager.onInfoHidden(), 1000);
+				gameInstance.runAfter(() => gameInstance.uiManager.onInfoHidden(), 1000);
 			} else {
 				console.log("Rejoin rejected, redirecting to play page.");
 				gameInstance.uiManager.onInfoShown("Izin verilmedi. Ana sayfaya dönülüyor...");
-				GameLoop.getInstance().stop();
-				this.finalize();
-				setTimeout(() => Router.getInstance().go('/'), 1000);
+				gameInstance.runAfter(() => {
+					Router.getInstance().go('/');
+					Router.getInstance().invalidatePage("/game");
+				}, 1000);
 			}
 		});
 		WebSocketClient.getInstance().emit("rejoin");
 	}
+
+	public runAfter(callback: () => void, delay: number): void {
+		const id = setTimeout(() => {
+			this.timers = this.timers.filter(t => t !== id);
+			callback();
+		}, delay);
+		this.timers.push(id);
+	}
 }
 
-function onClickedTo(element: HTMLElement): Promise<void> {
-	return new Promise((resolve, reject) => {
-		if (!element) {
-			reject(new Error("element not found: " + element));
+function handleMatchCancellation() {
+	gameInstance.uiManager.onInfoShown("Maç iptal edildi. Ana sayfaya yönlendiriliyor...");
+	gameInstance.runAfter(() => {
+		Router.getInstance().invalidatePage("/play");
+		Router.getInstance().go('/play');
+		Router.getInstance().invalidatePage("/game");
+	}, 1000);
+}
+
+export class AbortHandler {
+	private static ABORTED_ERROR = "Operation aborted";
+	private aborted: boolean = false;
+	public onAbort: ((error: any | null) => void) | null = null;
+
+	public abort(err?: any): void {
+		this.aborted = true;
+		this.onAbort?.(err || null);
+	}
+
+	public isAborted(): boolean {
+		return this.aborted;
+	}
+
+	public throwIfAborted(): void {
+		if (this.aborted) {
+			throw new Error(AbortHandler.ABORTED_ERROR);
+		}
+	}
+}
+
+export class AbortablePromise<C, P> implements PromiseLike<P> {
+	
+	private abortHandler: AbortHandler;
+	private callback: ((value: C | undefined) => P) | undefined;
+	private value!: P;
+	private isFullfilled: boolean = false;
+	private next: AbortablePromise<P, unknown> | null = null;
+
+	public constructor(abortHandler: AbortHandler, callback: ((value: C | undefined) => P) | undefined = undefined, first: boolean = true) {
+		this.callback = callback;
+		this.abortHandler = abortHandler;
+		if (first) {
+			this.run(undefined as unknown as C);
+			this.isFullfilled = true;
+		}
+	}
+
+	private async run(val: C | undefined) {
+		if (this.abortHandler.isAborted()) {
 			return;
 		}
+		
+		if (this.callback) {
+			try {
+				this.value = await this.callback(val);
+				this.isFullfilled = true;
+			} catch (error) {
+				this.abortHandler.abort(error);
+				return;
+			}
+		}
 
-		const handler = () => {
-			element.removeEventListener("click", handler);
-			resolve();
-		};
+		if (this.next && this.isFullfilled) {
+			this.next.run(this.value);
+		}
+	}
 
-		element.addEventListener("click", handler);
-	});
+	public then<TResult1 = P>(cb: (value: P | undefined) => TResult1): AbortablePromise<P, any> {
+		this.next = new AbortablePromise<P, any>(this.abortHandler, cb, false);
+
+		if (this.isFullfilled) {
+			this.next.run(this.value);
+		}
+		return this.next;
+	}
+	
 }
 
 export const gameInstance = new GameManager();	

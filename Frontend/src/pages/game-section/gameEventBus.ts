@@ -5,36 +5,40 @@ import { MatchPlayers } from "./network";
 import { updateScoreBoard, showEndMessage, startNextSet } from "./ui";
 import { WebSocketClient } from "./wsclient";
 import { Router } from "../../router";
-export type GameEventType =
-	| 'SET_COMPLETED'
-	| 'MATCH_ENDED'
-	| 'GAME_PAUSED'
-	| 'GAME_RESUMED'
-	| 'RIVAL_FOUND'
-	| 'WAITING_FOR_RIVAL'
-	| 'MODE_SELECTED'
-	| 'PLAYER_DISCONNECTED'
-	| 'GAME_STARTED'
-	| 'GAME_CONFIGURED' 
-	| 'ENTER_WAITING_PHASE'
-	| 'ENTER_READY_PHASE'
-	| 'ENTER_PLAYING_PHASE'
-	| 'REMATCH_APPROVAL'
-	| 'RIVAL_DISCONNECTED'
-	| 'RIVAL_RECONNECTED'
-	| 'INITIALLY_CONNECTED'
-	| 'DISCONNECTED'
-	| 'CONNECTION_ERROR'
-	| 'RECONNECTION_ATTEMPT_FAILED'
-	| 'RECONNECTION_ATTEMPT'
-	| 'RECONNECTION_GAVE_UP'
-	| 'RECONNECTED'
-	| 'GAME_MODE_CHOSEN'
-	| 'AI_DIFFICULTY_CHOSEN'
-	| 'CONNECTING_TO_SERVER'
-	| 'CONNECTING_TO_SERVER_FAILED'
-	| 'CONNECTED_TO_SERVER'
-;
+
+export const gameEventTypes = [
+    'SET_COMPLETED',
+    'MATCH_ENDED',
+    'GAME_PAUSED',
+    'GAME_RESUMED',
+    'RIVAL_FOUND',
+    'WAITING_FOR_RIVAL',
+    'MODE_SELECTED',
+    'PLAYER_DISCONNECTED',
+    'GAME_STARTED',
+    'GAME_CONFIGURED',
+    'ENTER_WAITING_PHASE',
+    'ENTER_READY_PHASE',
+    'ENTER_PLAYING_PHASE',
+    'REMATCH_APPROVAL',
+    'RIVAL_DISCONNECTED',
+    'RIVAL_RECONNECTED',
+    'INITIALLY_CONNECTED',
+    'DISCONNECTED',
+    'CONNECTION_ERROR',
+    'RECONNECTION_ATTEMPT_FAILED',
+    'RECONNECTION_ATTEMPT',
+    'RECONNECTION_GAVE_UP',
+    'RECONNECTED',
+	'READY_BUTTON_CLICK',
+    'GAME_MODE_CHOSEN',
+    'AI_DIFFICULTY_CHOSEN',
+    'CONNECTING_TO_SERVER',
+    'CONNECTING_TO_SERVER_FAILED',
+    'CONNECTED_TO_SERVER',
+] as const;
+
+export type GameEventType = typeof gameEventTypes[number];
 
 export interface GameEvent {
 	type: GameEventType;
@@ -43,10 +47,14 @@ export interface GameEvent {
 
 export type EventHandler = (event: GameEvent) => void | Promise<void>;
 
+export interface LabelledEventHandler {
+	labels: string[];
+	handler: EventHandler;
+}
 
 export class GameEventBus {
-	private listeners: { [eventType: string]: EventHandler[] } = {};
-	private onceListeners: { [eventType: string]: EventHandler[] } = {};
+	private listeners: { [eventType: string]: LabelledEventHandler[] } = {};
+	private onceListeners: { [eventType: string]: LabelledEventHandler[] } = {};
 
 	private static instance: GameEventBus;
 	private constructor() {
@@ -59,40 +67,60 @@ export class GameEventBus {
 		return GameEventBus.instance;
 	}
 
+	public reset(): void {
+		this.listeners = {};
+		this.onceListeners = {};
+	}
+
 	// concurrent. ensure enqueued.
 	public async emit(event: GameEvent): Promise<void> {
 		console.log(`Event emitted: ${event.type}`, event.payload);
 		const handlers = this.listeners[event.type] || [];
-		await Promise.all(handlers.map(handler => handler(event)));
+		await Promise.all(handlers.map(handler => handler.handler(event)));
 
 		const onceHandlers = this.onceListeners[event.type] || [];
 		if (onceHandlers.length === 0) return;
-		await Promise.all(onceHandlers.map(handler => handler(event)));
+		await Promise.all(onceHandlers.map(handler => handler.handler(event)));
 		this.onceListeners[event.type] = [];
 	}
 
-	public once(eventType: GameEventType, handler: EventHandler): void {
+	public once(eventType: GameEventType, handler: EventHandler, ...labels: string[]): void {
 		if (!this.onceListeners[eventType]) {
 			this.onceListeners[eventType] = [];
 		}
-		this.onceListeners[eventType].push(handler);
+		this.onceListeners[eventType].push({ labels, handler });
 	}
 
-	public on(eventType: GameEventType, handler: EventHandler): void {
+	public on(eventType: GameEventType, handler: EventHandler, ...labels: string[]): void {
 		if (!this.listeners[eventType]) {
 			this.listeners[eventType] = [];
 		}
-		this.listeners[eventType].push(handler);
+		this.listeners[eventType].push({ labels, handler });
 	}
 
 	public off(eventType: GameEventType, handler: EventHandler): void {
-		if (!this.listeners[eventType]) return;
-		this.listeners[eventType] = this.listeners[eventType].filter(h => h !== handler);
+		this.offByFilter(eventType, h => h.handler === handler);
+	}
+
+	public offAllByLabel(label: string): void {
+		for (const eventType of gameEventTypes) {
+			this.offByFilter(eventType as GameEventType, h => h.labels.includes(label));
+		}
+	}
+
+	public offByFilter(eventType: GameEventType, filter: (h: LabelledEventHandler) => boolean): void {
+		if (this.listeners[eventType]) {
+			this.listeners[eventType] = this.listeners[eventType].filter(h => !filter(h));
+		}
+		if (this.onceListeners[eventType]) {
+			this.onceListeners[eventType] = this.onceListeners[eventType].filter(h => !filter(h));
+		}
 	}
 }
 
 GameEventBus.getInstance().on('CONNECTING_TO_SERVER', async (event) => {
 	gameInstance.uiManager.onInfoShown("...");
+	console.log("1");
 });
 
 GameEventBus.getInstance().on('CONNECTING_TO_SERVER_FAILED', async (event) => {
@@ -118,7 +146,17 @@ GameEventBus.getInstance().on('MATCH_ENDED', () => {
 });
 
 GameEventBus.getInstance().on('GAME_RESUMED', () => {
-	//startGameLoop();
+	WebSocketClient.getInstance().emit("pause-resume", { status: "resume" });
+	gameInstance.uiManager.resumeButton?.classList.add("hidden");
+	gameInstance.uiManager.newMatchButton?.classList.add("hidden");
+	gameInstance.uiManager.turnToHomePage?.classList.add("hidden");
+});
+
+GameEventBus.getInstance().on('GAME_PAUSED', () => {
+	WebSocketClient.getInstance().emit("pause-resume", { status: "pause" });
+	gameInstance.uiManager.resumeButton?.classList.remove("hidden");
+	gameInstance.uiManager.newMatchButton?.classList.remove("hidden");
+	gameInstance.uiManager.turnToHomePage?.classList.remove("hidden");
 });
 
 GameEventBus.getInstance().on('WAITING_FOR_RIVAL', () => {
@@ -130,9 +168,6 @@ GameEventBus.getInstance().on('WAITING_FOR_RIVAL', () => {
 });
 
 GameEventBus.getInstance().on('RIVAL_FOUND', (event) => {
-	WebSocketClient.getInstance().once("match-cancelled", () => {
-		gameInstance.handleMatchCancellation();
-	});
 	const matchPlayers: MatchPlayers = event.payload.matchPlayers;
 	const rival: string = matchPlayers.left.socketId === WebSocketClient.getInstance().getSocket()!.id ? matchPlayers.right.username : matchPlayers.left.username;
 	gameInstance.uiManager.updateUIForRivalFound(matchPlayers, rival);
@@ -148,7 +183,7 @@ GameEventBus.getInstance().on('ENTER_READY_PHASE', () => {
 		gameInstance.uiManager.onInfoHidden();
 	}
 
-	gameInstance.uiManager.hide(gameInstance.uiManager.newmatchButton);
+	gameInstance.uiManager.hide(gameInstance.uiManager.newMatchButton);
 	gameInstance.uiManager.hide(gameInstance.uiManager.turnToHomePage);
 	gameInstance.uiManager.hideProgressBar();
 });
@@ -162,7 +197,7 @@ GameEventBus.getInstance().on('ENTER_PLAYING_PHASE',  async () => {
 
 GameEventBus.getInstance().on('REMATCH_APPROVAL', (event) => {
 	if (!event.payload.approval) {
-		gameInstance.uiManager.show(gameInstance.uiManager.newmatchButton);
+		gameInstance.uiManager.show(gameInstance.uiManager.newMatchButton);
 		gameInstance.uiManager.hide(gameInstance.uiManager.turnToHomePage);
 	}
 });
@@ -173,7 +208,7 @@ GameEventBus.getInstance().on('RIVAL_DISCONNECTED', () => {
 
 GameEventBus.getInstance().on('RIVAL_RECONNECTED', () => {
 	gameInstance.uiManager.onInfoShown("Rakip yeniden bağlandı.");
-	setTimeout(() => {
+	gameInstance.runAfter(() => {
 		gameInstance.uiManager.onInfoHidden();
 	}, 1000);
 });
@@ -199,7 +234,7 @@ GameEventBus.getInstance().on('RECONNECTION_GAVE_UP', (event) => {
 	if (gameInstance.gameStatus.currentGameStarted) {
 		gameInstance.uiManager.onInfoShown("Oyun sunucusuna yeniden bağlanma başarısız oldu.");
 		WebSocketClient.getInstance().reset();
-		setTimeout(() => {
+		gameInstance.runAfter(() => {
 			Router.getInstance().invalidatePage("/game");
 			Router.getInstance().go('/');
 		}, 1000);

@@ -19,7 +19,9 @@ const WALL_COLOR = new Color3(87/255, 43/255, 158/255); // purple
 
 export function createScene() {
   const canvas = document.getElementById("game-canvas") as HTMLCanvasElement;
+  console.log("Engine has created.");
   const engine = new Engine(canvas, true);
+  console.log("Scene has created.");
   const scene = new Scene(engine);
   
   scene.clearColor = new Color4(0, 0, 0, 0);

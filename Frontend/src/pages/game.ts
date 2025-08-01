@@ -1,5 +1,7 @@
 import { exmp } from "../languageManager";
 import { Page, Router } from "../router";
+import { GameEventBus } from "./game-section/gameEventBus";
+import { WebSocketClient } from "./game-section/wsclient";
 import { gameInstance } from "./play";
 import { retroGridBackground } from "./play-page";
 
@@ -139,34 +141,52 @@ export class GamePage implements Page {
         </defs>
         </svg>`
 
-		public static enablePage(): void {
-				document.getElementById("no-game-welcomer")?.classList.add("hidden");
-		} 
+    public static enablePage(): void {
+        document.getElementById("no-game-welcomer")?.classList.add("hidden");
+    }
 
-		public static disablePage(): void {
-				document.getElementById("no-game-welcomer")?.classList.remove("hidden");
-		}
+    public static disablePage(): void {
+        document.getElementById("no-game-welcomer")?.classList.remove("hidden");
+    }
 
-		public evaluate(): string {
-				return retroGridBackground(getScoreBoard() + getSetBoard() + this.hiddenButtons());
-		}
+    public evaluate(): string {
+        return retroGridBackground(getScoreBoard() + getSetBoard() + this.hiddenButtons());
+    }
 
-		onLoad(): void {
-				document.addEventListener("click", (event) => {
-						const target = event.target as HTMLElement;
-						if (target.id === "go-play-page") {
-								Router.getInstance().go("/play", true);
-						}
-				});
-				exmp.applyLanguage();
-		}
+    public onButtonClick(buttonId: string): void {
+        switch (buttonId) {
+            case "resume-button":
+                resumeButtonClick();
+                break;
+            case "newmatch-button":
+                newMatchButtonClick();
+                break;
+            case "turnHomePage-button":
+                turnToHomePageButtonClick();
+                break;
+            case "ready-button":
+                GameEventBus.getInstance().emit({ type: 'READY_BUTTON_CLICK' });
+                break;
+        }
+    }
+
+    public onLoad(): void {
+        document.addEventListener("click", (event) => {
+            const target = event.target as HTMLElement;
+            if (target.id === "go-play-page") {
+                Router.getInstance().go("/play", true);
+            }
+        });
+        exmp.applyLanguage();
+    }
 
     public onUnload(): void {
-      gameInstance.finalize();
+        gameInstance.finalize();
     }
 
     public hiddenButtons() {
-        return `<canvas id="game-canvas" class="rotate-90 sm:rotate-0 sm:w-full md:w-[90%] min-h-fit"></canvas>
+        return `
+        <canvas id="game-canvas" class="rotate-90 sm:rotate-0 sm:w-full md:w-[90%] min-h-fit"></canvas>
         <div id="no-game-welcomer" class="rotate-90 sm:rotate-0 absolute text-center">
             <div class="mx-auto w-full justify-center flex mb-8 hidden sm:flex">
                 ${GamePage.illustration}
@@ -179,7 +199,7 @@ export class GamePage implements Page {
         </div>
 
 		<div id="progress-container" class="hidden w-64 mx-auto bg-gray-700 rounded-full h-2.5">
-			<div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all ease-out" style="width: 100%; transition-duration: 20s;"></div>
+			<div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all ease-out" style="width: 100%;"></div>
 		</div>
 
 		<div id="roundDiv" class="absolute top-[5%] left-[67%] -translate-x-1/2 hidden flex justify-center items-center px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.2vw] text-[#eee] z-10"></div>
@@ -246,11 +266,11 @@ export class GamePage implements Page {
 				>!_!</span>
 			</div>
 		</button>    `;
-	}
+    }
 }
 
 function getScoreBoard(): string {
-	return `
+    return `
 		<div id="scoreboard" class="scoreboard-card absolute top-[3%] left-1/2 -translate-x-1/2 hidden z-10">
 			<div data-status="inprogress" class="teams">
 				<span class="team-info team-home">
@@ -290,7 +310,7 @@ function getScoreBoard(): string {
 }
 
 function getSetBoard(): string {
-		return `
+    return `
 		<div id="setboard" class="absolute bottom-[3%] left-1/2 transform -translate-x-1/2 mt-[0.3vw] hidden flex flex-col justify-center items-center px-[2vw] py-0 bg-gradient-to-br from-[#1e1e1e] to-[#2c2c2c] border border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.4vw] text-[#eee] z-10">
 				<div id="set-title">
 				<span id="setler" class="text-[1.3vw]">${exmp.getLang("game.sets")}</span>
@@ -302,4 +322,45 @@ function getSetBoard(): string {
 				</div>
 		</div>
 		`;
+}
+
+function resumeButtonClick(): void {
+    const gameInfo = gameInstance.gameInfo;
+    if (!gameInfo) return;
+    GameEventBus.getInstance().emit({ type: 'GAME_RESUMED', payload: gameInfo });
+    gameInfo.state!.isPaused = false;
+    WebSocketClient.getInstance().emit("pause-resume", { status: "resume" });
+    gameInstance.uiManager.resumeButton?.classList.add("hidden");
+    gameInstance.uiManager.newMatchButton?.classList.add("hidden");
+    gameInstance.uiManager.turnToHomePage?.classList.add("hidden");
+}
+
+function newMatchButtonClick(): void {
+    const gameInfo = gameInstance.gameInfo;
+    if (!gameInfo) return;
+    gameInstance.uiManager.resumeButton?.classList.add("hidden");
+    gameInstance.uiManager.newMatchButton?.classList.add("hidden");
+    gameInstance.uiManager.turnToHomePage?.classList.add("hidden");
+    gameInstance.uiManager.startButton?.classList.add("hidden");
+
+    if (!gameInfo.state?.matchOver)
+        WebSocketClient.getInstance().emit("reset-match");
+    Router.getInstance().go("/play");
+    Router.getInstance().invalidatePage('/game');
+}
+
+function turnToHomePageButtonClick(): void {
+    const gameInfo = gameInstance.gameInfo;
+    if (!gameInfo) return;
+    gameInstance.uiManager.resumeButton?.classList.add("hidden");
+    gameInstance.uiManager.newMatchButton?.classList.add("hidden");
+    gameInstance.uiManager.turnToHomePage?.classList.add("hidden");
+    gameInstance.uiManager.startButton?.classList.add("hidden");
+
+    if (!gameInfo.state?.matchOver)
+        WebSocketClient.getInstance().emit("reset-match");
+
+    const toPage = gameInfo.mode === 'tournament' ? '/tournament' : '/';
+    Router.getInstance().invalidatePage('/game');
+    Router.getInstance().go(toPage);
 }

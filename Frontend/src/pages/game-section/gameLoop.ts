@@ -68,7 +68,7 @@ export class GameLoop {
 	}
 
 	public stop(): void {
-		gameInstance.uiManager.engine!.stopRenderLoop();
+		gameInstance.uiManager.engine?.stopRenderLoop();
 		this.gameLoopRunning = false;
 	}
 }

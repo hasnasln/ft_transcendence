@@ -38,22 +38,31 @@ export class WebSocketClient {
         this.socket.emit(event, data);
     }
 
-    public on(event: string, callback: (...args: any[]) => void): void {
+    public on(event: string, callback: (...args: any[]) => void, timeout?: number): void {
         if (!this.socket) {
             console.error("Event could not listened. Socket is not initialized: event: '" + event + "'");
             return;
         }
-        this.socket.on(event, callback);
+
+        if (timeout) {
+            this.socket.timeout(timeout).on(event, callback);
+        } else {
+            this.socket.on(event, callback);
+        }
     }
 
-    public once(event: string, callback: (...args: any[]) => void): void {
+    public once(event: string, callback: (...args: any[]) => void, timeout?: number): void {
         if (!this.socket) {
             console.error("Once event could not listened. Socket is not initialized: event: '" + event + "'");
             return;
         }
-        this.socket.once(event, callback);
-    }
 
+        if (timeout) {
+            this.socket.timeout(timeout).once(event, callback);
+        } else {
+            this.socket.once(event, callback);
+        }
+    }
 
     public off(event: string): void {
         this.socket?.off(event);

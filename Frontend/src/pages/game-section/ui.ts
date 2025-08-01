@@ -7,6 +7,7 @@ import { Engine } from "@babylonjs/core/Engines/engine";
 import { Scene } from "@babylonjs/core/scene";
 import { BallController } from "./ball"; import { createPaddles, createGround, createWalls, createScene } from "../game-section/gameScene";
 import { CameraController } from "../game-section/camera";
+import { Color4 } from "@babylonjs/core/Maths/math";
 
 export class GameUI {
 	public startButton: HTMLElement | null = null;
@@ -17,9 +18,10 @@ export class GameUI {
 	public roundNoTable: HTMLElement | null = null;
 	public tournamentIDTable: HTMLElement | null = null;
 	public endMsg: HTMLElement | null = null;
-	public newmatchButton: HTMLElement | null = null;
+	public newMatchButton: HTMLElement | null = null;
 	public turnToHomePage: HTMLElement | null = null;
 	public info: HTMLElement | null = null;
+	public resumeButton: HTMLElement | null = null;
 	public canvas: HTMLCanvasElement | null = null;
 
 	public progressContainer: HTMLElement | null = null;
@@ -42,11 +44,28 @@ export class GameUI {
 		this.roundNoTable = document.getElementById("roundNo");
 		this.tournamentIDTable = document.getElementById("tournamentCode");
 		this.endMsg = document.getElementById("end-message");
-		this.newmatchButton = document.getElementById("newmatch-button");
+		this.newMatchButton = document.getElementById("newmatch-button");
 		this.turnToHomePage = document.getElementById("turnHomePage-button");
 		this.info = document.getElementById("info");
 		this.progressContainer = document.getElementById("progress-container");
 		this.progressBar = document.getElementById("progress-bar");
+		this.resumeButton = document.getElementById("resume-button");
+	}
+
+	public finalizeUI(): void {
+		[
+			this.startButton, this.scoreBoard, this.roundDiv, this.tournamentIdDiv,
+			this.scoreTable, this.roundNoTable,
+			this.endMsg, this.newMatchButton, this.turnToHomePage, this.info,
+			this.progressContainer, this.resumeButton
+		].filter(el => el != null)
+		.forEach(el => this.hide(el));
+
+		this.engine?.clear(new Color4(0,0,0,0), true, true);
+		this.scene?.dispose();
+		this.engine?.dispose();
+		this.scene = undefined;
+		this.engine = undefined;
 	}
 
 	public resetCache(): void {
@@ -58,7 +77,7 @@ export class GameUI {
 		this.roundNoTable = null;
 		this.tournamentIDTable = null;
 		this.endMsg = null;
-		this.newmatchButton = null;
+		this.newMatchButton = null;
 		this.turnToHomePage = null;
 		this.info = null;
 
@@ -79,31 +98,33 @@ export class GameUI {
 		this.progressContainer!.classList.add("hidden");
 	}
 
-	public updateProgressBar(percentage: number): void {
-		percentage = Math.max(0, Math.min(100, percentage));
+	public updateProgressBar(percentage: number, duration: number): void {
 		if (this.progressBar) {
+			console.log(`bar set to ${percentage}% in ${duration}ms`);
+			percentage = Math.max(0, Math.min(100, percentage));
+			this.progressBar.style.transitionDuration = `${duration}ms`;
 			this.progressBar.style.width = `${percentage}%`;
 		}
 	}
 
 	public onMenuHidden(): void {
-		document.getElementById("menu")!.classList.add("hidden");
+		document.getElementById("menu")?.classList.add("hidden");
 	}
 
 	public onDifficultyShown(): void {
-		document.getElementById("difficulty")!.classList.remove("hidden");
+		document.getElementById("difficulty")?.classList.remove("hidden");
 	}
 
 	public onDifficultyHidden(): void {
-		document.getElementById("difficulty")!.classList.add("hidden");
+		document.getElementById("difficulty")?.classList.add("hidden");
 	}
 
 	public onStartButtonShown(): void {
-		this.startButton!.classList.remove("hidden");
+		this.startButton?.classList.remove("hidden");
 	}
 
 	public onStartButtonHidden(): void {
-		this.startButton!.classList.add("hidden");
+		this.startButton?.classList.add("hidden");
 	}
 
 	public onInfoShown(message: string): void {
@@ -154,9 +175,6 @@ export class GameUI {
 			this.onInfoShown(`${rival} ile eşleştin`);
 		}
 		this.startButton!.innerHTML = `${rival} maçını oyna !`;
-		this.showProgressBar();
-		setTimeout(() => this.updateProgressBar(0), 50);
-		setTimeout(() => this.startButton?.classList.remove("hidden"), 500);
 	}
 
 	public async setupScene(): Promise<void> {
@@ -265,7 +283,7 @@ export function showSetToast(gameInfo: GameInfo, message: string): Promise<void>
 		toast.textContent = message;
 		toast.classList.remove("hidden");
 
-		setTimeout(() => {
+		gameInstance.runAfter(() => {
 			toast.classList.add("hidden");
 			resolve();
 		}, 3000);
@@ -293,7 +311,7 @@ export function showEndMessage() {
 			gameInstance.uiManager.endMsg!.textContent = `Rakibin bağlantısı kesildi. ${winnerName} ${gameInstance.gameStatus.tournamentCode} turnuvasını kazandı !   Tebrikler !`;
 	}
 
-	setTimeout(() => {
+	gameInstance.runAfter(() => {
 		gameInstance.uiManager.endMsg!.classList.remove("hidden");
 		if (gameInstance.gameInfo!.mode === 'tournament') {
 			gameInstance.uiManager.turnToHomePage!.textContent = "Turnuva sayfasına Dön";
@@ -303,7 +321,7 @@ export function showEndMessage() {
 				gameInstance.uiManager.startButton.textContent = "Aynı Maçı Tekrar Oyna";
 				gameInstance.uiManager.startButton.classList.remove("hidden");
 			}
-			gameInstance.uiManager.newmatchButton!.classList.remove("hidden");
+			gameInstance.uiManager.newMatchButton!.classList.remove("hidden");
 			gameInstance.uiManager.turnToHomePage!.classList.remove("hidden");
 		}
 	}, 500);

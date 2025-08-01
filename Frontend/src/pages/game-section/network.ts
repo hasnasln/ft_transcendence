@@ -78,15 +78,15 @@ export function waitForRematchApproval(rival: string): Promise<boolean> {
 		gameInstance.uiManager.onInfoShown(`Talebiniz ${rival} oyuncusuna iletildi.`);
 		WebSocketClient.getInstance().on("rematch-ready", () => {
 			gameInstance.uiManager.onInfoShown(`Maç başlıyor`);
-			setTimeout(() => {
+			gameInstance.runAfter(() => {
 				gameInstance.uiManager.onInfoHidden();
 				resolve(true);
 				}, 1000);
 			});
 
-		setTimeout(() => {
+		gameInstance.runAfter(() => {
 			gameInstance.uiManager.onInfoShown(`${rival} oyuncusundan onay gelmedi !`);
-			setTimeout(() => {
+			gameInstance.runAfter(() => {
 				gameInstance.uiManager.onInfoHidden();
 			}, 2000);
 			resolve(false);

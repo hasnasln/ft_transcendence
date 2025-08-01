@@ -4,18 +4,18 @@ import { GameEventBus } from "./gameEventBus";
 import { GameInfo } from "./network";
 import { WebSocketClient } from "./wsclient";
 
-export class KeyboardInputHandler {
+export class GameInputHandler {
 	private direction: "up" | "down" | "stop" = "stop";
 	private side: "left" | "right" = "left";
 	private mode: "local" | "remote" | "unset" = "unset";
 
-	private static instance: KeyboardInputHandler;
+	private static instance: GameInputHandler;
 
-	public static getInstance(): KeyboardInputHandler {
-		if (!KeyboardInputHandler.instance) {
-			KeyboardInputHandler.instance = new KeyboardInputHandler();
+	public static getInstance(): GameInputHandler {
+		if (!GameInputHandler.instance) {
+			GameInputHandler.instance = new GameInputHandler();
 		}
-		return KeyboardInputHandler.instance;
+		return GameInputHandler.instance;
 	}
 
 	public setMode(mode: "local" | "remote"): void {
@@ -78,101 +78,60 @@ export class KeyboardInputHandler {
 		return true;
 	}
 
-	public listen() {
+	public reset(): void {
+		this.direction = "stop";
+		this.side = "left";
+		this.mode = "unset";
 		window.removeEventListener("keydown", onKeyDown);
 		window.removeEventListener("keyup", onKeyUp);
+		window.removeEventListener("keydown", onSpaceKeyDown);
+	}
+
+	public listen() {
+		this.reset();
 		window.addEventListener("keydown", onKeyDown);
 		window.addEventListener("keyup", onKeyUp);
+		window.addEventListener("keydown", onSpaceKeyDown);
 	}
 }
 
 function onKeyDown(event: KeyboardEvent) {
-	if (KeyboardInputHandler.getInstance().keyDown(event.key)) {
+	if (GameInputHandler.getInstance().keyDown(event.key)) {
 		event.preventDefault();
 	}
 }
 
 function onKeyUp(event: KeyboardEvent) {
-	if (KeyboardInputHandler.getInstance().keyUp(event.key)) {
+	if (GameInputHandler.getInstance().keyUp(event.key)) {
 		event.preventDefault();
 	}
 }
 
-function listenPauseInputs() {
-	const resumeButton = document.getElementById("resume-button") as HTMLButtonElement;
-	document.addEventListener("keydown", (event) => {
-		const gameInfo = gameInstance.gameInfo;
-		if (!gameInfo) return;
-		if (gameInfo.mode !== 'vsAI' && gameInfo.mode !== 'localGame') return;
-		if (event.code !== "Space") return;
-		if (!gameInstance.uiManager.startButton!.classList.contains("hidden")) return; //hmm
+function onSpaceKeyDown(event: KeyboardEvent) {
+	const gameInfo = gameInstance.gameInfo;
+	if (!gameInfo) return;
+	if (gameInfo.mode !== 'vsAI' && gameInfo.mode !== 'localGame') return;
+	if (event.code !== "Space") return;
+	if (!gameInstance.uiManager.startButton!.classList.contains("hidden")) return; //hmm
+	event.preventDefault();
 
-		gameInfo.state!.isPaused = !gameInfo.state!.isPaused;
-		console.log("Game paused status: ", gameInfo.state!.isPaused);
-		if (gameInfo.state!.isPaused) {
-			GameEventBus.getInstance().emit({ type: 'GAME_PAUSED', payload: gameInfo });
-			WebSocketClient.getInstance().emit("pause-resume", { status: "pause" });
-			resumeButton.classList.remove("hidden");
-			gameInstance.uiManager.newmatchButton!.classList.remove("hidden");
-			gameInstance.uiManager.turnToHomePage!.classList.remove("hidden");
-		} else {
-			GameEventBus.getInstance().emit({ type: 'GAME_RESUMED', payload: gameInfo });
-			WebSocketClient.getInstance().emit("pause-resume", { status: "resume" });
-			resumeButton.classList.add("hidden");
-			gameInstance.uiManager.newmatchButton!.classList.add("hidden");
-			gameInstance.uiManager.turnToHomePage!.classList.add("hidden");
-		}
-	});
-
-	resumeButton?.addEventListener("click", () => {
-		const gameInfo = gameInstance.gameInfo;
-		if (!gameInfo) return;
+	gameInfo.state!.isPaused = !gameInfo.state!.isPaused;
+	console.log("Game paused status: ", gameInfo.state!.isPaused);
+	if (gameInfo.state!.isPaused) {
+		GameEventBus.getInstance().emit({ type: 'GAME_PAUSED', payload: gameInfo });
+	} else {
 		GameEventBus.getInstance().emit({ type: 'GAME_RESUMED', payload: gameInfo });
-		gameInfo.state!.isPaused = false;
-		WebSocketClient.getInstance().emit("pause-resume", { status: "resume" });
-		resumeButton.classList.add("hidden");
-		gameInstance.uiManager.newmatchButton!.classList.add("hidden");
-		gameInstance.uiManager.turnToHomePage!.classList.add("hidden");
-	});
+	}
 }
 
 export function listenPlayerInputs(gameInfo: GameInfo) {
+	GameInputHandler.getInstance().listen();
 	if (gameInfo.mode === 'remoteGame' || gameInfo.mode === 'vsAI' || gameInfo.mode === 'tournament') {
-		KeyboardInputHandler.getInstance().setMode("remote");
+		GameInputHandler.getInstance().setMode("remote");
 	} else if (gameInfo.mode === 'localGame') {
-		KeyboardInputHandler.getInstance().setMode("local");
+		GameInputHandler.getInstance().setMode("local");
+	} else {
+		throw new Error("Game mode is not set or invalid. Please set it to 'localGame', 'remoteGame', 'vsAI' or 'tournament': " + gameInfo.mode);
 	}
-	KeyboardInputHandler.getInstance().listen();
-
-	const resumeButton = document.getElementById("resume-button") as HTMLButtonElement;
-
-	listenPauseInputs();
-
-	gameInstance.uiManager.newmatchButton!.addEventListener("click", () => {
-		console.log(`yeni maça başlaya tıklandı, içerik : ${gameInstance.uiManager.newmatchButton!.innerText}`);
-		resumeButton.classList.add("hidden");
-		gameInstance.uiManager.newmatchButton?.classList.add("hidden");
-		gameInstance.uiManager.turnToHomePage?.classList.add("hidden");
-		gameInstance.uiManager.startButton?.classList.add("hidden");
-
-		if (!gameInfo.state?.matchOver)
-			WebSocketClient.getInstance().emit("reset-match");
-		Router.getInstance().go("/play");
-		Router.getInstance().invalidatePage('/game');
-	});
-
-	gameInstance.uiManager.turnToHomePage!.addEventListener("click", () => {
-		resumeButton.classList.add("hidden");
-		gameInstance.uiManager.newmatchButton?.classList.add("hidden");
-		gameInstance.uiManager.turnToHomePage?.classList.add("hidden");
-		gameInstance.uiManager.startButton?.classList.add("hidden");
-
-		if (!gameInfo.state?.matchOver)
-			WebSocketClient.getInstance().emit("reset-match");
-
-		const toPage = gameInfo.mode === 'tournament' ? '/tournament' : '/';
-		Router.getInstance().go(toPage);
-		Router.getInstance().invalidatePage('/game');
-	});
 }
 
