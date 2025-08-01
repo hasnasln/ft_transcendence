@@ -118,143 +118,145 @@ export class GameEventBus {
 	}
 }
 
-GameEventBus.getInstance().on('CONNECTING_TO_SERVER', async (event) => {
-	gameInstance.uiManager.onInfoShown("...");
-	console.log("1");
-});
+export function listenGameBusEvents() {
+	GameEventBus.getInstance().on('CONNECTING_TO_SERVER', async (event) => {
+		gameInstance.uiManager.onInfoShown("...");
+	});
 
-GameEventBus.getInstance().on('CONNECTING_TO_SERVER_FAILED', async (event) => {
-	gameInstance.uiManager.onInfoShown("Sunucuya bağlanma başarısız oldu: " + event.payload.error);
-});
+	GameEventBus.getInstance().on('CONNECTING_TO_SERVER_FAILED', async (event) => {
+		gameInstance.uiManager.onInfoShown("Sunucuya bağlanma başarısız oldu: " + event.payload.error);
+	});
 
-GameEventBus.getInstance().on('CONNECTED_TO_SERVER', async () => {
-	gameInstance.uiManager.onInfoShown("Bağlantı hazır.");
-});
+	GameEventBus.getInstance().on('CONNECTED_TO_SERVER', async () => {
+		gameInstance.uiManager.onInfoShown("Bağlantı hazır.");
+	});
 
-GameEventBus.getInstance().on('SET_COMPLETED', async () => {
-	updateScoreBoard();
-	return startNextSet().then(() => {
-		console.log("Game Loop started due to set completion.");
+	GameEventBus.getInstance().on('SET_COMPLETED', async () => {
+		updateScoreBoard();
+		return startNextSet().then(() => {
+			console.log("Game Loop started due to set completion.");
+			GameLoop.getInstance().start();
+		});
+	});
+
+	GameEventBus.getInstance().on('MATCH_ENDED', () => {
+		gameInstance.uiManager.onInfoHidden();
+		updateScoreBoard();
+		showEndMessage();
+	});
+
+	GameEventBus.getInstance().on('GAME_RESUMED', () => {
+		WebSocketClient.getInstance().emit("pause-resume", { status: "resume" });
+		gameInstance.uiManager.resumeButton?.classList.add("hidden");
+		gameInstance.uiManager.newMatchButton?.classList.add("hidden");
+		gameInstance.uiManager.turnToHomePage?.classList.add("hidden");
+	});
+
+	GameEventBus.getInstance().on('GAME_PAUSED', () => {
+		WebSocketClient.getInstance().emit("pause-resume", { status: "pause" });
+		gameInstance.uiManager.resumeButton?.classList.remove("hidden");
+		gameInstance.uiManager.newMatchButton?.classList.remove("hidden");
+		gameInstance.uiManager.turnToHomePage?.classList.remove("hidden");
+	});
+
+	GameEventBus.getInstance().on('WAITING_FOR_RIVAL', () => {
+		if (gameInstance.gameStatus.game_mode === 'tournament') {
+			gameInstance.uiManager.onInfoShown("Turnuva rakibi için bekleniyor...");
+		} else {
+			gameInstance.uiManager.onInfoShown("Online bir rakip için bekleniyor...");
+		}
+	});
+
+	GameEventBus.getInstance().on('RIVAL_FOUND', (event) => {
+		const matchPlayers: MatchPlayers = event.payload.matchPlayers;
+		const rival: string = matchPlayers.left.socketId === WebSocketClient.getInstance().getSocket()!.id ? matchPlayers.right.username : matchPlayers.left.username;
+		gameInstance.uiManager.updateUIForRivalFound(matchPlayers, rival);
+	});
+
+	GameEventBus.getInstance().on('ENTER_READY_PHASE', () => {
+		gameInstance.uiManager.onStartButtonHidden();
+		gameInstance.uiManager.hide(gameInstance.uiManager.endMsg ?? document.getElementById("end-message"));
+
+		if (gameInstance.gameStatus.game_mode === "remoteGame" || gameInstance.gameStatus.game_mode === "tournament") {
+			gameInstance.uiManager.onInfoShown(`${gameInstance.currentRival ?? ''} bekleniyor ...`);
+		} else {
+			gameInstance.uiManager.onInfoHidden();
+		}
+
+		gameInstance.uiManager.hide(gameInstance.uiManager.newMatchButton);
+		gameInstance.uiManager.hide(gameInstance.uiManager.turnToHomePage);
+		gameInstance.uiManager.hideProgressBar();
+	});
+
+	GameEventBus.getInstance().on('ENTER_PLAYING_PHASE',  async () => {
+		await gameInstance.uiManager.setupScene();
+		listenPlayerInputs(gameInstance.gameInfo!);
+		console.log("Game Loop started due to playing phase entry.");
 		GameLoop.getInstance().start();
 	});
-});
 
-GameEventBus.getInstance().on('MATCH_ENDED', () => {
-	gameInstance.uiManager.onInfoHidden();
-	updateScoreBoard();
-	showEndMessage();
-});
+	GameEventBus.getInstance().on('REMATCH_APPROVAL', (event) => {
+		if (!event.payload.approval) {
+			gameInstance.uiManager.show(gameInstance.uiManager.newMatchButton);
+			gameInstance.uiManager.hide(gameInstance.uiManager.turnToHomePage);
+		}
+	});
 
-GameEventBus.getInstance().on('GAME_RESUMED', () => {
-	WebSocketClient.getInstance().emit("pause-resume", { status: "resume" });
-	gameInstance.uiManager.resumeButton?.classList.add("hidden");
-	gameInstance.uiManager.newMatchButton?.classList.add("hidden");
-	gameInstance.uiManager.turnToHomePage?.classList.add("hidden");
-});
+	GameEventBus.getInstance().on('RIVAL_DISCONNECTED', () => {
+		gameInstance.uiManager.onInfoShown("Rakip bağlantısı kesildi. Bekleniyor...");
+	});
 
-GameEventBus.getInstance().on('GAME_PAUSED', () => {
-	WebSocketClient.getInstance().emit("pause-resume", { status: "pause" });
-	gameInstance.uiManager.resumeButton?.classList.remove("hidden");
-	gameInstance.uiManager.newMatchButton?.classList.remove("hidden");
-	gameInstance.uiManager.turnToHomePage?.classList.remove("hidden");
-});
-
-GameEventBus.getInstance().on('WAITING_FOR_RIVAL', () => {
-	if (gameInstance.gameStatus.game_mode === 'tournament') {
-		gameInstance.uiManager.onInfoShown("Turnuva rakibi için bekleniyor...");
-	} else {
-		gameInstance.uiManager.onInfoShown("Online bir rakip için bekleniyor...");
-	}
-});
-
-GameEventBus.getInstance().on('RIVAL_FOUND', (event) => {
-	const matchPlayers: MatchPlayers = event.payload.matchPlayers;
-	const rival: string = matchPlayers.left.socketId === WebSocketClient.getInstance().getSocket()!.id ? matchPlayers.right.username : matchPlayers.left.username;
-	gameInstance.uiManager.updateUIForRivalFound(matchPlayers, rival);
-});
-
-GameEventBus.getInstance().on('ENTER_READY_PHASE', () => {
-	gameInstance.uiManager.onStartButtonHidden();
-	gameInstance.uiManager.hide(gameInstance.uiManager.endMsg ?? document.getElementById("end-message"));
-
-	if (gameInstance.gameStatus.game_mode === "remoteGame" || gameInstance.gameStatus.game_mode === "tournament") {
-		gameInstance.uiManager.onInfoShown(`${gameInstance.currentRival ?? ''} bekleniyor ...`);
-	} else {
-		gameInstance.uiManager.onInfoHidden();
-	}
-
-	gameInstance.uiManager.hide(gameInstance.uiManager.newMatchButton);
-	gameInstance.uiManager.hide(gameInstance.uiManager.turnToHomePage);
-	gameInstance.uiManager.hideProgressBar();
-});
-
-GameEventBus.getInstance().on('ENTER_PLAYING_PHASE',  async () => {
-	await gameInstance.uiManager.setupScene();
-	listenPlayerInputs(gameInstance.gameInfo!);
-	console.log("Game Loop started due to playing phase entry.");
-	GameLoop.getInstance().start();
-});
-
-GameEventBus.getInstance().on('REMATCH_APPROVAL', (event) => {
-	if (!event.payload.approval) {
-		gameInstance.uiManager.show(gameInstance.uiManager.newMatchButton);
-		gameInstance.uiManager.hide(gameInstance.uiManager.turnToHomePage);
-	}
-});
-
-GameEventBus.getInstance().on('RIVAL_DISCONNECTED', () => {
-	gameInstance.uiManager.onInfoShown("Rakip bağlantısı kesildi. Bekleniyor...");
-});
-
-GameEventBus.getInstance().on('RIVAL_RECONNECTED', () => {
-	gameInstance.uiManager.onInfoShown("Rakip yeniden bağlandı.");
-	gameInstance.runAfter(() => {
-		gameInstance.uiManager.onInfoHidden();
-	}, 1000);
-});
-
-GameEventBus.getInstance().on('INITIALLY_CONNECTED', () => {
-});
-
-GameEventBus.getInstance().on('DISCONNECTED', (event) => {
-	if (gameInstance.gameStatus.currentGameStarted)
-		gameInstance.handleNetworkPause();
-	if (event.payload.reason === 'io server disconnect') {
-		gameInstance.uiManager.onInfoShown("Oyun sunucusu bağlantınızı reddetti. Başka bir oturum açık.");
-	}
-});
-
-GameEventBus.getInstance().on('RECONNECTED', () => {
-	if (!gameInstance.gameStatus.currentGameStarted || !gameInstance.uiManager.isSceneReady()) return;
-	console.log("Reconnected to the game server.");
-	gameInstance.requestRejoin();
-});
-
-GameEventBus.getInstance().on('RECONNECTION_GAVE_UP', (event) => {
-	if (gameInstance.gameStatus.currentGameStarted) {
-		gameInstance.uiManager.onInfoShown("Oyun sunucusuna yeniden bağlanma başarısız oldu.");
-		WebSocketClient.getInstance().reset();
+	GameEventBus.getInstance().on('RIVAL_RECONNECTED', () => {
+		gameInstance.uiManager.onInfoShown("Rakip yeniden bağlandı.");
 		gameInstance.runAfter(() => {
-			Router.getInstance().invalidatePage("/game");
-			Router.getInstance().go('/');
+			gameInstance.uiManager.onInfoHidden();
 		}, 1000);
-	}
-});
+	});
 
-GameEventBus.getInstance().on('CONNECTION_ERROR', (event) => {
-	const err = event.payload.reason;
-	if (err === "Existing session found.") {
-		gameInstance.uiManager.onInfoShown("Oyun sunucusu bağlantınızı reddetti. Başka bir oturum açık.");
-	}
-	/*console.error('Socket connection error:', err);
-	if (err.includes("token missing")) {
-		alert("Token eksik. Lütfen tekrar giriş yapın.");
-		Router.getInstance().go('/login');
-	} else if (err.includes("Token validation error")) {
-		alert("Token doğrulama hatası :" + err);
-		Router.getInstance().go('/login');
-	} else if (err.includes("Game server error")) {
-		alert("Aynı anda birden fazla oyuna katılamazsınız.");
-		Router.getInstance().go('/');
-	}*/
-});
+	GameEventBus.getInstance().on('INITIALLY_CONNECTED', () => {
+	});
+
+	GameEventBus.getInstance().on('DISCONNECTED', (event) => {
+		if (gameInstance.gameStatus.currentGameStarted)
+			gameInstance.handleNetworkPause();
+		if (event.payload.reason === 'io server disconnect') {
+			gameInstance.uiManager.onInfoShown("Oyun sunucusu bağlantınızı reddetti. Başka bir oturum açık.");
+		}
+	});
+
+	GameEventBus.getInstance().on('RECONNECTED', () => {
+		if (!gameInstance.gameStatus.currentGameStarted || !gameInstance.uiManager.isSceneReady()) return;
+		console.log("Reconnected to the game server.");
+		gameInstance.requestRejoin();
+	});
+
+	GameEventBus.getInstance().on('RECONNECTION_GAVE_UP', (event) => {
+		if (gameInstance.gameStatus.currentGameStarted) {
+			gameInstance.uiManager.onInfoShown("Oyun sunucusuna yeniden bağlanma başarısız oldu.");
+			WebSocketClient.getInstance().reset();
+			gameInstance.runAfter(() => {
+				Router.getInstance().invalidatePage("/game");
+				Router.getInstance().go('/');
+			}, 1000);
+		}
+	});
+
+	GameEventBus.getInstance().on('CONNECTION_ERROR', (event) => {
+		const err = event.payload.reason;
+		if (err === "Existing session found.") {
+			gameInstance.uiManager.onInfoShown("Oyun sunucusu bağlantınızı reddetti. Başka bir oturum açık.");
+		}
+		/*console.error('Socket connection error:', err);
+		if (err.includes("token missing")) {
+			alert("Token eksik. Lütfen tekrar giriş yapın.");
+			Router.getInstance().go('/login');
+		} else if (err.includes("Token validation error")) {
+			alert("Token doğrulama hatası :" + err);
+			Router.getInstance().go('/login');
+		} else if (err.includes("Game server error")) {
+			alert("Aynı anda birden fazla oyuna katılamazsınız.");
+			Router.getInstance().go('/');
+		}*/
+	});
+}
+

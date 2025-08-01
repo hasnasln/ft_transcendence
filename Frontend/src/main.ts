@@ -6,6 +6,7 @@ import { PlayPage } from './pages/play-page';
 import { RegisterPage } from './pages/register';
 import { LoginPage } from './pages/login';
 import { GamePage } from './pages/game';
+import { listenGameBusEvents } from './pages/game-section/gameEventBus';
 
 function bootstrap() {
 	const router = Router.getInstance();
@@ -33,6 +34,7 @@ function bootstrap() {
 	router.registerPage("/login", new LoginPage());
 	router.registerPage("/500", new ServerErrorPage());
 	router.go(window.location.pathname, true);
+	listenGameBusEvents();
 }
 
 bootstrap();
