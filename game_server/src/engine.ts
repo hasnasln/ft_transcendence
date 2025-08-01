@@ -61,7 +61,7 @@ function skipIfMatchOver(g: Game, _dt: number): boolean {
         GameEmitter.getInstance().emitGameState(g);
 
 		if (g.gameMode === 'localGame' || g.gameMode === 'vsAI')
-			MatchManager.getInstance().clearMatch(g);
+			MatchManager.getInstance().clearGame(g);
 		g.end();
 		return false;
 	}

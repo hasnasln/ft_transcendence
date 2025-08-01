@@ -29,7 +29,7 @@ export class GameQueue {
         const player1 = this.queuedPlayers.shift()!;
         const player2 = this.queuedPlayers.shift()!;
 
-        MatchManager.getInstance().createRemoteMatch(player1, player2);
+        MatchManager.getInstance().createRemoteGame(player1, player2);
     }
 
     public dequeue(player: Player) {

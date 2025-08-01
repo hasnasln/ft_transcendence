@@ -116,7 +116,7 @@ export class ConnectionHandler {
             const activeMatch = MatchManager.getInstance().getMatchByPlayer(player.username);
             if (activeMatch) {
                 activeMatch.finishIncompleteMatch();
-                MatchManager.getInstance().clearMatch(activeMatch);
+                MatchManager.getInstance().clearGame(activeMatch);
             }
         });
 

@@ -15,7 +15,7 @@ setInterval(() => {
 				const opponent = game.players.find(p => p.username !== player.username)!;
 				game.finishIncompleteMatch(opponent.username);
 			}
-			MatchManager.getInstance().clearMatch(game);
+			MatchManager.getInstance().clearGame(game);
 		}
 	}
 }, 1000);
