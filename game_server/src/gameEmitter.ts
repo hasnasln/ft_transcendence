@@ -2,9 +2,14 @@ import { ConnectionHandler } from "./connection";
 import {GameConstants, GameState, PaddleState, Game, GameEndInfo} from "./game";
 import { GameEntityFactory } from "./gameEntity";
 
+interface GameEmitCache {
+	cache: Map<string, any>;
+}
+
 export class GameEmitter {
 	private static _instance: GameEmitter;
 	private readonly ucf: number = GameEntityFactory.UCF;
+	private readonly caches: Map<string, GameEmitCache> = new Map();
 
 	private constructor() {}
 
@@ -13,6 +18,20 @@ export class GameEmitter {
 			GameEmitter._instance = new GameEmitter();
 		}
 		return GameEmitter._instance;
+	}
+
+	private emitWithCache(event: string, data: any, roomId: string): void {
+		let cache = this.caches.get(roomId);
+		if (!cache) {
+			cache = { cache: new Map() };
+			this.caches.set(roomId, cache);
+		}
+		const cachedData = cache.cache.get(event);
+		if (cachedData && JSON.stringify(cachedData) === JSON.stringify(data)) {
+			return;
+		}
+		cache.cache.set(event, data);
+		ConnectionHandler.getInstance().getServer().to(roomId).emit(event, data);
 	}
 
 	public emitGameConstants(game: Game): void {
@@ -35,7 +54,7 @@ export class GameEmitter {
 			phase: game.state
 		};
 
-		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("gameState", gameState);
+		this.emitWithCache("gameState", gameState, game.roomId);
 	}
 
 	public emitSetState(game: Game): void {
@@ -60,7 +79,7 @@ export class GameEmitter {
 			return;
 		}
 
-		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("bu", `${x.toFixed(2)}:${y.toFixed(2)}`);
+		this.emitWithCache("bu", `${x.toFixed(2)}:${y.toFixed(2)}`, game.roomId);
 	}
 
 	public emitPaddleState(game: Game): void {
@@ -69,20 +88,12 @@ export class GameEmitter {
 			p2y: game.rightPaddle.position.y / this.ucf,
 		};
 
-		if (game.lastPaddleUpdate &&
-			game.lastPaddleUpdate.p1y === paddleState.p1y &&
-			game.lastPaddleUpdate.p2y === paddleState.p2y
-		) {
-			return;
-		}
-
-		game.lastPaddleUpdate = paddleState;
-		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("paddleUpdate", paddleState);
+		this.emitWithCache("paddleUpdate", paddleState, game.roomId);
 	}
 
 	public emitGameFinish(game: Game): void {
 		const gameEndInfo: GameEndInfo = {
-			matchWinner: game.matchWinner,
+			matchWinner: game.winner,
 			endReason: game.aPlayerDisconnected ? 'disconnection' : 'normal',
 		};
 

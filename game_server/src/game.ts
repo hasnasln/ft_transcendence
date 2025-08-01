@@ -69,7 +69,6 @@ export class Game {
 	//  Meta
 	public roomId: string;
 	public gameMode: GameMode;
-	public lastPaddleUpdate: PaddleState | undefined = undefined;
 
 	public leftInput: InputProvider | undefined;
 	public rightInput: InputProvider | undefined;
