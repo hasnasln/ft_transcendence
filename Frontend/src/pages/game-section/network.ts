@@ -22,7 +22,6 @@ interface GameConstants {
 }
 
 export interface GameState {
-	matchOver: boolean;
 	setOver: boolean;
 	isPaused: boolean;
 	roundNumber?: number;

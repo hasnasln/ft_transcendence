@@ -58,11 +58,10 @@ export class Game {
 	public ground: Ground;
 
 	// Game Status
-	public matchOver = true;
 	public scoringManager: ScoringManager = new ScoringManager(this);
 
 	public isPaused = true;
-	public matchWinner: Side | undefined = undefined; //todo encapsulate this to scoring manager
+	public winner: Side | undefined = undefined; //todo encapsulate this to scoring manager
 	public aPlayerDisconnected: boolean = false;
 	public lastUpdatedTime: number | undefined = undefined;
 
@@ -112,12 +111,11 @@ export class Game {
 			this.resetBall(winner);
 		} else {
 			//todo extract here to a method
-			this.matchOver = true;
 			this.stopGameLoop();
 			this.end();
 
 			if (this.gameMode === 'tournament') {
-				const winnerInput = this.matchWinner === 'leftPlayer' ? this.leftInput : this.rightInput;
+				const winnerInput = this.winner === 'leftPlayer' ? this.leftInput : this.rightInput;
 				const uuid = winnerInput!.getUuid();
 				const username = winnerInput!.getUsername();
 				try {
@@ -127,7 +125,7 @@ export class Game {
 				}
 			}
 
-			this.matchWinner = this.scoringManager.getMatchWinner()!;
+			this.winner = this.scoringManager.getMatchWinner()!;
 
 			GameEmitter.getInstance().emitGameState(this);
 			GameEmitter.getInstance().emitGameFinish(this);
@@ -147,7 +145,7 @@ export class Game {
 		if (username)
 			inCompleteWinner = (username === this.leftInput!.getUsername() ? 'leftPlayer' : 'rightPlayer') as Side;
 		this.end();
-		this.matchWinner = inCompleteWinner;
+		this.winner = inCompleteWinner;
 		this.aPlayerDisconnected = true;
 		GameEmitter.getInstance().emitGameState(this);
 		GameEmitter.getInstance().emitGameFinish(this);
