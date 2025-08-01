@@ -73,7 +73,8 @@ export function waitForMatchReady(): Promise<MatchPlayers> {
 		});
 }
 
-export function waitForRematchApproval(rival: string): Promise<boolean> {
+export function waitForRematchApproval(): Promise<boolean> {
+	const rival = gameInstance.currentRival || "rakip";
 	return new Promise((resolve) => {
 		gameInstance.uiManager.onInfoShown(`Talebiniz ${rival} oyuncusuna iletildi.`);
 		WebSocketClient.getInstance().on("rematch-ready", () => {
@@ -119,5 +120,6 @@ export function waitGameStart(gameInfo: GameInfo): Promise<void> {
 				resolve();
 			}
 		}, 10);
+		gameInstance.timers.push(timerId);
 	});
 }
