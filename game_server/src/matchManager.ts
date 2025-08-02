@@ -2,7 +2,7 @@ import { Socket } from "socket.io";
 import { Game } from "./game";
 import { LocalPlayerInput, RemotePlayerInput, AIPlayerInput } from "./inputProviders";
 import { GameStatus } from "./game";
-import { getTournament, findMyMatch, joinMatchByCode as notifyTournamentService } from "./tournament";
+import {getTournament, extractMatch, joinMatchByCode as notifyTournamentService, Match} from "./tournament";
 import { emitError } from "./errorHandling";
 import { GameEmitter } from "./gameEmitter";
 import { ConnectionHandler } from "./connection";
@@ -36,7 +36,7 @@ export class MatchManager {
     private readonly readyTimeout: number = 20_000;
 	public disconnectTimestamps: Map<string, DisconnectionEvent> = new Map();
 	public playersGamesMap: Map<string, Game> = new Map();
-	private waitingTournamentMatches: Map<string, Map<string, Player>> = new Map();
+	private waitingTournamentMatches: Map<string, Player[]> = new Map();
 
 	private constructor() {}
 
@@ -119,35 +119,25 @@ export class MatchManager {
 
 	private async handleTournamentGame(player: Player, tournamentCode: string) {
 		try {
-			const response = await getTournament(tournamentCode!);
-			if (!response.success)
-				throw new Error(`Could not get the tournament with code : ${tournamentCode}`);
-
-			const match = findMyMatch(response.data, player.uuid);
-			if (!match.match_id) {
-				ConnectionHandler.getInstance().getServer().to(player.socket.id).emit("goToNextRound");
-				return;
+			const tournament = await getTournament(tournamentCode!);
+			if (!tournament) {
+				throw new Error(`Tournament with code ${tournamentCode} not found.`);
 			}
 
-			if (!this.waitingTournamentMatches.has(match.match_id))
-				this.waitingTournamentMatches.set(match.match_id, new Map<string, Player>());
+			const match = extractMatch(tournament, player.uuid);
 
-			const matchedPlayers = this.waitingTournamentMatches.get(match.match_id);
+			let matchedPlayers: Player[] | undefined = this.waitingTournamentMatches.get(match.match_id);
 			if (!matchedPlayers) {
-				throw new Error(`Maç bulunamadı: match_id = ${match.match_id}`);
+				matchedPlayers = []
+				this.waitingTournamentMatches.set(match.match_id, matchedPlayers);
 			}
-			matchedPlayers.set(player.username, player);
+			matchedPlayers.push(player);
 
-			if (matchedPlayers.size !== 2)
-				throw new Error(`an incomplete match found: match_id = ${match.match_id}, players = ${Array.from(matchedPlayers.keys()).join(', ')}`);
+			console.log(`${new Date().toISOString()}] ${player.username.padStart(10)} is connected for opponent in tournament match: ${match.match_id}`);
+			if (matchedPlayers.length == 1)
+				return;
 
-			const tournament = { code: tournamentCode, roundNo: match.roundNumber, finalMatch: match.finalMatch };
-
-			const iter = matchedPlayers.values();
-			const player1 = iter.next().value!;
-			const player2 = iter.next().value!;
-
-			this.createRemoteGame(player1, player2, tournament);
+			this.createRemoteGame(matchedPlayers[0], matchedPlayers[1], { code: tournamentCode, roundNo: match.roundNumber, finalMatch: match.finalMatch });
 		} catch (err: any) {
 			console.error("Tournament match error:", err);
 			emitError(err.message, player.socket.id);
@@ -163,7 +153,7 @@ export class MatchManager {
 
 		/* game.players.length == 1 */
 		if (game.gameMode === 'vsAI' || game.gameMode === 'localGame') {
-			game.finishIncompleteMatch();
+			game.finalize(game.gameMode === 'vsAI' ? "Robot" : "Friend");
 			this.clearGame(game);
 			return;
 		}
@@ -248,13 +238,13 @@ export class MatchManager {
 	}
 
 	public async waitForApprovals(game: Game): Promise<boolean> {
-		const approvalPromises = game.players.map(player => this.waitForSingleApproval(player));
+		const approvalPromises = game.players.map(player => this.waitForSingleApproval(player, game));
 		return Promise.all(approvalPromises).then((answers: ApprovalAnswer[]) => {
 			return answers.every(answer => answer === 'accept');
 		});
 	}
 
-	private waitForSingleApproval(player: Player): Promise<ApprovalAnswer> {
+	private waitForSingleApproval(player: Player, game: Game): Promise<ApprovalAnswer> {
 		const answer = new Promise<ApprovalAnswer>((resolve) => {
             player.socket.timeout(this.readyTimeout).once("ready", (payload) => {
                 if (payload.approval === 'rejected') {
@@ -262,6 +252,14 @@ export class MatchManager {
                     resolve('refuse');
                 } else {
                     console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} sent 'ready' message.`);
+					if (game.gameMode === 'tournament') {
+						try {
+							notifyTournamentService(game.tournament?.code as string, game.tournament?.roundNo as number,
+								{ uuid: player.uuid, username: player.username });
+						} catch (err: any) {
+							emitError(err.message, game.roomId);
+						}
+					}
                     resolve('accept');
                 }
             });
@@ -279,15 +277,7 @@ export class MatchManager {
     private onGameApproved(game: Game) {
         console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} match approved. Starting the game...`);
 
-        if (game.gameMode === 'tournament') {
-            try {
-				game.players.forEach(p => {
-					notifyTournamentService(game.tournament?.code as string, game.tournament?.roundNo as number, { uuid: p.uuid, username: p.username });
-				});
-            } catch (err: any) {
-                emitError(err.message, game.roomId);
-            }
-        }
+
 
         game.start();
     }

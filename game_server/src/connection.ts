@@ -51,14 +51,11 @@ export class ConnectionHandler {
         }
     
         const response = await apiCall('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined, token);
-        
-        if (!response.ok) {
-            return new Error("Token validation error: " + await response.text());
+        if (response.statusCode !== 200) {
+            return new Error("Token validation error: " + response.message);
         }
         
-        const body = await response.json();
-    
-        const user: any = { uuid: body.data.uuid, username: body.data.username};
+        const user: any = { uuid: response.data.uuid, username: response.data.username};
         (socket as any).user = user;
 
         if (ConnectionHandler.getInstance().connectedPlayersMap.has(user.username)) {
@@ -115,7 +112,7 @@ export class ConnectionHandler {
             console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} 'reset-match' message received.`);
             const activeMatch = MatchManager.getInstance().getMatchByPlayer(player.username);
             if (activeMatch && (activeMatch.gameMode === 'localGame' || activeMatch.gameMode === 'vsAI')) {
-                activeMatch.finishIncompleteMatch();
+                activeMatch.finalize(activeMatch.gameMode === 'vsAI' ? "Robot" : "Friend");
                 MatchManager.getInstance().clearGame(activeMatch);
             }
         });

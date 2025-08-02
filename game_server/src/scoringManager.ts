@@ -3,10 +3,10 @@ import { GameEmitter } from './gameEmitter';
 
 export class ScoringManager {
 
+	private readonly game: Game;
 	private scores: { [side in Side]: number } = { leftPlayer: 0, rightPlayer: 0 };
 	private sets: { [side in Side]: number } = { leftPlayer: 0, rightPlayer: 0 };
 	private setOver: boolean = false;
-	private game: Game;
 
 	public constructor(game: Game) {
 		this.game = game;
