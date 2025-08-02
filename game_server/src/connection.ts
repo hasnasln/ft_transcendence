@@ -125,6 +125,17 @@ export class ConnectionHandler {
             MatchManager.getInstance().handleDisconnect(player);
             ConnectionHandler.getInstance().onDisconnection(player);
         });
+
+
+        socket.on("pause-resume", (data: { status: string }) => {
+            const match = MatchManager.getInstance().getMatchByPlayer(player.username);
+            if (!match) return;
+
+            if (data.status === "pause" && !match.isPaused)
+                match.pause();
+            else if (data.status === "resume" && match.isPaused)
+                match.resume();
+        });
     }
 
     public getServer(): Server {
