@@ -1,10 +1,10 @@
-import { InputProvider } from "./inputProviders";
+import {InputProvider} from "./inputProviders";
 import {MatchManager, Player} from "./matchManager";
-import { GameEmitter } from "./gameEmitter";
-import { ScoringManager } from "./scoringManager";
-import { GameOrchestrator } from "./orchestrator";
-import { Ball, DEFAULT_GAME_ENTITY_CONFIG, GameEntityFactory, GameEnvironment } from "./gameEntity";
-import {pushWinnerToTournament} from "./tournament";
+import {GameEmitter} from "./gameEmitter";
+import {ScoringManager} from "./scoringManager";
+import {GameOrchestrator} from "./orchestrator";
+import {Ball, DEFAULT_GAME_ENTITY_CONFIG, GameEntityFactory, GameEnvironment} from "./gameEntity";
+import {patchWinnersToTournament} from "./tournament";
 import {emitError} from "./errorHandling";
 
 export type Side = 'leftPlayer' | 'rightPlayer';
@@ -55,7 +55,7 @@ export class Game {
 	public environment: GameEnvironment;
 	public scoringManager: ScoringManager = new ScoringManager(this);
 
-	public isPaused = true;
+	public isPaused = false;
 	public winner: Side | undefined = undefined;
 	public aPlayerDisconnected: boolean = false;
 	public lastUpdatedTime: number | undefined = undefined;
@@ -89,117 +89,52 @@ export class Game {
 		}, 1000);
 	}
 
-	public scorePoint(winner: Side) {
-		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} scored point for ${winner}.`);
-		if (this.state === 'completed' || this.isPaused) return;
-
-		this.scoringManager.onScore(winner); 
-
-		if (this.scoringManager.continueNewRound()) {
-			this.resetBall(winner);
-		} else {
-			this.finalize();
+	private startNewRound(lastScorer?: Side) {
+		if (!lastScorer) {
+			lastScorer = Math.random() < 0.5 ? 'leftPlayer' : 'rightPlayer';
 		}
-
+		this.resetBall(lastScorer);
+		GameEmitter.getInstance().emitGameConstants(this);
 		GameEmitter.getInstance().emitBallState(this);
 		GameEmitter.getInstance().emitSetState(this);
 		GameEmitter.getInstance().emitGameState(this);
 	}
 
-	public finishIncompleteMatch(username?: string) {
-		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} finishes incomplete match.`);
-		let inCompleteWinner: Side | undefined = undefined;
-		if (username)
-			inCompleteWinner = (username === this.leftInput!.getUsername() ? 'leftPlayer' : 'rightPlayer') as Side;
+	public scorePoint(scorer: Side) {
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} scored point for ${scorer}.`);
+		if (this.state === 'completed' || this.isPaused) return;
+
+		this.scoringManager.onScore(scorer);
+		if (this.scoringManager.continueNewRound()) {
+			this.startNewRound(scorer);
+		} else {
+			this.finalize();
+		}
+	}
+
+	public finalize(winner?: string) {
 		this.end();
-		this.winner = inCompleteWinner;
-		this.aPlayerDisconnected = true;
-		GameEmitter.getInstance().emitGameState(this);
-		GameEmitter.getInstance().emitGameFinish(this);
-	}
-
-	public pauseGameLoop() {
-		if (this.state === 'completed') {
-			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game cannot be paused, it is either over or already in progress.`);
-			return;
+		if (winner) {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} finishes incomplete match.`);
+			this.winner = (winner === this.leftInput!.getUsername() ? 'leftPlayer' : 'rightPlayer') as Side;
+			this.aPlayerDisconnected = true;
+		} else {
+			this.winner = this.scoringManager.getMatchWinner()!
+			this.aPlayerDisconnected = false;
 		}
-		this.isPaused = true;
-		this.lastUpdatedTime = undefined;
-		GameOrchestrator.getInstance().remove(this);
-		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game paused.`);
-	}
-
-	public stopGameLoop() {
-		GameOrchestrator.getInstance().remove(this);
-	}
-
-	public resumeGameLoop() {
-		if (this.state === 'completed') {
-			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game cannot be resumed, it is either over or already in progress.`);
-			return;
-		}
-		this.isPaused = false;
-		
-		GameOrchestrator.getInstance().add(this);
-		this.lastUpdatedTime = Date.now();
-		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game resume now.`);
-	}
-
-	public startGameLoop() {
-		GameEmitter.getInstance().emitGameConstants(this);
-		GameEmitter.getInstance().emitSetState(this);
-
-		this.scoringManager.isSetOver();
-		this.scoringManager.setSetOver(false); //todo not sure if needed
-		this.isPaused = false;
-
-		this.leftInput?.init?.();
-		this.rightInput?.init?.();
-
-		GameEmitter.getInstance().emitGameState(this);
-
-		const sides = [
-			{ socket: typeof this.leftInput!.getSocket === 'function' ? this.leftInput!.getSocket()! : null },
-			{ socket: typeof this.rightInput!.getSocket === 'function' ? this.rightInput!.getSocket()! : null }
-		];
-
-		if (this.gameMode === 'vsAI' || this.gameMode === 'localGame') {
-			//todo handle this in a global way. and gracefully off it.
-			sides.forEach(({ socket }) => {
-				if (!socket) return;
-				socket.on("pause-resume", (data: { status: string }) => {
-					if (data.status === "pause" && !this.isPaused)
-						this.pauseGameLoop();
-					else if (data.status === "resume" && this.isPaused)
-						this.resumeGameLoop();
-				});
-			});
-		}
-
-		if (!this.isPaused) {
-			const initialPlayer = Math.random() < 0.5 ? 'leftPlayer' : 'rightPlayer';
-			this.resetBall(initialPlayer);
-		}
-
-		GameOrchestrator.getInstance().add(this);
-	}
-
-	private finalize() {
-		this.stopGameLoop();
-		this.end();
 
 		if (this.gameMode === 'tournament') {
 			const winnerInput = this.winner === 'leftPlayer' ? this.leftInput : this.rightInput;
 			const uuid = winnerInput!.getUuid();
 			const username = winnerInput!.getUsername();
 			try {
-				pushWinnerToTournament(this.tournament?.code as string, this.tournament?.roundNo as number, { uuid, username });
+				patchWinnersToTournament(this.tournament?.code as string, this.tournament?.roundNo as number, { uuid, username });
 			} catch (err: any) {
 				emitError(err.message, this.roomId);
 			}
 		}
 
-		this.winner = this.scoringManager.getMatchWinner()!;
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} finalized with winner: ${this.winner}.`);
 
 		GameEmitter.getInstance().emitGameState(this);
 		GameEmitter.getInstance().emitGameFinish(this);
@@ -209,25 +144,61 @@ export class Game {
 	}
 
 	public start() {
+		if (this.state !== "waiting") {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game cannot be started.`);
+			return;
+		}
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} started.`);
+
+		this.leftInput?.init?.();
+		this.rightInput?.init?.();
+
 		this.state = 'playing';
-		this!.startGameLoop();
+		this.startNewRound()
+		GameOrchestrator.getInstance().add(this);
 	}
 
 	public pause() {
+		if (this.state === 'completed') {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game cannot be paused, it is either over or already in progress.`);
+			return;
+		}
+		if (this.isPaused) {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game is already paused.`);
+			return;
+		}
+
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} paused.`);
-		this!.pauseGameLoop();
+		this.isPaused = true;
+		this.lastUpdatedTime = undefined;
+		GameOrchestrator.getInstance().remove(this);
 	}
 
 	public resume() {
+		if (this.state === 'completed') {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game cannot be resumed, it is either over or already in progress.`);
+			return;
+		}
+		if (!this.isPaused) {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game is already running.`);
+			return;
+		}
+
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} resumes.`);
-		this!.resumeGameLoop();
+		this.isPaused = false;
+		this.lastUpdatedTime = Date.now();
+		GameOrchestrator.getInstance().add(this);
 	}
 
 	public end() {
+		if (this.state === 'completed') {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game is already ended.`);
+			return;
+		}
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} ended.`);
 		this.state = 'completed';
 		GameEmitter.getInstance().invalidateCache(this.roomId);
+		GameOrchestrator.getInstance().remove(this);
 	}
 
 	public getBall() {
