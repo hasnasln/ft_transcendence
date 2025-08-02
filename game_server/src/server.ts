@@ -5,6 +5,7 @@ import { GameOrchestrator } from "./orchestrator";
 ConnectionHandler.getInstance().init();
 GameOrchestrator.getInstance().start(60);
 
+//todo clean up old timestamps gracefully
 setInterval(() => {
 	const now = Date.now();
 	for (const [username, disconnectEvent] of MatchManager.getInstance().disconnectTimestamps) {
@@ -13,7 +14,7 @@ setInterval(() => {
 			const {player,game} = disconnectEvent;
 			if (game.state === 'playing') {
 				const opponent = game.players.find(p => p.username !== player.username)!;
-				game.finishIncompleteMatch(opponent.username);
+				game.finalize(opponent.username);
 			}
 			MatchManager.getInstance().clearGame(game);
 		}
