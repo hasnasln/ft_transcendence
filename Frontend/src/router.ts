@@ -530,18 +530,16 @@ export class Router {
 
 		// page'in url'ini reverse index'le bulur.
 		const legacyPagePath = this.pages.entries().find(([_, page]) => page === legacyPage)?.[0];
-		if (contentContainer == undefined) {
-			console.error(`Content container not found for path: '${newPagePath}', legacyPagePath='${legacyPagePath}', contentContainer='${contentContainer}'`);
-			return;
-		}
 
 		if (legacyPagePath) {
-			contentContainer.id = 'hidden-page-' + legacyPagePath;
-			contentContainer.classList.add('hidden');
+			if (contentContainer) {
+				contentContainer.id = 'hidden-page-' + legacyPagePath;
+				contentContainer.classList.add('hidden');
+			}
 		} else {
 			// non-indexed page, do not cache.
 			this.activePages.delete(this.currentPath);
-			contentContainer.remove();
+			contentContainer?.remove();
 		}
 
 		const newPageElement = document.getElementById('hidden-page-' + newPagePath);
