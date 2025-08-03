@@ -1,6 +1,6 @@
-import { Game } from "./game";
+import {Game, Position} from "./game";
 import {GameEntityFactory} from "./gameEntity";
-import { GameEmitter } from "./gameEmitter";
+import {GameEmitter} from "./gameEmitter";
 
 type Middleware = (g: Game, dt: number) => boolean;
 
@@ -71,21 +71,43 @@ function handleWallBounce(g: Game, _dt: number): boolean {
 	if ((hitTop || hitBottom) && Math.abs(g.environment.ball.position.x) <= g.environment.ground.width / 2 + g.environment.ball.radius) {
 		g.environment.ball.velocity.y *= -1;
 	}
+	g.environment.ball.position.y = Math.max(-(g.environment.ground.height / 2 - g.environment.ball.radius), Math.min(g.environment.ball.position.y, g.environment.ground.height / 2 - g.environment.ball.radius));
 	return true;
 }
 
-function handlePaddleBounce(g: Game, _dt: number): boolean {
+function handlePaddleBounce(g: Game, dt: number): boolean {
 	const paddles = [
 		{ paddle: g.environment.leftPaddle, direction: 1 },
 		{ paddle: g.environment.rightPaddle, direction: -1 }
 	];
 
+	const current = g.environment.ball.position;
+	const previous = {
+		x: g.environment.ball.position.x - g.environment.ball.velocity.x * dt,
+		y: g.environment.ball.position.y - g.environment.ball.velocity.y * dt
+	};
+
 	paddles.forEach(({ paddle, direction }) => {
 		const relativeX = g.environment.ball.position.x - paddle.position.x;
 		const xThreshold = g.environment.ball.radius + paddle.width + 1;
-		if (Math.abs(relativeX) < xThreshold &&  // pedala yeteri kadar yakında mı ?
+
+		const paddleTop = {x: paddle.position.x, y: paddle.position.y - paddle.height / 2};
+		const paddleBottom = {x: paddle.position.x, y: paddle.position.y + paddle.height / 2};
+		const tunnelled = intersectSegments(previous, current, paddleTop, paddleBottom);
+
+		let distanceToTravel = 0;
+		if (tunnelled) {
+			// teleport to the edge of the paddle to override suggested position by moveBall().
+			const norm = {x: tunnelled.x - g.environment.ball.position.x, y: tunnelled.y - g.environment.ball.position.y}
+			const distance =  g.environment.ball.radius / Math.hypot(norm.x, norm.y);
+			distanceToTravel = Math.hypot(g.environment.ball.velocity.x, g.environment.ball.velocity.y) - distance;
+			g.environment.ball.position = {x: tunnelled.x + norm.x * distance, y: tunnelled.y + norm.y * distance};
+		}
+
+		if (tunnelled ||
+			(Math.abs(relativeX) < xThreshold &&  // pedala yeteri kadar yakında mı ?
 			g.environment.ball.velocity.x * direction < 0 && // pedala doğru hareket ediyor mu ?
-			relativeX * direction > 0)           // pedalın önünde mi ?
+			relativeX * direction > 0))           // pedalın önünde mi ?
 		{
 			const relativeY = g.environment.ball.position.y - paddle.position.y;
 			const yThreshold = (paddle.height + g.environment.ball.radius) / 2 + 1;
@@ -107,7 +129,23 @@ function handlePaddleBounce(g: Game, _dt: number): boolean {
 				g.environment.ball.velocity.y *= -1;
 			}
 		}
+
+		/* the tunnel case's position overriding removes actual distance to travel
+		* so we move the ball for remaining distance. however, this time we ignore
+		* tunneling because getting double tunneling is extreme and practically
+		* indicates parallel paddle movement which causes infinite loops.
+		*
+		* also, this behavior is really exceptional case and can cause client side
+		* visualization glitches because the ball is never seen on the paddle.
+		*  */
+		if (distanceToTravel !== 0) {
+			const len = Math.hypot(g.environment.ball.velocity.x, g.environment.ball.velocity.y);
+			const delta = {x: g.environment.ball.velocity.x / len * distanceToTravel, y: g.environment.ball.velocity.y / len * distanceToTravel};
+			g.environment.ball.position.x += delta.x;
+			g.environment.ball.position.y += delta.y;
+		}
 	});
+
 
 	return true;
 }
@@ -157,8 +195,33 @@ function handleScoring(g: Game, _dt: number): boolean {
 	return false;
 }
 
- function exportStates(g: Game, _dt: number): boolean {
+function intersectSegments(a: Position, b: Position, c: Position, d: Position): Position | null {
+	const ab = { x: b.x - a.x, y: b.y - a.y };
+	const dc = { x: d.x - c.x, y: d.y - c.y };
+	const ca = { x: c.x - a.x, y: c.y - a.y };
+
+	const det = ab.x * dc.y - ab.y * dc.x;
+	if (det === 0) {
+		return null;
+	}
+
+	const t = (ca.x * dc.y - ca.y * dc.x) / det;
+	const u = (ca.x * ab.y - ca.y * ab.x) / det;
+
+	if (t < 0 || t > 1 || u < 0 || u > 1) {
+		return null;
+	}
+
+	return {
+		x: a.x + t * ab.x,
+		y: a.y + t * ab.y
+	};
+}
+
+function exportStates(g: Game, _dt: number): boolean {
     GameEmitter.getInstance().emitBallState(g);
     GameEmitter.getInstance().emitPaddleState(g);
 	return true;
 }
+
+
