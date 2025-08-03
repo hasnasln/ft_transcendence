@@ -17,6 +17,7 @@ export function tournamentApiCall(endpoint: string, method: string, headers?: He
 	headers = headers || {};
 	return apiCall(`${url}/api/${endpoint}`, method, {
 		...headers,
+		'Content-Type': 'application/json',
 		"x-api-key": process.env.X_API_KEY ?? "bypassauth",
 	}, body, token);
 }
@@ -45,7 +46,7 @@ export async function apiCall(url: string, method: string, headers: HeadersInit,
 			console.error('Error in fetch:', error);
 			throw error;
 		}
-		return { statusCode: response.status, message: responseBody.message, data: responseBody.data } satisfies ApiResult;
+		return { statusCode: response.status, message: response.ok ? responseBody.message : responseBody.error, data: responseBody.data } satisfies ApiResult;
 	} else {
 		const text = await response.text();
 		return { statusCode: -1, message: text, data: null } satisfies ApiResult;

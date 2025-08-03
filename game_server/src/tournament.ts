@@ -79,7 +79,7 @@ export async function getTournament(tournamentCode: string): Promise<TournamentD
 }
 
 export async function patchWinnersToTournament(tournamentCode: string, roundNumber: number, winner: Participant) {
-    const response = await tournamentApiCall(`tournament/${tournamentCode}`, HTTPMethod.PATCH, {}, JSON.stringify({roundNumber, winner}));
+    const response = await tournamentApiCall(`tournament/${tournamentCode}`, HTTPMethod.PATCH, {}, JSON.stringify({round_number: roundNumber, winner}));
 
     if (response.statusCode !== 200) {
         throw new Error(`Failed to patch winners to tournament: ${response.message}`);
@@ -87,7 +87,7 @@ export async function patchWinnersToTournament(tournamentCode: string, roundNumb
 }
 
 export async function joinMatchByCode(tournamentCode: string, roundNumber: number, participant: Participant) {
-    const response = await tournamentApiCall(`tournament/${tournamentCode}/join-match`, HTTPMethod.PATCH, {}, JSON.stringify({ roundNumber, participant }));
+    const response = await tournamentApiCall(`tournament/${tournamentCode}/join-match`, HTTPMethod.PATCH, {}, JSON.stringify({round_number:  roundNumber, participant }));
 
     if (response.statusCode !== 200) {
         throw new Error(`Failed to join match by code: ${response.message}`);
