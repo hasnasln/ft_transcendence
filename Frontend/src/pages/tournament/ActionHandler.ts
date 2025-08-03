@@ -38,7 +38,7 @@ export class TournamentActionHandler {
                 code: response.data.code,
                 name: response.data.name,
                 admin_id: response.data.admin_id,
-                participants: response.data.participants || []
+                lobby_members: response.data.participants || []
             };
             return {
                 success: true,
@@ -75,7 +75,7 @@ export class TournamentActionHandler {
                     code: tournamentResponse.data.code,
                     name: tournamentResponse.data.name,
                     admin_id: tournamentResponse.data.admin_id,
-                    participants: tournamentResponse.data.participants
+                    lobby_members: tournamentResponse.data.participants
                 };
                 return {
                     success: true,
@@ -143,11 +143,13 @@ export class TournamentActionHandler {
                     message: '❌ Turnuva verisi bulunamadı!'
                 };
             }
+            console.log("refresh-->>>>", response);
             const updatedData: ITournament = {
                 id: response.data.id || this.data.id,
                 code: response.data.code || this.data.code,
                 name: response.data.name || this.data.name,
                 admin_id: response.data.admin_id || this.data.admin_id,
+                lobby_members: response.data.participants || response.data.users || [],
                 participants: response.data.participants || response.data.users || []
             };
             return {
@@ -167,7 +169,7 @@ export class TournamentActionHandler {
         const isAdmin = this.data.admin_id === localStorage.getItem('uuid');
         try {
             let response;
-            if (isAdmin) {
+            if (isAdmin && this.data.status === 'ongoing') {
                 response = await _apiManager.deleteTournament(this.data.code);
             } else {
                 response = await _apiManager.leaveTournament(this.data.code);

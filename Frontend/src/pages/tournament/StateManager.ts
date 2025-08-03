@@ -17,14 +17,15 @@ export class TournamentStateManager {
     }
 
     async handleRefreshSuccess(updatedData: ITournament): Promise<void> {
-        this.data.participants = updatedData.participants;
-        localStorage.setItem('tdata', JSON.stringify(updatedData));
+        this.data.lobby_members = updatedData.lobby_members;
         const response = await _apiManager.getTournament(this.data.code);
         const tournamentStarted = response.data?.tournament_start || false;
         if (tournamentStarted) {
             this.status = true;
         }
-        this.updateRefreshUI(tournamentStarted);
+        const uid = localStorage.getItem('uuid');
+        console.log('participants:', updatedData.participants);
+        this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid));
         await this.delay(500);
         this.completeRefresh(updatedData);
     }
@@ -60,8 +61,8 @@ export class TournamentStateManager {
         t_first_section(container);
     }
 
-    private updateRefreshUI(tournamentStarted: boolean): void {
-        if (tournamentStarted) {
+    public updateRefreshUI(tournamentStarted: boolean, is_players: boolean): void {
+        if (tournamentStarted && is_players) {
             const startButton = document.getElementById('start-button');
             if (startButton) {
                 startButton.style.display = 'none';
@@ -131,7 +132,7 @@ export class TournamentStateManager {
     updateTournamentInfo(): void {
         const startButton = document.getElementById('start-button');
         const startInfo = document.querySelector('.tournament-start-info');
-        const playerCount = this.data.participants.length;
+        const playerCount = this.data.lobby_members.length;
         const minPlayers = 2;
         const maxPlayers = 10;
         

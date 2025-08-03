@@ -50,7 +50,7 @@ export class TournamentTreeManager {
 
     private async performTreeGeneration(): Promise<{ success: boolean; data?: any; message: string }> {
         try {
-            const participants = this.data.participants.map(user => user.username);
+            const participants = this.data.lobby_members.map(user => user.username);
             const tournamentData = await _apiManager.getTournament(this.data.code);
             if (tournamentData.success && tournamentData.data) {
                 const realTournamentData = {
@@ -64,7 +64,7 @@ export class TournamentTreeManager {
                     data: {
                         participants,
                         tournamentData: realTournamentData,
-                        playerCount: this.data.participants.length
+                        playerCount: this.data.lobby_members.length
                     },
                     message: '✅ Turnuva ağacı başarıyla oluşturuldu!'
                 };
@@ -74,20 +74,20 @@ export class TournamentTreeManager {
                     data: {
                         participants,
                         tournamentData: null,
-                        playerCount: this.data.participants.length
+                        playerCount: this.data.lobby_members.length
                     },
                     message: '⚠️ Turnuva verisi alınamadı, standart ağaç gösteriliyor.'
                 };
             }
         } catch (error) {
             console.error('Error fetching tournament data:', error);
-            const participants = this.data.participants.map(user => user.username);
+            const participants = this.data.lobby_members.map(user => user.username);
             return {
                 success: true,
                 data: {
                     participants,
                     tournamentData: null,
-                    playerCount: this.data.participants.length
+                    playerCount: this.data.lobby_members.length
                 },
                 message: '⚠️ Bağlantı hatası, standart ağaç gösteriliyor.'
             };
@@ -154,7 +154,7 @@ export class TournamentTreeManager {
         const treeContainer = document.getElementById('tree-container');
         if (!treeContainer) return;
         try {
-            const participants = this.data.participants.map(user => user.username);
+            const participants = this.data.lobby_members.map(user => user.username);
             getTournamentTree(treeContainer, participants);
         } catch (error) {
             console.error('Error rendering tournament tree:', error);

@@ -317,6 +317,7 @@ export class APIManager {
 			const response = await this.apiCall(`${this.t_url}/${tournamentCode}`, HTTPMethod.GET, {
 				'Content-Type': 'application/json',
 			});
+			console.log(response)
 			const data = await response.json();
 			result.success = true;
 			result.message = data.message;
@@ -342,6 +343,7 @@ export class APIManager {
 			}
 			else if (response.ok) {
 				const x = await response.json();
+				console.log(">>>>>>>>>>>>>>", x.data);
 				result.data = x.data;
 				result.success = true;
 				result.message = x.message;
@@ -368,7 +370,7 @@ export class APIManager {
 			result.code = response.status;
 			return result
 		} catch (error) {
-			console.error('Error in playerJoinTournament:', error);
+			console.error('Error in plaTurnuvaya katılımcı bekleniyor...yerJoinTournament:', error);
 			throw error;
 		}
 	}

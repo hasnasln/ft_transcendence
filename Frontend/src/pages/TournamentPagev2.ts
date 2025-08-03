@@ -1,6 +1,6 @@
 import { exmp } from '../languageManager';
 import { IApiResponseWrapper, _apiManager } from '../api/APIManager';
-import { ITournament } from '../api/types';
+import { ITournament, ITournamentUser} from '../api/types';
 import { Page, Router } from '../router';
 import { t_first_section } from './tournament/FormComponents';
 import { ShowTournament, getTournamentFormat, getOptimalTournamentSize, calculateByes, listPlayers} from './tournament/MainRenderer';
@@ -17,6 +17,7 @@ import { TournamentNotificationManager } from './tournament/NotificationManager'
 
 // read
 export class TournamentPage implements Page {
+    private flag: boolean = false;
     private data: ITournament | null = null;
     private status: boolean = false;
     private actionHandler!: TournamentActionHandler;
@@ -61,7 +62,6 @@ export class TournamentPage implements Page {
                 return defaultData;
             }
 
-            console.log("-->3")
             console.log("parse data ->" , parsedData);
             return parsedData;
         } catch (error) {
@@ -93,7 +93,7 @@ export class TournamentPage implements Page {
     public onLoad(): void {
         _apiManager.haveTournament()
         .then((resposeWraper) => {
-            console.log(resposeWraper);
+            console.log("haveTournament----->>", resposeWraper);
             if (resposeWraper.success === false)localStorage.removeItem('tdata');                                           // tournament verisi yoksa localStorage'dan sil
             else if (resposeWraper.success === true) localStorage.setItem('tdata', JSON.stringify(resposeWraper.data));     // tournament verisi varsa localStorage'a kaydet
             return resposeWraper;
@@ -104,10 +104,9 @@ export class TournamentPage implements Page {
                 code: '',
                 name: '',
                 admin_id: '',
-                participants: [],
+                lobby_members: [],
             };
             this.data = this.loadTournamentData(defaultData);
-            console.log("bakın--->", this.data)
 
             this.actionHandler = new TournamentActionHandler(this.data, this.status);
             this.loadingManager = new TournamentLoadingManager();
@@ -127,6 +126,7 @@ export class TournamentPage implements Page {
             } else {
                 const tdata: ITournament = JSON.parse(localStorage.getItem('tdata')!);
                 htmlcontent = this.renderTournament(tdata);
+                this.flag = true;
             }
             return htmlcontent;
         })
@@ -139,8 +139,16 @@ export class TournamentPage implements Page {
             setTimeout(() => {
                 this.init();
             }, 100);
+            if(this.flag && this.data!.status === "ongoing")
+                this.stateManager.updateRefreshUI(this.flag, this.amIPlaying(this.data!.participants!));
             exmp.applyLanguage()
         });
+    }
+
+    public amIPlaying(players: ITournamentUser[]): boolean {
+        const uuid = localStorage.getItem('uuid');
+        if (!uuid) return false;
+        return players.some(player => player.uuid === uuid);
     }
 
     public onUnload(): void {
@@ -312,7 +320,7 @@ export class TournamentPage implements Page {
 
     private async handleStartTournament(): Promise<void> {
         try {
-            const validationResult = this.validation.validateTournamentStart(this.data!.participants.length);
+            const validationResult = this.validation.validateTournamentStart(this.data!.lobby_members.length);
             if (!validationResult.isValid) {
                 this.notificationManager.showStartError(validationResult.message);
                 return;
@@ -327,7 +335,7 @@ export class TournamentPage implements Page {
             const startResult = await this.actionHandler.startTournament();
             
             if (startResult.success) {
-                this.notificationManager.showStartSuccess(startResult.message, this.data!.participants.length);
+                this.notificationManager.showStartSuccess(startResult.message, this.data!.lobby_members.length);
                 await this.stateManager.handleStartSuccess(startResult.message);
                 this.updateManagersStatus(true);
             } else {
@@ -452,7 +460,7 @@ export class TournamentPage implements Page {
         element.dataset.animationId = animationId.toString();
     }
     private async getStartConfirmation(): Promise<boolean> {
-        const playerCount = this.data!.participants.length;
+        const playerCount = this.data!.lobby_members.length;
         const confirmationMessage = this.validation.createStartConfirmationMessage(playerCount);
         return confirm(confirmationMessage);
     }
@@ -472,7 +480,7 @@ export class TournamentPage implements Page {
     }
     private handleStartError(errorMessage: string): void {
         this.loadingManager.removeLoadingOverlay('start');
-        const playerCount = this.data!.participants.length;
+        const playerCount = this.data!.lobby_members.length;
         const canStart = playerCount >= 2 && playerCount <= 10;
         this.notificationManager.resetStartButton(canStart, this.uiManager);
         this.notificationManager.showStartError(errorMessage);

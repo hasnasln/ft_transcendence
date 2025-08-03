@@ -147,8 +147,8 @@ export interface ILogoutRequest {
 
 //! token hederda olacğı için istek içerisinden tokenlar silinecek
 
-interface ITournamentUser {
-	user_id: string;
+export interface ITournamentUser {
+	uuid: string;
 	username: string;
 }
 
@@ -157,5 +157,7 @@ export interface ITournament{
 	code: string; // Tournament code
 	name: string; // Tournament name
 	admin_id: string; // Admin user ID
-	participants: ITournamentUser[]; // Users in the tournament
+	lobby_members: ITournamentUser[]; // Users in the tournament
+	status?: string;
+	participants?: ITournamentUser[]; // Players in the tournament
 }

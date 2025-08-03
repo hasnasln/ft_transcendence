@@ -352,7 +352,7 @@ const tr  = {
 			'Creater-description': "Turnuvayı organize eden kişi",
 			'ActivePlayer': "Aktif Oyuncu",
 			'ActivePlayer-description': "Aktif katılımcı sayısı ve kapasite",
-			'Status': "Statu",
+			'Status': "Durum",
 			'Status-description' : "Turnuva mevcut durumu",
 		},
 		"AdminPanel":{

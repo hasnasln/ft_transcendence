@@ -1,5 +1,5 @@
 import { _apiManager } from '../../api/APIManager';
-import { ITournament } from '../../api/types';
+import { ITournament, ITournamentUser} from '../../api/types';
 import { TournamentIcons } from './IconsHelper';
 
 export function ShowTournament(container: HTMLElement, tdata: ITournament): void {
@@ -57,18 +57,24 @@ function createInfoPanel(tdata: ITournament): string {
     `;
 }
 function createDetailsCard(tdata: ITournament): string {
-    console.log("----fatna---->", tdata);
     return `
         <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 lg:p-8 shadow-xl">
             ${createCardHeader()}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 ${createInfoCard('IdCard', tdata.code, TournamentIcons.getTournamentIdIcon(), 'from-purple-500 to-indigo-500')}
-                ${createInfoCard('Creater', tdata.participants[0]?.username || 'Unknown', TournamentIcons.getUserIcon(), 'from-blue-500 to-cyan-500')}
-                ${createInfoCard('ActivePlayer', `${tdata.participants.length} / 10`, TournamentIcons.getPlayersIcon(), 'from-green-500 to-emerald-500')}
+                ${createInfoCard('Creater', getAdminUsername(tdata) || 'Unknown', TournamentIcons.getUserIcon(), 'from-blue-500 to-cyan-500')}
+                ${createInfoCard('ActivePlayer', `${tdata.lobby_members.length} / 10`, TournamentIcons.getPlayersIcon(), 'from-green-500 to-emerald-500')}
                 ${createInfoCard('Status', 'Aktif', TournamentIcons.getStatusIcon(), 'from-pink-500 to-rose-500')}
             </div>
         </div>
     `;
+}
+function getAdminUsername(tdata: ITournament): string
+{
+    for(let i = 0; i < tdata.lobby_members.length; i++)
+        if(tdata.lobby_members[i].uuid === tdata.admin_id)
+            return tdata.lobby_members[i].username;
+    return "fatma bulamadi"
 }
 function createCardHeader(): string {
     return `
@@ -140,7 +146,7 @@ function createAdminPanel(tdata: ITournament): string {
     if (tdata.admin_id !== localStorage.getItem('uuid')) {
         return '';
     }
-    const playerCount = tdata.participants.length;
+    const playerCount = tdata.lobby_members.length;
     const minPlayers = 2;
     const maxPlayers = 10;
     const canStart = playerCount >= minPlayers && playerCount <= maxPlayers;
@@ -305,15 +311,15 @@ export function listPlayers(container: HTMLElement, tdata: ITournament): void {
     container.innerHTML = createPlayersListHTML(tdata);
 }
 function createPlayersListHTML(tdata: ITournament): string {
-    if (tdata.participants.length === 0) {
+    if (tdata.lobby_members.length === 0) {
         return createEmptyPlayersState();
     }
-    const playersHTML = tdata.participants.map((player, index) => 
+    const playersHTML = tdata.lobby_members.map((player, index) => 
         createPlayerCard(player, index, tdata.admin_id)
     ).join('');
     return `
         ${playersHTML}
-        ${createCapacityIndicator(tdata.participants.length)}
+        ${createCapacityIndicator(tdata.lobby_members.length)}
     `;
 }
 

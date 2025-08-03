@@ -151,14 +151,14 @@ export class HomePage implements Page {
 	}
 }
 
-function profileCard(name: string, linkedin: string, github: string, avatar: string): string {
+function profileCard(name: string, linkedin: string, github: string, avatar: string): string {	
 	return `
 		<div class="profile-card w-[160px] h-[220px] md:w-[180px] md:h-[240px] lg:w-[200px] lg:h-[260px] xl:w-[220px] xl:h-[280px] group cursor-pointer transform transition-all duration-300 hover:scale-105 opacity-90 hover:opacity-100">
 			<div class="relative w-full h-full bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 rounded-xl p-[2px] overflow-hidden transition-all duration-500 hover:scale-105 hover:rotate-1">
 				<!-- Glassmorphism background -->
-				<div class="absolute inset-0 bg-white/20 backdrop-blur-sm rounded-xl"></div>
+				<div class="absolute inset-0 bg-white/20  rounded-xl"></div>
 				
-				<div class="relative w-full h-full bg-white/90 backdrop-blur-lg rounded-xl p-3 md:p-4 flex flex-col items-center justify-between overflow-hidden">
+				<div class="relative w-full h-full bg-white/90  rounded-xl p-3 md:p-4 flex flex-col items-center justify-between overflow-hidden">
 					<!-- Floating particles animation -->
 					<div class="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
 						<div class="absolute top-[10%] left-[20%] w-1 h-1 bg-purple-300 rounded-full opacity-60 animate-float"></div>
@@ -169,7 +169,7 @@ function profileCard(name: string, linkedin: string, github: string, avatar: str
 					<div class="relative z-10 flex flex-col items-center">
 						<div class="relative mb-2 md:mb-3">
 							<!-- Glowing ring animation -->
-							<div class="absolute inset-0 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 animate-spin-slow opacity-75 blur-sm group-hover:opacity-100 transition-opacity duration-300"></div>
+							<div class="absolute inset-0 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 animate-spin-slow opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
 							
 							<img 
 								src="${avatar}" 
@@ -190,7 +190,7 @@ function profileCard(name: string, linkedin: string, github: string, avatar: str
 					
 					<div class="relative z-10 w-full space-y-1 md:space-y-2">
 						<a href="${linkedin}" target="_blank" rel="noopener noreferrer" 
-							class="flex items-center gap-2 p-2 bg-white/60 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300 group/link">
+							class="flex items-center gap-2 p-2 bg-white/60  rounded-lg border border-white/20 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300 group/link">
 							<div class="w-4 h-4 md:w-5 md:h-5 bg-blue-600 rounded flex items-center justify-center group-hover/link:scale-110 transition-transform duration-300">
 								<svg class="w-2 h-2 md:w-3 md:h-3 fill-white" viewBox="0 0 24 24">
 									<path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 10.268h-3v-4.604c0-1.099-.021-2.513-1.532-2.513-1.532 0-1.768 1.197-1.768 2.434v4.683h-3v-9h2.881v1.233h.041c.401-.761 1.379-1.563 2.841-1.563 3.039 0 3.6 2.001 3.6 4.599v4.731z"/>
@@ -202,7 +202,7 @@ function profileCard(name: string, linkedin: string, github: string, avatar: str
 						</a>
 						
 						<a href="${github}" target="_blank" rel="noopener noreferrer"
-							class="flex items-center gap-2 p-2 bg-white/60 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-gray-50 hover:border-gray-200 transition-all duration-300 group/link">
+							class="flex items-center gap-2 p-2 bg-white/60  rounded-lg border border-white/20 hover:bg-gray-50 hover:border-gray-200 transition-all duration-300 group/link">
 							<div class="w-4 h-4 md:w-5 md:h-5 bg-gray-800 rounded flex items-center justify-center group-hover/link:scale-110 transition-transform duration-300">
 								<svg class="w-2 h-2 md:w-3 md:h-3 fill-white" viewBox="0 0 24 24">
 									<path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.084-.729.084-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.834 2.809 1.304 3.495.997.108-.775.418-1.305.762-1.605-2.665-.305-5.466-1.334-5.466-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.301 1.23a11.52 11.52 0 013.003-.404c1.018.005 2.045.138 3.003.404 2.291-1.553 3.297-1.23 3.297-1.23.653 1.653.242 2.873.118 3.176.77.84 1.235 1.91 1.235 3.221 0 4.609-2.803 5.624-5.475 5.921.43.371.823 1.102.823 2.222v3.293c0 .322.218.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
