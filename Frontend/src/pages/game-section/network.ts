@@ -1,8 +1,6 @@
-import {gameInstance, GameMode, GameManager, GamePhase} from "../play";
-import { _apiManager } from '../../api/APIManager';
+import {gameInstance, GameMode, GamePhase} from "../play";
 import { GameEventBus } from "./gameEventBus";
 import { WebSocketClient } from "./wsclient";
-import {GameLoop} from "./gameLoop";
 
 export interface MatchPlayers {
 	left: {socketId: string, username: string};
