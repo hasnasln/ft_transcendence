@@ -146,15 +146,8 @@ export class APIManager {
 	*/
 	public async logout(): Promise<any> {
 		try {
-			const response = await this.apiCall(`${this.baseUrl}/logout`, HTTPMethod.POST, {
-				'Content-Type': 'application/json',
-			});
-			if (!response.ok) {
-				throw new Error('Logout failed');
-			}
 			this.setToken(null);
 			Router.getInstance().invalidateAllPages();
-			return response;
 		} catch (error) {
 			console.error('Error in logout:', error);
 			throw error;
@@ -373,6 +366,25 @@ export class APIManager {
 			console.error('Error in plaTurnuvaya katılımcı bekleniyor...yerJoinTournament:', error);
 			throw error;
 		}
+	}
+
+	public isTokenExpired() :boolean {
+		const token = this.getToken();
+		if (!token) return true;
+		try {
+			const payload = this.decodeJWT(token);
+			const exp = payload.exp;
+			return !exp || Date.now() >= exp * 1000;
+		} catch (error) {
+			return true;
+		}
+	}
+
+	public decodeJWT(token: string) {
+		const [, payload] = token.split('.');
+		const b64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+		const json = atob(b64);
+		return JSON.parse(json);
 	}
 }
 

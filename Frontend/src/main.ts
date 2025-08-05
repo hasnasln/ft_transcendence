@@ -7,6 +7,7 @@ import { RegisterPage } from './pages/register';
 import { LoginPage } from './pages/login';
 import { GamePage } from './pages/game';
 import { listenGameBusEvents } from './pages/game-section/gameEventBus';
+import {_apiManager} from "./api/APIManager";
 
 function bootstrap() {
 	const router = Router.getInstance();
@@ -34,6 +35,11 @@ function bootstrap() {
 	router.registerPage("/login", new LoginPage());
 	router.registerPage("/500", new ServerErrorPage());
 	router.go(window.location.pathname, true);
+	if (_apiManager.isTokenExpired()) {
+		_apiManager.logout();
+		router.go('/login');
+	}
+
 	listenGameBusEvents();
 }
 
