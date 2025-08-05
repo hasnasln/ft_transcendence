@@ -416,25 +416,21 @@ export class Router {
 
 	private constructor() {
 		this.currentPath = window.location.pathname;
-		window.addEventListener('popstate', async () => {
+		window.addEventListener('popstate', async (event) => {
 			if (this.currentPath === "/game" && gameInstance.gameStatus.currentGameStarted) {
 				const target = window.location.pathname;
-				history.pushState(null, '', this.currentPath);
+				history.replaceState({blocked:true}, '', '/game');
 				askUser("Are you sure you want to leave the page?")
 					.then((result) => {
 						if (result) {
 							this.invalidatePage("/game");
-							this.go(target, true);
+							this.go(target, true, true);
 						}
 					});
 				return;
 			}
 
-			this.go(window.location.pathname, true);
-		});
-
-		window.addEventListener('pushstate', (e) => {
-			this.go(window.location.pathname, true);
+			this.go(event.state.path, true, true);
 		});
 	}
 
@@ -486,13 +482,15 @@ export class Router {
 		document.getElementById('app')?.appendChild(contentContainer);
 	}
 
-	private savePageInfo(path: string, page: Page): void {
-		window.history.pushState({}, '', path);
+	private savePageInfo(path: string, page: Page, popstate: boolean): void {
+		if (!popstate)
+			window.history.pushState({path: path, scrollY: window.scrollY}, '', path);
+		console.log(`Router saved page info for path: ${path}`);
 		this.currentPath = path;
 		this.currentPage = page;
 	}
 
-	public createNewPage(path: string) {
+	public createNewPage(path: string, popstate: boolean) {
 		const oldContentContainer = document.getElementById(Router.CONTENT_CONTAINER_ID);
 		if (oldContentContainer) {
 			oldContentContainer.id = 'hidden-page-' + this.currentPath;
@@ -504,7 +502,7 @@ export class Router {
 
 		this.activePages.set(path, page);
 		this.setContent(pageContent);
-		this.savePageInfo(path, page);
+		this.savePageInfo(path, page, popstate);
 
 		// bu sizi rahatsız ediyorsa iyi developersınız demektir.
 		requestAnimationFrame(() => {
@@ -513,7 +511,7 @@ export class Router {
 		});
 	}
 
-	public loadExistingPage(newPagePath: string) {
+	public loadExistingPage(newPagePath: string, popstate: boolean) {
 		let contentContainer = document.getElementById(Router.CONTENT_CONTAINER_ID);
 		const legacyPage = this.currentPage;
 		const newPage = this.activePages.get(newPagePath);
@@ -550,7 +548,7 @@ export class Router {
 
 		newPageElement.id = Router.CONTENT_CONTAINER_ID;
 		newPageElement.classList.remove('hidden');
-		this.savePageInfo(newPagePath, newPage);
+		this.savePageInfo(newPagePath, newPage, popstate);
 	}
 
 	public invalidatePage(path: string): void {
@@ -572,7 +570,7 @@ export class Router {
 		this.activePages.clear();
 	}
 
-	public go(path: string, force: boolean = false): void {
+	public go(path: string, force: boolean = false, popstate:boolean=false): void {
 		if (!force && this.currentPath === path && this.currentPage !== null) {
 			console.warn(`Router skipped routing because already on ${path} and page is loaded.`);
 			return;
@@ -588,9 +586,9 @@ export class Router {
 			this.rootContainer()?.remove();
 		}
 		if (this.activePages.has(path)) {
-			this.loadExistingPage(path);
+			this.loadExistingPage(path, popstate);
 		} else {
-			this.createNewPage(path);
+			this.createNewPage(path, popstate);
 		}
 	}
 }
