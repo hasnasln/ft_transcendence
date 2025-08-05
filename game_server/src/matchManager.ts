@@ -142,7 +142,7 @@ export class MatchManager {
 			matchedPlayers.push(player);
 
 			console.log(`${new Date().toISOString()}] ${player.username.padStart(10)} is connected for opponent in tournament match: ${match.match_id}`);
-			await joinMatch(tournamentCode, match.roundNumber, player);
+			await joinMatch(tournamentCode, match.roundNumber, {uuid:player.uuid, username:player.username});
 
 			if (matchedPlayers.length == 1)
 				return;
@@ -239,7 +239,6 @@ export class MatchManager {
 
 		this.waitForApprovals(game)
 			.then(answers => {
-
 				if (game.tournament) {
 					if (answers.every(answer => answer.answer === 'accept')) {
 						this.onGameApproved(game);
