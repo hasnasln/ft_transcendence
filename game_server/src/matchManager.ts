@@ -2,14 +2,22 @@ import { Socket } from "socket.io";
 import { Game } from "./game";
 import { LocalPlayerInput, RemotePlayerInput, AIPlayerInput } from "./inputProviders";
 import { GameStatus } from "./game";
-import {getTournament, extractMatch, joinMatch, leaveMatch, generateMatchId} from "./tournament";
+import {
+	getTournament,
+	extractMatch,
+	joinMatch,
+	leaveMatch,
+	generateMatchId,
+	patchWinnersToTournament
+} from "./tournament";
 import { emitError } from "./errorHandling";
 import { GameEmitter } from "./gameEmitter";
 import { ConnectionHandler } from "./connection";
 import { GameBuilder } from "./gameBuilder";
 import { GameQueue } from "./queueManager";
+import {tournamentApiCall} from "./httpApiManager";
 
-type ApprovalAnswer = 'accept' | 'refuse' | 'timeout';
+type ApprovalAnswer = {player: Player, answer: 'accept' | 'refuse' | 'timeout'};
 
 interface MatchPlayers {
     left: { socketId: string, username: string };
@@ -230,11 +238,29 @@ export class MatchManager {
 		});
 
 		this.waitForApprovals(game)
-			.then(approved => {
-				if (approved) {
-					this.onGameApproved(game);
+			.then(answers => {
+
+				if (game.tournament) {
+					if (answers.every(answer => answer.answer === 'accept')) {
+						this.onGameApproved(game);
+						return;
+					}
+
+					let winner;
+					if (answers.some(answer => answer.answer === 'accept')) {
+						winner = answers.filter(a => a.answer === 'accept').pop()!.player
+					} else {
+						winner = answers[Math.random() > 0.5 ? 0 : 1].player;
+					}
+
+					patchWinnersToTournament(game.tournament.code, game.tournament.roundNo, winner);
+					return;
 				} else {
-					this.cancelGame(game, 'approval refused');
+					if (answers.every(answer => answer.answer === 'accept')) {
+						this.onGameApproved(game);
+					} else {
+						this.cancelGame(game, 'approval refused');
+					}
 				}
 			});
 
@@ -243,29 +269,27 @@ export class MatchManager {
 		}
 	}
 
-	public async waitForApprovals(game: Game): Promise<boolean> {
-		const approvalPromises = game.players.map(player => this.waitForSingleApproval(player, game));
-		return Promise.all(approvalPromises).then((answers: ApprovalAnswer[]) => {
-			return answers.every(answer => answer === 'accept');
-		});
+	public async waitForApprovals(game: Game): Promise<ApprovalAnswer[]> {
+		const approvalPromises = game.players.map(player => this.waitForSingleApproval(player));
+		return Promise.all(approvalPromises);
 	}
 
-	private waitForSingleApproval(player: Player, game: Game): Promise<ApprovalAnswer> {
+	private waitForSingleApproval(player: Player): Promise<ApprovalAnswer> {
 		const answer = new Promise<ApprovalAnswer>((resolve) => {
             player.socket.timeout(this.readyTimeout).once("ready", (payload) => {
                 if (payload.approval === 'rejected') {
                     console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} sent 'not ready' message.`);
-                    resolve('refuse');
+                    resolve({player ,answer: 'refuse'});
                 } else {
                     console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} sent 'ready' message.`);
-                    resolve('accept');
+                    resolve({player, answer: 'accept'});
                 }
             });
         });
 
 		const timeout = new Promise<ApprovalAnswer>((resolve) => {
 			setTimeout(() => {
-				resolve('timeout');
+				resolve({player, answer: 'timeout'});
 			}, this.readyTimeout + 100 /* 100ms buffer */);
 		});
 
