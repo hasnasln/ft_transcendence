@@ -1,5 +1,3 @@
-import { Button } from "@babylonjs/gui";
-
 const en = {
 	"singin": {
 	  "register-b": "Register",

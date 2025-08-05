@@ -141,6 +141,5 @@ export class ConnectionHandler {
 
     public onDisconnection(player: Player): void {
 		this.connectedPlayersMap.delete(player.username);
-
     }
 }
