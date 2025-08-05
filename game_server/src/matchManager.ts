@@ -2,7 +2,7 @@ import { Socket } from "socket.io";
 import { Game } from "./game";
 import { LocalPlayerInput, RemotePlayerInput, AIPlayerInput } from "./inputProviders";
 import { GameStatus } from "./game";
-import {getTournament, extractMatch, joinMatchByCode as notifyTournamentService, Match} from "./tournament";
+import {getTournament, extractMatch, joinMatch, leaveMatch, generateMatchId} from "./tournament";
 import { emitError } from "./errorHandling";
 import { GameEmitter } from "./gameEmitter";
 import { ConnectionHandler } from "./connection";
@@ -134,6 +134,8 @@ export class MatchManager {
 			matchedPlayers.push(player);
 
 			console.log(`${new Date().toISOString()}] ${player.username.padStart(10)} is connected for opponent in tournament match: ${match.match_id}`);
+			await joinMatch(tournamentCode, match.roundNumber, player);
+
 			if (matchedPlayers.length == 1)
 				return;
 
@@ -151,6 +153,17 @@ export class MatchManager {
 			return;
 		}
 
+		if (game.tournament && game.state === 'waiting') {
+			const matchId = generateMatchId(game.tournament.code, game.tournament.roundNo, game.players[0], game.players[1]);
+			const matchedPlayers = this.waitingTournamentMatches.get(matchId);
+			leaveMatch(game.tournament.code, game.tournament.roundNo, player);
+			if (matchedPlayers) {
+				this.waitingTournamentMatches.delete(matchId);
+				matchedPlayers.forEach(p => p.socket.leave(game.roomId));
+			}
+			return;
+		}
+
 		/* game.players.length == 1 */
 		if (game.gameMode === 'vsAI' || game.gameMode === 'localGame') {
 			game.finalize(game.gameMode === 'vsAI' ? "Robot" : "Friend");
@@ -158,22 +171,15 @@ export class MatchManager {
 			return;
 		}
 
-		const opponent = player.username === game.players[0].username ? game.players[1] : game.players[0];
 		switch (game.state) {
 			case 'waiting':
 				this.cancelGame(game, 'disconnect');
 				break;
 			case 'playing':
 				game.pause();
+				const opponent = player.username === game.players[0].username ? game.players[1] : game.players[0];
 				ConnectionHandler.getInstance().getServer().to(opponent.socket.id).emit("opponent-disconnected");
 				this.disconnectTimestamps.set(player.username, { player, game, timestamp: Date.now() });
-				break;
-			case 'completed':
-				if (game.gameMode === 'tournament') {
-					this.clearGame(game);
-				} else {
-					this.disconnectTimestamps.set(player.username, { player, game, timestamp: Date.now() });
-				}
 				break;
 		}
 	}
@@ -252,14 +258,6 @@ export class MatchManager {
                     resolve('refuse');
                 } else {
                     console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} sent 'ready' message.`);
-					if (game.gameMode === 'tournament') {
-						try {
-							notifyTournamentService(game.tournament?.code as string, game.tournament?.roundNo as number,
-								{ uuid: player.uuid, username: player.username });
-						} catch (err: any) {
-							emitError(err.message, game.roomId);
-						}
-					}
                     resolve('accept');
                 }
             });

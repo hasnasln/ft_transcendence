@@ -33,6 +33,7 @@ export type Round = {
     winners: Participant[] | null;
     expected_winner_count: number;
     is_completed: boolean;
+    expired_at: Date | null;
 }
 
 export type Match = {
@@ -42,6 +43,14 @@ export type Match = {
 
 export function isFinalMatch(activeRound: Round): boolean {
     return (activeRound.expected_winner_count === 1 && activeRound.winners === null);
+}
+
+export function generateMatchId(tournamentCode: string, roundNumber: number, participant1: Participant, participant2: Participant): string {
+    const p1 = participant1.username.replace(/\s+/g, '_').toLowerCase();
+    const p2 = participant2.username.replace(/\s+/g, '_').toLowerCase();
+    const first = p1 < p2 ? p1 : p2;
+    const second = p1 < p2 ? p2 : p1;
+    return `${tournamentCode}_r${roundNumber}_m${first}_vs_${second}`;
 }
 
 export function extractMatch(tournament: TournamentData, participantId: string): { roundNumber: number, match_id: string, finalMatch: boolean } {
@@ -60,7 +69,7 @@ export function extractMatch(tournament: TournamentData, participantId: string):
         throw new Error(`You are not playing in this tournament ${tournament.name} or you have already played your match in this round : ${activeRound.round_number}`);
     }
 
-    const match_id: string = `${tournament.code}_r${activeRound.round_number}_m${match.participant1.username}_vs_${match.participant2.username}`;
+    const match_id: string = generateMatchId(tournament.code, roundNumber, match.participant1, match.participant2);
     return { roundNumber, match_id, finalMatch }
     }
 
@@ -86,7 +95,7 @@ export async function patchWinnersToTournament(tournamentCode: string, roundNumb
     }
 }
 
-export async function joinMatchByCode(tournamentCode: string, roundNumber: number, participant: Participant) {
+export async function joinMatch(tournamentCode: string, roundNumber: number, participant: Participant) {
     const response = await tournamentApiCall(`tournament/${tournamentCode}/join-match`, HTTPMethod.PATCH, {}, JSON.stringify({round_number:  roundNumber, participant }));
 
     if (response.statusCode !== 200) {
@@ -94,3 +103,11 @@ export async function joinMatchByCode(tournamentCode: string, roundNumber: numbe
     }
 }
 
+export async function leaveMatch(tournamentCode: string, roundNumber: number, participant: Participant) {
+    const response = await tournamentApiCall(`tournament/${tournamentCode}/leave-match`,
+        HTTPMethod.PATCH, {}, JSON.stringify({round_number:  roundNumber, participant }));
+
+    if (response.statusCode !== 200) {
+        throw new Error(`Failed to join match by code: ${response.message}`);
+    }
+}
