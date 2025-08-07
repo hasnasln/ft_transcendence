@@ -1,4 +1,4 @@
-import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {BabylonJsWrapper} from "./3d";
 import {updateScoreBoard} from "./ui";
 import {gameInstance} from "../play";
 import {GameEventBus} from "./gameEventBus";
@@ -17,7 +17,8 @@ export class GameLoop {
 	}
 
 	private updateBallPosition(): void {
-		gameInstance.uiManager.ball!.ball.position = new Vector3(
+		const ctr = BabylonJsWrapper.getInstance().Vector3;
+		gameInstance.uiManager.ball!.ball.position = new ctr(
 			gameInstance.gameInfo!.ballPosition?.x,
 			gameInstance.gameInfo!.ballPosition?.y,
 			-gameInstance.gameInfo!.constants?.ballRadius!

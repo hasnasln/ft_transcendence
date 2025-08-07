@@ -3,13 +3,12 @@ import { GameInfo, MatchPlayers } from "./network";
 import { Router } from "../../router";
 import { moveButton } from "../../components/mov-button";
 
-import { Mesh } from "@babylonjs/core/Meshes/mesh";
-import { Engine } from "@babylonjs/core/Engines/engine";
-import { Scene } from "@babylonjs/core/scene";
 import { BallController } from "./ball";
+
+import { BabylonJsWrapper } from "./3d";
 import { createPaddles, createGround, createWalls, createScene } from "./gameScene";
 import { CameraController } from "./camera";
-import { Color4 } from "@babylonjs/core/Maths/math";
+const B = BabylonJsWrapper.getInstance();
 
 export class GameUI {
 	public startButton: HTMLElement | null = null;
@@ -30,12 +29,12 @@ export class GameUI {
 	public progressBar: HTMLElement | null = null;
 
 	public groundSize: { width: number, height: number } | null = null;
-	public ground: Mesh | null = null;
-	public paddle1: Mesh | null = null;
-	public paddle2: Mesh | null = null;
+	public ground: any | null = null;
+	public paddle1: any | null = null;
+	public paddle2: any | null = null;
 	public ball: BallController | null = null;
-	public engine: Engine | undefined;
-	public scene: Scene | undefined;
+	public engine: any | undefined;
+	public scene: any | undefined;
 
 	public cacheDOMElements(): void {
 		this.startButton = document.getElementById("ready-button");
@@ -62,8 +61,7 @@ export class GameUI {
 			this.progressContainer, this.resumeButton
 		].filter(el => el != null)
 		.forEach(el => this.hide(el));
-
-		this.engine?.clear(new Color4(0,0,0,0), true, true);
+		this.engine?.clear(new B.Color4(0, 0, 0, 0), true, true);
 		this.scene?.dispose();
 		this.engine?.dispose();
 		this.scene = undefined;

@@ -1,8 +1,9 @@
-import { FreeCamera }          from "@babylonjs/core/Cameras/freeCamera";
-import { Scene }               from "@babylonjs/core/scene";
-import { HemisphericLight }    from "@babylonjs/core/Lights/hemisphericLight";
-import { Vector3 }             from "@babylonjs/core/Maths/math.vector";
-import { KeyboardEventTypes }  from "@babylonjs/core/Events/keyboardEvents";
+import type { FreeCamera } from "@babylonjs/core/Cameras/freeCamera";
+import type { Scene } from "@babylonjs/core/scene";
+import type { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
+import type { Vector3 } from "@babylonjs/core/Maths/math.vector";
+import type { KeyboardEventTypes } from "@babylonjs/core/Events/keyboardEvents";
+import { BabylonJsWrapper } from "./3d";
 
 export class CameraController
 {
@@ -17,28 +18,29 @@ export class CameraController
 
   constructor(scene: Scene)
   {
+    const B = BabylonJsWrapper.getInstance();
     this.angleXZ = 0;
     this.angleYZ = 0;
     this.radius = 20;
     this.rotationActive = false;
-    this.target = Vector3.Zero();
+    this.target = B.Vector3.Zero();
     this.zoomStep = 1;
     this.rotStep = Math.PI / 32;
 
-    this.camera = new FreeCamera("Camera", new Vector3(0, 0, -this.radius), scene);
+    this.camera = new B.FreeCamera("Camera", new B.Vector3(0, 0, -this.radius), scene);
     this.camera.setTarget(this.target);
 
-    [new Vector3(1, 0, 0), new Vector3(-1, 0, 0), new Vector3(0, 1, 0),
-    new Vector3(0, -1, 0)].forEach((direction, index) =>
+    [new B.Vector3(1, 0, 0), new B.Vector3(-1, 0, 0), new B.Vector3(0, 1, 0),
+    new B.Vector3(0, -1, 0)].forEach((direction, index) =>
     {
-        const light = new HemisphericLight(`light${index + 1}`, direction, scene);
+        const light = new B.HemisphericLight(`light${index + 1}`, direction, scene);
         light.intensity = 0.5;
     });
 
     // 2. Klavye dinleyicisi ekleyelim
     scene.onKeyboardObservable.add((kbInfo) =>
     {
-        if (kbInfo.type !== KeyboardEventTypes.KEYDOWN) return;
+        if (kbInfo.type !== B.KeyboardEventTypes.KEYDOWN) return;
         const evt = kbInfo.event as KeyboardEvent;
         const key = evt.key;
 
@@ -53,7 +55,7 @@ export class CameraController
         }
 
         switch (key)
-        {   
+        {
         // Zoom In (yakınlaş)
         case "+":
             if (this.rotationActive)
@@ -125,7 +127,8 @@ export class CameraController
         this.angleXZ = 0;
         this.angleYZ = 0;
         this.radius = 20;
-        this.camera.position = new Vector3(0, 0, -this.radius);
+        const B = BabylonJsWrapper.getInstance();
+        this.camera.position = new B.Vector3(0, 0, -this.radius);
         this.camera.setTarget(this.target);
     }
 

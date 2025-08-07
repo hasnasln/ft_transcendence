@@ -1,4 +1,3 @@
-import '@babylonjs/core/Rendering/edgesRenderer'
 import {
 	GameInfo,
 	listenStateUpdates,
@@ -10,10 +9,11 @@ import {
 import {GameUI} from "./game-section/ui";
 import {GameEventBus} from "./game-section/gameEventBus";
 import {Router} from '../router';
-import {WebSocketClient} from './game-section/wsclient';
+import {SocketIOWrapper, WebSocketClient} from './game-section/wsclient';
 import {GamePage} from './game';
 import {GameLoop} from './game-section/gameLoop';
 import {GameInputHandler} from './game-section/keyboard';
+import {BabylonJsWrapper} from "./game-section/3d";
 
 export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament';
 export type GamePhase = 'unset' | 'waiting' | 'ready' | 'playing' | 'completed';
@@ -146,10 +146,11 @@ export class GameManager {
 		return;
 	};
 
-	public preparePlayProcess(tournamentMode: boolean, tournamentCode?: string): Promise<void> {
+	public async preparePlayProcess(tournamentMode: boolean, tournamentCode?: string): Promise<unknown> {
 		this.configureTournament(tournamentMode, tournamentCode);
-		return this.configure();
+		return Promise.all([BabylonJsWrapper.load(), this.configure()]);
 	}
+
 
 	public startPlayProcess(): void {
 		this.abortHandler?.abort();
@@ -162,6 +163,7 @@ export class GameManager {
 				return;
 			}
 		};
+
 
 		if (Router.getInstance().getCurrentPath() !== '/game') {
 			throw new Error("GameManager should be started from /game path, but current path is: " + Router.getInstance().getCurrentPath());
