@@ -32,7 +32,7 @@ interface SetState {
 	usernames: {left: string, right: string}
 }
 
-interface BallPosition {
+export interface Vector {
 	x: number;
 	y: number;
 }
@@ -47,14 +47,31 @@ export interface GameEndInfo {
 	endReason: 'normal' | 'disconnection' | 'unknown';
 }
 
+export type OnceConsumable<T> = {
+	isConsumed: boolean;
+	consume: () => T | null;
+};
+
+export function createOnceConsumable<T>(data: T): OnceConsumable<T> {
+	return {
+		isConsumed: false,
+		consume: function() {
+			if (this.isConsumed) return null;
+			this.isConsumed = true;
+			return data;
+		}
+	}
+}
+
 export class GameInfo {
 	public constants: GameConstants | null = null;
 	public state: GameState | null = null;
 	public gameEndInfo: GameEndInfo | null = null;
 	public paddle: PaddleState | null = null;
 	public mode: GameMode;
-	public ballPosition: BallPosition | null = null;
+	public ballPosition: Vector | null = null;
 	public setState: SetState | null = null;
+	public ballVelocity: OnceConsumable<Vector> = {isConsumed: true, consume: () => null};
 
 	constructor(mode: GameMode){
 		this.mode = mode;
@@ -103,6 +120,10 @@ export function listenStateUpdates(gameInfo: GameInfo): void {
 	WebSocketClient.getInstance().on("bu", (raw: string) => {
   		const [x, y] = raw.split(':').map(Number);
 		gameInfo.ballPosition = { x, y };
+	});
+	WebSocketClient.getInstance().on("ballVelocity", (raw: string) => {
+		const [vx, vy] = raw.split(':').map(Number);
+		gameInfo.ballVelocity = createOnceConsumable({x: vx, y: vy });
 	});
 	WebSocketClient.getInstance().on("updateState", (setState: SetState) => gameInfo.setState = setState);
 	WebSocketClient.getInstance().on("paddleUpdate", (data) => gameInfo.paddle = data);

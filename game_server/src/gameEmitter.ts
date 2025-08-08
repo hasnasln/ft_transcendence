@@ -80,6 +80,19 @@ export class GameEmitter {
 		}
 
 		this.emitWithCache("bu", `${x.toFixed(2)}:${y.toFixed(2)}`, game.roomId);
+		this.emitBallVelocity(game);
+	}
+
+	public emitBallVelocity(game: Game): void {
+		const vx = game.environment.ball.velocity.x / this.ucf;
+		const vy = game.environment.ball.velocity.y / this.ucf;
+
+		if (isNaN(vx) || isNaN(vy)) {
+			console.error(`Invalid ball coordinates: vx=${vx}, vy=${vy}`);
+			return;
+		}
+
+		this.emitWithCache("ballVelocity", `${vx.toFixed(2)}:${vy.toFixed(2)}`, game.roomId);
 	}
 
 	public emitPaddleState(game: Game): void {

@@ -2,10 +2,13 @@ import {BabylonJsWrapper} from "./3d";
 import {updateScoreBoard} from "./ui";
 import {gameInstance} from "../play";
 import {GameEventBus} from "./gameEventBus";
+import {Vector} from "./network";
 
 export class GameLoop {
 	private static instance: GameLoop;
 	private gameLoopRunning: boolean = false;
+	private lastVelocity: Vector = { x: 0, y: 0 };
+	private lastUpdateTime: number = 0;
 
 	private constructor() { }
 
@@ -17,12 +20,26 @@ export class GameLoop {
 	}
 
 	private updateBallPosition(): void {
-		const ctr = BabylonJsWrapper.getInstance().Vector3;
-		gameInstance.uiManager.ball!.ball.position = new ctr(
-			gameInstance.gameInfo!.ballPosition?.x,
-			gameInstance.gameInfo!.ballPosition?.y,
-			-gameInstance.gameInfo!.constants?.ballRadius!
-		);
+		const Vector3 = BabylonJsWrapper.getInstance().Vector3;
+
+		this.lastVelocity = gameInstance.gameInfo?.ballVelocity.consume() ?? this.lastVelocity;
+		if (!gameInstance.gameInfo!.ballPosition) {
+			return
+		}
+
+		const curX = gameInstance.gameInfo!.ballPosition.x;
+		const curY = gameInstance.gameInfo!.ballPosition.y;
+		const dt = ((Date.now() - this.lastUpdateTime) * 60) / 1000;
+
+		const x = curX + this.lastVelocity.x * dt;
+		const y = curY + this.lastVelocity.y * dt;
+		gameInstance.gameInfo!.ballPosition.x = x;
+		gameInstance.gameInfo!.ballPosition.y = y;
+
+
+		gameInstance.uiManager.ball!.ball.position = new Vector3(x, y, -gameInstance.gameInfo!.constants?.ballRadius!);
+
+		this.lastUpdateTime = Date.now();
 	}
 
 	private updatePaddlePositions(): void {
