@@ -1,7 +1,7 @@
 import { exmp } from '../languageManager';
 import { gameInstance } from './play';
 import { Page, Router } from '../router';
-import { GameEventBus } from './game-section/gameEventBus';
+import {GameEventBus, listenGameBusEvents} from './game-section/gameEventBus';
 
 function getMenu(): string {
   const buttonData = [
@@ -144,11 +144,12 @@ export class PlayPage implements Page {
 	}
 
 	public onLoad(): void {
-		gameInstance.preparePlayProcess(false)
+		Promise.all([Router.getInstance().preloadLazyPage("/game"), gameInstance.preparePlayProcess(false)])
+			.then(() => Router.getInstance().go("/game"))
 			.then(() => {
-				Router.getInstance().go("/game");
 				requestAnimationFrame(() => {
 					Router.getInstance().invalidatePage('/play');
+					listenGameBusEvents();
 					gameInstance.startPlayProcess();
 				});
 			});

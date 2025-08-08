@@ -9,7 +9,7 @@ import {
 import {GameUI} from "./game-section/ui";
 import {GameEventBus} from "./game-section/gameEventBus";
 import {Router} from '../router';
-import {SocketIOWrapper, WebSocketClient} from './game-section/wsclient';
+import { WebSocketClient} from './game-section/wsclient';
 import {GamePage} from './game';
 import {GameLoop} from './game-section/gameLoop';
 import {GameInputHandler} from './game-section/keyboard';

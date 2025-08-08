@@ -2,7 +2,7 @@ import { exmp } from "../languageManager";
 import { Page, Router } from "../router";
 import { GameEventBus } from "./game-section/gameEventBus";
 import { WebSocketClient } from "./game-section/wsclient";
-import { gameInstance } from "./play";
+import {gameInstance, GameManager} from "./play";
 import { retroGridBackground } from "./play-page";
 
 export class GamePage implements Page {
@@ -182,6 +182,10 @@ export class GamePage implements Page {
 
     public onUnload(): void {
         gameInstance.finalize();
+    }
+
+    public getGameInstance(): GameManager {
+        return gameInstance;
     }
 
     public hiddenButtons() {

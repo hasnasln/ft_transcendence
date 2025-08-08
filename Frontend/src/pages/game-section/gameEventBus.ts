@@ -118,7 +118,10 @@ export class GameEventBus {
 	}
 }
 
+let listenersLoaded = false;
 export function listenGameBusEvents() {
+	if (listenersLoaded) return;
+	listenersLoaded = true;
 	GameEventBus.getInstance().on('CONNECTING_TO_SERVER', async (event) => {
 		gameInstance.uiManager.onInfoShown("...");
 	});
