@@ -1,38 +1,5 @@
 import { exmp } from "./languageManager";
 
-const toastStyles = document.createElement('style');
-toastStyles.textContent = `
-	@keyframes toast-slide-in {
-		from {
-			transform: translateX(100%);
-			opacity: 0;
-		}
-		to {
-			transform: translateX(0);
-			opacity: 1;
-		}
-	}
-	
-	@keyframes toast-slide-out {
-		from {
-			transform: translateX(0);
-			opacity: 1;
-		}
-		to {
-			transform: translateX(100%);
-			opacity: 0;
-		}
-	}
-	
-	#toast-container::-webkit-scrollbar {
-		width: 0px;
-		background: transparent;
-	}
-		transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-`;
-document.head.appendChild(toastStyles);
-
 export class ToastManager {
 	private static container: HTMLElement | null = null;
 

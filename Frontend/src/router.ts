@@ -139,7 +139,7 @@ export class Router {
 
 	private savePageInfo(path: string, page: Page, popstate: boolean): void {
 		if (!popstate)
-			window.history.pushState({path: path, scrollY: window.scrollY}, '', path);
+			window.history.pushState({path: path}, '', path);
 		console.log(`Router saved page info for path: ${path}`);
 		this.currentPath = path;
 		this.currentPage = page;
