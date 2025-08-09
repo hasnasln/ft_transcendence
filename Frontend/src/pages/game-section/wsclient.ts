@@ -115,7 +115,7 @@ export class WebSocketClient {
                 autoConnect: true,
                 rememberUpgrade: true,
                 reconnection: true,
-                reconnectionAttempts: 5,
+                reconnectionAttempts: 15,
                 reconnectionDelay: 200, // 200ms
                 randomizationFactor: 0,
                 timeout: 20_000,
@@ -157,8 +157,7 @@ export class WebSocketClient {
 
         this.socket.on('disconnect', (reason: string) => {
             if (reason === 'io server disconnect') {
-                this.socket?.off();
-                this.socket = null;
+                this.reset();
             }
 
             GameEventBus.getInstance().emit({ type: 'DISCONNECTED', payload: {
