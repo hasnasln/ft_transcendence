@@ -4,6 +4,34 @@ import {GameEmitter} from "./gameEmitter";
 
 type Middleware = (g: Game, dt: number) => boolean;
 
+function setLength(vector: {x: number, y: number}, length: number): {x: number, y: number} {
+	const currentLength = getLength(vector);
+	if (currentLength === 0)
+		return {x: 0, y: 0};
+	const factor = length / currentLength;
+	return {x: vector.x * factor, y: vector.y * factor};
+}
+
+function getLength(vector:{x:number, y:number}): number {
+	return Math.hypot(vector.x, vector.y);
+}
+
+function getDirection(from: Position, to: Position): {x: number, y: number} {
+	return setLength({x: to.x - from.x, y: to.y - from.y}, 1);
+}
+
+function reverse(vector: Position): Position {
+	return {x: -vector.x, y: -vector.y};
+}
+
+function sum(a: Position, b: Position): Position {
+	return {x: a.x + b.x, y: a.y + b.y};
+}
+
+function diff(a: Position, b: Position): Position {
+	return {x: a.x - b.x, y: a.y - b.y};
+}
+
 export class PhysicsEngine {
     private static instance: PhysicsEngine;
     private static readonly middlewareChain: Middleware[] = [
@@ -93,18 +121,14 @@ function handlePaddleBounce(g: Game, dt: number): boolean {
 
 		const paddleTop = {x: paddle.position.x, y: paddle.position.y - paddle.height / 2};
 		const paddleBottom = {x: paddle.position.x, y: paddle.position.y + paddle.height / 2};
-		const tunnelled = intersectSegments(previous, current, paddleTop, paddleBottom);
+		const intersectedPoint = intersectSegments(previous, current, paddleTop, paddleBottom);
 
-		let distanceToTravel = 0;
-		if (tunnelled) {
-			// teleport to the edge of the paddle to override suggested position by moveBall().
-			const norm = {x: tunnelled.x - g.environment.ball.position.x, y: tunnelled.y - g.environment.ball.position.y}
-			const distance =  g.environment.ball.radius / Math.hypot(norm.x, norm.y);
-			distanceToTravel = Math.hypot(g.environment.ball.velocity.x, g.environment.ball.velocity.y) - distance;
-			g.environment.ball.position = {x: tunnelled.x + norm.x * distance, y: tunnelled.y + norm.y * distance};
+		if (intersectedPoint) {
+			const ballDirection = getDirection(previous, intersectedPoint);
+			g.environment.ball.position = sum(intersectedPoint, setLength(reverse(ballDirection), g.getBall().radius));
 		}
 
-		if (tunnelled ||
+		if (intersectedPoint ||
 			(Math.abs(relativeX) < xThreshold &&  // pedala yeteri kadar yakında mı ?
 			g.environment.ball.velocity.x * direction < 0 && // pedala doğru hareket ediyor mu ?
 			relativeX * direction > 0))           // pedalın önünde mi ?
@@ -129,21 +153,6 @@ function handlePaddleBounce(g: Game, dt: number): boolean {
 				g.environment.ball.velocity.y *= -1;
 			}
 		}
-
-		/* the tunnel case's position overriding removes actual distance to travel
-		* so we move the ball for remaining distance. however, this time we ignore
-		* tunneling because getting double tunneling is extreme and practically
-		* indicates parallel paddle movement which causes infinite loops.
-		*
-		* also, this behavior is really exceptional case and can cause client side
-		* visualization glitches because the ball is never seen on the paddle.
-		*  */
-		if (distanceToTravel !== 0) {
-			const len = Math.hypot(g.environment.ball.velocity.x, g.environment.ball.velocity.y);
-			const delta = {x: g.environment.ball.velocity.x / len * distanceToTravel, y: g.environment.ball.velocity.y / len * distanceToTravel};
-			g.environment.ball.position.x += delta.x;
-			g.environment.ball.position.y += delta.y;
-		}
 	});
 
 
@@ -159,11 +168,9 @@ function applyAirResistance(g: Game, dt: number): boolean {
 function enforceSpeedLimits(g: Game, dt: number): boolean {
 	const speed = Math.hypot(g.environment.ball.velocity.x, g.environment.ball.velocity.y);
 	if (speed < g.environment.ball.minimumSpeed) {
-		g.environment.ball.velocity.x *= 1.02;
-		g.environment.ball.velocity.y *= 1.02;
+		g.environment.ball.velocity = setLength(g.environment.ball.velocity, g.environment.ball.minimumSpeed);
 	} else if (speed > g.environment.ball.maximumSpeed) {
-		g.environment.ball.velocity.x /= 1.02;
-		g.environment.ball.velocity.y /= 1.02;
+		g.environment.ball.velocity = setLength(g.environment.ball.velocity, g.environment.ball.maximumSpeed);
 	}
 	//Oyun zig-zag a dönmesin kontrolü
 	if (g.environment.ball.velocity.x !== 0 && Math.abs(g.environment.ball.velocity.y / g.environment.ball.velocity.x) > 2)

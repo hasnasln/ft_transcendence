@@ -31,11 +31,14 @@ export class GameLoop {
 		const curY = gameInstance.gameInfo!.ballPosition.y;
 		const dt = ((Date.now() - this.lastUpdateTime) * 60) / 1000;
 
-		const x = curX + this.lastVelocity.x * dt;
-		const y = curY + this.lastVelocity.y * dt;
+		let x = curX + this.lastVelocity.x * dt;
+		let y = curY + this.lastVelocity.y * dt;
+		if (x < -gameInstance.gameInfo!.constants!.groundWidth / 2 + gameInstance.gameInfo!.constants!.ballRadius || x > gameInstance.gameInfo!.constants!.groundWidth / 2 - gameInstance.gameInfo!.constants!.ballRadius) {
+			x = curX;
+			y = curY;
+		}
 		gameInstance.gameInfo!.ballPosition.x = x;
 		gameInstance.gameInfo!.ballPosition.y = y;
-
 
 		gameInstance.uiManager.ball!.ball.position = new Vector3(x, y, -gameInstance.gameInfo!.constants?.ballRadius!);
 
