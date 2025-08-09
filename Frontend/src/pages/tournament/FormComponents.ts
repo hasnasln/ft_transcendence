@@ -1,5 +1,3 @@
-import { _apiManager } from '../../api/APIManager';
-
 function joinorcreate(id: string, key: string, title_key: string, placeholder_key: string): string {
     const position = id === 'createPanel' ? 'right-0' : 'left-0';
     const dataAction = key === 'create' ? 'create-tournament' : 'join-room';
