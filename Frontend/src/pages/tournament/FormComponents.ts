@@ -1,4 +1,4 @@
-function joinorcreate(id: string, key: string, title_key: string, placeholder_key: string): string {
+function joinOrCreate(id: string, key: string, title_key: string, placeholder_key: string): string {
     const position = id === 'createPanel' ? 'right-0' : 'left-0';
     const dataAction = key === 'create' ? 'create-tournament' : 'join-room';
     return `
@@ -59,8 +59,8 @@ export function t_first_section(container: HTMLElement) {
     container.innerHTML = `
         <div id="tournament-container" class="relative bg-white/10 backdrop-blur-lg rounded-[30px] shadow-2xl border border-white/20 w-full max-w-2xl min-h-[480px] overflow-hidden transition-all-ease font-montserrat">
             ${createToggleSection()}
-            ${joinorcreate('createPanel', 'create','tournament-first-page.create-title','tournament-first-page.create-placeholder')}
-            ${joinorcreate('joinPanel', 'join','tournament-first-page.join-title','tournament-first-page.join-placeholder')}
+            ${joinOrCreate('createPanel', 'create','tournament-first-page.create-title','tournament-first-page.create-placeholder')}
+            ${joinOrCreate('joinPanel', 'join','tournament-first-page.join-title','tournament-first-page.join-placeholder')}
         </div>
     `;
 }
