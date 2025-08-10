@@ -51,18 +51,14 @@ export class TournamentPage implements Page {
         try {
             const storedData = localStorage.getItem('tdata');
             if (!storedData || storedData === '{}' || storedData === 'null') {
-                console.log("-->1");
                 return defaultData;
             }
-            console.log("--------->" + storedData);
             const parsedData = JSON.parse(storedData);
             if (!parsedData || typeof parsedData !== 'object' || !parsedData.code) {
                 console.warn('Invalid tournament data in localStorage, using defaults');
-                console.log("-->2")
                 return defaultData;
             }
 
-            console.log("parse data ->" , parsedData);
             return parsedData;
         } catch (error) {
             console.error('Error parsing localStorage tournament data:', error);
@@ -93,7 +89,6 @@ export class TournamentPage implements Page {
     public onLoad(): void {
         _apiManager.haveTournament()
         .then((resposeWraper) => {
-            console.log("haveTournament----->>", resposeWraper);
             if (resposeWraper.success === false)localStorage.removeItem('tdata');                                           // tournament verisi yoksa localStorage'dan sil
             else if (resposeWraper.success === true) localStorage.setItem('tdata', JSON.stringify(resposeWraper.data));     // tournament verisi varsa localStorage'a kaydet
             return resposeWraper;
