@@ -2,6 +2,8 @@ import { _apiManager } from "../api/APIManager";
 import { Router } from "../router";
 import { exmp } from "../languageManager";
 import { Page } from '../router';
+import { AuthResponseMessages } from "../api/types";
+import { ModernOverlay } from "../components/ModernOverlay.js";
 import "../styles/login.css";
 
 export class LoginPage implements Page {
@@ -142,31 +144,40 @@ export class LoginPage implements Page {
 		const nicnameOrMail = this.getInputValue('nicname_or_mail_input');
 		const passwordValue = this.getInputValue('password_input');
 		
-		if (!nicnameOrMail || !passwordValue) {
-			if (!nicnameOrMail) this.showError(exmp.getLang('singin-errors.required.email'));
-			else if (!passwordValue) this.showError(exmp.getLang('singin-errors.required.password'));
-			return;
-		}
-
-		if (nicnameOrMail.includes('@') && !this.isValidEmail(nicnameOrMail)) {
-			this.showError(exmp.getLang('singin-errors.invalid.email') || 'Invalid email format');
-			return;
-		}
-		
 		try {
 			const response = await _apiManager.login(nicnameOrMail, passwordValue);
 			if (!response.success) {
-				const errorKey = response.message || 'INVALID_CREDENTIALS';
-				const errorMessage = exmp.getLang(`singin-errors.${errorKey}`) || 
-								   exmp.getLang('singin-errors.INVALID_CREDENTIALS');
-				this.showError(errorMessage);
+				const messageKey = response.message as AuthResponseMessages;
+				let errorMessage = '';
+
+				switch (messageKey) {
+					case AuthResponseMessages.EMAIL_AND_PASSWORD_REQUIRED:
+					case AuthResponseMessages.EMAIL_LENGTH_INVALID:
+					case AuthResponseMessages.INVALID_EMAIL_FORMAT:
+					case AuthResponseMessages.INVALID_EMAIL:
+					case AuthResponseMessages.INVALID_PASSWORD:
+						errorMessage = exmp.getLang(`auth-messages.${messageKey}`) || 
+									  exmp.getLang('singin-errors.INVALID_CREDENTIALS');
+						break;
+					default:
+						errorMessage = exmp.getLang('singin-errors.INVALID_CREDENTIALS');
+						break;
+				}
+
+				ModernOverlay.show(errorMessage, 'error');
 				return;
 			}
 			
-			Router.getInstance().go('/');
+			const successMessage = exmp.getLang(`auth-messages.${AuthResponseMessages.LOGIN_SUCCESS}`);
+			ModernOverlay.show(successMessage, 'success');
+			
+			setTimeout(() => {
+				Router.getInstance().go('/');
+			}, 1000);
+			
 		} catch (error: any) {
 			const errorMessage = exmp.getLang('singin-errors.networkError');
-			this.showError(errorMessage);
+			ModernOverlay.show(errorMessage, 'error');
 			console.error('Login error:', error);
 		}
 	}
