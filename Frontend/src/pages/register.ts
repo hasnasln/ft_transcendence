@@ -2,6 +2,8 @@ import { exmp } from "../languageManager";
 import {_apiManager } from "../api/APIManager";
 import type { IApiRegister } from "../api/APIManager";
 import { Router, Page } from "../router";
+import { AuthResponseMessages } from "../api/types";
+import { ModernOverlay } from "../components/ModernOverlay.js";
 import "../styles/register.css";
 
 export class RegisterPage implements Page {
@@ -305,83 +307,59 @@ async function submit(e: Event): Promise<void> {
     const regEmail = document.getElementById("email") as HTMLInputElement;
     const regPassword = document.getElementById("password") as HTMLInputElement;
     const regRepeat = document.getElementById("repeat-password") as HTMLInputElement;
-    const errorDiv = document.getElementById("error-div") as HTMLDivElement;
 
     const username = (regUsername.value || "").trim();
     const email = (regEmail.value || "").trim();
     const password = (regPassword.value || "").trim();
     const repeatPassword = (regRepeat.value || "").trim();
     
-    if (!username || !email || !password || !repeatPassword) {
-        if (!username) errorDiv.textContent = exmp.getLang('register-errors.required.username');
-        else if (!email) errorDiv.textContent = exmp.getLang('register-errors.required.email');
-        else if (!password) errorDiv.textContent = exmp.getLang('register-errors.required.password');
-        else if (!repeatPassword) errorDiv.textContent = exmp.getLang('register-errors.required.confirmPassword');
-        errorDiv.style.visibility = "visible";
-        return;
-    }
-    
-    if (username.length < 3 || password.length < 6) {
-        if (username.length < 3) errorDiv.textContent = exmp.getLang('register-errors.minlength.username');
-        else if (password.length < 6) errorDiv.textContent = exmp.getLang('register-errors.minlength.password');
-        errorDiv.style.visibility = "visible";
-        return;
-    }
-    
-    if (username.length > 20 || password.length > 20) {
-        if (username.length > 20) errorDiv.textContent = exmp.getLang('register-errors.maxlength.username');
-        else if (password.length > 20) errorDiv.textContent = exmp.getLang('register-errors.maxlength.password');
-        errorDiv.style.visibility = "visible";
-        return;
-    }
-    
-    const isValidEmail = (email: string): boolean => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    };
-    
-    if (!isValidEmail(email)) {
-        errorDiv.textContent = exmp.getLang('register-errors.invalidCharacters.email');
-        errorDiv.style.visibility = "visible";
-        return;
-    }
-    
-    if (!/^[a-zA-Z0-9_.]+$/.test(username)) {
-        errorDiv.textContent = exmp.getLang('register-errors.invalidCharacters.username');
-        errorDiv.style.visibility = "visible";
-        return;
-    }
-    
     if (password !== repeatPassword) {
-        errorDiv.textContent = exmp.getLang('register-errors.passwordMismatch');
-        errorDiv.style.visibility = "visible";
+        const errorMessage = exmp.getLang('register-errors.passwordMismatch');
+        ModernOverlay.show(errorMessage, 'error');
         return;
     }
+    
     const registerData: IApiRegister = { username, email, password };
     
     try {
         const response = await _apiManager.register(registerData);
         if (!response.success) {
-        const errorKey = response.message || 'registerFailed';
+            const messageKey = response.message as AuthResponseMessages;
+            let errorMessage = '';
 
-        if (errorKey === 'usernameExists') {
-            errorDiv.textContent = exmp.getLang('register-errors.exists.username');
-        } else if (errorKey === 'emailExists') {
-            errorDiv.textContent = exmp.getLang('register-errors.exists.email');
-        } else {
-            errorDiv.textContent = exmp.getLang(`register-errors.${errorKey}`) || 
-                                   exmp.getLang('register-errors.registerFailed');
+            switch (messageKey) {
+                case AuthResponseMessages.REGISTRATION_FIELDS_REQUIRED:
+                case AuthResponseMessages.USERNAME_NOT_ALPHANUMERIC:
+                case AuthResponseMessages.USERNAME_LENGTH_INVALID:
+                case AuthResponseMessages.PASSWORD_LENGTH_INVALID:
+                case AuthResponseMessages.EMAIL_LENGTH_INVALID:
+                case AuthResponseMessages.INVALID_EMAIL_FORMAT:
+                case AuthResponseMessages.INVALID_EMAIL:
+                case AuthResponseMessages.INVALID_PASSWORD:
+                case AuthResponseMessages.USERNAME_EXISTS:
+                case AuthResponseMessages.EMAIL_EXISTS:
+                    errorMessage = exmp.getLang(`auth-messages.${messageKey}`) || exmp.getLang('register-errors.registerFailed');
+                    break;
+                default:
+                    errorMessage = exmp.getLang('register-errors.registerFailed');
+                    break;
+            }
+
+            ModernOverlay.show(errorMessage, 'error');
+            return;
         }
-
-        errorDiv.style.visibility = "visible";
-        return;
-    }
         
-        errorDiv.style.visibility = "hidden";
-        Router.getInstance().go('/login');
+        const successMessage = exmp.getLang(`auth-messages.${AuthResponseMessages.USER_REGISTERED}`) || 
+                              exmp.getLang('register-success');
+        ModernOverlay.show(successMessage, 'success');
+        
+        setTimeout(() => {
+            Router.getInstance().go('/login');
+        }, 1500);
+        
     } catch (error: any) {
-        errorDiv.textContent = exmp.getLang('register-errors.networkError');
-        errorDiv.style.visibility = "visible";
+        const networkError = exmp.getLang('register-errors.networkError');
+        ModernOverlay.show(networkError, 'error');
         console.error('Registration error:', error);
     }
 }
