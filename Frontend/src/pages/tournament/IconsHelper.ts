@@ -1,14 +1,5 @@
 export class TournamentIcons
 {
-	public static getStartButtonActiveClasses(): string {
-		return `w-full py-3 sm:py-4 px-4 rounded-xl font-semibold text-sm sm:text-base transition-all duration-300 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-lg hover:shadow-green-500/25`;
-	}
-	public static getStartButtonDisabledClasses(): string {
-		return `w-full py-3 sm:py-4 px-4 rounded-xl font-semibold text-sm sm:text-base transition-all duration-300 bg-gray-600 text-gray-300 cursor-not-allowed`;
-	}
-	public static getLightningIcon(): string {
-		return `<svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
-	}
 	public static getRocketIcon(): string {
 		return `<svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>`;
 	}
