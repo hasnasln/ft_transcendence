@@ -123,21 +123,9 @@ export class LoginPage implements Page {
 
 	}
 
-	private showError(message: string): void {
-		const errorMessage = document.getElementById('error_message');
-		if (!errorMessage) return;
-		errorMessage.style.visibility = 'visible';
-		errorMessage.textContent = message;
-	}
-
 	private getInputValue(id: string): string {
 		const input = document.getElementById(id) as HTMLInputElement;
 		return input ? input.value.trim() : '';
-	}
-
-	private isValidEmail(email: string): boolean {
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		return emailRegex.test(email);
 	}
 
 	async handleLogin(): Promise<void> {
