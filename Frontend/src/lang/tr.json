@@ -34,6 +34,29 @@
 		"signin-link": "Buradan giriş yapın"
 	},
 	"register-success": "Kayıt başarılı! Lütfen giriş yapın.",
+	"auth-messages": {
+		"AUTH_HEADER_MISSING_OR_INVALID": "Yetkilendirme başlığı eksik veya geçersiz",
+		"TOKEN_MISSING": "Token eksik",
+		"INVALID_TOKEN": "Geçersiz token",
+		"TOKEN_VALID": "Token geçerli",
+		"EMAIL_AND_PASSWORD_REQUIRED": "E-posta ve şifre gerekli",
+		"EMAIL_LENGTH_INVALID": "E-posta uzunluğu geçersiz",
+		"INVALID_EMAIL_FORMAT": "Geçersiz e-posta formatı",
+		"INVALID_EMAIL": "Geçersiz e-posta",
+		"INVALID_PASSWORD": "Geçersiz şifre",
+		"LOGIN_SUCCESS": "Giriş başarılı",
+		"REGISTRATION_FIELDS_REQUIRED": "Kayıt alanları gerekli",
+		"USERNAME_NOT_ALPHANUMERIC": "Kullanıcı adı sadece harf ve rakam içerebilir",
+		"USERNAME_LENGTH_INVALID": "Kullanıcı adı uzunluğu geçersiz",
+		"PASSWORD_LENGTH_INVALID": "Şifre uzunluğu geçersiz",
+		"USERNAME_EXISTS": "Bu kullanıcı adı zaten kullanımda",
+		"EMAIL_EXISTS": "Bu e-posta adresi zaten kullanımda",
+		"USER_REGISTERED": "Kullanıcı başarıyla kaydedildi",
+		"USER_NOT_FOUND": "Kullanıcı bulunamadı",
+		"EMAIL_ALREADY_IN_USE": "E-posta adresi zaten kullanımda",
+		"USER_UPDATED": "Kullanıcı güncellendi",
+		"NO_CHANGES_MADE": "Hiçbir değişiklik yapılmadı"
+	},
 	"register-errors": {
 		"required": {
 			"name": "İsim gerekli",
