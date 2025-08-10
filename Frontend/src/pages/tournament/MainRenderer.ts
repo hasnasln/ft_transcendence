@@ -1,5 +1,4 @@
-import { _apiManager } from '../../api/APIManager';
-import { ITournament, ITournamentUser} from '../../api/types';
+import { ITournament} from '../../api/types';
 import { TournamentIcons } from './IconsHelper';
 
 export function ShowTournament(container: HTMLElement, tdata: ITournament): void {
