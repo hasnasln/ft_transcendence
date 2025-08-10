@@ -48,7 +48,7 @@ export class Router {
 				}
 			}
 
-			this.go(event.state.path, true, true);
+			this.go(event.state.path ?? window.location.pathname, true, true);
 		});
 	}
 
