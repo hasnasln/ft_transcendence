@@ -4,20 +4,14 @@ export interface IUser {
 	name: string;
 	surname: string;
 	email: string;
-	language: string;		// kayıtlı dil
-	avatar: string;			// avatar url
+	language: string;
+	avatar: string;
 }
 
 export interface IUserSettings {
-	ball_color: string;				// top rengi
-	background_color: string;		// arka plan rengi
-	fisrt_player_color: string;		// 1. oyuncu rengi
-	second_player_color: string;	// 2. oyuncu rengi
-	language: string;				// dil
+	ball_color: string;
+	language: string;
 }
-//#endregion
-
-//#region SETTINGS SECTİON
 
 export interface ISettingsRequest {
 	token: string;
