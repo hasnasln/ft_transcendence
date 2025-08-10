@@ -200,7 +200,7 @@ export class TournamentPage implements Page {
     }
     private executeAction(action: string, target: HTMLElement): void {
         this.loadingManager.setActionLoading(action, target);
-        this.performAction(action, target)
+        this.performAction(action)
             .catch(error => {
                 console.error(`Error executing action ${action}:`, error);
                 this.handleActionError(action, target, error);
@@ -211,7 +211,7 @@ export class TournamentPage implements Page {
                 }, 500);
             });
     }
-    private async performAction(action: string, target: HTMLElement): Promise<void> {
+    private async performAction(action: string): Promise<void> {
         const container = this.uiManager.findTournamentContainer();
         if (!container) throw new Error('Container not found');
 
