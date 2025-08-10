@@ -127,19 +127,6 @@ export class TournamentUIManager {
             </div>
         `;
     }
-
-    createDisabledStartButtonHTML(playerCount: number, minPlayers: number, maxPlayers: number): string {
-        const reason = playerCount < minPlayers ? 'Yetersiz Oyuncu' : 'Çok Fazla Oyuncu';
-        return `
-            <div class="flex items-center justify-center space-x-2 opacity-50">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
-                </svg>
-                <span>${reason}</span>
-            </div>
-        `;
-    }
-
     createCannotStartButtonHTML(): string {
         return `
             <div class="flex items-center justify-center space-x-2 opacity-50">
