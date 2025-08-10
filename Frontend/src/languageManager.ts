@@ -172,7 +172,7 @@ const en = {
 	  "play": "Play"
 	},
 	"game": {
-	  "strat": "__Start Game",
+	  "strat": "Start Game",
 	  "continue": "Continue Game",
 	  "new": "Start New Game",
 	  "goHome": "Return Home"
@@ -182,17 +182,17 @@ const en = {
 		"title": "Pong Arena",
 		"subTitle": "Select Game Mode",
 		"Button": {
-		  "AI": "_Play vs AI",
-		  "Local": "_Local Play",
-		  "Online": "_Online Play"
+		  "AI": "Play vs AI",
+		  "Local": "Local Play",
+		  "Online": "Online Play"
 		}
 	  },
 	  "Difficulty": {
 		"title": "Select Difficulty",
 		"Button": {
-		  "easy": "_Easy",
-		  "medium": "_Medium",
-		  "hard": "_Hard"
+		  "easy": "Easy",
+		  "medium": "Medium",
+		  "hard": "Hard"
 		}
 	  }
 	},
@@ -395,7 +395,7 @@ const tr  = {
 		"play": "Oyna"
 	},
 	"game":{
-		"strat": "__Oyunu Başlat",
+		"strat": "Oyunu Başlat",
 		"continue": "Oyuna Devam Et",
 		"new": "Yeni Oyun Başlat",
 		"goHome": "Ana Sayfaya Dön"
@@ -405,17 +405,17 @@ const tr  = {
 			"title": "Pong Arena",
 			"subTitle" : "Oyun Modunu Seçin",
 			"Button": {
-				"AI": "_Yapay Zekaya Karşı",
-				"Local": "_Yerel Oyun",
-				"Online": "_Çevrim İçi Oyun"
+				"AI": "Yapay Zekaya Karşı",
+				"Local": "Yerel Oyun",
+				"Online": "Çevrim İçi Oyun"
 			},
 		},
 		"Difficulty":{
 			"title": "Zorluk Seviyesini Seçin",
 			"Button": {
-				"easy": "_Kolay",
-				"medium": "_Orta",
-				"hard": "_Zor"
+				"easy": "Kolay",
+				"medium": "Orta",
+				"hard": "Zor"
 			}
 		}
 	},
@@ -638,7 +638,7 @@ const fr = {
 	  "play": "Jouer"
 	},
 	"game": {
-	  "strat": "__Démarrer le jeu",
+	  "strat": "Démarrer le jeu",
 	  "continue": "Continuer le jeu",
 	  "new": "Commencer un nouveau jeu",
 	  "goHome": "Retour à l’accueil"
@@ -648,17 +648,17 @@ const fr = {
 		"title": "Pong Arena",
 		"subTitle": "Sélectionnez le mode de jeu",
 		"Button": {
-		  "AI": "_Jouer contre l’IA",
-		  "Local": "_Jeu local",
-		  "Online": "_Jeu en ligne"
+		  "AI": "Jouer contre l’IA",
+		  "Local": "Jeu local",
+		  "Online": "Jeu en ligne"
 		}
 	  },
 	  "Difficulty": {
 		"title": "Choisissez la difficulté",
 		"Button": {
-		  "easy": "_Facile",
-		  "medium": "_Moyen",
-		  "hard": "_Difficile"
+		  "easy": "Facile",
+		  "medium": "Moyen",
+		  "hard": "Difficile"
 		}
 	  }
 	},
