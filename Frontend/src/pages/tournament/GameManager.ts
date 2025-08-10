@@ -1,7 +1,6 @@
 import { _apiManager } from '../../api/APIManager';
 import { ModernOverlay } from './ModernOverlay';
 import { ITournament } from '../../api/types';
-import { PlayPage } from '../play-page';
 import { gameInstance } from '../play';
 import { Router } from '../../router';
 
