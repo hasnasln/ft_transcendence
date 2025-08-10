@@ -1,9 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-   './index.html',
-   // './src/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: (process.env.PAGE_GLOBS ?? "")
+    .split(",")
+    .map(s => s.trim())
+    .filter(Boolean),
   theme: {
     extend: {
       keyframes: {

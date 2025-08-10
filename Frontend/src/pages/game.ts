@@ -4,6 +4,11 @@ import { GameEventBus } from "./game-section/gameEventBus";
 import { WebSocketClient } from "./game-section/wsclient";
 import {gameInstance, GameManager} from "./play";
 import { retroGridBackground } from "./play-page";
+import "../game-scene.css"
+import "../common.css"
+import "../styles/game.css";
+import "../styles/others.css";
+//import "../styles/all.css"
 
 export class GamePage implements Page {
 

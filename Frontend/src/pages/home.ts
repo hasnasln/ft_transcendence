@@ -2,6 +2,7 @@ import { Settingsv3 } from './settingsv3';
 import { ProfileSettingsV2 } from './profilev2';
 import { exmp } from '../languageManager';
 import { Router, Page } from '../router';
+import "../styles/home.css"
 
 export class HomePage implements Page {
 
@@ -11,31 +12,31 @@ export class HomePage implements Page {
                 name: "AYHAN COŞGUN",
                 linkedin: "https://www.linkedin.com/in/ayhan-coşgun-8324392b9",
                 github: "https://github.com/AyhanCosgun",
-                avatar: "creaters/acosgun.jpg"
+                avatar: "creaters/acosgun.webp"
             },
             {
                 name: "HAMZA COŞKUN",
                 linkedin: "https://www.linkedin.com/in/hamza-cskn",
                 github: "https://github.com/hamza-cskn",
-                avatar: "creaters/hcoskun.jpg"
+                avatar: "creaters/hcoskun.webp"
             },
             {
                 name: "FATMANUR ÇETİNTAŞ",
                 linkedin: "https://www.linkedin.com/in/fatmanurcetintas",
                 github: "https://github.com/facetint",
-                avatar: "creaters/facetint.jpg"
+                avatar: "creaters/facetint.webp"
             },
             {
                 name: "BATUHAN KAS",
                 linkedin: "https://www.linkedin.com/in/batuhan-kaş-545689254",
                 github: "https://github.com/BatuhanKas",
-                avatar: "creaters/bkas.jpg"
+                avatar: "creaters/bkas.webp"
             },
             {
                 name: "HASAN ASLAN",
                 linkedin: "https://www.linkedin.com/in/hasan-aslan-",
                 github: "https://github.com/hasnasln",
-                avatar: "creaters/haslan.jpg"
+                avatar: "creaters/haslan.webp"
             }
         ];
 
@@ -155,11 +156,9 @@ function profileCard(name: string, linkedin: string, github: string, avatar: str
 	return `
 		<div class="profile-card w-[160px] h-[220px] md:w-[180px] md:h-[240px] lg:w-[200px] lg:h-[260px] xl:w-[220px] xl:h-[280px] group cursor-pointer transform transition-all duration-300 hover:scale-105 opacity-90 hover:opacity-100">
 			<div class="relative w-full h-full bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 rounded-xl p-[2px] overflow-hidden transition-all duration-500 hover:scale-105 hover:rotate-1">
-				<!-- Glassmorphism background -->
 				<div class="absolute inset-0 bg-white/20  rounded-xl"></div>
 				
 				<div class="relative w-full h-full bg-white/90  rounded-xl p-3 md:p-4 flex flex-col items-center justify-between overflow-hidden">
-					<!-- Floating particles animation -->
 					<div class="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
 						<div class="absolute top-[10%] left-[20%] w-1 h-1 bg-purple-300 rounded-full opacity-60 animate-float"></div>
 						<div class="absolute top-[30%] right-[15%] w-1.5 h-1.5 bg-pink-300 rounded-full opacity-40 animate-float-delayed"></div>
@@ -181,9 +180,9 @@ function profileCard(name: string, linkedin: string, github: string, avatar: str
 						</div>
 						
 						<div class="text-center mb-2 md:mb-3">
-							<h3 class="text-xs md:text-sm lg:text-base font-bold text-gray-800 mb-1 group-hover:text-purple-600 transition-colors duration-300 leading-tight">
+							<h1 class="text-xs md:text-sm lg:text-base font-bold text-gray-800 mb-1 group-hover:text-purple-600 transition-colors duration-300 leading-tight">
 								${name}
-							</h3>
+							</h1>
 							<p class="text-xs text-gray-600 font-medium">Full Stack Developer</p>
 						</div>
 					</div>

@@ -2,6 +2,7 @@ import { exmp } from "../languageManager";
 import {_apiManager } from "../api/APIManager";
 import type { IApiRegister } from "../api/APIManager";
 import { Router, Page } from "../router";
+import "../styles/register.css";
 
 export class RegisterPage implements Page {
 

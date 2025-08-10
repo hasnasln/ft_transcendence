@@ -6,6 +6,7 @@ export default defineConfig({
         visualizer({ open: true, filename: 'stats.html' })
     ],
     build: {
+        cssCodeSplit: true,
         chunkSizeWarningLimit: 500,
         rollupOptions: {
             output: {

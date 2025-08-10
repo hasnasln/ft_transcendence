@@ -1,9 +1,9 @@
 import { exmp } from '../languageManager';
-import { IApiResponseWrapper, _apiManager } from '../api/APIManager';
+import { _apiManager } from '../api/APIManager';
 import { ITournament, ITournamentUser} from '../api/types';
 import { Page, Router } from '../router';
 import { t_first_section } from './tournament/FormComponents';
-import { ShowTournament, getTournamentFormat, getOptimalTournamentSize, calculateByes, listPlayers} from './tournament/MainRenderer';
+import { ShowTournament } from './tournament/MainRenderer';
 import { TournamentActionHandler } from './tournament/ActionHandler';
 import { TournamentLoadingManager } from './tournament/LoadingManager';
 import { TournamentEventHandler } from './tournament/EventHandler';
@@ -13,7 +13,7 @@ import { TournamentTreeManager } from './tournament/TreeManager';
 import { TournamentGameManager } from './tournament/GameManager';
 import { TournamentStateManager } from './tournament/StateManager';
 import { TournamentNotificationManager } from './tournament/NotificationManager';
-
+import "../styles/tournament.css";
 
 // read
 export class TournamentPage implements Page {

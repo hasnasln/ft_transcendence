@@ -2,6 +2,7 @@ import { _apiManager } from "../api/APIManager";
 import { Router } from "../router";
 import { exmp } from "../languageManager";
 import { Page } from '../router';
+import "../styles/login.css";
 
 export class LoginPage implements Page {
 	evaluate(): string {

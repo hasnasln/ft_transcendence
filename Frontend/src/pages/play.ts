@@ -14,6 +14,7 @@ import {GamePage} from './game';
 import {GameLoop} from './game-section/gameLoop';
 import {GameInputHandler} from './game-section/keyboard';
 import {BabylonJsWrapper} from "./game-section/3d";
+import "../styles/play.css";
 
 export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament';
 export type GamePhase = 'unset' | 'waiting' | 'ready' | 'playing' | 'completed';

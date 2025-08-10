@@ -1,4 +1,5 @@
 import {Page} from "../router";
+import "../styles/500.css";
 
 export class ServerErrorPage implements Page {
 
