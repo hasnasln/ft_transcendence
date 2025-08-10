@@ -1,38 +1,3 @@
-//#region  LOGIN
-
-export interface ILoginRequest {
-	username: string;
-	password: string;
-}
-
-export interface ILoginResponse {
-	token: string;
-	user: IUser;
-}
-
-//#endregion
-
-//#region  REGISTER
-
-export interface IRegisterRequest {
-	name: string;
-	surname: string;
-	username: string;
-	email: string;
-	password: string;
-}
-/*
-!burada kayıt olan kişi girişe mi yönlendirilecek yoksa içeri mi alınacak ?
-? içeri alınacaksa token ve user bilgisi dönecek
-*/
-export interface IRegisterResponse {
-	token: string;
-	user: IUser;
-}
-
-//#endregion
-
-//#region USER
 export interface IUser {
 	id: number;
 	username: string;
