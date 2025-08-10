@@ -165,22 +165,13 @@ export class TournamentPage implements Page {
             console.error('Container not found');
             return;
         }
-        this.setupEventDelegation(container);
+                this.eventHandler.setupEventDelegation(container, 
+            (event) => this.handleClickEvent(event), 
+            (event) => this.handleInputChange(event)
+        );
         this.eventHandler.setupKeyboardShortcuts();
         this.eventHandler.setupGlobalErrorHandling();
         this.setupPerformanceMonitoring();
-    }
-
-    private setupEventDelegation(container: HTMLElement): void {
-        container.addEventListener('click', (event) => {
-            this.handleClickEvent(event);
-        });
-        container.addEventListener('submit', (event) => {
-            this.eventHandler.handleFormSubmission(event);
-        });
-        container.addEventListener('input', (event) => {
-            this.handleInputChange(event);
-        });
     }
 
     private handleClickEvent(event: Event): void {
@@ -331,7 +322,7 @@ export class TournamentPage implements Page {
             
             if (startResult.success) {
                 this.notificationManager.showStartSuccess(startResult.message, this.data!.lobby_members.length);
-                await this.stateManager.handleStartSuccess(startResult.message);
+                await this.stateManager.handleStartSuccess();
                 this.updateManagersStatus(true);
             } else {
                 this.handleStartError(startResult.message);
@@ -373,7 +364,7 @@ export class TournamentPage implements Page {
             
             if (exitResult.success) {
                 this.notificationManager.showExitSuccess(exitResult.message);
-                await this.stateManager.handleExitSuccess(container, exitResult.message);
+                await this.stateManager.handleExitSuccess(container);
             } else {
                 this.handleExitError(exitResult.message);
             }
