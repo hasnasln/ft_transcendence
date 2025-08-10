@@ -1,16 +1,24 @@
 export class TournamentEventHandler {
     private container: HTMLElement | null = null;
 
-    setupEventDelegation(container: HTMLElement): void {
+    setupEventDelegation(container: HTMLElement, clickHandler?: (event: Event) => void, inputHandler?: (event: Event) => void): void {
         this.container = container;
         container.addEventListener('click', (event) => {
-            this.handleClickEvent(event);
+            if (clickHandler) {
+                clickHandler(event);
+            } else {
+                this.handleClickEvent(event);
+            }
         });
         container.addEventListener('submit', (event) => {
             this.handleFormSubmission(event);
         });
         container.addEventListener('input', (event) => {
-            this.handleInputChange(event);
+            if (inputHandler) {
+                inputHandler(event);
+            } else {
+                this.handleInputChange(event);
+            }
         });
     }
 
