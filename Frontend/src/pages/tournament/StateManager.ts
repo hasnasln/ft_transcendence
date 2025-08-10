@@ -46,14 +46,14 @@ export class TournamentStateManager {
         this.renderTournamentPage(container, tournamentData);
     }
 
-    async handleStartSuccess(successMessage: string): Promise<void> {
+    async handleStartSuccess(): Promise<void> {
         this.status = true;
         this.loadingManager.removeLoadingOverlay('start');
         await this.delay(2000);
         this.updateUIAfterStart();
     }
 
-    async handleExitSuccess(container: HTMLElement, message: string): Promise<void> {
+    async handleExitSuccess(container: HTMLElement): Promise<void> {
         this.loadingManager.removeLoadingOverlay('exit');
         await this.delay(1500);
         localStorage.removeItem('tdata');
