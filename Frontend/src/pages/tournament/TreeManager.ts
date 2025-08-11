@@ -1,5 +1,5 @@
 import { _apiManager } from '../../api/APIManager';
-import { ModernOverlay } from './ModernOverlay';
+import { ModernOverlay } from '../../components/ModernOverlay';
 import { ITournament } from '../../api/types';
 import { getTournamentTree } from './BracketRenderer';
 import { TournamentIcons } from './IconsHelper';
