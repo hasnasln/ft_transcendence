@@ -147,18 +147,6 @@ export class TournamentEventHandler {
         }
     }
 
-    private showInputError(inputType: 'join' | 'create', message: string): void {
-        const errorElement = document.getElementById(`${inputType}_error_message`);
-        if (errorElement) {
-            errorElement.textContent = message;
-            errorElement.style.visibility = 'visible';
-            setTimeout(() => {
-                errorElement.style.visibility = 'hidden';
-                errorElement.textContent = '';
-            }, 5000);
-        }
-    }
-
     private showGlobalError(message: string): void {
         const toast = document.createElement('div');
         toast.className = 'global-error-toast';
