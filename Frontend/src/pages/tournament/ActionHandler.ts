@@ -102,7 +102,6 @@ export class TournamentActionHandler {
     async startTournament(): Promise<{ success: boolean; message: string }> {
         try {        
             const response = await _apiManager.startTournament(this.data.code);
-            console.log('Tournament start response:', response);
             if (response.success === true) {
                 const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_STARTED}`);
                 return {
@@ -128,12 +127,8 @@ export class TournamentActionHandler {
 
     async refreshTournament(): Promise<{ success: boolean; data?: ITournament; message: string }> {
         try {
-            console.log('ActionHandler refreshTournament called with code:', this.data.code);
-            console.log('Current tournament data:', this.data);
-            
             const response = await _apiManager.getTournament(this.data.code);
-            console.log('API response:', response);
-            
+ 
             if (response.success === false) {
                 const messageKey = response.message as TournamentResponseMessages;
                 const translatedMessage = exmp.getLang(`tournament-messages.${messageKey}`);
@@ -148,7 +143,6 @@ export class TournamentActionHandler {
                     message: exmp.getLang('tournament-messages.ERR_TOURNAMENT_NOT_FOUND')
                 };
             }
-            console.log("refresh-->>>>", response);
             const updatedData: ITournament = {
                 id: response.data.id || this.data.id,
                 code: response.data.code || this.data.code,
