@@ -24,7 +24,6 @@ export class TournamentStateManager {
             this.status = true;
         }
         const uid = localStorage.getItem('uuid');
-        console.log('participants:', updatedData.participants);
         this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid));
         await this.delay(500);
         this.completeRefresh(updatedData);
@@ -120,13 +119,6 @@ export class TournamentStateManager {
         localStorage.removeItem('tdata');
         container.innerHTML = '';
         t_first_section(container);
-    }
-
-    renderFallbackData(): void {
-        const playersList = document.getElementById('list-player');
-        if (playersList) {
-            listPlayers(playersList, this.data);
-        }
     }
 
     updateTournamentInfo(): void {
