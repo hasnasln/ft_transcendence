@@ -79,7 +79,8 @@ export class GameEmitter {
 			return;
 		}
 
-		this.emitWithCache("bu", `${x.toFixed(2)}:${y.toFixed(2)}`, game.roomId);
+		if (x === 0)
+			this.emitWithCache("bu", `${x.toFixed(2)}:${y.toFixed(2)}`, game.roomId);
 		this.emitBallVelocity(game);
 	}
 
