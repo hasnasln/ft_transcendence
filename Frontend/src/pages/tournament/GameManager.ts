@@ -1,5 +1,5 @@
 import { _apiManager } from '../../api/APIManager';
-import { ModernOverlay } from './ModernOverlay';
+import { ModernOverlay } from '../../components/ModernOverlay';
 import { ITournament, TournamentResponseMessages } from '../../api/types';
 import { gameInstance } from '../play';
 import { Router } from '../../router';
