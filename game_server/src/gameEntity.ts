@@ -34,7 +34,7 @@ export interface GameEntityConfig {
 
 export const DEFAULT_GAME_ENTITY_CONFIG: GameEntityConfig = {
     ballFirstSpeedFactor: 0.18,
-    ballAirResistanceFactor: 1,//0.998,
+    ballAirResistanceFactor: 0.998,
     ballMinimumSpeed: 0.18,
     ballMaximumSpeed: 0.4,
     ballRadius: 0.25,

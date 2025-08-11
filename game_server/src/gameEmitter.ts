@@ -79,7 +79,7 @@ export class GameEmitter {
 			return;
 		}
 
-		if (force || Date.now() - game.lastNotifiedBallPositionTime > 1000) {
+		if (force || Date.now() - game.lastNotifiedBallPositionTime > 10) {
 			this.emitWithCache("bu", `${x.toFixed(2)}:${y.toFixed(2)}`, game.roomId);
 			game.lastNotifiedBallPositionTime = Date.now();
 		}
