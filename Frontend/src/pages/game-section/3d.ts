@@ -8,98 +8,111 @@
 import {GameScene} from "./gameScene";
 
 export class BabylonJsWrapper {
-  private static _instance: BabylonJsWrapper;
-  private static loaded = false;
+    private static _instance: BabylonJsWrapper;
+    private static loaded = false;
 
-  Mesh!: typeof import("@babylonjs/core/Meshes/mesh").Mesh;
-  MeshBuilder!: typeof import("@babylonjs/core/Meshes/meshBuilder");
-  SphereBuilder!: typeof import("@babylonjs/core/Meshes/Builders/sphereBuilder").SphereBuilder;
-  Vector3!: typeof import("@babylonjs/core/Maths/math.vector").Vector3;
-  Color3!: typeof import("@babylonjs/core/Maths/math.color").Color3;
-  Color4!: typeof import("@babylonjs/core/Maths/math.color").Color4;
-  Engine!: typeof import("@babylonjs/core/Engines/engine").Engine;
-  Scene!: typeof import("@babylonjs/core/scene").Scene;
-  FreeCamera!: typeof import("@babylonjs/core/Cameras/freeCamera").FreeCamera;
-  HemisphericLight!: typeof import("@babylonjs/core/Lights/hemisphericLight").HemisphericLight;
-  KeyboardEventTypes!: typeof import("@babylonjs/core/Events/keyboardEvents").KeyboardEventTypes;
-  EdgesRenderer!: typeof import("@babylonjs/core/Rendering/edgesRenderer").EdgesRenderer;
-  StandardMaterial!: typeof import("@babylonjs/core/Materials/standardMaterial").StandardMaterial;
+    Mesh!: typeof import("@babylonjs/core/Meshes/mesh").Mesh;
+    MeshBuilder!: typeof import("@babylonjs/core/Meshes/meshBuilder");
+    SphereBuilder!: typeof import("@babylonjs/core/Meshes/Builders/sphereBuilder").SphereBuilder;
+    Vector3!: typeof import("@babylonjs/core/Maths/math.vector").Vector3;
+    Color3!: typeof import("@babylonjs/core/Maths/math.color").Color3;
+    Color4!: typeof import("@babylonjs/core/Maths/math.color").Color4;
+    Engine!: typeof import("@babylonjs/core/Engines/engine").Engine;
+    Scene!: typeof import("@babylonjs/core/scene").Scene;
+    FreeCamera!: typeof import("@babylonjs/core/Cameras/freeCamera").FreeCamera;
+    HemisphericLight!: typeof import("@babylonjs/core/Lights/hemisphericLight").HemisphericLight;
+    KeyboardEventTypes!: typeof import("@babylonjs/core/Events/keyboardEvents").KeyboardEventTypes;
+    EdgesRenderer!: typeof import("@babylonjs/core/Rendering/edgesRenderer").EdgesRenderer;
+    StandardMaterial!: typeof import("@babylonjs/core/Materials/standardMaterial").StandardMaterial;
+    TrailMesh!: typeof import("@babylonjs/core/Meshes/trailMesh").TrailMesh;
+    DefaultRenderingPipeline!: typeof import("@babylonjs/core/PostProcesses/RenderPipeline/Pipelines/defaultRenderingPipeline").DefaultRenderingPipeline;
+    GlowLayer!: typeof import("@babylonjs/core/Layers/glowLayer").GlowLayer;
 
-  private constructor() {}
-
-  public static getInstance(): BabylonJsWrapper {
-    if (!BabylonJsWrapper._instance) {
-      BabylonJsWrapper._instance = new BabylonJsWrapper();
+    private constructor() {
     }
-    return BabylonJsWrapper._instance;
-  }
 
-  public static async load(): Promise<void> {
-    if (BabylonJsWrapper.loaded) return;
-    BabylonJsWrapper.loaded = true;
-    console.log("loading BabylonJS modules...");
-    const [
-      { Mesh },
-      MeshBuilderMod,
-      { SphereBuilder },
-      mathMod,
-      { Engine },
-      { Scene },
-      { FreeCamera },
-      { HemisphericLight },
-      { KeyboardEventTypes },
-      { EdgesRenderer },
-      { StandardMaterial },
-    ] = await Promise.all([
-      import("@babylonjs/core/Meshes/mesh"),
-      import("@babylonjs/core/Meshes/meshBuilder"),
-      import("@babylonjs/core/Meshes/Builders/sphereBuilder"),
-      import("@babylonjs/core/Maths/math"),
-      import("@babylonjs/core/Engines/engine"),
-      import("@babylonjs/core/scene"),
-      import("@babylonjs/core/Cameras/freeCamera"),
-      import("@babylonjs/core/Lights/hemisphericLight"),
-      import("@babylonjs/core/Events/keyboardEvents"),
-      import("@babylonjs/core/Rendering/edgesRenderer"),
-      import("@babylonjs/core/Materials/standardMaterial"),
-    ]);
+    public static getInstance(): BabylonJsWrapper {
+        if (!BabylonJsWrapper._instance) {
+            BabylonJsWrapper._instance = new BabylonJsWrapper();
+        }
+        return BabylonJsWrapper._instance;
+    }
 
-    const { Vector3, Color3, Color4 } = mathMod;
-    const instance = BabylonJsWrapper.getInstance();
+    public static async load(): Promise<void> {
+        if (BabylonJsWrapper.loaded) return;
+        BabylonJsWrapper.loaded = true;
+        console.log("loading BabylonJS modules...");
+        const [
+            {Mesh},
+            MeshBuilderMod,
+            {SphereBuilder},
+            mathMod,
+            {Engine},
+            {Scene},
+            {FreeCamera},
+            {HemisphericLight},
+            {KeyboardEventTypes},
+            {EdgesRenderer},
+            {StandardMaterial},
+            {TrailMesh},
+            {DefaultRenderingPipeline},
+            {GlowLayer}
+        ] = await Promise.all([
+            import("@babylonjs/core/Meshes/mesh"),
+            import("@babylonjs/core/Meshes/meshBuilder"),
+            import("@babylonjs/core/Meshes/Builders/sphereBuilder"),
+            import("@babylonjs/core/Maths/math"),
+            import("@babylonjs/core/Engines/engine"),
+            import("@babylonjs/core/scene"),
+            import("@babylonjs/core/Cameras/freeCamera"),
+            import("@babylonjs/core/Lights/hemisphericLight"),
+            import("@babylonjs/core/Events/keyboardEvents"),
+            import("@babylonjs/core/Rendering/edgesRenderer"),
+            import("@babylonjs/core/Materials/standardMaterial"),
+            import("@babylonjs/core/Meshes/trailMesh"),
+            import("@babylonjs/core/PostProcesses/RenderPipeline/Pipelines/defaultRenderingPipeline"),
+            import("@babylonjs/core/Layers/glowLayer")
+        ]);
 
-    Object.assign(instance, {
-      Mesh,
-      MeshBuilder: MeshBuilderMod,
-      SphereBuilder,
-      Vector3,
-      Color3,
-      Color4,
-      Engine,
-      Scene,
-      FreeCamera,
-      HemisphericLight,
-      KeyboardEventTypes,
-      EdgesRenderer,
-      StandardMaterial,
-    });
+        const {Vector3, Color3, Color4} = mathMod;
+        const instance = BabylonJsWrapper.getInstance();
 
-    GameScene.getInstance().EDGE_COLOR = new (instance.Color4)(0.7, 0.7, 0.7, 1);
-    GameScene.getInstance().GROUND_COLOR = new (instance.Color3)(0.1, 0.1, 0.1);
-    GameScene.getInstance().EDGE_COLOR_LIGHT = new (instance.Color4)(0.6, 0.6, 0.6, 1);
-    GameScene.getInstance().PADDLE1_DIFFUSE = new (instance.Color3)(0, 0, 0.7);
-    GameScene.getInstance().PADDLE1_EMISSIVE = new (instance.Color3)(0, 0, 0.5);
-    GameScene.getInstance().PADDLE2_DIFFUSE = new (instance.Color3)(0.7, 0, 0);
-    GameScene.getInstance().PADDLE2_EMISSIVE = new (instance.Color3)(0.5, 0, 0);
-    GameScene.getInstance().WALL_COLOR = new (instance.Color3)(87/255, 43/255, 158/255);
+        Object.assign(instance, {
+            Mesh,
+            MeshBuilder: MeshBuilderMod,
+            SphereBuilder,
+            Vector3,
+            Color3,
+            Color4,
+            Engine,
+            Scene,
+            FreeCamera,
+            HemisphericLight,
+            KeyboardEventTypes,
+            EdgesRenderer,
+            StandardMaterial,
+            TrailMesh,
+            DefaultRenderingPipeline,
+            GlowLayer
+        });
 
-    console.log("BabylonJS modules loaded successfully.");
-  }
+        GameScene.getInstance().EDGE_COLOR = new (instance.Color4)(0.7, 0.7, 0.7, 1);
+        GameScene.getInstance().GROUND_COLOR = new (instance.Color3)(0.1, 0.1, 0.1);
+        GameScene.getInstance().EDGE_COLOR_LIGHT = new (instance.Color4)(0.6, 0.6, 0.6, 1);
+        GameScene.getInstance().PADDLE1_DIFFUSE = new (instance.Color3)(0, 0, 0.7);
+        GameScene.getInstance().PADDLE1_EMISSIVE = new (instance.Color3)(0, 0, 0.5);
+        GameScene.getInstance().PADDLE2_DIFFUSE = new (instance.Color3)(0.7, 0, 0);
+        GameScene.getInstance().PADDLE2_EMISSIVE = new (instance.Color3)(0.5, 0, 0);
+        GameScene.getInstance().WALL_COLOR = new (instance.Color3)(87 / 255, 43 / 255, 158 / 255);
 
-  public getMesh(): typeof import("@babylonjs/core/Meshes/mesh").Mesh {
-    return this.Mesh;
-  }
+        console.log("BabylonJS modules loaded successfully.");
+    }
 
-  public getEngine(): typeof import("@babylonjs/core/Engines/engine").Engine {
-    return this.Engine;
-  }
+    public getMesh(): typeof import("@babylonjs/core/Meshes/mesh").Mesh {
+        return this.Mesh;
+    }
+
+    public getEngine(): typeof import("@babylonjs/core/Engines/engine").Engine {
+        return this.Engine;
+    }
 }

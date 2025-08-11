@@ -2,12 +2,10 @@ import {BabylonJsWrapper} from "./3d";
 import {updateScoreBoard} from "./ui";
 import {gameInstance} from "../play";
 import {GameEventBus} from "./gameEventBus";
-import {Vector} from "./network";
 
 export class GameLoop {
 	private static instance: GameLoop;
 	private gameLoopRunning: boolean = false;
-	private lastVelocity: Vector = { x: 0, y: 0 };
 	private lastUpdateTime: number = 0;
 
 	private constructor() { }
@@ -22,7 +20,6 @@ export class GameLoop {
 	private updateBallPosition(): void {
 		const Vector3 = BabylonJsWrapper.getInstance().Vector3;
 
-		this.lastVelocity = gameInstance.gameInfo?.ballVelocity.consume() ?? this.lastVelocity;
 		if (!gameInstance.gameInfo!.ballPosition) {
 			return
 		}
@@ -31,12 +28,13 @@ export class GameLoop {
 		const curY = gameInstance.gameInfo!.ballPosition.y;
 		const dt = ((Date.now() - this.lastUpdateTime) * 60) / 1000;
 
-		let x = curX + this.lastVelocity.x * dt;
-		let y = curY + this.lastVelocity.y * dt;
+		let x = curX + gameInstance.gameInfo!.ballVelocity.x * dt;
+		let y = curY + gameInstance.gameInfo!.ballVelocity.y * dt;
 		if (x < -gameInstance.gameInfo!.constants!.groundWidth / 2 + gameInstance.gameInfo!.constants!.ballRadius || x > gameInstance.gameInfo!.constants!.groundWidth / 2 - gameInstance.gameInfo!.constants!.ballRadius) {
 			x = curX;
 			y = curY;
 		}
+
 		gameInstance.gameInfo!.ballPosition.x = x;
 		gameInstance.gameInfo!.ballPosition.y = y;
 

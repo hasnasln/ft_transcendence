@@ -5,12 +5,15 @@ import { MatchPlayers } from "./network";
 import { updateScoreBoard, showEndMessage, startNextSet } from "./ui";
 import { WebSocketClient } from "./wsclient";
 import { Router } from "../../router";
+import {BabylonJsWrapper} from "./3d";
 
 export const gameEventTypes = [
     'SET_COMPLETED',
     'MATCH_ENDED',
     'GAME_PAUSED',
     'GAME_RESUMED',
+	'BALL_POSITION_RESET',
+	'BALL_PADDLE_HIT',
     'RIVAL_FOUND',
     'WAITING_FOR_RIVAL',
     'MODE_SELECTED',
@@ -212,6 +215,7 @@ export function listenGameBusEvents() {
 		await gameInstance.uiManager.setupScene();
 		listenPlayerInputs(gameInstance.gameInfo!);
 		console.log("Game Loop started due to playing phase entry.");
+
 		GameLoop.getInstance().start();
 	});
 
@@ -285,7 +289,24 @@ export function listenGameBusEvents() {
 		}*/
 	});
 
+	GameEventBus.getInstance().on('BALL_POSITION_RESET', event => {
+		const tr = gameInstance.uiManager.ball!.trail;
+		tr.stop();
+		tr.setEnabled(false);
 
+		requestAnimationFrame(() => {
+			tr.reset();
+			tr.setEnabled(true);
+			tr.start();
+		});
+	});
 
+	GameEventBus.getInstance().on('BALL_PADDLE_HIT', event => {
+		if (!gameInstance.uiManager.ball) return;
+		const mat = event.payload.object.material;
+		const oldColor = mat.emissiveColor;
+		mat.emissiveColor = new (BabylonJsWrapper.getInstance().Color3)(mat.emissiveColor.r+0.4, mat.emissiveColor.g+0.4, mat.emissiveColor.b+0.4);
+		setTimeout(() => mat.emissiveColor = oldColor, 100);
+	});
 }
 

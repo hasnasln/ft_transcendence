@@ -8,7 +8,6 @@ import "../game-scene.css"
 import "../common.css"
 import "../styles/game.css";
 import "../styles/others.css";
-//import "../styles/all.css"
 
 export class GamePage implements Page {
 
@@ -197,7 +196,7 @@ export class GamePage implements Page {
         return `
         <canvas id="game-canvas" class="rotate-90 sm:rotate-0 sm:w-full md:w-[90%] min-h-fit"></canvas>
         <div id="no-game-welcomer" class="rotate-90 sm:rotate-0 absolute text-center">
-            <div class="mx-auto w-full justify-center flex mb-8 hidden sm:flex">
+            <div class="mx-auto w-full justify-center mb-8 sm:flex hidden">
                 ${GamePage.illustration}
             </div>
             <div class="text-white text-3xl lg:text-5xl mx-8 font-semibold mb-4">No game found</div>

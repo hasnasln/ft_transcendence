@@ -194,6 +194,8 @@ export class GameUI {
 		createWalls(this.scene, gameInstance.gameInfo!);
 		this.canvas!.focus();
 		gameInstance.gameStatus.currentGameStarted = true;
+		const glow = new (BabylonJsWrapper.getInstance().GlowLayer)("glow", this.scene);
+		glow.intensity = 0.7;
 	}
 
 	public isSceneReady(): boolean {
