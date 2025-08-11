@@ -111,7 +111,7 @@ export function listenStateUpdates(gameInfo: GameInfo): void {
         gameInfo.ballPosition = {x, y};
     });
 
-    WebSocketClient.getInstance().on("ballVelocity", (raw: string) => {
+    WebSocketClient.getInstance().on("bv", (raw: string) => {
         const [vx, vy] = raw.split(':').map(Number);
         const prevVx = gameInfo.ballVelocity.x;
         if ((prevVx > 0 && vx < 0) || (prevVx < 0 && vx > 0)) {
@@ -122,7 +122,10 @@ export function listenStateUpdates(gameInfo: GameInfo): void {
     });
 
     WebSocketClient.getInstance().on("updateState", (setState: SetState) => gameInfo.setState = setState);
-    WebSocketClient.getInstance().on("paddleUpdate", (data) => gameInfo.paddle = data);
+    WebSocketClient.getInstance().on("pu", (raw: string) => {
+        const [y1, y2] = raw.split(':').map(Number);
+        gameInfo.paddle = {p1y: y1, p2y: y2};
+    });
     WebSocketClient.getInstance().on("opponent-disconnected", () => {
         GameEventBus.getInstance().emit({type: 'RIVAL_DISCONNECTED', payload: {}});
     });

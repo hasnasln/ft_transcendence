@@ -95,16 +95,19 @@ export class GameEmitter {
 			return;
 		}
 
-		this.emitWithCache("ballVelocity", `${vx.toFixed(2)}:${vy.toFixed(2)}`, game.roomId);
+		this.emitWithCache("bv", `${vx.toFixed(2)}:${vy.toFixed(2)}`, game.roomId);
 	}
 
 	public emitPaddleState(game: Game): void {
-		const paddleState: PaddleState = {
-			p1y: game.environment.leftPaddle.position.y / this.ucf,
-			p2y: game.environment.rightPaddle.position.y / this.ucf,
-		};
+		const p1y= game.environment.leftPaddle.position.y / this.ucf;
+		const p2y= game.environment.rightPaddle.position.y / this.ucf;
 
-		this.emitWithCache("paddleUpdate", paddleState, game.roomId);
+		if (isNaN(p1y) || isNaN(p2y)) {
+			console.error(`Invalid ball coordinates: vx=${p1y}, vy=${p2y}`);
+			return;
+		}
+
+		this.emitWithCache("pu", `${p1y.toFixed(2)}:${p2y.toFixed(2)}`, game.roomId);
 	}
 
 	public emitGameFinish(game: Game): void {
