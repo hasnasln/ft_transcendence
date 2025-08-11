@@ -4,7 +4,7 @@ import type { Scene } from "@babylonjs/core/scene";
 
 import { BabylonJsWrapper } from "./3d";
 import { GameInfo } from "./network";
-import { activeBallColor } from "../../components/ball-coler";
+import { activeBallColor } from "../../components/ballColor";
 
 export class BallController {
 	ball: Mesh;
