@@ -1,7 +1,8 @@
 import { exmp } from '../languageManager';
 import { _apiManager } from '../api/APIManager';
-import { ITournament, ITournamentUser} from '../api/types';
-import { Page, Router } from '../router';
+import { ITournament, ITournamentUser, TournamentResponseMessages} from '../api/types';
+import { Router, Page } from '../router';
+import { ModernOverlay } from '../components/ModernOverlay.js';
 import { t_first_section } from './tournament/FormComponents';
 import { ShowTournament } from './tournament/MainRenderer';
 import { TournamentActionHandler } from './tournament/ActionHandler';
@@ -111,7 +112,7 @@ export class TournamentPage implements Page {
             this.treeManager = new TournamentTreeManager(this.data, this.uiManager);
             this.gameManager = new TournamentGameManager(this.data, this.status, this.validation, this.uiManager);
             this.stateManager = new TournamentStateManager(this.data, this.status, this.uiManager, this.loadingManager);
-            this.notificationManager = new TournamentNotificationManager(this.uiManager);
+            this.notificationManager = new TournamentNotificationManager();
             return responseWraper;
         })
         .then((responseWraper) => {
@@ -252,66 +253,63 @@ export class TournamentPage implements Page {
     private async createTournament(container: HTMLElement): Promise<void> {
         try {
             const input = document.querySelector('#createInput') as HTMLInputElement;
-            const validationResult = this.validation.validateCreateInput(input);
-            if (!validationResult.isValid) {
-                this.notificationManager.showCreateError(validationResult.message);
-                return;
-            }
+            const tournamentName = input.value.trim();
             
-            const tournamentName = validationResult.tournamentName;
             this.loadingManager.showCreateLoading();
             
             const createResult = await this.actionHandler.createTournament(tournamentName);
             if (createResult.success && createResult.data) {
-                this.notificationManager.showCreateSuccess(createResult.data);
+                const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_CREATED}`) || 
+                                      'Turnuva başarıyla oluşturuldu';
+                ModernOverlay.show(successMessage, 'success');
                 await this.stateManager.handleCreateSuccess(container, createResult.data);
                 this.updateManagersData(createResult.data);
             } else {
-                this.handleCreateError(createResult.message || '❌ Turnuva verisi alınamadı! Lütfen tekrar deneyin.');
+                const messageKey = createResult.message as TournamentResponseMessages;
+                const errorMessage = exmp.getLang(`tournament-messages.${messageKey}`) || 
+                                    'Turnuva oluşturulurken bir hata oluştu';
+                ModernOverlay.show(errorMessage, 'error');
             }
         } catch (error) {
             console.error('Error creating tournament:', error);
-            this.handleCreateError('❌ Turnuva oluşturulurken beklenmeyen bir hata oluştu!\n\nLütfen tekrar deneyin.');
+            const networkError = 'Ağ bağlantısı hatası, lütfen tekrar deneyin';
+            ModernOverlay.show(networkError, 'error');
         }
     }
     private async joinRoom(container: HTMLElement): Promise<void> {
         try {
             const input = document.querySelector('#joinInput') as HTMLInputElement;
-            const validationResult = this.validation.validateJoinInput(input);
-            if (!validationResult.isValid) {
-                this.notificationManager.showJoinError(validationResult.message);
-                return;
-            }
+            const tournamentId = input.value.trim();
             
-            const tournamentId = validationResult.tournamentId;
             this.loadingManager.showJoinLoading();
             
             const joinResult = await this.actionHandler.joinTournament(tournamentId);
             if (joinResult.success) {
                 if (joinResult.data) {
-                    this.notificationManager.showJoinSuccess();
+                    const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_PARTICIPANT_JOINED}`) || 
+                                          'Turnuvaya başarıyla katıldınız';
+                    ModernOverlay.show(successMessage, 'success');
                     await this.stateManager.handleJoinSuccess(container, joinResult.data);
                     this.updateManagersData(joinResult.data);
                 } else {
-                    this.handleJoinError('❌ Turnuva verisi alınamadı! Lütfen tekrar deneyin.');
+                    const errorMessage = 'Turnuva verisi alınamadı, lütfen tekrar deneyin';
+                    ModernOverlay.show(errorMessage, 'error');
                 }
             } else {
-                this.handleJoinError(joinResult.message);
+                const messageKey = joinResult.message as TournamentResponseMessages;
+                const errorMessage = exmp.getLang(`tournament-messages.${messageKey}`) || 
+                                    'Turnuvaya katılım sırasında bir hata oluştu';
+                ModernOverlay.show(errorMessage, 'error');
             }
         } catch (error) {
             console.error('Error joining tournament:', error);
-            this.handleJoinError('❌ Turnuvaya katılırken beklenmeyen bir hata oluştu!\n\nLütfen tekrar deneyin.');
+            const networkError = 'Ağ bağlantısı hatası, lütfen tekrar deneyin';
+            ModernOverlay.show(networkError, 'error');
         }
     }
 
     private async handleStartTournament(): Promise<void> {
         try {
-            const validationResult = this.validation.validateTournamentStart(this.data!.lobby_members.length);
-            if (!validationResult.isValid) {
-                this.notificationManager.showStartError(validationResult.message);
-                return;
-            }
-            
             const confirmation = await this.getStartConfirmation();
             if (!confirmation) {
                 return;
@@ -321,15 +319,21 @@ export class TournamentPage implements Page {
             const startResult = await this.actionHandler.startTournament();
             
             if (startResult.success) {
-                this.notificationManager.showStartSuccess(startResult.message, this.data!.lobby_members.length);
+                const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_STARTED}`) || 
+                                      'Turnuva başarıyla başlatıldı';
+                ModernOverlay.show(successMessage, 'success');
                 await this.stateManager.handleStartSuccess();
                 this.updateManagersStatus(true);
             } else {
-                this.handleStartError(startResult.message);
+                const messageKey = startResult.message as TournamentResponseMessages;
+                const errorMessage = exmp.getLang(`tournament-messages.${messageKey}`) || 
+                                    'Turnuva başlatılırken bir hata oluştu';
+                ModernOverlay.show(errorMessage, 'error');
             }
         } catch (error) {
             console.error('Error starting tournament:', error);
-            this.handleStartError('❌ Turnuva başlatılırken beklenmeyen bir hata oluştu!\n\nLütfen tekrar deneyin.');
+            const networkError = 'Ağ bağlantısı hatası, lütfen tekrar deneyin';
+            ModernOverlay.show(networkError, 'error');
         }
     }
     private async handleRefresh(): Promise<void> {
@@ -342,14 +346,19 @@ export class TournamentPage implements Page {
                     await this.stateManager.handleRefreshSuccess(refreshResult.data);
                     this.updateManagersData(refreshResult.data);
                 } else {
-                    this.handleRefreshError('❌ Turnuva verisi alınamadı!');
+                    const errorMessage = 'Turnuva verisi alınamadı';
+                    ModernOverlay.show(errorMessage, 'error');
                 }
             } else {
-                this.handleRefreshError(refreshResult.message);
+                const messageKey = refreshResult.message as TournamentResponseMessages;
+                const errorMessage = exmp.getLang(`tournament-messages.${messageKey}`) || 
+                                    'Veriler güncellenirken bir hata oluştu';
+                ModernOverlay.show(errorMessage, 'error');
             }
         } catch (error) {
             console.error('Refresh error:', error);
-            this.handleRefreshError('❌ Veriler güncellenirken hata oluştu!\n\nLütfen tekrar deneyin.');
+            const networkError = 'Ağ bağlantısı hatası, lütfen tekrar deneyin';
+            ModernOverlay.show(networkError, 'error');
         }
     }
     private async exitTournament(container: HTMLElement): Promise<void> {
@@ -363,14 +372,20 @@ export class TournamentPage implements Page {
             const exitResult = await this.actionHandler.exitTournament();
             
             if (exitResult.success) {
-                this.notificationManager.showExitSuccess(exitResult.message);
+                const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_PARTICIPANT_LEFT}`) || 
+                                      'Turnuvadan başarıyla ayrıldınız';
+                ModernOverlay.show(successMessage, 'success');
                 await this.stateManager.handleExitSuccess(container);
             } else {
-                this.handleExitError(exitResult.message);
+                const messageKey = exitResult.message as TournamentResponseMessages;
+                const errorMessage = exmp.getLang(`tournament-messages.${messageKey}`) || 
+                                    'Turnuvadan çıkarken bir hata oluştu';
+                ModernOverlay.show(errorMessage, 'error');
             }
         } catch (error) {
             console.error('Exit tournament error:', error);
-            this.handleExitError('❌ Turnuvadan çıkılırken bir hata oluştu!\n\nLütfen tekrar deneyin.');
+            const networkError = 'Ağ bağlantısı hatası, lütfen tekrar deneyin';
+            ModernOverlay.show(networkError, 'error');
             this.stateManager.forceExitToMainPage(container);
         }
     }
@@ -455,30 +470,6 @@ export class TournamentPage implements Page {
         const confirmationMessage = this.validation.createExitConfirmationMessage(isAdmin);
         const confirmed = confirm(confirmationMessage);
         return { confirmed, isAdmin };
-    }
-    private handleCreateError(errorMessage: string): void {
-        this.loadingManager.removeLoadingOverlay('create');
-        this.notificationManager.showCreateError(errorMessage);
-    }
-    private handleJoinError(errorMessage: string): void {
-        this.loadingManager.removeLoadingOverlay('join');
-        this.notificationManager.showJoinError(errorMessage);
-    }
-    private handleStartError(errorMessage: string): void {
-        this.loadingManager.removeLoadingOverlay('start');
-        const playerCount = this.data!.lobby_members.length;
-        const canStart = playerCount >= 2 && playerCount <= 10;
-        this.notificationManager.resetStartButton(canStart, this.uiManager);
-        this.notificationManager.showStartError(errorMessage);
-    }
-    private handleRefreshError(errorMessage: string): void {
-        this.notificationManager.resetRefreshButton();
-        this.notificationManager.showRefreshError(errorMessage);
-        exmp.applyLanguage();
-    }
-    private handleExitError(errorMessage: string): void {
-        this.loadingManager.removeLoadingOverlay('exit');
-        this.notificationManager.showExitError(errorMessage);
     }
     private updateManagersData(newData: ITournament): void {
         this.data = newData;
