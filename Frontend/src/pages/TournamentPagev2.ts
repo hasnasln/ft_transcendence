@@ -2,7 +2,7 @@ import { exmp } from '../languageManager';
 import { _apiManager } from '../api/APIManager';
 import { ITournament, ITournamentUser, TournamentResponseMessages} from '../api/types';
 import { Router, Page } from '../router';
-import { ModernOverlay } from '../components/ModernOverlay.js';
+import { ModernOverlay } from '../components/ModernOverlay';
 import { t_first_section } from './tournament/FormComponents';
 import { ShowTournament } from './tournament/MainRenderer';
 import { TournamentActionHandler } from './tournament/ActionHandler';
@@ -16,7 +16,6 @@ import { TournamentStateManager } from './tournament/StateManager';
 import { TournamentNotificationManager } from './tournament/NotificationManager';
 import "../styles/tournament.css";
 
-// read
 export class TournamentPage implements Page {
     private flag: boolean = false;
     private data: ITournament | null = null;
@@ -258,6 +257,9 @@ export class TournamentPage implements Page {
             this.loadingManager.showCreateLoading();
             
             const createResult = await this.actionHandler.createTournament(tournamentName);
+            
+            this.loadingManager.removeLoadingOverlay('create');
+            
             if (createResult.success && createResult.data) {
                 const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_CREATED}`) || 
                                       'Turnuva başarıyla oluşturuldu';
@@ -272,6 +274,7 @@ export class TournamentPage implements Page {
             }
         } catch (error) {
             console.error('Error creating tournament:', error);
+            this.loadingManager.removeLoadingOverlay('create');
             const networkError = 'Ağ bağlantısı hatası, lütfen tekrar deneyin';
             ModernOverlay.show(networkError, 'error');
         }
@@ -284,6 +287,9 @@ export class TournamentPage implements Page {
             this.loadingManager.showJoinLoading();
             
             const joinResult = await this.actionHandler.joinTournament(tournamentId);
+            
+            this.loadingManager.removeLoadingOverlay('join');
+            
             if (joinResult.success) {
                 if (joinResult.data) {
                     const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_PARTICIPANT_JOINED}`) || 
@@ -303,6 +309,7 @@ export class TournamentPage implements Page {
             }
         } catch (error) {
             console.error('Error joining tournament:', error);
+            this.loadingManager.removeLoadingOverlay('join');
             const networkError = 'Ağ bağlantısı hatası, lütfen tekrar deneyin';
             ModernOverlay.show(networkError, 'error');
         }
@@ -318,6 +325,8 @@ export class TournamentPage implements Page {
             this.loadingManager.showStartLoading();
             const startResult = await this.actionHandler.startTournament();
             
+            this.loadingManager.removeLoadingOverlay('start');
+            
             if (startResult.success) {
                 const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_STARTED}`) || 
                                       'Turnuva başarıyla başlatıldı';
@@ -332,6 +341,7 @@ export class TournamentPage implements Page {
             }
         } catch (error) {
             console.error('Error starting tournament:', error);
+            this.loadingManager.removeLoadingOverlay('start');
             const networkError = 'Ağ bağlantısı hatası, lütfen tekrar deneyin';
             ModernOverlay.show(networkError, 'error');
         }
@@ -371,6 +381,8 @@ export class TournamentPage implements Page {
             this.loadingManager.showExitLoading(confirmation.isAdmin);
             const exitResult = await this.actionHandler.exitTournament();
             
+            this.loadingManager.removeLoadingOverlay('exit');
+            
             if (exitResult.success) {
                 const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_PARTICIPANT_LEFT}`) || 
                                       'Turnuvadan başarıyla ayrıldınız';
@@ -384,6 +396,7 @@ export class TournamentPage implements Page {
             }
         } catch (error) {
             console.error('Exit tournament error:', error);
+            this.loadingManager.removeLoadingOverlay('exit');
             const networkError = 'Ağ bağlantısı hatası, lütfen tekrar deneyin';
             ModernOverlay.show(networkError, 'error');
             this.stateManager.forceExitToMainPage(container);
