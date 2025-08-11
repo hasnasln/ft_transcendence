@@ -79,7 +79,7 @@ export class GameEmitter {
 			return;
 		}
 
-		if (force || Date.now() - game.lastNotifiedBallPositionTime > 10) {
+		if (force || Date.now() - game.lastNotifiedBallPositionTime > 1000) {
 			this.emitWithCache("bu", `${x.toFixed(2)}:${y.toFixed(2)}`, game.roomId);
 			game.lastNotifiedBallPositionTime = Date.now();
 		}
@@ -95,7 +95,7 @@ export class GameEmitter {
 			return;
 		}
 
-		this.emitWithCache("bv", `${vx.toFixed(2)}:${vy.toFixed(2)}`, game.roomId);
+		this.emitWithCache("bv", `${vx}:${vy}`, game.roomId);
 	}
 
 	public emitPaddleState(game: Game): void {
