@@ -1,3 +1,6 @@
+import { TournamentResponseMessages } from '../../api/types';
+import { exmp } from '../../languageManager';
+
 export class TournamentEventHandler {
     private container: HTMLElement | null = null;
 
@@ -42,11 +45,11 @@ export class TournamentEventHandler {
     setupGlobalErrorHandling(): void {
         window.addEventListener('unhandledrejection', (event) => {
             console.error('Unhandled promise rejection:', event.reason);
-            this.showGlobalError('Beklenmeyen bir hata oluştu. Lütfen sayfayı yenileyin.');
+            this.showGlobalError(exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_INTERNAL_SERVER}`));
         });
         window.addEventListener('error', (event) => {
             console.error('Global error:', event.error);
-            this.showGlobalError('Bir hata oluştu. Lütfen sayfayı yenileyin.');
+            this.showGlobalError(exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_INTERNAL_SERVER}`));
         });
     }
 
@@ -115,18 +118,10 @@ export class TournamentEventHandler {
     }
 
     private performRealTimeValidation(input: HTMLInputElement): void {
-        const value = input.value.trim();
         const inputType = input.id === 'createInput' ? 'create' : 'join';
         this.clearInputError(inputType);
-        if (value.length > 0 && value.length < 3) {
-            this.showInputError(inputType, 'En az 3 karakter gerekli');
-            return;
-        }
-        if (inputType === 'create' && value.length > 50) {
-            this.showInputError(inputType, 'En fazla 50 karakter olabilir');
-            return;
-        }
-        if (value.length >= 3) {
+        
+        if (input.value.trim().length > 0) {
             this.showInputSuccess(inputType);
         }
     }
