@@ -4,62 +4,6 @@ import { TournamentResponseMessages } from '../../api/types';
 import { exmp } from '../../languageManager';
 
 export class TournamentValidation {
-    validateCreateInput(input: HTMLInputElement): { isValid: boolean; tournamentName: string; message: string } {
-        const tournamentName = input?.value?.trim() || '';
-        if (!tournamentName) {
-            return {
-                isValid: false,
-                tournamentName: '',
-                message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NAME_REQUIRED}`)
-            };
-        }
-        if (tournamentName.length < 3) {
-            return {
-                isValid: false,
-                tournamentName: '',
-                message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NAME_EMPTY}`)
-            };
-        }
-        if (tournamentName.length > 50) {
-            return {
-                isValid: false,
-                tournamentName: '',
-                message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NAME_TOO_LONG}`)
-            };
-        }
-        return {
-            isValid: true,
-            tournamentName,
-            message: ''
-        };
-    }
-
-    validateJoinInput(input: HTMLInputElement): { isValid: boolean; tournamentId: string; message: string } {
-        const tournamentId = input?.value?.trim() || '';
-        if (!tournamentId) {
-            return {
-                isValid: false,
-                tournamentId: '',
-                message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_FOUND}`)
-            };
-        }
-        return {
-            isValid: true,
-            tournamentId,
-            message: ''
-        };
-    }
-
-    validateTournamentStart(playerCount: number): { isValid: boolean; message: string } {
-        if (playerCount < 2) {
-            return {
-                isValid: false,
-                message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_NOT_ENOUGH_PARTICIPANTS}`)
-            };
-        }
-        return { isValid: true, message: '' };
-    }
-
     async validateTournamentStatus(data: any, status: boolean): Promise<{ isValid: boolean; message: string }> {
         const response = await _apiManager.getTournament(data.code);
         if (!response.data.tournament_start && !status) {
