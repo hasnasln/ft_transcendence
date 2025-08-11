@@ -70,7 +70,7 @@ export class GameEmitter {
 		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("updateState", setState);
 	}
 
-	public emitBallState(game: Game): void {
+	public emitBallState(game: Game, force=false): void {
 		const x = game.environment.ball.position.x / this.ucf;
 		const y = game.environment.ball.position.y / this.ucf;
 
@@ -79,8 +79,10 @@ export class GameEmitter {
 			return;
 		}
 
-		if (x === 0)
+		if (force || Date.now() - game.lastNotifiedBallPositionTime > 1000) {
 			this.emitWithCache("bu", `${x.toFixed(2)}:${y.toFixed(2)}`, game.roomId);
+			game.lastNotifiedBallPositionTime = Date.now();
+		}
 		this.emitBallVelocity(game);
 	}
 

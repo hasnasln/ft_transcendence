@@ -59,6 +59,7 @@ export class Game {
 	public winner: Side | undefined = undefined;
 	public aPlayerDisconnected: boolean = false;
 	public lastUpdatedTime: number | undefined = undefined;
+	public lastNotifiedBallPositionTime: number= 0;
 	public tournament?: { code: string, roundNo: number, finalMatch: boolean }
 
 	public leftInput: InputProvider | undefined;
@@ -95,7 +96,7 @@ export class Game {
 		}
 		this.resetBall(lastScorer);
 		GameEmitter.getInstance().emitGameConstants(this);
-		GameEmitter.getInstance().emitBallState(this);
+		GameEmitter.getInstance().emitBallState(this, true);
 		GameEmitter.getInstance().emitSetState(this);
 		GameEmitter.getInstance().emitGameState(this);
 	}

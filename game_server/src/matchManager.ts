@@ -216,8 +216,9 @@ export class MatchManager {
 			.forEach(p => p.socket.emit("opponent-reconnected"));
 		game.resume();
 
+		GameEmitter.getInstance().invalidateCache(game.roomId);
 		GameEmitter.getInstance().emitGameConstants(game);
-		GameEmitter.getInstance().emitBallState(game);
+		GameEmitter.getInstance().emitBallState(game, true);
 		GameEmitter.getInstance().emitPaddleState(game);
 		GameEmitter.getInstance().emitGameState(game);
 		GameEmitter.getInstance().emitSetState(game);

@@ -32,6 +32,9 @@ export class GameLoop {
 		let y = curY + gameInstance.gameInfo!.ballVelocity.y * dt;
 		if (x < -gameInstance.gameInfo!.constants!.groundWidth / 2 + gameInstance.gameInfo!.constants!.ballRadius || x > gameInstance.gameInfo!.constants!.groundWidth / 2 - gameInstance.gameInfo!.constants!.ballRadius) {
 			x = curX;
+		}
+
+		if (y < -gameInstance.gameInfo!.constants!.groundHeight / 2 + gameInstance.gameInfo!.constants!.ballRadius || y > gameInstance.gameInfo!.constants!.groundHeight / 2 - gameInstance.gameInfo!.constants!.ballRadius) {
 			y = curY;
 		}
 
