@@ -1,84 +1,6 @@
-import { TournamentIcons } from './IconsHelper';
-import { ModernOverlay } from './ModernOverlay';
-
 export class TournamentNotificationManager {
-    private uiManager: any;
 
-    constructor(uiManager: any) {
-        this.uiManager = uiManager;
-    }
-
-    showCreateSuccess(tournamentData: any): void {
-        const successOverlay = this.uiManager.createSuccessOverlay('create', tournamentData);
-        document.body.appendChild(successOverlay);
-        setTimeout(() => {
-            const overlay = document.getElementById('create-success-overlay');
-            if (overlay) {
-                document.body.removeChild(overlay);
-            }
-        }, 2000);
-    }
-
-    showJoinSuccess(): void {
-        const successOverlay = this.uiManager.createSuccessOverlay('join');
-        document.body.appendChild(successOverlay);
-        setTimeout(() => {
-            const overlay = document.getElementById('join-success-overlay');
-            if (overlay) {
-                document.body.removeChild(overlay);
-            }
-        }, 2000);
-    }
-
-    showStartSuccess(successMessage: string, playerCount: number): void {
-        const successOverlay = this.uiManager.createStartSuccessOverlay(successMessage, playerCount);
-        document.body.appendChild(successOverlay);
-        setTimeout(() => {
-            const overlay = document.getElementById('start-success-overlay');
-            if (overlay) {
-                document.body.removeChild(overlay);
-            }
-        }, 3000);
-    }
-
-    showExitSuccess(message: string): void {
-        const successOverlay = this.uiManager.createExitSuccessOverlay(message);
-        document.body.appendChild(successOverlay);
-        setTimeout(() => {
-            const overlay = document.getElementById('exit-success-overlay');
-            if (overlay) {
-                document.body.removeChild(overlay);
-            }
-        }, 2000);
-    }
-
-    showCreateError(errorMessage: string): void {
-        this.showInputError('create', errorMessage);
-        ModernOverlay.show(errorMessage, 'error');
-    }
-
-    showJoinError(errorMessage: string): void {
-        this.showInputError('join', errorMessage);
-        ModernOverlay.show(errorMessage, 'error');
-    }
-
-    showStartError(errorMessage: string): void {
-        ModernOverlay.show(errorMessage, 'error');
-    }
-
-    showRefreshError(errorMessage: string): void {
-        const refreshButton = document.querySelector('[data-action="refresh"]') as HTMLElement;
-        if (refreshButton) {
-            refreshButton.innerHTML = TournamentIcons.getErrorIcon();
-            setTimeout(() => {
-                refreshButton.innerHTML = TournamentIcons.getRefreshIcon();
-            }, 2000);
-        }
-        ModernOverlay.show(errorMessage, 'error');
-    }
-
-    showExitError(errorMessage: string): void {
-        ModernOverlay.show(errorMessage, 'error');
+    constructor() {
     }
 
     showInputError(inputType: 'join' | 'create', message: string): void {
@@ -111,32 +33,6 @@ export class TournamentNotificationManager {
         if (errorElement) {
             errorElement.style.visibility = 'hidden';
             errorElement.textContent = '';
-        }
-    }
-
-    showRefreshSuccess(): void {
-        const refreshButton = document.querySelector('[data-action="refresh"]') as HTMLElement;
-        if (refreshButton) {
-            refreshButton.innerHTML = TournamentIcons.getSuccessCheckIcon();
-            setTimeout(() => {
-                refreshButton.innerHTML = TournamentIcons.getRefreshIcon();
-            }, 1000);
-        }
-    }
-
-    resetRefreshButton(): void {
-        const refreshButton = document.querySelector('[data-action="refresh"]') as HTMLElement;
-        if (refreshButton) {
-            refreshButton.innerHTML = TournamentIcons.getRefreshIcon();
-            refreshButton.classList.remove('animate-spin');
-        }
-    }
-
-    resetStartButton(canStart: boolean, uiManager: any): void {
-        const startButton = document.getElementById('start-button');
-        if (startButton && canStart) {
-            startButton.innerHTML = uiManager.createActiveStartButtonHTML();
-            (startButton as HTMLButtonElement).disabled = false;
         }
     }
 
