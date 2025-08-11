@@ -3,18 +3,6 @@ export class TournamentNotificationManager {
     constructor() {
     }
 
-    showInputError(inputType: 'join' | 'create', message: string): void {
-        const errorElement = document.getElementById(`${inputType}_error_message`);
-        if (errorElement) {
-            errorElement.textContent = message;
-            errorElement.style.visibility = 'visible';
-            setTimeout(() => {
-                errorElement.style.visibility = 'hidden';
-                errorElement.textContent = '';
-            }, 5000);
-        }
-    }
-
     showInputSuccess(inputType: string): void {
         const input = document.getElementById(`${inputType}Input`) as HTMLInputElement;
         if (input) {
@@ -49,18 +37,10 @@ export class TournamentNotificationManager {
     }
 
     performRealTimeValidation(input: HTMLInputElement): void {
-        const value = input.value.trim();
         const inputType = input.id === 'createInput' ? 'create' : 'join';
         this.clearInputError(inputType);
-        if (value.length > 0 && value.length < 3) {
-            this.showInputError(inputType, 'En az 3 karakter gerekli');
-            return;
-        }
-        if (inputType === 'create' && value.length > 50) {
-            this.showInputError(inputType, 'En fazla 50 karakter olabilir');
-            return;
-        }
-        if (value.length >= 3) {
+        
+        if (input.value.trim().length > 0) {
             this.showInputSuccess(inputType);
         }
     }
