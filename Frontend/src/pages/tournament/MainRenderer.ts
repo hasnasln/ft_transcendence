@@ -187,12 +187,6 @@ function createStartButton(canStart: boolean, playerCount: number, minPlayers: n
     `;
 }
 
-/**
- * buton2 nin ikinci açıklaması gereksiz, turnuva tam dolu olduğu zaman yeni bir kişi zaten giremiyor.
- * 
- * buton2 nin aktif olduğu durmda ${getTournamentFormat(playerCount)} • ${calculateByes(playerCount)} bye
- * kısmı için herhangi bir düzenleme yapmadım ama lazım
- *  */
 function createStartInfo(canStart: boolean, playerCount: number, minPlayers: number, maxPlayers: number): string {
     if (canStart) {
         return `
@@ -206,9 +200,8 @@ function createStartInfo(canStart: boolean, playerCount: number, minPlayers: num
                         </p>
                     </div>
                     <div class="text-center">
-                        <p
-                            class="text-green-300 text-xs">
-                            ${getTournamentFormat(playerCount)} • ${calculateByes(playerCount)} bye
+                        <p class="text-green-300 text-xs">
+                            ${getTournamentFormat(playerCount)}${calculateByes(playerCount) > 0 ? ` • ${calculateByes(playerCount)} bye` : ''}
                         </p>
                     </div>
                 </div>
@@ -221,16 +214,13 @@ function createStartInfo(canStart: boolean, playerCount: number, minPlayers: num
                     <div class="flex items-center justify-center space-x-2 mb-2">
                         ${TournamentIcons.getWarningIcon()}
                         <p 
-                            data-langm-key="tournament-second-page.AdminPanel.Button2.${playerCount < minPlayers ? 'deactive-1' : 'deactive-2'}"
+                            data-langm-key="tournament-second-page.AdminPanel.Button2.deactive-1"
                             class="text-yellow-400 font-semibold text-sm">!_!
                         </p>
                     </div>
                     <div class="text-center">
                         <p
-                            data-langm-key="tournament-second-page.AdminPanel.Button2.${playerCount < minPlayers 
-                                ? `description-1`
-                                : `description-2`
-                            }"
+                            data-langm-key="tournament-second-page.AdminPanel.Button2.description-1"
                             class="text-yellow-300 text-xs">!_!
                         </p>
                     </div>
