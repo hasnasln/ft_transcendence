@@ -30,12 +30,6 @@ export class TournamentEventHandler {
             if (event.key === 'Escape') {
                 this.handleEscapeKey();
             }
-            if ((event.ctrlKey || event.metaKey) && event.key === 'r') {
-                event.preventDefault();
-            }
-            if (event.key === 'F5') {
-                event.preventDefault();
-            }
             if (event.key === 'Enter') {
                 this.handleEnterKey(event);
             }
