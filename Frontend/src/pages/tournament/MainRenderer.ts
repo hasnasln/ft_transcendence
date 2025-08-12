@@ -306,37 +306,12 @@ export function listPlayers(container: HTMLElement, tdata: ITournament): void {
     container.innerHTML = createPlayersListHTML(tdata);
 }
 function createPlayersListHTML(tdata: ITournament): string {
-    if (tdata.lobby_members.length === 0) {
-        return createEmptyPlayersState();
-    }
     const playersHTML = tdata.lobby_members.map((player, index) => 
         createPlayerCard(player, index, tdata.admin_id)
     ).join('');
     return `
         ${playersHTML}
         ${createCapacityIndicator(tdata.lobby_members.length)}
-    `;
-}
-
-// Bu fonsiyon turnuva içerisnde 0 oyuncu olduğu durumda aktif olan bir fonsiyon
-// bizde turnuva oluşturucusu hep içeride olduğu için aşağıdaki fonsiyona gerek yok:
-// createEmptyPlayersState
-function createEmptyPlayersState(): string {
-    return `
-        <div class="flex flex-col items-center justify-center py-16 text-center">
-            <div class="w-24 h-24 bg-gradient-to-br from-gray-500/20 to-gray-700/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-sm border border-white/10">
-                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                </svg>
-            </div>
-            <h4 class="text-xl font-bold text-white mb-2">Waiting for Players</h4>
-            <p class="text-gray-400 font-medium">Turnuvaya katılımcı bekleniyor...</p>
-            <div class="mt-4 flex space-x-2">
-                <div class="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                <div class="w-2 h-2 bg-pink-500 rounded-full animate-pulse delay-100"></div>
-                <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse delay-200"></div>
-            </div>
-        </div>
     `;
 }
 
