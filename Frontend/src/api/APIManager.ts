@@ -16,22 +16,22 @@ export interface IApiSetSettings {
 export interface IApiRegister {
 	username?: string;
 	password?: string;
-	new_password?: string; // yeni şifre
+	new_password?: string;
 	email?: string;
 	uuid?: string;
 }
 
 export interface IApiTournament {
-	name: string; // Tournament name
-	admin: string; // Admin username
-	playerCount: number; // Number of players
+	name: string;
+	admin: string;
+	playerCount: number;
 }
 
 export interface IApiResponseWrapper {
-	code?: number; // HTTP status code
+	code?: number;
 	success?: boolean;
 	message?: string;
-	data?: any; // Data can be of any type, depending on the API response
+	data?: any;
 }
 
 export class APIManager {
@@ -39,8 +39,8 @@ export class APIManager {
 	private baseUrl: string;
 	private t_url: string;
 	private token: string | null;
-	private active_pass: string | null = null; // aktif pass tutulacak
-	private uuid: string | null = null; // uuid tutulacak, register ve login sonrası gelecek
+	private active_pass: string | null = null;
+	private uuid: string | null = null;
 
 	private constructor(baseUrl: string, url_altarnetive: string) {
 		this.baseUrl = baseUrl;
@@ -165,7 +165,6 @@ export class APIManager {
 
 			if (!response.ok) {
 				result.success = false;
-				// diğer hatalar alt alta dizilecek
 				if (response.status === 409)
 					result.message = 'Username or email already exists';
 				return result;
@@ -175,7 +174,7 @@ export class APIManager {
 			result.data = await response.json();
 			return result;
 		} catch (error) {
-			// console.error('Error in register:', error);
+				console.error('Error in register:', error);
 			throw error;
 		}
 	}
@@ -228,14 +227,12 @@ export class APIManager {
 		}
 	}
 
-	//*********************************Turnuva Kısmı************************************/
 	public async createTournament(name: string): Promise<IApiResponseWrapper> {
 		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
 			}, JSON.stringify({ name: name }));
-			console.log("--------------------Create Tournament response:", response);
 			if (!response.ok) {
 				throw new Error('Create Tournament failed');
 			}
@@ -274,7 +271,7 @@ export class APIManager {
 			});
 
 			if (!response.ok) {
-				const errorText = await response.text(); // daha açıklayıcı hata
+				const errorText = await response.text();
 				throw new Error(`Delete Tournament failed: ${errorText}`);
 			}
 			const data = await response.json();
@@ -339,7 +336,6 @@ export class APIManager {
 			}
 			else if (response.ok) {
 				const x = await response.json();
-				console.log(">>>>>>>>>>>>>>", x.data);
 				result.data = x.data;
 				result.success = true;
 				result.message = x.message;
@@ -357,7 +353,7 @@ export class APIManager {
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentId}/start`, HTTPMethod.POST, {})
 			if (!response.ok) {
-				const errorText = await response.text(); // daha açıklayıcı hata
+				const errorText = await response.text();
 				throw new Error(`Delete Tournament failed: ${errorText}`);
 			}
 			const data = await response.json()
