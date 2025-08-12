@@ -1,4 +1,6 @@
 import { Router } from "../router";
+import { TournamentResponseMessages } from "./types";
+import { exmp } from "../languageManager";
 
 export class HTTPMethod extends String {
 	public static GET: string = 'GET';
@@ -31,6 +33,7 @@ export interface IApiResponseWrapper {
 	code?: number;
 	success?: boolean;
 	message?: string;
+	messageKey?: string;
 	data?: any;
 }
 
@@ -66,6 +69,14 @@ export class APIManager {
 
 	public getActivePass(): string {
 		return this.active_pass!;
+	}
+
+	private translateBackendKey(key: string): string {
+		if (Object.values(TournamentResponseMessages).includes(key as TournamentResponseMessages)) {
+			const translatedMessage = exmp.getLang(`tournament-messages.${key}`);
+			return translatedMessage || key;
+		}
+		return key;
 	}
 
 	private async apiCall(url: string, method: string, headers: HeadersInit, body?: BodyInit): Promise<Response> {
@@ -228,35 +239,41 @@ export class APIManager {
 	}
 
 	public async createTournament(name: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
 			}, JSON.stringify({ name: name }));
-			if (!response.ok) {
-				throw new Error('Create Tournament failed');
-			}
+
 			const data = await response.json();
-			result.success = true;
-			result.message = data.message || 'Mesaj kısmı boşta';
-			result.data = data.data || null;
+			result.success = response.ok;
 			result.code = response.status;
+			result.data = data.data || null;
+
+			const backendKey = data.message || data.error || '';
+			result.messageKey = backendKey;
+			result.message = this.translateBackendKey(backendKey);
+
 			return result;
 		} catch (error) {
-			console.error('create içerisnde eror var:' + error);
+			console.error('Error in createTournament:', error);
 			throw error;
 		}
 	}
 
 	public async deleteTournament(tournamentId: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentId}`, HTTPMethod.DELETE, {});
 
 			const data = await response.json();
 			result.success = response.ok;
-			result.message = response.ok ? data.message : data.error || 'No message';
 			result.code = response.status;
+
+			const backendKey = response.ok ? data.message : (data.error || data.message || '');
+			result.messageKey = backendKey;
+			result.message = this.translateBackendKey(backendKey);
+
 			return result;
 		} catch (error) {
 			console.error('Error in deleteTournament:', error);
@@ -265,57 +282,65 @@ export class APIManager {
 	}
 
 	public async joinTournament(tournamentId: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentId}/join`, HTTPMethod.POST, {
 			});
 
-			if (!response.ok) {
-				const errorText = await response.text();
-				throw new Error(`Delete Tournament failed: ${errorText}`);
-			}
 			const data = await response.json();
-			result.success = true;
-			result.message = data.message;
-			result.data = data.data;
+			result.success = response.ok;
 			result.code = response.status;
+			result.data = data.data;
+
+			const backendKey = response.ok ? data.message : (data.error || data.message || '');
+			result.messageKey = backendKey;
+			result.message = this.translateBackendKey(backendKey);
+
 			return result;
 		} catch (error) {
-			console.error('Error in playerJoinTournament:', error);
+			console.error('Error in joinTournament:', error);
 			throw error;
 		}
 	}
 
 	public async leaveTournament(tournamentCode: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentCode}/leave`, HTTPMethod.POST, {
 			});
 
 			const data = await response.json();
 			result.success = response.ok;
-			result.message = response.ok ? data.message : data.error || 'No message';
-			result.data = data.data;
 			result.code = response.status;
+			result.data = data.data;
+
+			const backendKey = response.ok ? data.message : (data.error || data.message || '');
+			result.messageKey = backendKey;
+			result.message = this.translateBackendKey(backendKey);
+
 			return result;
 		} catch (error) {
-			console.error('Error in playerLeaveTournament:', error);
+			console.error('Error in leaveTournament:', error);
 			throw error;
 		}
 	}
 
 	public async getTournament(tournamentCode: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentCode}`, HTTPMethod.GET, {
 				'Content-Type': 'application/json',
 			});
-			console.log(response)
+			
 			const data = await response.json();
-			result.success = true;
-			result.message = data.message;
-			result.data = data.data;
+			result.success = response.ok;
 			result.code = response.status;
+			result.data = data.data;
+
+			const backendKey = response.ok ? data.message : (data.error || data.message || '');
+			result.messageKey = backendKey;
+			result.message = this.translateBackendKey(backendKey);
+
 			return result;
 		} catch (error) {
 			console.error('Error in getTournament:', error);
@@ -324,45 +349,51 @@ export class APIManager {
 	}
 
 	public async haveTournament(): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}`, HTTPMethod.GET, {
 				'Content-Type': 'application/json',
 			});
-			if (!response.ok){
-				result.success = false;
-				result.message = 'No tournament found for this user';
-				result.code = response.status;
-			}
-			else if (response.ok) {
-				const x = await response.json();
-				result.data = x.data;
+
+			if (response.ok) {
+				const data = await response.json();
 				result.success = true;
-				result.message = x.message;
 				result.code = response.status;
+				result.data = data.data;
+
+				const backendKey = data.message || '';
+				result.messageKey = backendKey;
+				result.message = this.translateBackendKey(backendKey);
+			} else {
+				result.success = false;
+				result.code = response.status;
+				result.message = 'No tournament found for this user';
+				result.messageKey = 'ERR_TOURNAMENT_NOT_FOUND';
 			}
+
 			return result;
-		} catch {
-			console.error('Error in haveTournament:');
-			throw new Error('Error in haveTournament');
+		} catch (error) {
+			console.error('Error in haveTournament:', error);
+			throw error;
 		}	
 	}
 
 	public async startTournament(tournamentId: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentId}/start`, HTTPMethod.POST, {})
-			if (!response.ok) {
-				const errorText = await response.text();
-				throw new Error(`Delete Tournament failed: ${errorText}`);
-			}
-			const data = await response.json()
-			result.success = true;
-			result.message = data.message;
+			
+			const data = await response.json();
+			result.success = response.ok;
 			result.code = response.status;
-			return result
+
+			const backendKey = response.ok ? data.message : (data.error || data.message || '');
+			result.messageKey = backendKey;
+			result.message = this.translateBackendKey(backendKey);
+
+			return result;
 		} catch (error) {
-			console.error('Error in plaTurnuvaya katılımcı bekleniyor...yerJoinTournament:', error);
+			console.error('Error in startTournament:', error);
 			throw error;
 		}
 	}
