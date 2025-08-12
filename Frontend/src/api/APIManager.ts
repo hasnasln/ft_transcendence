@@ -23,12 +23,6 @@ export interface IApiRegister {
 	uuid?: string;
 }
 
-export interface IApiTournament {
-	name: string;
-	admin: string;
-	playerCount: number;
-}
-
 export interface IApiResponseWrapper {
 	code?: number;
 	success?: boolean;
