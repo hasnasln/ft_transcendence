@@ -483,7 +483,8 @@ const tr  = {
 			"Button": {
 				"AI": "Yapay Zekaya Karşı",
 				"Local": "Yerel Oyun",
-				"Online": "Çevrim İçi Oyun"
+				"Online": "Çevrim İçi Oyun",
+				"Home": "Ana Sayfaya Dön"
 			},
 		},
 		"Difficulty":{
