@@ -153,12 +153,12 @@ function createAdminPanel(tdata: ITournament): string {
                     class="text-lg sm:text-xl font-bold text-white mb-2">!_!
                 </h3>
             </div>
-            ${createStartButton(canStart, playerCount, minPlayers, maxPlayers)}
-            ${createStartInfo(canStart, playerCount, minPlayers, maxPlayers)}
+            ${createStartButton(canStart, playerCount, minPlayers)}
+            ${createStartInfo(canStart, playerCount, minPlayers)}
         </div>
     `;
 }
-function createStartButton(canStart: boolean, playerCount: number, minPlayers: number, maxPlayers: number): string {
+function createStartButton(canStart: boolean, playerCount: number, minPlayers: number): string {
     const buttonClass = canStart 
         ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-lg hover:shadow-green-500/25' 
         : 'bg-gray-600 text-gray-300 cursor-not-allowed';
@@ -187,7 +187,7 @@ function createStartButton(canStart: boolean, playerCount: number, minPlayers: n
     `;
 }
 
-function createStartInfo(canStart: boolean, playerCount: number, minPlayers: number, maxPlayers: number): string {
+function createStartInfo(canStart: boolean, playerCount: number, minPlayers: number): string {
     if (canStart) {
         return `
             <div class="tournament-start-info mt-4">
