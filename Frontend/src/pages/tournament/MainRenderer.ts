@@ -11,7 +11,11 @@ export function ShowTournament(container: HTMLElement, tdata: ITournament): void
 function createTournamentPageHTML(tdata: ITournament): string {
     return `
         <div id="tournament-div02" class="min-h-screen w-full p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-            ${createBackgroundElements()}
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                <div class="absolute top-20 left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+                <div class="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl animate-pulse delay-2000"></div>
+            </div>
             <div class="max-w-7xl mx-auto space-y-8 relative z-10">
                 ${createHeaderSection(tdata)}
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -22,15 +26,7 @@ function createTournamentPageHTML(tdata: ITournament): string {
         </div>
     `;
 }
-function createBackgroundElements(): string {
-    return `
-        <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute top-20 left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-            <div class="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl animate-pulse delay-2000"></div>
-        </div>
-    `;
-}
+
 function createHeaderSection(tdata: ITournament): string {
     return `
         <div class="text-center mb-8">

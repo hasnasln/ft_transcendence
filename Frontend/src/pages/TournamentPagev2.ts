@@ -68,12 +68,23 @@ export class TournamentPage implements Page {
     }
 
     evaluate(): string {
-        return `<div>Yükleniyor </div>`
+        return ``
     }
+
+    /**
+     * 
+     * @returns 
+     * 
+     * 
+     * 
+     * 
+     * class="min-h-screen w-full p-4 sm:p-6 lg:p-8  relative overflow-hidden">
+            
+     * 
+     */
     private renderFirstSection(): string {
         const tempDiv = document.createElement('div');
         tempDiv.id = "tournament-main";
-        tempDiv.className = "flex flex-col items-center justify-center min-h-screen w-full absolute top-0 left-0 z-0 bg-gradient-to-br bg-gray-300";
         t_first_section(tempDiv);
         return tempDiv.outerHTML;
     }

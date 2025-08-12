@@ -169,7 +169,7 @@ export class TournamentActionHandler {
         const isAdmin = this.data.admin_id === localStorage.getItem('uuid');
         try {
             let response;
-            if (isAdmin && this.data.status === 'ongoing') {
+            if (isAdmin && this.data.status === 'created') {
                 response = await _apiManager.deleteTournament(this.data.code);
             } else {
                 response = await _apiManager.leaveTournament(this.data.code);
