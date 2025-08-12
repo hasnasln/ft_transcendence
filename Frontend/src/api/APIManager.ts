@@ -16,6 +16,7 @@ export interface IApiSetSettings {
 export interface IApiRegister {
 	username?: string;
 	password?: string;
+	new_password?: string; // yeni şifre
 	email?: string;
 	uuid?: string;
 }
@@ -80,7 +81,7 @@ export class APIManager {
 			if (body) {
 				options.body = body;
 			}
-
+			console.log("API Call:", url, method, headers, body);
 			const response = await fetch(url, options);
 			if (response.status >= 500 && response.status < 600) {
 				Router.getInstance().go('/500', true);
@@ -183,16 +184,18 @@ export class APIManager {
 	@param name: string -> name of the item to be updated
 	@param data: string -> data to be updated
 	*/
-	public async updateSomething(name: string, data: string) {
+	public async updateSomething(name: string, data: string, data2?:string) {
 		//! nul olmayan güncellencek - bos olmayan 
 		const x: IApiRegister = {
 			username: localStorage.getItem('username') || '',
 			email: localStorage.getItem('email') || '',
-			password: localStorage.getItem('password') || '',
 			uuid: this.uuid || '',
 		}
 		if (name === 'password')
+		{
 			x.password = data;
+			x.new_password = data2;
+		}
 		else if (name === 'email')
 			x.email = data;
 		else if (name === 'username')

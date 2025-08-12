@@ -53,7 +53,8 @@ export class ProfileSettingsV2 implements Page {
 				<div class="absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-r from-emerald-400/8 to-teal-500/8 rounded-full blur-3xl animate-pulse delay-500 opacity-40"></div>
 			</div>
 			<div id="profile_sidebar"
-			class="w-[520px] h-full 
+			class="
+			w-full max-w-lg min-w-[320px] h-full 
 			bg-gradient-to-br from-white/95 via-slate-50/90 to-gray-100/95
 			backdrop-blur-3xl backdrop-saturate-200 backdrop-brightness-110
 			shadow-[0_32px_64px_-12px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.3)]
@@ -173,7 +174,7 @@ export class ProfileSettingsV2 implements Page {
 			return;
 		}
 		try {
-			const response = await _apiManager.updateSomething('password', newPassword);
+			const response = await _apiManager.updateSomething('password',oldPassword, newPassword);
 			
 			if (response && response.success !== false) {
 				ToastManager.ShowToast('success', 'toast.success.password-updated');
@@ -437,11 +438,8 @@ export class ProfileSettingsV2 implements Page {
 		
 		return `
 		<div class="flex-1 overflow-y-auto overflow-x-visible custom-scrollbar-profile">
-			<div class="bg-gradient-to-b from-transparent via-slate-50/30 to-transparent 
-			backdrop-blur-sm p-8 space-y-8 overflow-visible">
 			${this.createProfileInfoSection()}
 			${this.createProfileSettingsSection()}
-			</div>
 		</div>
 		`
 	}
@@ -453,7 +451,7 @@ export class ProfileSettingsV2 implements Page {
 		return `
 		<div
 		class="group relative bg-gradient-to-br from-white/95 via-slate-50/90 to-white/95
-		backdrop-blur-3xl rounded-[2rem] p-12 border-2 border-white/50
+		backdrop-blur-3xl  p-12 border-2 border-white/50
 		shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.4)]
 		hover:shadow-[0_35px_70px_-12px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.6)]
 		hover:border-white/70 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] 
@@ -467,7 +465,7 @@ export class ProfileSettingsV2 implements Page {
 			</div>
 			<div class="flex flex-col items-center mb-8 relative z-10">
 				<!-- image container -->
-				<div 
+				<div
 				id="profile-image-container"
 				class="relative w-32 h-32 rounded-full overflow-hidden cursor-pointer
 				bg-gradient-to-br from-blue-500 to-purple-600
@@ -514,10 +512,6 @@ export class ProfileSettingsV2 implements Page {
 	private createProfileSettingsSection(): string {
 		return `
 		<div>
-				<div class="absolute inset-0 bg-gradient-to-br from-green-500/3 via-blue-500/3 to-purple-500/3 group-hover:from-green-500/8 group-hover:via-blue-500/8 group-hover:to-purple-500/8 transition-all duration-700"></div>
-				<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-700"></div>
-				<div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-400/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-700"></div>
-			</div>
 			<div class="flex items-center gap-8 mb-12 relative z-10">
 				<div class="relative w-20 h-20 rounded-3xl overflow-hidden
 				bg-gradient-to-br from-green-500 via-emerald-600 to-blue-600
@@ -543,7 +537,7 @@ export class ProfileSettingsV2 implements Page {
 					</h3>
 				</div>
 			</div>
-			<div id="second_part" class="relative z-10">
+			<div id="second_part" class="relative z-10 w-full">
 				${this.createProfileSettings()}
 			</div>
 		</div>
@@ -555,7 +549,9 @@ export class ProfileSettingsV2 implements Page {
 		let innerDivs =``
 		this.getProfileSettings().forEach(({name, type, placeholder, action}) => {
 			innerDivs += `
-			<div class="p-6">
+			<div class="
+			w-full sm:w-[400%]
+			p-1">
 				<div class="absolute inset-0 pointer-events-none">
 					<div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent  to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 					<div class="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
