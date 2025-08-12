@@ -1,5 +1,5 @@
 import { Router } from "../router";
-import { TournamentResponseMessages } from "./types";
+import { TournamentResponseMessages, AuthResponseMessages } from "./types";
 import { exmp } from "../languageManager";
 
 export class HTTPMethod extends String {
@@ -76,6 +76,10 @@ export class APIManager {
 			const translatedMessage = exmp.getLang(`tournament-messages.${key}`);
 			return translatedMessage || key;
 		}
+		if (Object.values(AuthResponseMessages).includes(key as AuthResponseMessages)) {
+			const translatedMessage = exmp.getLang(`auth-messages.${key}`);
+			return translatedMessage || key;
+		}
 		return key;
 	}
 
@@ -113,7 +117,7 @@ export class APIManager {
 	}
 
 	public async login(email: string, password: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
 		this.active_pass = password;
 		localStorage.setItem('password', password);
 		try {
@@ -122,19 +126,16 @@ export class APIManager {
 			}, JSON.stringify({ "email": email, "password": password }));
 
 			result.code = response.status;
-			if (!response.ok) {
-				result.success = false;
-				if (response.status === 401) {
-					result.message = 'INVALID_CREDENTIALS';
-					return result;
-				}
-			}
-
 			const data = await response.json();
-			if (data.token) {
+
+			if (response.ok && data.token) {
 				result.success = true;
 				result.data = data;
-				result.message = 'Login successful';
+				
+				const backendKey = data.message || 'LOGIN_SUCCESS';
+				result.messageKey = backendKey;
+				result.message = this.translateBackendKey(backendKey);
+				
 				this.setToken(data.token);
 				this.uuid = data.uuid;
 				localStorage.setItem('token', data.token);
@@ -143,9 +144,12 @@ export class APIManager {
 				localStorage.setItem('email', data.email);
 			} else {
 				result.success = false;
-				result.message = data.error || 'Token not found in response';
-				return result;
+				
+				const backendKey = data.error || data.message || 'INVALID_TOKEN';
+				result.messageKey = backendKey;
+				result.message = this.translateBackendKey(backendKey);
 			}
+			
 			return result;
 		} catch (error) {
 			console.error('Error in login:', error);
@@ -167,34 +171,32 @@ export class APIManager {
 	}
 
 	public async register(registerData: IApiRegister): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
 		console.log("Register data:", registerData);
 		try {
 			const response = await this.apiCall(`${this.baseUrl}/register`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
 			}, JSON.stringify(registerData));
 
-			if (!response.ok) {
-				result.success = false;
-				if (response.status === 409)
-					result.message = 'Username or email already exists';
-				return result;
-			}
+			const data = await response.json();
+			result.success = response.ok;
 			result.code = response.status;
-			result.success = true;
-			result.data = await response.json();
+			result.data = response.ok ? data : null;
+
+			const backendKey = response.ok ? (data.message || 'USER_REGISTERED') : (data.error || data.message || '');
+			result.messageKey = backendKey;
+			result.message = this.translateBackendKey(backendKey);
+
 			return result;
 		} catch (error) {
-				console.error('Error in register:', error);
+			console.error('Error in register:', error);
 			throw error;
 		}
 	}
 
-	/*
-	@param name: string -> name of the item to be updated
-	@param data: string -> data to be updated
-	*/
-	public async updateSomething(name: string, data: string, data2?:string) {
+	public async updateSomething(name: string, data: string, data2?:string): Promise<IApiResponseWrapper> {
+		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
+		
 		//! nul olmayan güncellencek - bos olmayan 
 		const x: IApiRegister = {
 			username: localStorage.getItem('username') || '',
@@ -210,17 +212,23 @@ export class APIManager {
 			x.email = data;
 		else if (name === 'username')
 			x.username = data;
+		
 		try {
 			const response = await this.apiCall(`${this.baseUrl}/${this.uuid}`, HTTPMethod.PUT, {
 				'Content-Type': 'application/json',
 			}, JSON.stringify(x));
 
-			if (!response.ok) {
-				throw new Error(`Update ${name} failed`);
-			}
-
 			const dataResponse = await response.json();
-			if (dataResponse.token) {
+			result.success = response.ok;
+			result.code = response.status;
+
+			if (response.ok && dataResponse.token) {
+				result.data = dataResponse;
+				
+				const backendKey = dataResponse.message || 'USER_UPDATED';
+				result.messageKey = backendKey;
+				result.message = this.translateBackendKey(backendKey);
+				
 				this.setToken(dataResponse.token);
 				this.uuid = dataResponse.uuid;
 				localStorage.setItem('token', dataResponse.token);
@@ -228,10 +236,12 @@ export class APIManager {
 				localStorage.setItem('uuid', dataResponse.uuid);
 				localStorage.setItem('email', dataResponse.email);
 			} else {
-				const msg= dataResponse.error || 'Token not found in response';
-				throw new Error(msg);
+				const backendKey = dataResponse.error || dataResponse.message || `Update ${name} failed`;
+				result.messageKey = backendKey;
+				result.message = this.translateBackendKey(backendKey);
 			}
-			return dataResponse;
+			
+			return result;
 		} catch (error) {
 			console.error(`Error in update${name}:`, error);
 			throw error;
