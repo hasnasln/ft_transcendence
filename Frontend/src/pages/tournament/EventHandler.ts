@@ -19,8 +19,6 @@ export class TournamentEventHandler {
         container.addEventListener('input', (event) => {
             if (inputHandler) {
                 inputHandler(event);
-            } else {
-                this.handleInputChange(event);
             }
         });
     }
@@ -68,14 +66,6 @@ export class TournamentEventHandler {
         }
     }
 
-    private handleInputChange(event: Event): void {
-        const input = event.target as HTMLInputElement;
-        const inputId = input.id;
-        if (inputId === 'createInput' || inputId === 'joinInput') {
-            this.performRealTimeValidation(input);
-        }
-    }
-
     private handleEscapeKey(): void {
         const modals = [
             'tree-overlay',
@@ -109,36 +99,6 @@ export class TournamentEventHandler {
         return button.hasAttribute('disabled') || 
                button.classList.contains('disabled') ||
                (button as HTMLButtonElement).disabled;
-    }
-
-    private performRealTimeValidation(input: HTMLInputElement): void {
-        const inputType = input.id === 'createInput' ? 'create' : 'join';
-        this.clearInputError(inputType);
-        
-        if (input.value.trim().length > 0) {
-            this.showInputSuccess(inputType);
-        }
-    }
-
-    private showInputSuccess(inputType: string): void {
-        const input = document.getElementById(`${inputType}Input`) as HTMLInputElement;
-        if (input) {
-            input.style.borderColor = '#10b981';
-            input.style.boxShadow = '0 0 0 2px rgba(16, 185, 129, 0.2)';
-        }
-    }
-
-    private clearInputError(inputType: string): void {
-        const input = document.getElementById(`${inputType}Input`) as HTMLInputElement;
-        const errorElement = document.getElementById(`${inputType}_error_message`);
-        if (input) {
-            input.style.borderColor = '';
-            input.style.boxShadow = '';
-        }
-        if (errorElement) {
-            errorElement.style.visibility = 'hidden';
-            errorElement.textContent = '';
-        }
     }
 
     private showGlobalError(message: string): void {
