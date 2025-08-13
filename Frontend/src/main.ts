@@ -20,7 +20,7 @@ function bootstrap() {
 		}
 	});
 
-	router.lazyRegisterPage("/tournament", {path: "TournamentPagev2", pageName: "TournamentPage"});
+	router.lazyRegisterPage("/tournament", {path: "TournamentPage", pageName: "TournamentPage"});
 	router.lazyRegisterPage("/login", {path: "login", pageName: "LoginPage"});
 	router.lazyRegisterPage("/register", {path: "register", pageName: "RegisterPage"});
 	router.lazyRegisterPage("/play", {path: "play-page", pageName: "PlayPage"});
