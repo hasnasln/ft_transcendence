@@ -27,13 +27,7 @@ export class TournamentActionHandler {
                     message: translatedMessage || response.message || 'Turnuva oluşturulamadı'
                 };
             }
-            const tdata: ITournament = {
-                id: response.data.id,
-                code: response.data.code,
-                name: response.data.name,
-                admin_id: response.data.admin_id,
-                lobby_members: response.data.participants || []
-            };
+            const tdata = this.mapToTournamentData(response.data);
             const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_CREATED}`);
             return {
                 success: true,
@@ -69,13 +63,8 @@ export class TournamentActionHandler {
                         message: translatedMessage || 'Turnuva bilgileri alınamadı'
                     };
                 }
-                const tdata: ITournament = {
-                    id: tournamentResponse.data.id,
-                    code: tournamentResponse.data.code,
-                    name: tournamentResponse.data.name,
-                    admin_id: tournamentResponse.data.admin_id,
-                    lobby_members: tournamentResponse.data.participants
-                };
+                const tdata = this.mapToTournamentData(tournamentResponse.data);
+                tdata.participants = tdata.lobby_members; // Add participants field
                 const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_PARTICIPANT_JOINED}`);
                 return {
                     success: true,
@@ -206,5 +195,15 @@ export class TournamentActionHandler {
                 message: exmp.getLang('tournament-messages.ERR_INTERNAL_SERVER')
             };
         }
+    }
+
+    private mapToTournamentData(data: any): ITournament {
+        return {
+            id: data.id,
+            code: data.code,
+            name: data.name,
+            admin_id: data.admin_id,
+            lobby_members: data.participants || data.users || []
+        };
     }
 }
