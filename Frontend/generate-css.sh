@@ -1,5 +1,5 @@
 rm src/styles/*
-PAGE_GLOBS="src/pages/home.ts,src/pages/settingsv3.ts,src/pages/settingsv2.ts,src/pages/profile.ts" npx tailwindcss -c tailwind.page.config.js -i src/style.css -o src/styles/home.css --minify
+PAGE_GLOBS="src/pages/home.ts,src/pages/Settings.ts,src/pages/profile.ts" npx tailwindcss -c tailwind.page.config.js -i src/style.css -o src/styles/home.css --minify
 PAGE_GLOBS="src/pages/game.ts,src/pages/game-section/*.ts" npx tailwindcss -c tailwind.page.config.js -i src/style.css -o src/styles/game.css --minify
 PAGE_GLOBS="src/pages/play.ts,src/pages/play-page.ts," npx tailwindcss -c tailwind.page.config.js -i src/style.css -o src/styles/play.css --minify
 PAGE_GLOBS="src/pages/login.ts" npx tailwindcss -c tailwind.page.config.js -i src/style.css -o src/styles/login.css --minify
