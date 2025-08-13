@@ -1,6 +1,6 @@
 import { _apiManager } from '../../api/APIManager';
 import { ITournament } from '../../api/types';
-import { ShowTournament, listPlayers } from './MainRenderer';
+import { ShowTournament } from './MainRenderer';
 import { t_first_section } from './FormComponents';
 
 export class TournamentStateManager {
@@ -167,14 +167,6 @@ export class TournamentStateManager {
 
     private delay(ms: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    getData(): ITournament {
-        return this.data;
-    }
-
-    getStatus(): boolean {
-        return this.status;
     }
 
     updateData(newData: ITournament): void {
