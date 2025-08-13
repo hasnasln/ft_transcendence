@@ -14,7 +14,7 @@ import { TournamentTreeManager } from './tournament/TreeManager';
 import { TournamentGameManager } from './tournament/GameManager';
 import { TournamentStateManager } from './tournament/StateManager';
 import { TournamentNotificationManager } from './tournament/NotificationManager';
-import "../styles/tournament.css";
+
 
 export class TournamentPage implements Page {
     private flag: boolean = false;

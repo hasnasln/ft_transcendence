@@ -1,5 +1,3 @@
-import "../../styles/bracket.css";
-
 interface TournamentMatch {
     player1: string;
     player2: string;

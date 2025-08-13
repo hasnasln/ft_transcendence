@@ -2,7 +2,7 @@ import { Settings } from './Settings';
 import { Profile } from './profile';
 import { exmp } from '../languageManager';
 import { Router, Page } from '../router';
-import "../styles/home.css"
+
 
 export class HomePage implements Page {
 

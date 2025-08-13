@@ -1,5 +1,5 @@
 import {Page} from "../router";
-import "../styles/404.css";
+
 
 export class NotFoundPage implements Page {
 

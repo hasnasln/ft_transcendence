@@ -1,4 +1,4 @@
-import './style.css';
+import './global.css';
 import { Router } from './router';
 import {_apiManager} from "./api/APIManager";
 
