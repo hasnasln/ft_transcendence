@@ -23,7 +23,7 @@ function bootstrap() {
 	router.lazyRegisterPage("/tournament", {path: "TournamentPage", pageName: "TournamentPage"});
 	router.lazyRegisterPage("/login", {path: "login", pageName: "LoginPage"});
 	router.lazyRegisterPage("/register", {path: "register", pageName: "RegisterPage"});
-	router.lazyRegisterPage("/play", {path: "play-page", pageName: "PlayPage"});
+	router.lazyRegisterPage("/play", {path: "PlayPage", pageName: "PlayPage"});
 	router.lazyRegisterPage("/game", {path: "game", pageName: "GamePage"});
 	router.lazyRegisterPage("/", {path: "home", pageName: "HomePage"});
 	router.lazyRegisterPage("/500", {path: "ServerErrorPage", pageName: "ServerErrorPage"});
