@@ -1,5 +1,5 @@
-import { Settingsv3 } from './settingsv3';
-import { ProfileSettingsV2 } from './profilev2';
+import { Settings } from './Settings';
+import { Profile } from './profile';
 import { exmp } from '../languageManager';
 import { Router, Page } from '../router';
 import "../styles/home.css"
@@ -132,7 +132,7 @@ export class HomePage implements Page {
 			return;
 		}
 		
-		new Settingsv3().onLoad();
+		new Settings().onLoad();
 	}
 
 	handleProfile(): void {
@@ -148,7 +148,7 @@ export class HomePage implements Page {
 			}, { once: true });
 			return;
 		}
-		new ProfileSettingsV2().onLoad();
+		new Profile().onLoad();
 	}
 }
 
