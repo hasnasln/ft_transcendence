@@ -154,7 +154,7 @@ function createAdminPanel(tdata: ITournament): string {
                 </h3>
             </div>
             ${createStartButton(canStart, playerCount, minPlayers)}
-            ${createStartInfo(canStart, playerCount, minPlayers)}
+            ${createStartInfo(canStart, playerCount)}
         </div>
     `;
 }
@@ -187,7 +187,7 @@ function createStartButton(canStart: boolean, playerCount: number, minPlayers: n
     `;
 }
 
-function createStartInfo(canStart: boolean, playerCount: number, minPlayers: number): string {
+function createStartInfo(canStart: boolean, playerCount: number): string {
     if (canStart) {
         return `
             <div class="tournament-start-info mt-4">
