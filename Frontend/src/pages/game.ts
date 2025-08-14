@@ -190,6 +190,24 @@ export class GamePage implements Page {
 
 	public hiddenButtons() {
 		return `
+		<div id="move-buttons"
+			class="absolute 
+			-top-10 right-[40%] rotate-90 w-[70px] h-[160px] 
+			sm:rotate-0 sm:top-[30%] sm:left-[3%] sm:right-auto sm:w-auto sm:h-auto
+			bg-white/10 backdrop-blur-md border border-white/20 z-[100] flex flex-col justify-center items-center gap-4 p-3 rounded-2xl shadow-lg">
+			
+			<button class="w-[50px] h-[50px] bg-gradient-to-b from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 active:scale-90 transition-all rounded-full flex items-center justify-center shadow-md">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+				</svg>
+			</button>
+
+			<button class="w-[50px] h-[50px] bg-gradient-to-b from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 active:scale-90 transition-all rounded-full flex items-center justify-center shadow-md">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+				</svg>
+			</button>
+		</div>
 		<canvas id="game-canvas" class="rotate-90 w-[100vh] h-[100vw] sm:rotate-0 sm:w-full sm:h-auto md:w-[90%] min-h-fit"></canvas>
 		<div id="no-game-welcomer" class="rotate-90 sm:rotate-0 absolute text-center">
 			<div class="mx-auto w-full justify-center mb-8 sm:flex hidden">
