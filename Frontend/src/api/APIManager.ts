@@ -1,6 +1,5 @@
 import { Router } from "../router";
 import { TournamentResponseMessages, AuthResponseMessages } from "./types";
-import { exmp } from "../languageManager";
 
 export class HTTPMethod extends String {
 	public static GET: string = 'GET';
@@ -65,18 +64,6 @@ export class APIManager {
 		return this.active_pass!;
 	}
 
-	private translateBackendKey(key: string): string {
-		if (Object.values(TournamentResponseMessages).includes(key as TournamentResponseMessages)) {
-			const translatedMessage = exmp.getLang(`tournament-messages.${key}`);
-			return translatedMessage || key;
-		}
-		if (Object.values(AuthResponseMessages).includes(key as AuthResponseMessages)) {
-			const translatedMessage = exmp.getLang(`auth-messages.${key}`);
-			return translatedMessage || key;
-		}
-		return key;
-	}
-
 	private async apiCall(url: string, method: string, headers: HeadersInit, body?: BodyInit): Promise<Response> {
 		try {
 			const options: RequestInit = {
@@ -102,7 +89,7 @@ export class APIManager {
 				Router.getInstance().go('/login', true);
 				throw new Error('Unauthorized access, redirecting to login');
 			}
-
+			console.log("API Response:", response);
 			return response;
 		} catch (error) {
 			console.error('Error in fetch:', error);
@@ -111,7 +98,7 @@ export class APIManager {
 	}
 
 	public async login(email: string, password: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		this.active_pass = password;
 		localStorage.setItem('password', password);
 		try {
@@ -121,14 +108,13 @@ export class APIManager {
 
 			result.code = response.status;
 			const data = await response.json();
+			console.log("Login data:", data);
+			console.log("Login response", response);
 
 			if (response.ok && data.token) {
 				result.success = true;
 				result.data = data;
-				
-				const backendKey = data.message || 'LOGIN_SUCCESS';
-				result.messageKey = backendKey;
-				result.message = this.translateBackendKey(backendKey);
+				result.message = data.message;
 				
 				this.setToken(data.token);
 				this.uuid = data.uuid;
@@ -138,10 +124,7 @@ export class APIManager {
 				localStorage.setItem('email', data.email);
 			} else {
 				result.success = false;
-				
-				const backendKey = data.error || data.message || 'INVALID_TOKEN';
-				result.messageKey = backendKey;
-				result.message = this.translateBackendKey(backendKey);
+				result.message = data.message;
 			}
 			
 			return result;
@@ -165,7 +148,7 @@ export class APIManager {
 	}
 
 	public async register(registerData: IApiRegister): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		console.log("Register data:", registerData);
 		try {
 			const response = await this.apiCall(`${this.baseUrl}/register`, HTTPMethod.POST, {
@@ -179,7 +162,6 @@ export class APIManager {
 
 			const backendKey = response.ok ? (data.message || 'USER_REGISTERED') : (data.error || data.message || '');
 			result.messageKey = backendKey;
-			result.message = this.translateBackendKey(backendKey);
 
 			return result;
 		} catch (error) {
@@ -189,7 +171,7 @@ export class APIManager {
 	}
 
 	public async updateSomething(name: string, data: string, data2?:string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		
 		//! nul olmayan güncellencek - bos olmayan 
 		const x: IApiRegister = {
@@ -221,7 +203,7 @@ export class APIManager {
 				
 				const backendKey = dataResponse.message || 'USER_UPDATED';
 				result.messageKey = backendKey;
-				result.message = this.translateBackendKey(backendKey);
+
 				
 				this.setToken(dataResponse.token);
 				this.uuid = dataResponse.uuid;
@@ -232,7 +214,7 @@ export class APIManager {
 			} else {
 				const backendKey = dataResponse.error || dataResponse.message || `Update ${name} failed`;
 				result.messageKey = backendKey;
-				result.message = this.translateBackendKey(backendKey);
+
 			}
 			
 			return result;
@@ -243,7 +225,7 @@ export class APIManager {
 	}
 
 	public async createTournament(name: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
@@ -256,7 +238,6 @@ export class APIManager {
 
 			const backendKey = data.message || data.error || '';
 			result.messageKey = backendKey;
-			result.message = this.translateBackendKey(backendKey);
 
 			return result;
 		} catch (error) {
@@ -266,7 +247,7 @@ export class APIManager {
 	}
 
 	public async deleteTournament(tournamentId: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentId}`, HTTPMethod.DELETE, {});
 
@@ -276,7 +257,6 @@ export class APIManager {
 
 			const backendKey = response.ok ? data.message : (data.error || data.message || '');
 			result.messageKey = backendKey;
-			result.message = this.translateBackendKey(backendKey);
 
 			return result;
 		} catch (error) {
@@ -286,7 +266,7 @@ export class APIManager {
 	}
 
 	public async joinTournament(tournamentId: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentId}/join`, HTTPMethod.POST, {
 			});
@@ -295,10 +275,7 @@ export class APIManager {
 			result.success = response.ok;
 			result.code = response.status;
 			result.data = data.data;
-
-			const backendKey = response.ok ? data.message : (data.error || data.message || '');
-			result.messageKey = backendKey;
-			result.message = this.translateBackendKey(backendKey);
+			result.messageKey = data.message;
 
 			return result;
 		} catch (error) {
@@ -308,7 +285,7 @@ export class APIManager {
 	}
 
 	public async leaveTournament(tournamentCode: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentCode}/leave`, HTTPMethod.POST, {
 			});
@@ -320,7 +297,6 @@ export class APIManager {
 
 			const backendKey = response.ok ? data.message : (data.error || data.message || '');
 			result.messageKey = backendKey;
-			result.message = this.translateBackendKey(backendKey);
 
 			return result;
 		} catch (error) {
@@ -330,7 +306,7 @@ export class APIManager {
 	}
 
 	public async getTournament(tournamentCode: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentCode}`, HTTPMethod.GET, {
 				'Content-Type': 'application/json',
@@ -343,7 +319,6 @@ export class APIManager {
 
 			const backendKey = response.ok ? data.message : (data.error || data.message || '');
 			result.messageKey = backendKey;
-			result.message = this.translateBackendKey(backendKey);
 
 			return result;
 		} catch (error) {
@@ -353,7 +328,7 @@ export class APIManager {
 	}
 
 	public async haveTournament(): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}`, HTTPMethod.GET, {
 				'Content-Type': 'application/json',
@@ -367,7 +342,7 @@ export class APIManager {
 
 				const backendKey = data.message || '';
 				result.messageKey = backendKey;
-				result.message = this.translateBackendKey(backendKey);
+
 			} else {
 				result.success = false;
 				result.code = response.status;
@@ -383,7 +358,7 @@ export class APIManager {
 	}
 
 	public async startTournament(tournamentId: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', messageKey: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentId}/start`, HTTPMethod.POST, {})
 			
@@ -393,7 +368,6 @@ export class APIManager {
 
 			const backendKey = response.ok ? data.message : (data.error || data.message || '');
 			result.messageKey = backendKey;
-			result.message = this.translateBackendKey(backendKey);
 
 			return result;
 		} catch (error) {
