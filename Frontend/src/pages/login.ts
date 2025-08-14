@@ -2,7 +2,6 @@ import { _apiManager } from "../api/APIManager";
 import { Router } from "../router";
 import { exmp } from "../languageManager";
 import { Page } from '../router';
-import { AuthResponseMessages } from "../api/types";
 import { ModernOverlay } from "../components/ModernOverlay.js";
 
 
@@ -129,37 +128,18 @@ export class LoginPage implements Page {
 		try {
 			const response = await _apiManager.login(nicnameOrMail, passwordValue);
 			if (!response.success) {
-				const messageKey = response.message as AuthResponseMessages;
-				let errorMessage = '';
-
-				switch (messageKey) {
-					case AuthResponseMessages.EMAIL_AND_PASSWORD_REQUIRED:
-					case AuthResponseMessages.EMAIL_LENGTH_INVALID:
-					case AuthResponseMessages.INVALID_EMAIL_FORMAT:
-					case AuthResponseMessages.INVALID_EMAIL:
-					case AuthResponseMessages.INVALID_PASSWORD:
-						errorMessage = exmp.getLang(`auth-messages.${messageKey}`) || 
-									  exmp.getLang('singin-errors.INVALID_CREDENTIALS');
-						break;
-					default:
-						errorMessage = exmp.getLang('singin-errors.INVALID_CREDENTIALS');
-						break;
-				}
-
-				ModernOverlay.show(errorMessage, 'error');
+				ModernOverlay.show(`auth-messages.${response.message}`, 'error');
 				return;
 			}
-			
-			const successMessage = exmp.getLang(`auth-messages.${AuthResponseMessages.LOGIN_SUCCESS}`);
-			ModernOverlay.show(successMessage, 'success');
-			
+
+			ModernOverlay.show(`auth-messages.${response.message}`, 'success');
+
 			setTimeout(() => {
 				Router.getInstance().go('/');
 			}, 1000);
 			
 		} catch (error: any) {
-			const errorMessage = exmp.getLang('singin-errors.networkError');
-			ModernOverlay.show(errorMessage, 'error');
+			ModernOverlay.show('singin-errors.networkError', 'error');
 			console.error('Login error:', error);
 		}
 	}
