@@ -916,7 +916,7 @@ export class LanguageManager
 			const data = el.getAttribute('data-langm-tmp');
 			if (data)
 				rawContent = rawContent + " " + data
-			if (path=='palaceholder' && el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement)
+			if (path=='placeholder' && el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement)
 				el.placeholder = rawContent;
 			else if(path =='title')
 				el.setAttribute(path, rawContent);
