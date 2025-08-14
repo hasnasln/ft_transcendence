@@ -6,7 +6,7 @@ export class ModernOverlay {
     private static overlay: HTMLElement | null = null;
     private static hideTimeout: NodeJS.Timeout | null = null;
 
-    static show(message: string, type: OverlayType = 'error', duration: number = 4000): void {
+    static show(key: string, type: OverlayType = 'error', duration: number = 4000): void {
         this.hide();
 
         const overlay = document.createElement('div');
@@ -17,8 +17,9 @@ export class ModernOverlay {
         
         const icon = this.getIcon(type);
         const text = document.createElement('span');
-        text.textContent = message;
-        
+        text.setAttribute('data-langm-key', key);
+        text.textContent = "!_!";
+
         content.appendChild(icon);
         content.appendChild(text);
         overlay.appendChild(content);
@@ -29,6 +30,7 @@ export class ModernOverlay {
         this.overlay = overlay;
         
         requestAnimationFrame(() => {
+            exmp.applyLanguage();
             overlay.classList.add('modern-overlay-show');
         });
         
@@ -47,7 +49,7 @@ export class ModernOverlay {
                     this.overlay.parentNode.removeChild(this.overlay);
                 }
                 this.overlay = null;
-            }, 300);
+            }, 3000);
         }
         
         if (this.hideTimeout) {
