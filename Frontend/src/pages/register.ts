@@ -2,7 +2,6 @@ import { exmp } from "../languageManager";
 import {_apiManager } from "../api/APIManager";
 import type { IApiRegister } from "../api/APIManager";
 import { Router, Page } from "../router";
-import { AuthResponseMessages } from "../api/types";
 import { ModernOverlay } from "../components/ModernOverlay.js";
 
 
@@ -13,30 +12,36 @@ export class RegisterPage implements Page {
             <main id="register_main" class="glass-container p-10 mx-16 max-w-full lg:max-w-md w-full relative animate-fadeIn">
                 <section id="section-register" class="animate-fadeIn">
                     <form id="register-form" class="flex flex-col space-y-8" autocomplete="off" novalidate>
-                        <h2 class="text-4xl font-extrabold text-center mb-8 title-gradient">
-                            ${exmp.getLang("singin.register-b") || "Kayıt Ol"}
+                        <h2 class="text-4xl font-extrabold text-center mb-8 title-gradient"
+                            data-langm-key="singin.register-b">
+                            !_!
                         </h2>
                         <div class="text-center mx-auto mb-4">
                             ${illustrationSvg}
                         </div>
                         <input
+                            data-langm-key="register.username"
+                            data-langm-path="placeholder"
                             type="text"
                             id="username"
-                            placeholder="${exmp.getLang("register.username") || "Username"}"
                             class="input-premium w-full"
                         />
 
                         <input
+                            data-langm-key="register.email"
+                            data-langm-path="placeholder"
                             type="text"
                             id="email"
-                            placeholder="${exmp.getLang("register.email") || "Email"}"
+                            placeholder="!_!"
                             class="input-premium w-full"
                         />
 
                         <input
+                            data-langm-key="register.passwor"
+                            data-langm-path="placeholder"
                             type="password"
                             id="password"
-                            placeholder="${exmp.getLang("register.password") || "Şifre"}"
+                            placeholder="!_!"
                             class="input-premium w-full"
                         />
 
@@ -69,6 +74,7 @@ export class RegisterPage implements Page {
     }
 
     onLoad(): void {
+        exmp.applyLanguage();
         renderRegister(Router.getInstance().rootContainer());
     }
 }
@@ -87,52 +93,27 @@ async function submit(e: Event): Promise<void> {
     const repeatPassword = (regRepeat.value || "").trim();
     
     if (password !== repeatPassword) {
-        const errorMessage = exmp.getLang('register-errors.passwordMismatch');
-        ModernOverlay.show(errorMessage, 'error');
+        ModernOverlay.show('register-errors.passwordMismatch', 'error');
         return;
     }
     
     const registerData: IApiRegister = { username, email, password };
     
-    try {
+   try {
         const response = await _apiManager.register(registerData);
         if (!response.success) {
-            const messageKey = response.message as AuthResponseMessages;
-            let errorMessage = '';
-
-            switch (messageKey) {
-                case AuthResponseMessages.REGISTRATION_FIELDS_REQUIRED:
-                case AuthResponseMessages.USERNAME_NOT_ALPHANUMERIC:
-                case AuthResponseMessages.USERNAME_LENGTH_INVALID:
-                case AuthResponseMessages.PASSWORD_LENGTH_INVALID:
-                case AuthResponseMessages.EMAIL_LENGTH_INVALID:
-                case AuthResponseMessages.INVALID_EMAIL_FORMAT:
-                case AuthResponseMessages.INVALID_EMAIL:
-                case AuthResponseMessages.INVALID_PASSWORD:
-                case AuthResponseMessages.USERNAME_EXISTS:
-                case AuthResponseMessages.EMAIL_EXISTS:
-                    errorMessage = exmp.getLang(`auth-messages.${messageKey}`) || exmp.getLang('register-errors.registerFailed');
-                    break;
-                default:
-                    errorMessage = exmp.getLang('register-errors.registerFailed');
-                    break;
-            }
-
-            ModernOverlay.show(errorMessage, 'error');
+            ModernOverlay.show(`auth-messages.${response.message}`, 'error');
             return;
         }
         
-        const successMessage = exmp.getLang(`auth-messages.${AuthResponseMessages.USER_REGISTERED}`) || 
-                              exmp.getLang('register-success');
-        ModernOverlay.show(successMessage, 'success');
-        
+        ModernOverlay.show(`auth-messages.${response.message}`, 'success');
+
         setTimeout(() => {
             Router.getInstance().go('/login');
         }, 1500);
         
     } catch (error: any) {
-        const networkError = exmp.getLang('register-errors.networkError');
-        ModernOverlay.show(networkError, 'error');
+        ModernOverlay.show('register-errors.networkError', 'error');
         console.error('Registration error:', error);
     }
 }
