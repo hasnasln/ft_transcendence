@@ -170,6 +170,7 @@ export class GamePage implements Page {
 		}
 	}
 
+
 	public onLoad(): void {
 		document.addEventListener("click", (event) => {
 			const target = event.target as HTMLElement;
@@ -177,6 +178,9 @@ export class GamePage implements Page {
 				Router.getInstance().go("/play", true);
 			}
 		});
+
+		
+
 		exmp.applyLanguage();
 	}
 
@@ -190,24 +194,6 @@ export class GamePage implements Page {
 
 	public hiddenButtons() {
 		return `
-		<div id="move-buttons"
-			class="absolute 
-			-top-10 right-[40%] rotate-90 w-[70px] h-[160px] 
-			sm:rotate-0 sm:top-[30%] sm:left-[3%] sm:right-auto sm:w-auto sm:h-auto
-			bg-white/10 backdrop-blur-md border border-white/20 z-[100] flex flex-col justify-center items-center gap-4 p-3 rounded-2xl shadow-lg">
-			
-			<button class="w-[50px] h-[50px] bg-gradient-to-b from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 active:scale-90 transition-all rounded-full flex items-center justify-center shadow-md">
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-				</svg>
-			</button>
-
-			<button class="w-[50px] h-[50px] bg-gradient-to-b from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 active:scale-90 transition-all rounded-full flex items-center justify-center shadow-md">
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-				</svg>
-			</button>
-		</div>
 		<canvas id="game-canvas" class="rotate-90 w-[100vh] h-[100vw] sm:rotate-0 sm:w-full sm:h-auto md:w-[90%] min-h-fit"></canvas>
 		<div id="no-game-welcomer" class="rotate-90 sm:rotate-0 absolute text-center">
 			<div class="mx-auto w-full justify-center mb-8 sm:flex hidden">
@@ -226,8 +212,18 @@ export class GamePage implements Page {
 
 		<div id="roundDiv" class="absolute top-[5%] left-[67%] -translate-x-1/2 hidden flex justify-center items-center px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.2vw] text-[#eee] z-10"></div>
 
-		<div id="set-toast" class="absolute bottom-[20%] left-1/2 -translate-x-1/2 bg-black text-white text-[1.5vw] px-[2vw] py-[1vw] rounded-[8px] z-10 hidden"></div>
-		<div id="end-message" class="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white text-[2vw] px-[4vw] py-[2vw] rounded-[12px] z-10 hidden"></div>
+		<div id="set-toast" class="absolute 
+		rotate-90 right-[22%] text-[3vw]
+		sm:rotate-0 sm:right-auto 
+		sm:top-[20%] sm:left-1/2 sm:-translate-x-1/2 bg-black text-white sm:text-[1.5vw] px-[2vw] py-[1vw] rounded-[8px] z-10 hidden"></div>
+		
+
+		<div id="end-message" class="absolute
+		rotate-90 right-[20%] text-[3vw]
+		sm:rotate-0 sm:right-auto 
+		sm:top-[30%] sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 bg-black text-white sm:text-[2vw] px-[4vw] py-[2vw] rounded-[12px] z-10 hidden"></div>
+		
+		
 		<div id="info" class="absolute left-1/2
 		right-[15%] rotate-90 w-[30vh] h-[15vw] text-2xl
 		sm:right-auto sm:rotate-0 sm:w-auto sm:h-auto sm:text-xl
@@ -245,9 +241,40 @@ export class GamePage implements Page {
 				inset 0 0 30px rgba(0, 255, 255, 0.1);
 		"></div>
 		<div id="countdown" class="absolute top-[40%] left-1/2 -translate-x-1/2 bg-black text-white text-[1.8vw] px-[2vw] py-[1vw] rounded-[30px] z-10 hidden"></div>
-		<button id="ready-button" class="modern-game-button absolute
-		right-[20%] rotate-90 w-[30vh] h-[15vw] text-2xl
-		sm:right-auto sm:rotate-0 sm:w-auto sm:h-auto sm:text-xl
+		${getButtons()}
+		`;
+	}
+}
+
+function getButtons(): string {
+	return `
+	<div id="move-buttons"
+		class="absolute lg:hidden
+		-top-10 right-[40%] rotate-90 w-[70px] h-[160px] 
+		sm:rotate-0 sm:top-[30%] sm:left-[3%] sm:right-auto sm:w-auto sm:h-auto
+		bg-white/10 backdrop-blur-md border border-white/20 z-[100] flex flex-col justify-center items-center gap-4 p-3 rounded-2xl shadow-lg">
+		
+		<button id="up_touch_buttons" class="w-[50px] h-[50px] bg-gradient-to-b from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 active:scale-90 transition-all rounded-full flex items-center justify-center shadow-md">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+			</svg>
+		</button>
+
+		<button id="down_touch_buttons" class="w-[50px] h-[50px] bg-gradient-to-b from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 active:scale-90 transition-all rounded-full flex items-center justify-center shadow-md">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+			</svg>
+		</button>
+	</div>
+
+
+	<div id="buttons-container" class="absolute
+	rotate-90 left-[9%]
+	sm:rotate-0 sm:left-1/2 sm:bottom-[10%]
+	flex flex-col justify-center items-center gap-4">
+		<button id="ready-button" class="modern-game-button
+		w-[25vh] h-[10vw] text-xs flex items-center justify-center
+		sm:right-auto sm:rotate-0 sm:w-auto sm:h-auto sm:text-[1.5vw] 
 		sm:-translate-x-1/2 sm:-translate-y-1/2 sm:top-[45%] sm:px-[2.8vw] sm:py-[1.2vw] text-white border-none rounded-[12px] cursor-pointer z-30 transition-all transform hidden">
 			<div class="flex items-center gap-2">
 				<svg class="w-[3vw] h-[3vw] sm:w-[1.8vw] sm:h-[1.8vw]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -258,9 +285,10 @@ export class GamePage implements Page {
 				</span>
 			</div>
 		</button>
-		<button id="resume-button" class="modern-game-button absolute 
-		right-[15%] rotate-90 w-[20vh] h-[10vw] text-xs
-		sm:right-auto sm:rotate-0 sm:w-auto sm:h-auto sm:text-[1.5vw]
+
+		<button id="resume-button" class="modern-game-button
+		w-[25vh] h-[10vw] text-xs flex items-center justify-center
+		sm:right-auto sm:rotate-0 sm:w-auto sm:h-auto sm:text-[1.5vw] 
 		sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:top-[45%] sm:px-[2.8vw] sm:py-[1.2vw] text-white border-none rounded-[12px] cursor-pointer z-30 transition-all transform hidden">
 			<div class="flex items-center gap-2">
 				<svg class="w-[3vw] h-[3vw] sm:w-[1.8vw] sm:h-[1.8vw]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -271,8 +299,10 @@ export class GamePage implements Page {
 				>!_!</span>
 			</div>
 		</button>
-		<button id="newmatch-button" class="modern-game-button absolute 
-		right-[30%] rotate-90 w-[20vh] h-[10vw] text-xs
+
+
+		<button id="newmatch-button" class="modern-game-button
+		w-[25vh] h-[10vw] text-xs flex items-center justify-center
 		sm:right-auto sm:rotate-0 sm:w-auto sm:h-auto sm:text-[1.5vw]
 		sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:top-[60%] sm:px-[2.8vw] sm:py-[1.2vw] text-white border-none rounded-[12px] cursor-pointer z-30 transition-all transform hidden">
 			<div class="flex items-center gap-2">
@@ -284,8 +314,10 @@ export class GamePage implements Page {
 				>!_!</span>
 			</div>
 		</button>
-		<button id="turnHomePage-button" class="absolute 
-			right-[45%] rotate-90 w-[20vh] h-[10vw] text-xs
+
+
+		<button id="turnHomePage-button" class="
+		w-[25vh] h-[10vw] text-xs flex items-center justify-center
 			sm:right-auto sm:rotate-0 sm:w-auto sm:h-auto sm:text-[1.5vw]
 			sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:top-[75%] sm:px-[2.8vw] sm:py-[1.2vw] 
 			text-red-200 rounded-2xl cursor-pointer z-30 transition-all duration-300 transform hidden font-semibold" style="
@@ -302,24 +334,30 @@ export class GamePage implements Page {
 				data-langm-key="game.goHome"
 				>!_!</span>
 			</div>
-		</button>    `;
-	}
+		</button>
+	</div>
+	`;
 }
 
 function getScoreBoard(): string {
  	return `
 		<div id="scoreboard" class="scoreboard-card absolute 
-		-right-[44%] rotate-90
-		sm:top-[3%] sm:left-1/2 sm:-translate-x-1/2 sm:rotate-0 sm:right-auto hidden z-10">
+		-right-[42%] rotate-90 text-[1vw] lg:text-[3vw]
+		sm:top-0 sm:left-1/2 sm:-translate-x-1/2 sm:rotate-0 sm:right-auto sm:-top-2 hidden z-10">
 			<div data-status="inprogress" class="teams">
 				<span class="team-info team-home">
 					<span class="team-info-container">
-						<span id="blue-team" class="team-name-info">P1</span>
+						<span id="blue-team" class="team-name-info
+						text-[15px] sm:text-[20px] lg:text-[25px]
+						">P1</span>
 					</span>
 				</span>
 				<span class="event-scoreboard">
-					<span class="event-score-container">
-						<span class="current-time-container">
+					<span class="event-score-container
+					p-[4px] lg:p-[10px]
+					">
+						<span class="current-time-container
+						mb-4 sm:mb-8 ">
 							<span class="event-current-time">
 								<span id="roundNo" class="event-clock">(Round 1)</span>
 								<span class="current-part">PONG</span>
@@ -328,7 +366,8 @@ function getScoreBoard(): string {
 								<span class="load"></span>
 							</span>
 						</span>
-						<span class="score-container">
+						<span class="score-container
+						text-[15px] lg:text-[30px] xl:text-[45px]">
 							<span id="score-home" class="score-home">0</span>
 							<span class="custom-sep">-</span>
 							<span id="score-away" class="score-away">0</span>
@@ -337,7 +376,9 @@ function getScoreBoard(): string {
 				</span>
 				<span class="team-info team-away">
 					<span class="team-info-container">
-						<span id="red-team" class="team-name-info">P2</span>
+						<span id="red-team" class="team-name-info
+						text-[15px] sm:text-[20px] lg:text-[25px]									
+						">P2</span>
 					</span>
 				</span>
 			</div>

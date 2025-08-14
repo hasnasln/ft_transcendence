@@ -329,7 +329,6 @@
 .scoreboard-card .event-scoreboard .event-score-container {
     display: flex;
     flex-wrap: wrap;
-    padding: 10px;
     border-radius: 10px;
     width: fit-content;
     background: linear-gradient(#1e1e1e 0%, #0c0c0c8e 4%, #1a1419);
@@ -339,15 +338,12 @@
     margin: 10px 0;
 }
 .scoreboard-card .event-scoreboard .event-score-container .score-container {
-    font-size: 24px;
     background: linear-gradient(90deg, #3a3dff, #ff2929);
     -webkit-background-clip: text;
     width: 100%;
     -webkit-text-fill-color: transparent;
 }
 .scoreboard-card .event-scoreboard .event-score-container .current-time-container {
-    font-size: 12px;
-    margin-bottom: 8px;
     width: 100%;
     font-family: "SegoeUI";
     color: #a1a1a1;
