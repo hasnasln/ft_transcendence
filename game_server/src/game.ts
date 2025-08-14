@@ -27,6 +27,7 @@ export interface GameConstants {
 	ballRadius: number;
 	paddleWidth: number;
 	paddleHeight: number;
+	paddleSpeed: number;
 }
 
 export interface GameState {
@@ -59,7 +60,8 @@ export class Game {
 	public winner: Side | undefined = undefined;
 	public aPlayerDisconnected: boolean = false;
 	public lastUpdatedTime: number | undefined = undefined;
-	public lastNotifiedBallPositionTime: number= 0;
+	public lastBallNotifiedTime: number= 0;
+	public lastPaddleNotifiedTime: number= 0;
 	public tournament?: { code: string, roundNo: number, finalMatch: boolean }
 
 	public leftInput: InputProvider | undefined;
@@ -87,6 +89,7 @@ export class Game {
 		setTimeout(() => {
 			this.environment.ball.shove(lastScorer);
 			this.lastUpdatedTime = Date.now();
+			GameEmitter.getInstance().emitBallState(this, true);
 		}, 1000);
 	}
 

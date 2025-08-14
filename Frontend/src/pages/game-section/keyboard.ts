@@ -1,4 +1,3 @@
-import { Router } from "../../router";
 import { gameInstance } from "../play";
 import { GameEventBus } from "./gameEventBus";
 import { GameInfo } from "./network";
@@ -20,6 +19,17 @@ export class GameInputHandler {
 
 	public setMode(mode: "local" | "remote"): void {
 		this.mode = mode;
+	}
+
+	public getDirectionSign(): 1 | -1 | 0 {
+		switch (this.direction) {
+			case "up":
+				return 1;
+			case "down":
+				return -1;
+			default:
+				return 0;
+		}
 	}
 
 	public keyToDirectionAndSide(key: string): { direction: "up" | "down" | "stop", side: "left" | "right" } | null {

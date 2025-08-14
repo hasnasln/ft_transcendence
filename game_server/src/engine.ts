@@ -227,7 +227,7 @@ function intersectSegments(a: Position, b: Position, c: Position, d: Position): 
 
 function exportStates(g: Game, _dt: number): boolean {
     GameEmitter.getInstance().emitBallState(g, g.getBall().position.x > g.environment.ground.width / 2 - g.getBall().radius || g.getBall().position.x < -g.environment.ground.width / 2 + g.getBall().radius);
-    GameEmitter.getInstance().emitPaddleState(g);
+    GameEmitter.getInstance().emitPaddleState(g, g.gameMode !== 'vsAI');
 	return true;
 }
 

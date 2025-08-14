@@ -41,6 +41,7 @@ export class GameEmitter {
 			ballRadius: game.environment.ball.radius / this.ucf,
 			paddleWidth: game.environment.leftPaddle.width / this.ucf,
 			paddleHeight: game.environment.leftPaddle.height / this.ucf,
+			paddleSpeed: game.getPaddleSpeed() / this.ucf,
 		};
 
 		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("init", gameConstants);
@@ -79,9 +80,9 @@ export class GameEmitter {
 			return;
 		}
 
-		if (force || Date.now() - game.lastNotifiedBallPositionTime > 10) {
+		if (force || Date.now() - game.lastBallNotifiedTime > 200) {
 			this.emitWithCache("bu", `${x.toFixed(2)}:${y.toFixed(2)}`, game.roomId);
-			game.lastNotifiedBallPositionTime = Date.now();
+			game.lastBallNotifiedTime = Date.now();
 		}
 		this.emitBallVelocity(game);
 	}
@@ -95,10 +96,10 @@ export class GameEmitter {
 			return;
 		}
 
-		this.emitWithCache("bv", `${vx}:${vy}`, game.roomId);
+		this.emitWithCache("bv", `${vx.toFixed(4)}:${vy.toFixed(4)}`, game.roomId);
 	}
 
-	public emitPaddleState(game: Game): void {
+	public emitPaddleState(game: Game, force=false): void {
 		const p1y= game.environment.leftPaddle.position.y / this.ucf;
 		const p2y= game.environment.rightPaddle.position.y / this.ucf;
 
@@ -107,7 +108,10 @@ export class GameEmitter {
 			return;
 		}
 
-		this.emitWithCache("pu", `${p1y.toFixed(2)}:${p2y.toFixed(2)}`, game.roomId);
+		if (force || Date.now() - game.lastPaddleNotifiedTime > 100) {
+			this.emitWithCache("pu", `${p1y.toFixed(2)}:${p2y.toFixed(2)}`, game.roomId);
+			game.lastPaddleNotifiedTime = Date.now();
+		}
 	}
 
 	public emitGameFinish(game: Game): void {
