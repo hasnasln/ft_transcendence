@@ -260,7 +260,8 @@ export class TournamentPage implements Page {
         }
         exmp.applyLanguage();
     }
-    private async createTournament(container: HTMLElement): Promise<void> {
+    
+        private async createTournament(container: HTMLElement): Promise<void> {
         try {
             const input = document.querySelector('#createInput') as HTMLInputElement;
             const tournamentName = input.value.trim();
@@ -272,9 +273,7 @@ export class TournamentPage implements Page {
             this.loadingManager.removeLoadingOverlay('create');
             
             if (createResult.success && createResult.data) {
-                const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_CREATED}`) || 
-                                      'Turnuva başarıyla oluşturuldu';
-                ModernOverlay.show(successMessage, 'success');
+                ModernOverlay.show(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_CREATED}`, 'success');
                 await this.stateManager.handleCreateSuccess(container, createResult.data);
                 this.updateManagersData(createResult.data);
             } else {
@@ -303,9 +302,7 @@ export class TournamentPage implements Page {
             
             if (joinResult.success) {
                 if (joinResult.data) {
-                    const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_PARTICIPANT_JOINED}`) || 
-                                          'Turnuvaya başarıyla katıldınız';
-                    ModernOverlay.show(successMessage, 'success');
+                    ModernOverlay.show(`tournament-messages.${TournamentResponseMessages.SUCCESS_PARTICIPANT_JOINED}`, 'success');
                     await this.stateManager.handleJoinSuccess(container, joinResult.data);
                     this.updateManagersData(joinResult.data);
                 } else {
