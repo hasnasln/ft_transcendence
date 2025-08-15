@@ -348,16 +348,16 @@ function getScoreBoard(): string {
 				<span class="team-info team-home">
 					<span class="team-info-container">
 						<span id="blue-team" class="team-name-info
-						text-[15px] sm:text-[20px] lg:text-[25px]
+						text-[15px] lg:text-[25px]
 						">P1</span>
 					</span>
 				</span>
 				<span class="event-scoreboard">
 					<span class="event-score-container
-					p-[4px] lg:p-[10px]
+					p-[2px] lg:p-[10px]
 					">
 						<span class="current-time-container
-						mb-4 sm:mb-8 ">
+						mb-2 lg:mb-8 ">
 							<span class="event-current-time">
 								<span id="roundNo" class="event-clock">(Round 1)</span>
 								<span class="current-part">PONG</span>
@@ -377,7 +377,7 @@ function getScoreBoard(): string {
 				<span class="team-info team-away">
 					<span class="team-info-container">
 						<span id="red-team" class="team-name-info
-						text-[15px] sm:text-[20px] lg:text-[25px]									
+						text-[15px] lg:text-[25px]									
 						">P2</span>
 					</span>
 				</span>
