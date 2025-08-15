@@ -102,4 +102,5 @@ export interface ITournament{
 	lobby_members: ITournamentUser[];
 	status?: string;
 	participants?: ITournamentUser[];
+    tournament_start?:{}
 }

@@ -681,8 +681,8 @@
 
 .match-status {
     position: absolute;
-    top: -12px;
-    right: -12px;
+    top: 2px;
+    right: 2px;
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -694,19 +694,24 @@
     border: 2px solid white;
 }
 
-.status-pending {
+.status-created {
     background: #f39c12;
     color: white;
 }
 
-.status-playing {
+.status-ongoing {
     background: #e74c3c;
     color: white;
     animation: pulse 2s infinite;
 }
 
-.status-finished {
+.status-completed {
     background: #27ae60;
+    color: white;
+}
+
+.status-cancelled {
+    background: #ff0000;
     color: white;
 }
 

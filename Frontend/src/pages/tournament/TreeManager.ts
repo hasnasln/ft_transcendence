@@ -1,8 +1,9 @@
 import { _apiManager } from '../../api/APIManager';
 import { ModernOverlay } from '../../components/ModernOverlay';
 import { ITournament } from '../../api/types';
-import { getTournamentTree } from './BracketRenderer';
 import { TournamentIcons } from './IconsHelper';
+import { tournament10, tournament5 } from './10and5';
+import {ParticipantStatus, Participant, TournamentStatus, MatchStatus, TournamentData, TournamentStart, Round, Match} from './10and5';
 
 export class TournamentTreeManager {
     private data: ITournament;
@@ -13,20 +14,44 @@ export class TournamentTreeManager {
         this.uiManager = uiManager;
     }
 
-    async handleTree(): Promise<void> {
-        try {
-            this.removeExistingTreeModal();
-            this.showTreeLoading();
-            const treeResult = await this.performTreeGeneration();
-            if (treeResult.success) {
-                this.handleTreeSuccess(treeResult.data);
-            } else {
-                this.handleTreeError(treeResult.message);
-            }
-        } catch (error) {
-            console.error('Error generating tournament tree:', error);
-            this.handleTreeError('❌ Turnuva ağacı oluşturulurken hata oluştu!\n\nLütfen tekrar deneyin.');
+    async handleTree(flag: boolean = true): Promise<void> {
+        if (flag) // reflesh de de aynı fonsiyonu kullanmak için yaptım
+        {
+            this.removeExistingTreeModal(); // inerhtml kullandığımız için buna gerek olmayabilir
+            this.createTreeLoadingOverlay();
         }
+        _apiManager.getTournament(this.data.code)
+        .then((response) => {
+            if(flag) {
+                this.createTreeModalOverlay(response.data);
+                console.log('Tournament data:', response.data);
+            }
+            return response;
+        })
+        .then((response) => {
+            this.removeTreeLoadingOverlay();
+            if (response.success) {
+                if (response.data.status != 'created')
+                {
+                    // const x = this.renderTournamentTree(response.data?.tournament_start?.rounds!);
+                    const x = this.renderTournamentTree(tournament10.tournament_start?.rounds!);
+                    const treeContainer = document.getElementById('tree-container');
+                    if (!treeContainer) return;
+                    treeContainer.innerHTML = x;
+                }
+                else {
+                    const treeContainer = document.getElementById('tree-container');
+                    if (!treeContainer) return;
+                    this.uiManager.createTreeErrorHTML("Turnuva henüz başlatılmadı.");
+                }
+            } else {
+                this.showTreeError(response.messageKey!);
+            }
+        })
+        .then(() => {
+            if (!flag) return; // sadece ilk çağrıda event listener ekle
+            this.setupTreeModalEventListeners();
+        });
     }
 
     private removeExistingTreeModal(): void {
@@ -36,72 +61,11 @@ export class TournamentTreeManager {
         }
     }
 
-    private showTreeLoading(): void {
-        const loadingOverlay = this.createTreeLoadingOverlay();
-        document.body.appendChild(loadingOverlay);
-    }
-
-    private createTreeLoadingOverlay(): HTMLElement {
+    private createTreeLoadingOverlay(): void {
         const overlay = document.createElement('div');
         overlay.id = 'tree-loading-overlay';
         overlay.innerHTML = this.uiManager.createTreeLoadingHTML();
-        return overlay;
-    }
-
-    private async performTreeGeneration(): Promise<{ success: boolean; data?: any; message: string }> {
-        try {
-            const participants = this.data.lobby_members.map(user => user.username);
-            const tournamentData = await _apiManager.getTournament(this.data.code);
-            if (tournamentData.success && tournamentData.data) {
-                const realTournamentData = {
-                    matches: tournamentData.data.matches || [],
-                    participants: participants,
-                    currentRound: tournamentData.data.currentRound || 1,
-                    status: tournamentData.data.status || 'pending'
-                };
-                return {
-                    success: true,
-                    data: {
-                        participants,
-                        tournamentData: realTournamentData,
-                        playerCount: this.data.lobby_members.length
-                    },
-                    message: '✅ Turnuva ağacı başarıyla oluşturuldu!'
-                };
-            } else {
-                return {
-                    success: true,
-                    data: {
-                        participants,
-                        tournamentData: null,
-                        playerCount: this.data.lobby_members.length
-                    },
-                    message: '⚠️ Turnuva verisi alınamadı, standart ağaç gösteriliyor.'
-                };
-            }
-        } catch (error) {
-            console.error('Error fetching tournament data:', error);
-            const participants = this.data.lobby_members.map(user => user.username);
-            return {
-                success: true,
-                data: {
-                    participants,
-                    tournamentData: null,
-                    playerCount: this.data.lobby_members.length
-                },
-                message: '⚠️ Bağlantı hatası, standart ağaç gösteriliyor.'
-            };
-        }
-    }
-
-    private handleTreeSuccess(treeData: any): void {
-        this.removeTreeLoadingOverlay();
-        this.showTreeModal(treeData);
-    }
-
-    private handleTreeError(errorMessage: string): void {
-        this.removeTreeLoadingOverlay();
-        this.showTreeError(errorMessage);
+        document.body.appendChild(overlay);
     }
 
     private removeTreeLoadingOverlay(): void {
@@ -111,32 +75,14 @@ export class TournamentTreeManager {
         }
     }
 
-    private showTreeModal(treeData: any): void {
-        const treeOverlay = this.createTreeModalOverlay(treeData);
-        document.body.appendChild(treeOverlay);
-        this.setupTreeModalEventListeners();
-    }
-
-    private createTreeModalOverlay(treeData: any): HTMLElement {
+    private createTreeModalOverlay(treeData: any): void {
         const overlay = document.createElement('div');
         overlay.id = 'tree-overlay';
         overlay.innerHTML = this.uiManager.createTreeModalHTML(treeData);
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                this.closeTreeModal();
-            }
-        });
-        return overlay;
+        document.body.appendChild(overlay);
     }
 
     private setupTreeModalEventListeners(): void {
-        const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
-                this.closeTreeModal();
-                document.removeEventListener('keydown', handleEscape);
-            }
-        };
-        document.addEventListener('keydown', handleEscape);
         const closeButton = document.getElementById('close-tree-modal');
         if (closeButton) {
             closeButton.addEventListener('click', () => this.closeTreeModal());
@@ -145,21 +91,69 @@ export class TournamentTreeManager {
         if (refreshButton) {
             refreshButton.addEventListener('click', () => this.refreshTreeData());
         }
-        requestAnimationFrame(() => {
-            this.renderTournamentTree();
-        });
+
+        const overlay = document.getElementById('tree-overlay');
+        if( overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    this.closeTreeModal();
+                }
+            });
+        }
     }
 
-    private renderTournamentTree(): void {
-        const treeContainer = document.getElementById('tree-container');
-        if (!treeContainer) return;
-        try {
-            const participants = this.data.lobby_members.map(user => user.username);
-            getTournamentTree(treeContainer, participants);
-        } catch (error) {
-            console.error('Error rendering tournament tree:', error);
-            treeContainer.innerHTML = this.uiManager.createTreeErrorHTML();
-        }
+    private thisisWinner(winner: Participant[], participant: Participant): boolean {
+        return winner.some(p => p.uuid === participant.uuid);
+    }
+
+    private  renderTournamentTree(rounds: Round[]): string {
+        console.log('Rendering tournament tree with rounds:', rounds);
+        const roundsHtml = rounds.map((round) => `
+            <div class="tournament-round">
+                <div class="round-title">
+                    ${round.round_number}. TUR
+                </div>
+                <div class="matches-container">
+                    ${round.matches.map(match => `
+                        <div class="match-card">
+                            <div class="match-status status-${match.status}">
+                                ${match.status === MatchStatus.CREATED ? '⏱' : 
+                                match.status === MatchStatus.ONGOING ? '🎮' :
+                                match.status === MatchStatus.CANCELLED ? 'X' : '✓'
+                            }
+                            </div>
+                            <div class="player ${
+                                match.status === MatchStatus.CREATED ? '' : 
+                                round.winners && this.thisisWinner(round.winners, match.participant1) ? 'winner' : 'loser'
+                            }">
+                                <span>${match.participant1.username}</span>
+                                <div class="player-status">
+                                    ${round.winners && this.thisisWinner(round.winners, match.participant1) ? '<span class="trophy">🏆</span>' : ''}
+                                </div>
+                            </div>
+                            <div class="vs-divider">VS</div>
+                            <div class="player ${
+                                match.status === MatchStatus.CREATED ? '' : 
+                                round.winners && this.thisisWinner(round.winners, match.participant2) ? 'winner' : 'loser'
+                            }">
+                                <span>${match.participant2.username}</span>
+                                <div class="player-status">
+                                    ${round.winners && this.thisisWinner(round.winners, match.participant2) ? '<span class="trophy">🏆</span>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+        
+        return `
+            <div class="tournament-container">
+                <div class="tournament-bracket">
+                    ${roundsHtml}
+                </div>
+            </div>
+        `;
     }
 
     private closeTreeModal(): void {
@@ -181,7 +175,6 @@ export class TournamentTreeManager {
         }
         try {
             await this.delay(500); 
-            this.renderTournamentTree();
             if (refreshButton) {
                 refreshButton.innerHTML = `
                     <div class="flex items-center space-x-2">
@@ -189,6 +182,7 @@ export class TournamentTreeManager {
                         <span>Yenile</span>
                     </div>
                 `;
+                this.handleTree(false); // Refresh the tree data
             }
         } catch (error) {
             console.error('Error refreshing tree:', error);
