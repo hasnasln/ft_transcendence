@@ -1,4 +1,5 @@
 import { Router } from "../router";
+import { TournamentResponseMessages, AuthResponseMessages } from "./types";
 
 export class HTTPMethod extends String {
 	public static GET: string = 'GET';
@@ -16,21 +17,17 @@ export interface IApiSetSettings {
 export interface IApiRegister {
 	username?: string;
 	password?: string;
+	new_password?: string;
 	email?: string;
 	uuid?: string;
 }
 
-export interface IApiTournament {
-	name: string; // Tournament name
-	admin: string; // Admin username
-	playerCount: number; // Number of players
-}
-
 export interface IApiResponseWrapper {
-	code?: number; // HTTP status code
+	code?: number;
 	success?: boolean;
 	message?: string;
-	data?: any; // Data can be of any type, depending on the API response
+	messageKey?: string;
+	data?: any;
 }
 
 export class APIManager {
@@ -38,18 +35,14 @@ export class APIManager {
 	private baseUrl: string;
 	private t_url: string;
 	private token: string | null;
-	private active_pass: string | null = null; // aktif pass tutulacak
-	private uuid: string | null = null; // uuid tutulacak, register ve login sonrası gelecek
+	private active_pass: string | null = null;
+	private uuid: string | null = null;
 
-	private constructor(baseUrl: string, url_altarnetive: string, token: string | null = null) {
+	private constructor(baseUrl: string, url_altarnetive: string) {
 		this.baseUrl = baseUrl;
 		this.t_url = url_altarnetive;
-		if (token === null) {
-			this.token = localStorage.getItem('token') || null;
-			this.uuid = localStorage.getItem('uuid') || null;
-		} else {
-			this.token = token;
-		}
+		this.token = localStorage.getItem('token') || null;
+		this.uuid = localStorage.getItem('uuid') || null;
 	}
 
 	public static getInstance(baseUrl: string, url_altarnetive: string): APIManager {
@@ -84,7 +77,7 @@ export class APIManager {
 			if (body) {
 				options.body = body;
 			}
-
+			console.log("API Call:", url, method, headers, body);
 			const response = await fetch(url, options);
 			if (response.status >= 500 && response.status < 600) {
 				Router.getInstance().go('/500', true);
@@ -96,7 +89,7 @@ export class APIManager {
 				Router.getInstance().go('/login', true);
 				throw new Error('Unauthorized access, redirecting to login');
 			}
-
+			console.log("API Response:", response);
 			return response;
 		} catch (error) {
 			console.error('Error in fetch:', error);
@@ -105,7 +98,7 @@ export class APIManager {
 	}
 
 	public async login(email: string, password: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		this.active_pass = password;
 		localStorage.setItem('password', password);
 		try {
@@ -114,31 +107,26 @@ export class APIManager {
 			}, JSON.stringify({ "email": email, "password": password }));
 
 			result.code = response.status;
-			if (!response.ok) {
-				result.success = false;
-				if (response.status === 401) {
-					result.message = 'INVALID_CREDENTIALS';
-					return result;
-				}
-			}
-
 			const data = await response.json();
-			if (data.token) {
+			console.log("Login data:", data);
+			console.log("Login response", response);
+
+			if (response.ok && data.token) {
 				result.success = true;
 				result.data = data;
-				result.message = 'Login successful';
+				result.message = data.message;
+				
 				this.setToken(data.token);
 				this.uuid = data.uuid;
 				localStorage.setItem('token', data.token);
 				localStorage.setItem('username', data.username);
 				localStorage.setItem('uuid', data.uuid);
 				localStorage.setItem('email', data.email);
-				localStorage.setItem('avatar', data.uuid.at(-1) + '.png'); // Example avatar logic, can be customized
 			} else {
 				result.success = false;
-				result.message = data.error || 'Token not found in response';
-				return result;
+				result.message = data.message;
 			}
+			
 			return result;
 		} catch (error) {
 			console.error('Error in login:', error);
@@ -151,181 +139,125 @@ export class APIManager {
 	*/
 	public async logout(): Promise<any> {
 		try {
-			const response = await this.apiCall(`${this.baseUrl}/logout`, HTTPMethod.POST, {
-				'Content-Type': 'application/json',
-			});
-			if (!response.ok) {
-				throw new Error('Logout failed');
-			}
 			this.setToken(null);
 			Router.getInstance().invalidateAllPages();
-			return response;
 		} catch (error) {
 			console.error('Error in logout:', error);
 			throw error;
 		}
 	}
 
-	public async getSettings(): Promise<any> {
-		try {
-			const response = await this.apiCall(`${this.baseUrl}/settings`, HTTPMethod.GET, {
-				'Content-Type': 'application/json',
-			});
-			if (!response.ok) {
-				throw new Error('Settings failed');
-			}
-			const data = await response.json();
-			localStorage.setItem('settings', JSON.stringify(data));
-			console.log("Settings data:", data);
-			return data;
-		} catch (error) {
-			console.error('Error in settings:', error);
-			throw error;
-		}
-	}
-
-	public async updateSettings(choises: IApiSetSettings): Promise<any> {
-		try {
-			const response = await this.apiCall(`${this.baseUrl}/settings`, HTTPMethod.POST, {
-				'Content-Type': 'application/json',
-			}, JSON.stringify(choises));
-			if (!response.ok) {
-				throw new Error('Settings failed');
-			}
-			const data = await response.json();
-			localStorage.setItem('settings', JSON.stringify(data));
-			return data;
-		} catch (error) {
-			console.error('Error in settings:', error);
-			throw error;
-		}
-	}
-
-	public async getMe(): Promise<any> {
-		try {
-			const response = await this.apiCall(`${this.baseUrl}/me`, HTTPMethod.GET, {
-				'Content-Type': 'application/json',
-			});
-			if (!response.ok) {
-				throw new Error('Get ME failed');
-			}
-			const data = await response.json();
-			localStorage.setItem('name', data.user.name);
-			localStorage.setItem('surname', data.user.surname);
-			localStorage.setItem('username', data.user.username);
-			localStorage.setItem('email', data.user.email);
-			localStorage.setItem('avatar', data.user.avatar);
-			return data;
-		} catch (error) {
-			console.error('Error in getME:', error);
-			throw error;
-		}
-	}
-
 	public async register(registerData: IApiRegister): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		console.log("Register data:", registerData);
 		try {
 			const response = await this.apiCall(`${this.baseUrl}/register`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
 			}, JSON.stringify(registerData));
 
-			if (!response.ok) {
-				result.success = false;
-				// diğer hatalar alt alta dizilecek
-				if (response.status === 409)
-					result.message = 'Username or email already exists';
-				return result;
-			}
+			const data = await response.json();
+			result.success = response.ok;
 			result.code = response.status;
-			result.success = true;
-			result.data = await response.json();
+			result.data = response.ok ? data : null;
+
+			const backendKey = response.ok ? (data.message || 'USER_REGISTERED') : (data.error || data.message || '');
+			result.messageKey = backendKey;
+
 			return result;
 		} catch (error) {
-			// console.error('Error in register:', error);
+			console.error('Error in register:', error);
 			throw error;
 		}
 	}
 
-	/*
-	@param name: string -> name of the item to be updated
-	@param data: string -> data to be updated
-	*/
-	public async updateSomething(name: string, data: string) {
+	public async updateSomething(name: string, data: string, data2?:string): Promise<IApiResponseWrapper> {
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
+		
 		//! nul olmayan güncellencek - bos olmayan 
 		const x: IApiRegister = {
 			username: localStorage.getItem('username') || '',
 			email: localStorage.getItem('email') || '',
-			password: localStorage.getItem('password') || '',
 			uuid: this.uuid || '',
 		}
 		if (name === 'password')
+		{
 			x.password = data;
+			x.new_password = data2;
+		}
 		else if (name === 'email')
 			x.email = data;
 		else if (name === 'username')
 			x.username = data;
+		
 		try {
 			const response = await this.apiCall(`${this.baseUrl}/${this.uuid}`, HTTPMethod.PUT, {
 				'Content-Type': 'application/json',
 			}, JSON.stringify(x));
 
-			if (!response.ok) {
-				throw new Error(`Update ${name} failed`);
-			}
-
 			const dataResponse = await response.json();
-			if (dataResponse.token) {
+			result.success = response.ok;
+			result.code = response.status;
+
+			if (response.ok && dataResponse.token) {
+				result.data = dataResponse;
+				
+				const backendKey = dataResponse.message || 'USER_UPDATED';
+				result.messageKey = backendKey;
+
+				
 				this.setToken(dataResponse.token);
 				this.uuid = dataResponse.uuid;
 				localStorage.setItem('token', dataResponse.token);
-				localStorage.setItem('uuid', JSON.stringify(dataResponse.uuid));
-				localStorage.setItem('username', JSON.stringify(dataResponse.username));
+				localStorage.setItem('username', dataResponse.username);
+				localStorage.setItem('uuid', dataResponse.uuid);
 				localStorage.setItem('email', dataResponse.email);
-				localStorage.setItem('avatar', dataResponse.uuid.at(-1) + '.png'); // Example avatar logic, can be customized
 			} else {
-				const msg= dataResponse.error || 'Token not found in response';
-				throw new Error(msg);
+				const backendKey = dataResponse.error || dataResponse.message || `Update ${name} failed`;
+				result.messageKey = backendKey;
+
 			}
-			return dataResponse;
+			
+			return result;
 		} catch (error) {
 			console.error(`Error in update${name}:`, error);
 			throw error;
 		}
 	}
 
-	//*********************************Turnuva Kısmı************************************/
 	public async createTournament(name: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
 			}, JSON.stringify({ name: name }));
-			console.log("--------------------Create Tournament response:", response);
-			if (!response.ok) {
-				throw new Error('Create Tournament failed');
-			}
+
 			const data = await response.json();
-			result.success = true;
-			result.message = data.message || 'Mesaj kısmı boşta';
-			result.data = data.data || null;
+			result.success = response.ok;
 			result.code = response.status;
+			result.data = data.data || null;
+
+			const backendKey = data.message || data.error || '';
+			result.messageKey = backendKey;
+
 			return result;
 		} catch (error) {
-			console.error('create içerisnde eror var:' + error);
+			console.error('Error in createTournament:', error);
 			throw error;
 		}
 	}
 
 	public async deleteTournament(tournamentId: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentId}`, HTTPMethod.DELETE, {});
 
 			const data = await response.json();
 			result.success = response.ok;
-			result.message = response.ok ? data.message : data.error || 'No message';
 			result.code = response.status;
+
+			const backendKey = response.ok ? data.message : (data.error || data.message || '');
+			result.messageKey = backendKey;
+
 			return result;
 		} catch (error) {
 			console.error('Error in deleteTournament:', error);
@@ -334,56 +266,60 @@ export class APIManager {
 	}
 
 	public async joinTournament(tournamentId: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentId}/join`, HTTPMethod.POST, {
 			});
 
-			if (!response.ok) {
-				const errorText = await response.text(); // daha açıklayıcı hata
-				throw new Error(`Delete Tournament failed: ${errorText}`);
-			}
 			const data = await response.json();
-			result.success = true;
-			result.message = data.message;
-			result.data = data.data;
+			result.success = response.ok;
 			result.code = response.status;
+			result.data = data.data;
+			result.messageKey = data.message;
+
 			return result;
 		} catch (error) {
-			console.error('Error in playerJoinTournament:', error);
+			console.error('Error in joinTournament:', error);
 			throw error;
 		}
 	}
 
 	public async leaveTournament(tournamentCode: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentCode}/leave`, HTTPMethod.POST, {
 			});
 
 			const data = await response.json();
 			result.success = response.ok;
-			result.message = response.ok ? data.message : data.error || 'No message';
-			result.data = data.data;
 			result.code = response.status;
+			result.data = data.data;
+
+			const backendKey = response.ok ? data.message : (data.error || data.message || '');
+			result.messageKey = backendKey;
+
 			return result;
 		} catch (error) {
-			console.error('Error in playerLeaveTournament:', error);
+			console.error('Error in leaveTournament:', error);
 			throw error;
 		}
 	}
 
 	public async getTournament(tournamentCode: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentCode}`, HTTPMethod.GET, {
 				'Content-Type': 'application/json',
 			});
+			
 			const data = await response.json();
-			result.success = true;
-			result.message = data.message;
-			result.data = data.data;
+			result.success = response.ok;
 			result.code = response.status;
+			result.data = data.data;
+
+			const backendKey = response.ok ? data.message : (data.error || data.message || '');
+			result.messageKey = backendKey;
+
 			return result;
 		} catch (error) {
 			console.error('Error in getTournament:', error);
@@ -392,47 +328,71 @@ export class APIManager {
 	}
 
 	public async haveTournament(): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}`, HTTPMethod.GET, {
 				'Content-Type': 'application/json',
 			});
-			if (!response.ok){
-				result.success = false;
-				result.message = 'No tournament found for this user';
-				result.code = response.status;
-			}
-			else if (response.ok) {
-				const x = await response.json();
-				result.data = x.data;
+
+			if (response.ok) {
+				const data = await response.json();
 				result.success = true;
-				result.message = x.message;
 				result.code = response.status;
+				result.data = data.data;
+
+				const backendKey = data.message || '';
+				result.messageKey = backendKey;
+
+			} else {
+				result.success = false;
+				result.code = response.status;
+				result.message = 'No tournament found for this user';
+				result.messageKey = 'ERR_TOURNAMENT_NOT_FOUND';
 			}
+
 			return result;
-		} catch {
-			console.error('Error in haveTournament:');
-			throw new Error('Error in haveTournament');
+		} catch (error) {
+			console.error('Error in haveTournament:', error);
+			throw error;
 		}	
 	}
 
 	public async startTournament(tournamentId: string): Promise<IApiResponseWrapper> {
-		const result: IApiResponseWrapper = { success: false, message: '', data: null, code: 0 };
+		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentId}/start`, HTTPMethod.POST, {})
-			if (!response.ok) {
-				const errorText = await response.text(); // daha açıklayıcı hata
-				throw new Error(`Delete Tournament failed: ${errorText}`);
-			}
-			const data = await response.json()
-			result.success = true;
-			result.message = data.message;
+			
+			const data = await response.json();
+			result.success = response.ok;
 			result.code = response.status;
-			return result
+
+			const backendKey = response.ok ? data.message : (data.error || data.message || '');
+			result.messageKey = backendKey;
+
+			return result;
 		} catch (error) {
-			console.error('Error in playerJoinTournament:', error);
+			console.error('Error in startTournament:', error);
 			throw error;
 		}
+	}
+
+	public isTokenExpired() :boolean {
+		const token = this.getToken();
+		if (!token) return true;
+		try {
+			const payload = this.decodeJWT(token);
+			const exp = payload.exp;
+			return !exp || Date.now() >= exp * 1000;
+		} catch (error) {
+			return true;
+		}
+	}
+
+	public decodeJWT(token: string) {
+		const [, payload] = token.split('.');
+		const b64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+		const json = atob(b64);
+		return JSON.parse(json);
 	}
 }
 

@@ -1,5 +1,6 @@
-import { ITournament } from '../../api/types';
+import { ITournament, TournamentResponseMessages } from '../../api/types';
 import { _apiManager } from '../../api/APIManager';
+import { exmp } from '../../languageManager';
 
 export class TournamentActionHandler {
     private data: ITournament;
@@ -17,39 +18,27 @@ export class TournamentActionHandler {
     }
     async createTournament(tournamentName: string): Promise<{ success: boolean; data?: ITournament; message: string }> {
         try {
-            // if (localStorage.getItem('tdata') !== null) {
-            //     const existingData = JSON.parse(localStorage.getItem('tdata')!);
-            //     existingData.name = tournamentName;
-            //     return {
-            //         success: true,
-            //         data: existingData,
-            //         message: '✅ Turnuva adı güncellendi!'
-            //     };
-            // }
             const response = await _apiManager.createTournament(tournamentName);
             if (response.success === false) {
+                const messageKey = response.message as TournamentResponseMessages;
+                const translatedMessage = exmp.getLang(`tournament-messages.${messageKey}`);
                 return {
                     success: false,
-                    message: response.message || '❌ Turnuva oluşturulamadı!\n\nLütfen tekrar deneyin.'
+                    message: translatedMessage || response.message || 'Turnuva oluşturulamadı'
                 };
             }
-            const tdata: ITournament = {
-                id: response.data.id,
-                code: response.data.code,
-                name: response.data.name,
-                admin_id: response.data.admin_id,
-                participants: response.data.participants || []
-            };
+            const tdata = this.mapToTournamentData(response.data);
+            const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_CREATED}`);
             return {
                 success: true,
                 data: tdata,
-                message: '✅ Turnuva başarıyla oluşturuldu!'
+                message: successMessage
             };
         } catch (error) {
             console.error('Create tournament error:', error);
             return {
                 success: false,
-                message: '❌ Bağlantı hatası!\n\nİnternet bağlantınızı kontrol edin.'
+                message: exmp.getLang('tournament-messages.ERR_INTERNAL_SERVER')
             };
         }
     }
@@ -58,43 +47,43 @@ export class TournamentActionHandler {
             if (localStorage.getItem('tdata') === null) {
                 const joinResponse = await _apiManager.joinTournament(tournamentId);
                 if (joinResponse.success === false) {
+                    const messageKey = joinResponse.message as TournamentResponseMessages;
+                    const translatedMessage = exmp.getLang(`tournament-messages.${messageKey}`);
                     return {
                         success: false,
-                        message: joinResponse.message || '❌ Turnuvaya katılım başarısız!\n\nLütfen tekrar deneyin.'
+                        message: translatedMessage || joinResponse.message || 'Turnuvaya katılım başarısız'
                     };
                 }
                 const tournamentResponse = await _apiManager.getTournament(tournamentId);
                 if (tournamentResponse.success === false) {
+                    const messageKey = tournamentResponse.message as TournamentResponseMessages;
+                    const translatedMessage = exmp.getLang(`tournament-messages.${messageKey}`);
                     return {
                         success: false,
-                        message: '❌ Turnuva bilgileri alınamadı!\n\nLütfen tekrar deneyin.'
+                        message: translatedMessage || 'Turnuva bilgileri alınamadı'
                     };
                 }
-                const tdata: ITournament = {
-                    id: tournamentResponse.data.id,
-                    code: tournamentResponse.data.code,
-                    name: tournamentResponse.data.name,
-                    admin_id: tournamentResponse.data.admin_id,
-                    participants: tournamentResponse.data.participants
-                };
+                const tdata = this.mapToTournamentData(tournamentResponse.data);
+                tdata.participants = tdata.lobby_members; // Add participants field
+                const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_PARTICIPANT_JOINED}`);
                 return {
                     success: true,
                     data: tdata,
-                    message: '✅ Turnuvaya başarıyla katıldınız!'
+                    message: successMessage
                 };
             } else {
                 const existingData = JSON.parse(localStorage.getItem('tdata')!);
                 return {
                     success: true,
                     data: existingData,
-                    message: '✅ Turnuva sayfasına yönlendiriliyorsunuz...'
+                    message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_RETRIEVED_UUID}`)
                 };
             }
         } catch (error) {
             console.error('Join tournament error:', error);
             return {
                 success: false,
-                message: '❌ Bağlantı hatası!\n\nİnternet bağlantınızı kontrol edin.'
+                message: exmp.getLang('tournament-messages.ERR_INTERNAL_SERVER')
             };
         }
     }
@@ -102,45 +91,45 @@ export class TournamentActionHandler {
     async startTournament(): Promise<{ success: boolean; message: string }> {
         try {        
             const response = await _apiManager.startTournament(this.data.code);
-            console.log('Tournament start response:', response);
             if (response.success === true) {
+                const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_STARTED}`);
                 return {
                     success: true,
-                    message: '🎉 Turnuva başarıyla başlatıldı!\n\nOyuncular artık maçlarına katılabilir.'
+                    message: successMessage
                 };
             } else {
+                const messageKey = response.message as TournamentResponseMessages;
+                const translatedMessage = exmp.getLang(`tournament-messages.${messageKey}`);
                 return {
                     success: false,
-                    message: response.message || '❌ Turnuva başlatılırken hata oluştu!\n\nLütfen tekrar deneyin.'
+                    message: translatedMessage || response.message || 'Turnuva başlatılırken hata oluştu'
                 };
             }
         } catch (error) {
             console.error('Start tournament API error:', error);
             return {
                 success: false,
-                message: '❌ Bağlantı hatası!\n\nİnternet bağlantınızı kontrol edin.'
+                message: exmp.getLang('tournament-messages.ERR_INTERNAL_SERVER')
             };
         }
     }
 
     async refreshTournament(): Promise<{ success: boolean; data?: ITournament; message: string }> {
         try {
-            console.log('ActionHandler refreshTournament called with code:', this.data.code);
-            console.log('Current tournament data:', this.data);
-            
             const response = await _apiManager.getTournament(this.data.code);
-            console.log('API response:', response);
-            
+ 
             if (response.success === false) {
+                const messageKey = response.message as TournamentResponseMessages;
+                const translatedMessage = exmp.getLang(`tournament-messages.${messageKey}`);
                 return {
                     success: false,
-                    message: response.message || '❌ Turnuva verileri alınamadı!'
+                    message: translatedMessage || response.message || 'Turnuva verileri alınamadı'
                 };
             }
             if (!response.data) {
                 return {
                     success: false,
-                    message: '❌ Turnuva verisi bulunamadı!'
+                    message: exmp.getLang('tournament-messages.ERR_TOURNAMENT_NOT_FOUND')
                 };
             }
             const updatedData: ITournament = {
@@ -148,18 +137,20 @@ export class TournamentActionHandler {
                 code: response.data.code || this.data.code,
                 name: response.data.name || this.data.name,
                 admin_id: response.data.admin_id || this.data.admin_id,
+                lobby_members: response.data.participants || response.data.users || [],
                 participants: response.data.participants || response.data.users || []
             };
+            const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_PARTICIPANTS_RETRIEVED}`);
             return {
                 success: true,
                 data: updatedData,
-                message: '✅ Veriler başarıyla güncellendi!'
+                message: successMessage
             };
         } catch (error) {
             console.error('Refresh API error:', error);
             return {
                 success: false,
-                message: '❌ Bağlantı hatası!\n\nİnternet bağlantınızı kontrol edin.'
+                message: exmp.getLang('tournament-messages.ERR_INTERNAL_SERVER')
             };
         }
     }
@@ -167,34 +158,52 @@ export class TournamentActionHandler {
         const isAdmin = this.data.admin_id === localStorage.getItem('uuid');
         try {
             let response;
-            if (isAdmin) {
+            if (isAdmin && this.data.status === 'created') {
                 response = await _apiManager.deleteTournament(this.data.code);
             } else {
                 response = await _apiManager.leaveTournament(this.data.code);
             }
 
             if (response.code === 404) {
-                response.success = true; // accept not found is a success of not existence
+                response.success = true;
             }
 
             if (!response.success) {
+                const messageKey = response.message as TournamentResponseMessages;
+                const translatedMessage = exmp.getLang(`tournament-messages.${messageKey}`);
                 return {
                     success: false,
-                    message: response.message || '❌ Turnuvadan çıkarken hata oluştu!'
+                    message: translatedMessage || response.message || 'Turnuvadan çıkarken hata oluştu'
                 };
             }
 
+            const successMessageKey = isAdmin && this.data.status === 'ongoing' 
+                ? TournamentResponseMessages.SUCCESS_TOURNAMENT_DELETED
+                : TournamentResponseMessages.SUCCESS_PARTICIPANT_LEFT;
+            
+            const successMessage = exmp.getLang(`tournament-messages.${successMessageKey}`);
+
             return {
                 success: response.success,
-                message: response.message || '✅ Turnuvadan başarıyla ayrıldınız!'
+                message: successMessage || response.message || 'İşlem başarıyla tamamlandı'
             };
 
         } catch (error) {
             console.error('Exit action error:', error);
             return {
                 success: false,
-                message: '❌ İşlem sırasında bir hata oluştu!'
+                message: exmp.getLang('tournament-messages.ERR_INTERNAL_SERVER')
             };
         }
+    }
+
+    private mapToTournamentData(data: any): ITournament {
+        return {
+            id: data.id,
+            code: data.code,
+            name: data.name,
+            admin_id: data.admin_id,
+            lobby_members: data.participants || data.users || []
+        };
     }
 }

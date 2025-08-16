@@ -1,7 +1,7 @@
 import { Page } from "../router";
 import { exmp } from "../languageManager";
 
-export class Settingsv3 implements Page{
+export class Settings implements Page{
 	private isOpen = false;
 	private selectedColor = localStorage.getItem('ballColor') || '#3b82f6';
 	private selectedLanguage = localStorage.getItem('language') || 'tr';
@@ -44,7 +44,9 @@ export class Settingsv3 implements Page{
 					<div class="absolute bottom-1/4 left-1/3 w-56 h-56 bg-gradient-to-r from-violet-400/7 to-indigo-500/7 rounded-full blur-3xl animate-pulse delay-2000 opacity-35"></div>
 				</div>
 				<div id="settings_sidebar"
-				class="min-w-[550px] w-full lg:w-2/3 xl:w-1/3 h-full bg-gradient-to-br from-white/95 via-slate-50/90 to-gray-100/95 backdrop-blur-3xl backdrop-saturate-200 backdrop-brightness-110 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.3)] border border-white/40 border-l-white/60 flex flex-col relative overflow-hidden transform -translate-x-full transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
+				class="
+				w-full max-w-lg min-w-[320px] h-full
+				bg-gradient-to-br from-white/95 via-slate-50/90 to-gray-100/95 backdrop-blur-3xl backdrop-saturate-200 backdrop-brightness-110 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.3)] border border-white/40 border-l-white/60 flex flex-col relative overflow-hidden transform -translate-x-full transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
 					<div
 					class = "absolute inset-0 pointer-events-none">
 						<div class="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-transparent via-50% to-purple-500/8"></div>
@@ -248,10 +250,10 @@ export class Settingsv3 implements Page{
 		document.head.appendChild(style);
 	
 		return `
-			<div class="flex-1 overflow-y-auto overflow-x-visible custom-scrollbar">
+			<div class="flex-1 bg-gradient-to-b overflow-y-auto overflow-x-visible custom-scrollbar">
 				<div class="bg-gradient-to-b from-transparent via-slate-50/30 to-transparent backdrop-blur-sm p-8 space-y-8 overflow-visible">
-					${this.createColorSectionV2()}
-					${this.createLanguageSectionV2()}
+				${this.createLanguageSectionV2()}
+				${this.createColorSectionV2()}
 				</div>
 			</div>
 		`;
@@ -259,24 +261,10 @@ export class Settingsv3 implements Page{
 
 	private createColorSectionV2(): string {
 	return `
-		<div id="createColorSectionV2-stop" class="group relative bg-gradient-to-br from-white/95 via-slate-50/90 to-white/95
-			backdrop-blur-3xl rounded-[2rem] p-12 border-2 border-white/50
-			shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.4)]
-			hover:shadow-[0_35px_70px_-12px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.6)]
-			hover:border-white/70 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] 
-			overflow-hidden hover:scale-[1.02] hover:-translate-y-2
-			before:absolute before:inset-0 before:bg-gradient-to-br before:from-blue-500/5 before:via-purple-500/5 before:to-pink-500/5 
-			before:opacity-0 before:transition-opacity before:duration-700 hover:before:opacity-100">
-			<div class="absolute inset-0 pointer-events-none overflow-hidden">
-				<div class="absolute inset-0 bg-gradient-to-br from-blue-500/3 via-purple-500/3 to-pink-500/3 group-hover:from-blue-500/8 group-hover:via-purple-500/8 group-hover:to-pink-500/8 transition-all duration-700"></div>
-				<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-400/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-700"></div>
-				<div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-400/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-700"></div>
-				<div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-				<div class="absolute top-4 right-4 w-3 h-3 bg-blue-400/30 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all duration-700"></div>
-				<div class="absolute bottom-6 left-6 w-2 h-2 bg-purple-400/30 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-all duration-700 delay-200"></div>
-			</div>
-			<div class="flex items-center gap-8 mb-12 relative z-10">
-				<div class="relative w-20 h-20 rounded-3xl overflow-hidden
+		<div id="createColorSectionV2-stop">
+			<div class="flex items-center justify-start
+			gap-4 mb-2 relative z-10">
+				<div class="relative w-16 h-16 rounded-xl overflow-hidden
 					bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600
 					flex items-center justify-center shadow-2xl group-hover:shadow-3xl
 					transform group-hover:scale-110 group-hover:rotate-6
@@ -290,12 +278,13 @@ export class Settingsv3 implements Page{
 							d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
 					</svg>
 				</div>
-				<div class="flex-1">
-					<h3 data-langm-key="settings.ball-color" class="text-4xl font-black text-transparent bg-clip-text 
-						bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800
-						tracking-tight leading-tight group-hover:from-gray-900 
-						group-hover:via-blue-900 group-hover:to-gray-900
-						transition-all duration-700 mb-3">
+				<div class="flex align-items-center justify-center">
+					<h3
+					data-langm-key="settings.ball-color"
+					class="flex justify-center items-center
+					text-3xl font-black text-transparent bg-clip-text 
+					bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800
+					tracking-tight leading-tight ">
 					</h3>
 				</div>
 			</div>
@@ -307,24 +296,11 @@ export class Settingsv3 implements Page{
 
 	private createLanguageSectionV2(): string {
 		return `
-			<div id="createLanguageSectionV2-stop" class="group relative bg-gradient-to-br from-white/95 via-slate-50/90 to-white/95
-				backdrop-blur-3xl rounded-[2rem] p-12 border-2 border-white/50
-				shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.4)]
-				hover:shadow-[0_35px_70px_-12px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.6)]
-				hover:border-white/70 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] 
-				overflow-visible hover:scale-[1.02] hover:-translate-y-2 z-50
-				before:absolute before:inset-0 before:bg-gradient-to-br before:from-green-500/5 before:via-blue-500/5 before:to-purple-500/5 
-				before:opacity-0 before:transition-opacity before:duration-700 hover:before:opacity-100">
-				<div class="absolute inset-0 pointer-events-none overflow-hidden">
-					<div class="absolute inset-0 bg-gradient-to-br from-green-500/3 via-blue-500/3 to-purple-500/3 group-hover:from-green-500/8 group-hover:via-blue-500/8 group-hover:to-purple-500/8 transition-all duration-700"></div>
-					<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-700"></div>
-					<div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-400/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-700"></div>
-					<div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-					<div class="absolute top-4 right-4 w-3 h-3 bg-green-400/30 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all duration-700"></div>
-					<div class="absolute bottom-6 left-6 w-2 h-2 bg-blue-400/30 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-all duration-700 delay-200"></div>
-				</div>
+			<div id="createLanguageSectionV2-stop" class="group relative bg-gradient-to-br from-white/95 via-slate-50/90 to-white/95">
 				<div class="flex items-center gap-8 mb-12 relative z-10">
-					<div class="relative w-20 h-20 rounded-3xl overflow-hidden
+					<div class="relative
+					w-16 h-16
+					rounded-3xl overflow-hidden
 						bg-gradient-to-br from-green-500 via-emerald-600 to-blue-600
 						flex items-center justify-center shadow-2xl group-hover:shadow-3xl
 						transform group-hover:scale-110 group-hover:rotate-6
@@ -339,7 +315,9 @@ export class Settingsv3 implements Page{
 						</svg>
 					</div>
 					<div class="flex-1">
-						<h3 data-langm-key="settings.language-select" class="text-4xl font-black text-transparent bg-clip-text 
+						<h3 data-langm-key="settings.language-select" class="
+						text-3xl
+						font-black text-transparent bg-clip-text 
 							bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800
 							tracking-tight leading-tight group-hover:from-gray-900 
 							group-hover:via-green-900 group-hover:to-gray-900
@@ -353,15 +331,19 @@ export class Settingsv3 implements Page{
 	}
 
 	private createColorGridV2(): string {
-		let gridHTML = `<div id="scolor_section" class="grid grid-cols-4 gap-6 relative z-10 max-w-lg mx-auto">`;
-
+		let gridHTML = `<div id="scolor_section" 
+		class="
+		grid grid-cols-2 gap-5 p-4 
+		sm:grid-cols-3 sm:gap-7 sm:px-6
+		z-10">`;
 		this.colors.forEach((color) => {
 			const isSelected = color === this.selectedColor;
 			gridHTML += `
-				<div class="group/card relative cursor-pointer bg-white/95 backdrop-blur-md rounded-3xl p-4 
-					border-3 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden
+				<div class="
+					group/card relative cursor-pointer bg-white/95 backdrop-blur-md rounded-3xl p-2 
+					border-3 transition-all duraticuon-700 ease-[bic-bezier(0.16,1,0.3,1)] overflow-hidden
 					hover:bg-white hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.35)] 
-					hover:scale-125 hover:-translate-y-4 hover:rotate-2 hover:z-10
+					hover:scale-125 hover:-translate-y-4 hover:rotate-2
 					before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/60 before:to-transparent 
 					before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-700
 					after:absolute after:inset-[-2px] after:bg-gradient-to-br after:from-white/30 after:to-transparent
@@ -379,7 +361,11 @@ export class Settingsv3 implements Page{
 						<div class="absolute bottom-2 right-2 w-1.5 h-1.5 rounded-full opacity-0 group-hover/card:opacity-60 group-hover/card:animate-pulse transition-all duration-1000" style="background-color: ${color}; animation-delay: 900ms;"></div>
 						<div class="absolute top-1/2 left-1/2 w-0.5 h-0.5 rounded-full opacity-0 group-hover/card:opacity-100 group-hover/card:animate-ping transition-all duration-1000" style="background-color: ${color}; animation-delay: 1200ms; transform: translate(-50%, -50%);"></div>
 					</div>
-					<div class="w-16 h-16 rounded-2xl mx-auto relative shadow-2xl group-hover/card:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.35)]
+					<div class="
+						w-[3rem] h-[3rem]
+						sm:w-[3.2rem] sm:h-[3.2rem]
+						md:w-[3.4rem] md:h-[3.4rem]
+						rounded-2xl mx-auto relative shadow-2xl group-hover/card:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.35)]
 						transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] 
 						group-hover/card:scale-125 group-hover/card:rotate-12 border-4 border-white/80
 						before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-white/40 before:to-transparent 
@@ -443,90 +429,75 @@ export class Settingsv3 implements Page{
 		`;
 	}
 
-	private createLanguageDropdownV2(): string {
-		let optionsHTML = '';
-		exmp.getLanguageChoises().forEach((lang) => {
-			optionsHTML += `
-				<button class="w-full p-3 flex items-center gap-3 hover:bg-gray-50/90 hover:backdrop-blur-sm
-					transition-all duration-200 ease-out text-left border-b border-gray-100/60 
-					last:border-b-0 group hover:scale-[1.01] hover:shadow-sm min-h-[48px]
-					${lang === this.selectedLanguage ? 'bg-blue-50/90 border-blue-200/50' : ''}"
-					data-lang="${lang}"
-					type="button"
-				>
-					<div class="text-xl group-hover:scale-110 transition-transform duration-300">${this.langFlags[lang] || "🌐"}</div>
-					<div class="flex-1">
-						<div class="font-bold text-gray-800 text-sm group-hover:text-gray-900">${this.langNames[lang] || lang}</div>
-						<div class="text-xs text-gray-500 font-medium">${lang.toUpperCase()}</div>
-					</div>
-					${lang === this.selectedLanguage ? `
-						<div class="w-6 h-6 rounded-full bg-gradient-to-br from-green-500 to-blue-600 
-							flex items-center justify-center shadow-md">
-							<svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-								<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-							</svg>
-						</div>
-					` : ''}
-				</button>
-			`;
-		});
-		const dropdownHTML = `
-			<div id="dropdownHTML" class="relative z-[100] dropdown-container">
-				<button type="button"
-					class="w-full bg-white/90 backdrop-blur-sm border-2 border-gray-300/80 
-					rounded-3xl p-4 flex items-center justify-between hover:bg-white hover:border-gray-400 
-					hover:shadow-lg hover:scale-[1.02] transition-all duration-300 ease-out
-					cursor-pointer group shadow-md min-h-[56px] relative z-10"
-					id="current-lang-btn"
-				>
-					<div class="flex items-center gap-3">
-						<div class="text-xl group-hover:scale-110 transition-transform duration-300">${this.langFlags[this.selectedLanguage] || "🌐"}</div>
-						<div class="text-left">
-							<div class="font-bold text-gray-800 text-sm">${this.langNames[this.selectedLanguage] || this.selectedLanguage}</div>
-							<div class="text-xs text-gray-500 font-medium">${this.selectedLanguage.toUpperCase()}</div>
-						</div>
-					</div>
-					<svg class="w-5 h-5 text-gray-400 transform transition-all duration-300 group-hover:text-gray-600 group-hover:rotate-180" 
-						fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-					</svg>
-				</button>
-				<div class="absolute top-full left-0 right-0 mt-3 z-[99999]
-					bg-white/95 backdrop-blur-xl border-2 border-gray-300/50 
-					rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.35)] 
-					max-h-48 overflow-hidden hidden opacity-0 transform translate-y-2 scale-95
-					transition-all duration-300 ease-out dropdown-menu"
-					id="dropdown-menu-lang"
-				>
-					${optionsHTML}
-				</div>
-			</div>
-		`;
-	return dropdownHTML;
-	}
+   private createLanguageDropdownV2(): string {
+	   const renderLangOption = (lang: string) => `
+		   <button class="w-full p-3 flex items-center gap-3 hover:bg-gray-50/90 hover:backdrop-blur-sm
+			   transition-all duration-200 ease-out text-left border-b border-gray-100/60 
+			   last:border-b-0 group hover:scale-[1.01] hover:shadow-sm min-h-[48px]
+			   ${lang === this.selectedLanguage ? 'bg-blue-50/90 border-blue-200/50' : ''}"
+			   data-lang="${lang}"
+			   type="button">
+			   <div class="text-xl group-hover:scale-110 transition-transform duration-300">${this.langFlags[lang] || "🌐"}</div>
+			   <div class="flex-1">
+				   <div class="font-bold text-gray-800 text-sm group-hover:text-gray-900">${this.langNames[lang] || lang}</div>
+				   <div class="text-xs text-gray-500 font-medium">${lang.toUpperCase()}</div>
+			   </div>
+			   ${lang === this.selectedLanguage ? `
+				   <div class="w-6 h-6 rounded-full bg-gradient-to-br from-green-500 to-blue-600 
+					   flex items-center justify-center shadow-md">
+					   <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+						   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+					   </svg>
+				   </div>
+			   ` : ''}
+		   </button>
+	   `;
+
+	   const optionsHTML = exmp.getLanguageChoises().map(renderLangOption).join('');
+	   const dropdownHTML = `
+		   <div id="dropdownHTML" class="relative z-[100] dropdown-container">
+			   <button type="button"
+				   class="w-full bg-white/90 backdrop-blur-sm border-2 border-gray-300/80 
+				   rounded-3xl p-4 flex items-center justify-between hover:bg-white hover:border-gray-400 
+				   hover:shadow-lg hover:scale-[1.02] transition-all duration-300 ease-out
+				   cursor-pointer group shadow-md min-h-[56px] relative z-10"
+				   id="current-lang-btn"
+			   >
+				   ${this.updateLanguageDisplay(this.selectedLanguage, this.langFlags, this.langNames)}
+			   </button>
+			   <div class="absolute top-full left-0 right-0 mt-3 z-[99999]
+				   bg-white/95 backdrop-blur-xl border-2 border-gray-300/50 
+				   rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.35)] 
+				   max-h-48 overflow-hidden hidden opacity-0 transform translate-y-2 scale-95
+				   transition-all duration-300 ease-out dropdown-menu"
+				   id="dropdown-menu-lang"
+			   >
+				   ${optionsHTML}
+			   </div>
+		   </div>
+	   `;
+	   return dropdownHTML;
+   }
 	
 	private selectColor(color: string, grid: HTMLElement, colors: string[]): void {
 		this.selectedColor = color;
-		localStorage.setItem('ballColor', color);
+		// localStorage.setItem('ballColor', color);
 
 		grid.querySelectorAll('.group\\/card').forEach((card, index) => {
 		const isSelected = colors[index] === color;
 
-		card.className = `
-			group/card relative cursor-pointer bg-white/95 backdrop-blur-md rounded-3xl p-4 
-			border-3 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden
-			hover:bg-white hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.35)] 
-			hover:scale-125 hover:-translate-y-4 hover:rotate-2 hover:z-10
-			before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/60 before:to-transparent 
-			before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-700
-			after:absolute after:inset-[-2px] after:bg-gradient-to-br after:from-white/30 after:to-transparent
-			after:rounded-3xl after:opacity-0 hover:after:opacity-100 after:transition-opacity after:duration-700 after:-z-10
-			${	isSelected ? 
-				'border-gray-900 bg-white shadow-[0_20px_40px_-8px_rgba(0,0,0,0.3)] scale-110 -translate-y-2 rotate-1 z-10'
-				: 'border-gray-200/60 hover:border-gray-400/80'}`;
-
+		if(isSelected){
+			card.classList.add('border-gray-900', 'bg-white', 'shadow-[0_20px_40px_-8px_rgba(0,0,0,0.3)]', 'scale-110', '-translate-y-2', 'rotate-1', 'z-10');
+			card.classList.remove('border-gray-200/60', 'hover:border-gray-400/80');
+		} else {
+			card.classList.remove('border-gray-900', 'bg-white', 'shadow-[0_20px_40px_-8px_rgba(0,0,0,0.3)]', 'scale-110', '-translate-y-2', 'rotate-1', 'z-10');
+			card.classList.add('border-gray-200/60', 'hover:border-gray-400/80');
+		}
+		
+		// seçimi belli etmek için üzerinede olan sihay nokta
 		const existingCheck = card.querySelector('.animate-pulse');
 		if (existingCheck) existingCheck.remove();
+
 		if (isSelected) card.innerHTML += `${createEnhancedCheckmarkV2()}`;
 		});
 	}
@@ -557,20 +528,44 @@ export class Settingsv3 implements Page{
 		if (arrow) arrow.style.transform = 'rotate(90deg)';
 	}
 
-	private selectLanguage(lang: string, currentBtn: HTMLElement, dropdownMenu: HTMLElement, flags: any, names: any, langs: string[]): void {
-		
-		// animasyonu incele 1 saliselik bir animasyon bence gerek yok- beraber karakr verelim
-		const clickedOption = event?.currentTarget as HTMLElement;
-		if (clickedOption) {
-			clickedOption.style.transform = 'scale(0.98)';
-			setTimeout(() => {
-				clickedOption.style.transform = '';
-			}, 100);
-		}
-		this.selectedLanguage = lang;
-		currentBtn.innerHTML = this.updateLanguageDisplay(lang, flags, names);
-		this.closeDropdown(dropdownMenu, currentBtn);
-	}
+   private selectLanguage(lang: string, currentBtn: HTMLElement, dropdownMenu: HTMLElement, flags: any, names: any, langs: string[]): void {
+	   this.selectedLanguage = lang;
+	   localStorage.setItem('language', lang);
+	   currentBtn.innerHTML = this.updateLanguageDisplay(lang, flags, names);
+	   let optionsHTML = '';
+	   langs.forEach((l) => {
+		   optionsHTML += `
+			   <button class="w-full p-3 flex items-center gap-3 hover:bg-gray-50/90 hover:backdrop-blur-sm
+				   transition-all duration-200 ease-out text-left border-b border-gray-100/60 
+				   last:border-b-0 group hover:scale-[1.01] hover:shadow-sm min-h-[48px]
+				   ${l === lang ? 'bg-blue-50/90 border-blue-200/50' : ''}"
+				   data-lang="${l}"
+				   type="button">
+				   <div class="text-xl group-hover:scale-110 transition-transform duration-300">${flags[l] || "🌐"}</div>
+				   <div class="flex-1">
+					   <div class="font-bold text-gray-800 text-sm group-hover:text-gray-900">${names[l] || l}</div>
+					   <div class="text-xs text-gray-500 font-medium">${l.toUpperCase()}</div>
+				   </div>
+				   ${l === lang ? `
+					   <div class="w-6 h-6 rounded-full bg-gradient-to-br from-green-500 to-blue-600 
+						   flex items-center justify-center shadow-md">
+						   <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+							   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+						   </svg>
+					   </div>
+				   ` : ''}
+			   </button>
+		   `;
+	   });
+	   dropdownMenu.innerHTML = optionsHTML;
+	   dropdownMenu.querySelectorAll('button[data-lang]').forEach((btn) => {
+		   btn.addEventListener('click', () => {
+			   this.tmpLanguage = (btn as HTMLElement).getAttribute('data-lang')!;
+			   this.selectLanguage(this.tmpLanguage, currentBtn, dropdownMenu, flags, names, langs);
+		   });
+	   });
+	   this.closeDropdown(dropdownMenu, currentBtn);
+   }
 
 	private updateLanguageDisplay(lang: string, flags: any, names: any): string {
 		return `

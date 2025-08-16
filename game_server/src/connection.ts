@@ -12,9 +12,7 @@ export class ConnectionHandler {
     private connectedPlayersMap: Map<string, Player> = new Map();
     private io: Server = undefined as any;
 
-    private constructor() {
-        
-    }
+    private constructor() {}
 
     public static getInstance(): ConnectionHandler {
         if (!ConnectionHandler._instance) {
@@ -53,16 +51,14 @@ export class ConnectionHandler {
         }
     
         const response = await apiCall('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined, token);
-        const body = await response.json();
-    
-        if (!response.ok) {
-            return new Error("Token validation error: " + body.error);
+        if (response.statusCode !== 200) {
+            return new Error("Token validation error: " + response.message);
         }
-    
-        const user: any = { uuid: body.data.uuid, username: body.data.username, token: token };
+        
+        const user: any = { uuid: response.data.uuid, username: response.data.username};
         (socket as any).user = user;
-    
-        if (MatchManager.getInstance().connectedPlayers.has(user.username)) {
+
+        if (ConnectionHandler.getInstance().connectedPlayersMap.has(user.username)) {
             return new Error("Existing session found.");
         }
         // note: do not assume player is connected here.
@@ -82,7 +78,7 @@ export class ConnectionHandler {
 
     public handleConnectionRequest(socket: Socket): void {
         const user: any = (socket as any).user;
-        let player: Player = { ...user, socket, socketReady: false };
+        let player: Player = { ...user, socket };
 
         if (!this.acceptConnection(socket, player)) {
             return;
@@ -92,7 +88,7 @@ export class ConnectionHandler {
         socket.on("rejoin", () => {
             console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} 'rejoin' message received.`);
             const game = MatchManager.getInstance().getMatchByPlayer(player.username);
-            if (!game || (game.gameMode !== 'remoteGame' && game.gameMode !== 'tournament') || (game.state !== 'in-progress' && game.state !== 'paused')) {
+            if (!game || (game.gameMode !== 'remoteGame' && game.gameMode !== 'tournament') || game.state !== "playing") {
                 socket.emit("rejoin-response", {status: "rejected"});
                 return;
             }
@@ -115,9 +111,9 @@ export class ConnectionHandler {
         socket.on("reset-match", () => {
             console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} 'reset-match' message received.`);
             const activeMatch = MatchManager.getInstance().getMatchByPlayer(player.username);
-            if (activeMatch) {
-                activeMatch.finishIncompleteMatch();
-                MatchManager.getInstance().clearMatch(activeMatch);
+            if (activeMatch && (activeMatch.gameMode === 'localGame' || activeMatch.gameMode === 'vsAI')) {
+                activeMatch.finalize(activeMatch.gameMode === 'vsAI' ? "Robot" : "Friend");
+                MatchManager.getInstance().clearGame(activeMatch);
             }
         });
 
@@ -125,6 +121,17 @@ export class ConnectionHandler {
             console.log(`[${new Date().toISOString()}] ${player.username.padStart(10)} 'disconnect' message received.`);
             MatchManager.getInstance().handleDisconnect(player);
             ConnectionHandler.getInstance().onDisconnection(player);
+        });
+
+
+        socket.on("pause-resume", (data: { status: string }) => {
+            const match = MatchManager.getInstance().getMatchByPlayer(player.username);
+            if (!match) return;
+
+            if (data.status === "pause" && !match.isPaused)
+                match.pause();
+            else if (data.status === "resume" && match.isPaused)
+                match.resume();
         });
     }
 
@@ -134,9 +141,5 @@ export class ConnectionHandler {
 
     public onDisconnection(player: Player): void {
 		this.connectedPlayersMap.delete(player.username);
-
     }
-
-
-
 }

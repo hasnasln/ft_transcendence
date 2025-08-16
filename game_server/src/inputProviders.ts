@@ -40,10 +40,10 @@ export class RemotePlayerInput implements InputProvider {
 }
 
 export class AIPlayerInput implements InputProvider {
-	private username: string;
+	private readonly username: string;
+	private readonly refreshTime: number = 1500; //ms
 	private lastDecisionTime = 0;
 	private targetY = 0;
-	private refreshTime: number = 1500; //ms
 	public game: Game;
 	public paddle: Paddle;
 
@@ -74,7 +74,7 @@ export class AIPlayerInput implements InputProvider {
 
 		if (now - this.lastDecisionTime >= this.refreshTime) {
 			this.lastDecisionTime = now;
-			this.targetY = predictBallY(ball, groundWidth / 2, groundHeight / 2);
+			this.targetY = predictBallY(ball, groundWidth / 2, groundHeight / 2, this.game.getLeftPaddle() === paddle, this.game.environment);
 		}
 
 		const diff = this.targetY - paddle.position.y;

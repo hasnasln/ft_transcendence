@@ -1,6 +1,6 @@
 import { _apiManager } from '../../api/APIManager';
 import { ITournament } from '../../api/types';
-import { ShowTournament, listPlayers } from './MainRenderer';
+import { ShowTournament } from './MainRenderer';
 import { t_first_section } from './FormComponents';
 
 export class TournamentStateManager {
@@ -17,14 +17,14 @@ export class TournamentStateManager {
     }
 
     async handleRefreshSuccess(updatedData: ITournament): Promise<void> {
-        this.data.participants = updatedData.participants;
-        localStorage.setItem('tdata', JSON.stringify(updatedData));
+        this.data.lobby_members = updatedData.lobby_members;
         const response = await _apiManager.getTournament(this.data.code);
         const tournamentStarted = response.data?.tournament_start || false;
         if (tournamentStarted) {
             this.status = true;
         }
-        this.updateRefreshUI(tournamentStarted);
+        const uid = localStorage.getItem('uuid');
+        this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid));
         await this.delay(500);
         this.completeRefresh(updatedData);
     }
@@ -45,14 +45,14 @@ export class TournamentStateManager {
         this.renderTournamentPage(container, tournamentData);
     }
 
-    async handleStartSuccess(successMessage: string): Promise<void> {
+    async handleStartSuccess(): Promise<void> {
         this.status = true;
         this.loadingManager.removeLoadingOverlay('start');
         await this.delay(2000);
         this.updateUIAfterStart();
     }
 
-    async handleExitSuccess(container: HTMLElement, message: string): Promise<void> {
+    async handleExitSuccess(container: HTMLElement): Promise<void> {
         this.loadingManager.removeLoadingOverlay('exit');
         await this.delay(1500);
         localStorage.removeItem('tdata');
@@ -60,8 +60,8 @@ export class TournamentStateManager {
         t_first_section(container);
     }
 
-    private updateRefreshUI(tournamentStarted: boolean): void {
-        if (tournamentStarted) {
+    public updateRefreshUI(tournamentStarted: boolean, is_players: boolean): void {
+        if (tournamentStarted && is_players) {
             const startButton = document.getElementById('start-button');
             if (startButton) {
                 startButton.style.display = 'none';
@@ -121,17 +121,10 @@ export class TournamentStateManager {
         t_first_section(container);
     }
 
-    renderFallbackData(): void {
-        const playersList = document.getElementById('list-player');
-        if (playersList) {
-            listPlayers(playersList, this.data);
-        }
-    }
-
     updateTournamentInfo(): void {
         const startButton = document.getElementById('start-button');
         const startInfo = document.querySelector('.tournament-start-info');
-        const playerCount = this.data.participants.length;
+        const playerCount = this.data.lobby_members.length;
         const minPlayers = 2;
         const maxPlayers = 10;
         
@@ -174,14 +167,6 @@ export class TournamentStateManager {
 
     private delay(ms: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    getData(): ITournament {
-        return this.data;
-    }
-
-    getStatus(): boolean {
-        return this.status;
     }
 
     updateData(newData: ITournament): void {

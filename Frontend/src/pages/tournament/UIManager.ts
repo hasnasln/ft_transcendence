@@ -1,106 +1,6 @@
 import { TournamentIcons } from './IconsHelper';
 
 export class TournamentUIManager {
-    createSuccessOverlayHTML(key: string, iconType: 'success' | 'create' | 'join'): string {
-        const icon = this.getIconByType(iconType);
-        return `
-            <div class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-                <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 shadow-2xl max-w-md w-full mx-4">
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                            ${icon}
-                        </div>
-                        <h3
-                        data-langm-key="overlays.Tournament.first_page.create.success.title"
-                        class="text-xl font-bold text-white mb-4">İşlem Başarılı!</h3>
-                        <p
-                        data-langm-key=${key}"
-                        class="text-gray-300 text-sm">!_!</p>
-                        <div class="mt-6 flex items-center justify-center">
-                            <div class="w-8 h-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    createCreateSuccessHTML(tournamentData: any): string {
-        return `
-            <div class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-                <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 shadow-2xl max-w-md w-full mx-4">
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                            ${this.getSuccessIcon()}
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-4">Turnuva Oluşturuldu!</h3>
-                        <div class="bg-white/10 rounded-xl p-4 mb-4">
-                            <p class="text-gray-300 text-sm mb-2">Turnuva Adı:</p>
-                            <p class="text-white font-bold text-lg">${tournamentData.name}</p>
-                            <p class="text-gray-300 text-sm mt-3 mb-2">Turnuva Kodu:</p>
-                            <div class="flex items-center justify-center space-x-2">
-                                <p class="text-green-400 font-bold text-xl">${tournamentData.code}</p>
-                                <button onclick="navigator.clipboard.writeText('${tournamentData.code}')" class="p-1 bg-green-500/20 rounded hover:bg-green-500/30 transition-colors" title="Kopyala">
-                                    ${this.getCopyIcon()}
-                                </button>
-                            </div>
-                        </div>
-                        <p class="text-gray-300 text-xs">Bu kodu paylaşarak oyuncuları davet edebilirsiniz</p>
-                        <div class="mt-6 flex items-center justify-center">
-                            <div class="w-8 h-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    createJoinSuccessHTML(): string {
-        return `
-            <div class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-                <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 shadow-2xl max-w-md w-full mx-4">
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                            ${this.getSuccessIcon()}
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-4">Katılım Başarılı!</h3>
-                        <p class="text-gray-300 text-sm">Turnuvaya başarıyla katıldınız</p>
-                        <div class="mt-6 flex items-center justify-center">
-                            <div class="w-8 h-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    createStartSuccessHTML(successMessage: string, playerCount: number): string {
-        const { getTournamentFormat } = this.getTournamentUtils();
-        const format = getTournamentFormat(playerCount);
-        return `
-            <div class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-                <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 shadow-2xl max-w-md w-full mx-4">
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                            ${this.getSuccessIcon()}
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-4">Turnuva Başladı!</h3>
-                        <div class="bg-white/10 rounded-xl p-4 mb-4">
-                            <p class="text-gray-300 text-sm mb-2">Turnuva Formatı:</p>
-                            <p class="text-green-400 font-bold text-lg">${format}</p>
-                            <p class="text-gray-300 text-sm mt-3 mb-2">Katılımcı Sayısı:</p>
-                            <p class="text-white font-bold">${playerCount} Oyuncu</p>
-                        </div>
-                        <p class="text-gray-300 text-xs">${successMessage}</p>
-                        <div class="mt-6 flex items-center justify-center">
-                            <div class="w-8 h-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
     createTournamentStartedInfoHTML(): string {
         return `
             <div class="bg-blue-500/20 border border-blue-500/30 rounded-xl p-4">
@@ -127,19 +27,6 @@ export class TournamentUIManager {
             </div>
         `;
     }
-
-    createDisabledStartButtonHTML(playerCount: number, minPlayers: number, maxPlayers: number): string {
-        const reason = playerCount < minPlayers ? 'Yetersiz Oyuncu' : 'Çok Fazla Oyuncu';
-        return `
-            <div class="flex items-center justify-center space-x-2 opacity-50">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
-                </svg>
-                <span>${reason}</span>
-            </div>
-        `;
-    }
-
     createCannotStartButtonHTML(): string {
         return `
             <div class="flex items-center justify-center space-x-2 opacity-50">
@@ -237,66 +124,11 @@ export class TournamentUIManager {
         return container;
     }
 
-    private getIconByType(iconType: 'success' | 'create' | 'join'): string {
-        switch (iconType) {
-            case 'success':
-                return this.getSuccessIcon();
-            case 'create':
-                return this.getCreateIcon();
-            case 'join':
-                return this.getJoinIcon();
-            default:
-                return this.getSuccessIcon();
-        }
-    }
-
-    private getSuccessIcon(): string {
-        return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
-    }
-
-    private getCreateIcon(): string {
-        return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>`;
-    }
-
-    private getJoinIcon(): string {
-        return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>`;
-    }
-
-    private getCopyIcon(): string {
-        return `<svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>`;
-    }
-
-    createSuccessOverlay(type: 'create' | 'join', tournamentData?: any): HTMLElement {
-        const overlay = document.createElement('div');
-        overlay.id = `${type}-success-overlay`;
-        if (type === 'create' && tournamentData) {
-            overlay.innerHTML = this.createCreateSuccessHTML(tournamentData);
-        } else {
-            overlay.innerHTML = this.createJoinSuccessHTML();
-        }
-        return overlay;
-    }
-
-    createStartSuccessOverlay(successMessage: string, playerCount: number): HTMLElement {
-        const overlay = document.createElement('div');
-        overlay.id = 'start-success-overlay';
-        overlay.innerHTML = this.createStartSuccessHTML(successMessage, playerCount);
-        return overlay;
-    }
-
-    createExitSuccessOverlay(message: string): HTMLElement {
-        const overlay = document.createElement('div');
-        overlay.id = 'exit-success-overlay';
-        overlay.innerHTML = this.createSuccessOverlayHTML(message, 'success');
-        return overlay;
-    }
-
     createTreeModalHTML(treeData: any): string {
         return `
             <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
                 <div class="relative bg-white rounded-lg max-w-6xl max-h-[90vh] overflow-auto p-6">
                     ${this.createTreeModalHeader()}
-                    ${this.createTreeInfoSection(treeData.playerCount)}
                     <div id="tree-container"> <!-- Tournament tree will be rendered here --></div>
                     ${this.createTreeModalFooter()}
                 </div>
@@ -313,6 +145,7 @@ export class TournamentUIManager {
         `;
     }
 
+    // kullandığımız kısmı sildim - bence gerek yok yine de bakalım
     createTreeInfoSection(playerCount: number): string {
         const { getTournamentFormat, getOptimalTournamentSize, calculateByes } = this.getTournamentUtils();
         return `
@@ -372,15 +205,14 @@ export class TournamentUIManager {
         `;
     }
 
-    createTreeErrorHTML(): string {
+    createTreeErrorHTML(message: string): string {
         return `
             <div class="flex flex-col items-center justify-center py-12 text-center">
                 <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
                     <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
                 </div>
-                <h3 class="text-lg font-bold text-gray-800 mb-2">Ağaç Oluşturulamadı</h3>
-                <p class="text-gray-600 text-sm">Turnuva ağacı render edilirken bir hata oluştu.</p>
+                <p class="text-gray-600 text-sm">${message}</p>
                 <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">Sayfayı Yenile</button>
             </div>
         `;

@@ -1,8 +1,9 @@
 import { _apiManager } from '../../api/APIManager';
-import { ITournament } from '../../api/types';
-import { PlayPage } from '../play-page';
+import { ModernOverlay } from '../../components/ModernOverlay';
+import { ITournament, TournamentResponseMessages } from '../../api/types';
 import { gameInstance } from '../play';
 import { Router } from '../../router';
+import { exmp } from '../../languageManager';
 
 export class TournamentGameManager {
     private data: ITournament;
@@ -35,7 +36,7 @@ export class TournamentGameManager {
             await this.initializeGame();
         } catch (error) {
             console.error('Error starting game:', error);
-            this.showGameError('❌ Oyun başlatılırken hata oluştu!\n\nLütfen tekrar deneyin.');
+            this.showGameError(exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_INTERNAL_SERVER}`));
             this.handleGameError();
         }
     }
@@ -53,7 +54,7 @@ export class TournamentGameManager {
         if (!response.data?.tournament_start) {
             return {
                 isValid: false,
-                message: '⚠️ Turnuva durumu değişti! Admin tarafından henüz başlatılmamış.'
+                message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_STARTABLE}`)
             };
         }
         return { isValid: true, message: '' };
@@ -91,11 +92,11 @@ export class TournamentGameManager {
     }
 
     private showValidationError(message: string): void {
-        alert(message);
+        ModernOverlay.show(message, 'error');
     }
 
     private showGameError(message: string): void {
-        alert(message);
+        ModernOverlay.show(message, 'error');
     }
 
     updateData(newData: ITournament, newStatus: boolean): void {

@@ -1,22 +1,11 @@
 import { Game, GameMode } from "./game";
 import { InputProvider } from "./inputProviders";
 import { Player } from "./matchManager";
+import {DEFAULT_GAME_ENTITY_CONFIG, GameEnvironment} from "./gameEntity";
 
-/**
- * Fluent builder for constructing fully-configured `Game` instances.
- *
- * Example:
- *   const game = new GameBuilder()
- *                 .withRoomId("room_alice_bob")
- *                 .withPlayers(alice, bob)
- *                 .withGameMode("remoteGame")
- *                 .withTournament("ABC123", 2, false)
- *                 .build();
- */
 export class GameBuilder {
     private _roomId!: string;
-    private _player1!: Player;
-    private _player2!: Player;
+    private _players!: Player[];
     private _gameMode?: GameMode;
     private _tournament?: { code: string; roundNo: number; finalMatch: boolean };
     private _leftInput?: (g: Game) => InputProvider;
@@ -27,9 +16,8 @@ export class GameBuilder {
         return this;
     }
 
-    withPlayers(player1: Player, player2: Player): this {
-        this._player1 = player1;
-        this._player2 = player2;
+    withPlayers(...players: Player[]): this {
+        this._players = players;
         return this;
     }
 
@@ -57,8 +45,8 @@ export class GameBuilder {
         if (!this._roomId) {
             throw new Error("GameBuilder: roomId must be specified.");
         }
-        if (!this._player1 || !this._player2) {
-            throw new Error("GameBuilder: both players must be specified.");
+        if (!this._players || this._players.length === 0) {
+            throw new Error("GameBuilder: players must be specified.");
         }
         if (!this._gameMode) {
             throw new Error("GameBuilder: game mode must be specified.");
@@ -67,7 +55,7 @@ export class GameBuilder {
             throw new Error("GameBuilder: both input providers must be specified.");
         }
 
-        const game = new Game(this._roomId, this._player1, this._player2, this._gameMode);
+        const game = new Game(this._roomId, this._players, this._gameMode, new GameEnvironment(DEFAULT_GAME_ENTITY_CONFIG));
 
         if (this._tournament) {
             game.tournament = this._tournament;

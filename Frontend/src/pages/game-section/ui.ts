@@ -1,12 +1,14 @@
-import { gameInstance } from "./../play";
+import { gameInstance } from "../play";
 import { GameInfo, MatchPlayers } from "./network";
 import { Router } from "../../router";
 import { moveButton } from "../../components/mov-button";
-import { Mesh } from "@babylonjs/core/Meshes/mesh";
-import { Engine } from "@babylonjs/core/Engines/engine";
-import { Scene } from "@babylonjs/core/scene";
-import { BallController } from "./ball"; import { createPaddles, createGround, createWalls, createScene } from "../game-section/gameScene";
-import { CameraController } from "../game-section/camera";
+
+import { BallController } from "./ball";
+
+import { BabylonJsWrapper } from "./3d";
+import { createPaddles, createGround, createWalls, createScene } from "./gameScene";
+import { CameraController } from "./camera";
+const B = BabylonJsWrapper.getInstance();
 
 export class GameUI {
 	public startButton: HTMLElement | null = null;
@@ -17,18 +19,22 @@ export class GameUI {
 	public roundNoTable: HTMLElement | null = null;
 	public tournamentIDTable: HTMLElement | null = null;
 	public endMsg: HTMLElement | null = null;
-	public newmatchButton: HTMLElement | null = null;
+	public newMatchButton: HTMLElement | null = null;
 	public turnToHomePage: HTMLElement | null = null;
 	public info: HTMLElement | null = null;
+	public resumeButton: HTMLElement | null = null;
 	public canvas: HTMLCanvasElement | null = null;
 
+	public progressContainer: HTMLElement | null = null;
+	public progressBar: HTMLElement | null = null;
+
 	public groundSize: { width: number, height: number } | null = null;
-	public ground: Mesh | null = null;
-	public paddle1: Mesh | null = null;
-	public paddle2: Mesh | null = null;
+	public ground: any | null = null;
+	public paddle1: any | null = null;
+	public paddle2: any | null = null;
 	public ball: BallController | null = null;
-	public engine: Engine | undefined;
-	public scene: Scene | undefined;
+	public engine: any | undefined;
+	public scene: any | undefined;
 
 	public cacheDOMElements(): void {
 		this.startButton = document.getElementById("ready-button");
@@ -39,9 +45,27 @@ export class GameUI {
 		this.roundNoTable = document.getElementById("roundNo");
 		this.tournamentIDTable = document.getElementById("tournamentCode");
 		this.endMsg = document.getElementById("end-message");
-		this.newmatchButton = document.getElementById("newmatch-button");
+		this.newMatchButton = document.getElementById("newmatch-button");
 		this.turnToHomePage = document.getElementById("turnHomePage-button");
 		this.info = document.getElementById("info");
+		this.progressContainer = document.getElementById("progress-container");
+		this.progressBar = document.getElementById("progress-bar");
+		this.resumeButton = document.getElementById("resume-button");
+	}
+
+	public finalizeUI(): void {
+		[
+			this.startButton, this.scoreBoard, this.roundDiv, this.tournamentIdDiv,
+			this.scoreTable, this.roundNoTable,
+			this.endMsg, this.newMatchButton, this.turnToHomePage, this.info,
+			this.progressContainer, this.resumeButton
+		].filter(el => el != null)
+		.forEach(el => this.hide(el));
+		this.engine?.clear(new B.Color4(0, 0, 0, 0), true, true);
+		this.scene?.dispose();
+		this.engine?.dispose();
+		this.scene = undefined;
+		this.engine = undefined;
 	}
 
 	public resetCache(): void {
@@ -53,7 +77,7 @@ export class GameUI {
 		this.roundNoTable = null;
 		this.tournamentIDTable = null;
 		this.endMsg = null;
-		this.newmatchButton = null;
+		this.newMatchButton = null;
 		this.turnToHomePage = null;
 		this.info = null;
 
@@ -66,24 +90,40 @@ export class GameUI {
 		this.ball = null;
 	}
 
+	public showProgressBar(): void {
+		this.progressContainer!.classList.remove("hidden");
+	}
+
+	public hideProgressBar(): void {
+		this.progressContainer!.classList.add("hidden");
+	}
+
+	public updateProgressBar(percentage: number, duration: number): void {
+		if (this.progressBar) {
+			percentage = Math.max(0, Math.min(100, percentage));
+			this.progressBar.style.transitionDuration = `${duration}ms`;
+			this.progressBar.style.width = `${percentage}%`;
+		}
+	}
+
 	public onMenuHidden(): void {
-		document.getElementById("menu")!.classList.add("hidden");
+		document.getElementById("menu")?.classList.add("hidden");
 	}
 
 	public onDifficultyShown(): void {
-		document.getElementById("difficulty")!.classList.remove("hidden");
+		document.getElementById("difficulty")?.classList.remove("hidden");
 	}
 
 	public onDifficultyHidden(): void {
-		document.getElementById("difficulty")!.classList.add("hidden");
+		document.getElementById("difficulty")?.classList.add("hidden");
 	}
 
 	public onStartButtonShown(): void {
-		this.startButton!.classList.remove("hidden");
+		this.startButton?.classList.remove("hidden");
 	}
 
 	public onStartButtonHidden(): void {
-		this.startButton!.classList.add("hidden");
+		this.startButton?.classList.add("hidden");
 	}
 
 	public onInfoShown(message: string): void {
@@ -134,7 +174,6 @@ export class GameUI {
 			this.onInfoShown(`${rival} ile eşleştin`);
 		}
 		this.startButton!.innerHTML = `${rival} maçını oyna !`;
-		setTimeout(() => this.startButton?.classList.remove("hidden"), 500);
 	}
 
 	public async setupScene(): Promise<void> {
@@ -155,6 +194,8 @@ export class GameUI {
 		createWalls(this.scene, gameInstance.gameInfo!);
 		this.canvas!.focus();
 		gameInstance.gameStatus.currentGameStarted = true;
+		const glow = new (BabylonJsWrapper.getInstance().GlowLayer)("glow", this.scene);
+		glow.intensity = 0.7;
 	}
 
 	public isSceneReady(): boolean {
@@ -243,7 +284,7 @@ export function showSetToast(gameInfo: GameInfo, message: string): Promise<void>
 		toast.textContent = message;
 		toast.classList.remove("hidden");
 
-		setTimeout(() => {
+		gameInstance.runAfter(() => {
 			toast.classList.add("hidden");
 			resolve();
 		}, 3000);
@@ -257,12 +298,12 @@ export async function startNextSet() {
 
 export function showEndMessage() {
 	if (!gameInstance.gameInfo) return;
-	let winnerName = gameInstance.gameInfo.state?.matchWinner === 'leftPlayer' ? gameInstance.gameInfo.setState?.usernames.left : gameInstance.gameInfo.setState?.usernames.right;
+	let winnerName = gameInstance.gameInfo.gameEndInfo?.matchWinner === 'leftPlayer' ? gameInstance.gameInfo.setState?.usernames.left : gameInstance.gameInfo.setState?.usernames.right;
 	gameInstance.uiManager.endMsg!.textContent = `${winnerName} maçı kazandı !`;
 	if (gameInstance.gameInfo.mode === 'tournament' && gameInstance.gameStatus.finalMatch == true)
 		gameInstance.uiManager.endMsg!.textContent = `${winnerName} ${gameInstance.gameStatus.tournamentCode} turnuvasını kazandı !   Tebrikler !`;
 
-	if (gameInstance.gameInfo.state?.matchDisconnection) {
+	if (gameInstance.gameInfo.gameEndInfo?.endReason === 'disconnection') {
 		if (gameInstance.gameInfo.mode === 'localGame' || gameInstance.gameInfo.mode === 'vsAI')
 			gameInstance.uiManager.endMsg!.textContent = `Bağlantısı kesildi. Maç bitti !`;
 		if (gameInstance.gameInfo.mode === 'remoteGame' || gameInstance.gameInfo.mode === 'tournament')
@@ -271,17 +312,17 @@ export function showEndMessage() {
 			gameInstance.uiManager.endMsg!.textContent = `Rakibin bağlantısı kesildi. ${winnerName} ${gameInstance.gameStatus.tournamentCode} turnuvasını kazandı !   Tebrikler !`;
 	}
 
-	setTimeout(() => {
+	gameInstance.runAfter(() => {
 		gameInstance.uiManager.endMsg!.classList.remove("hidden");
 		if (gameInstance.gameInfo!.mode === 'tournament') {
 			gameInstance.uiManager.turnToHomePage!.textContent = "Turnuva sayfasına Dön";
 			gameInstance.uiManager.turnToHomePage!.classList.remove("hidden");
 		} else {
-			if (gameInstance.uiManager.startButton && !gameInstance.gameInfo?.state?.matchDisconnection) {
+			if (gameInstance.uiManager.startButton && gameInstance.gameInfo?.gameEndInfo?.endReason !== 'disconnection' ) {
 				gameInstance.uiManager.startButton.textContent = "Aynı Maçı Tekrar Oyna";
 				gameInstance.uiManager.startButton.classList.remove("hidden");
 			}
-			gameInstance.uiManager.newmatchButton!.classList.remove("hidden");
+			gameInstance.uiManager.newMatchButton!.classList.remove("hidden");
 			gameInstance.uiManager.turnToHomePage!.classList.remove("hidden");
 		}
 	}, 500);

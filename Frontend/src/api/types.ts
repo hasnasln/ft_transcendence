@@ -1,161 +1,106 @@
-//#region  LOGIN
-
-export interface ILoginRequest {
-	username: string;
-	password: string;
+export enum TournamentResponseMessages {
+    ERR_INVALID_TOKEN = "ERR_INVALID_TOKEN",
+    ERR_INTERNAL_SERVER = "ERR_INTERNAL_SERVER",
+    ERR_TOURNAMENT_NAME_REQUIRED = "ERR_TOURNAMENT_NAME_REQUIRED",
+    ERR_TOURNAMENT_NAME_EMPTY = "ERR_TOURNAMENT_NAME_EMPTY",
+    ERR_TOURNAMENT_NAME_INVALID_CHARS = "ERR_TOURNAMENT_NAME_INVALID_CHARS",
+    ERR_TOURNAMENT_NAME_EXISTS = "ERR_TOURNAMENT_NAME_EXISTS",
+    ERR_PARTICIPANT_ALREADY_IN_TOURNAMENT = "ERR_PARTICIPANT_ALREADY_IN_TOURNAMENT",
+    ERR_TOURNAMENT_NAME_TOO_LONG = "ERR_TOURNAMENT_NAME_TOO_LONG",
+    SUCCESS_TOURNAMENT_CREATED = "SUCCESS_TOURNAMENT_CREATED",
+    ERR_MAX_10_PARTICIPANTS = "ERR_MAX_10_PARTICIPANTS",
+    ERR_TOURNAMENT_NOT_JOINABLE = "ERR_TOURNAMENT_NOT_JOINABLE",
+    ERR_PARTICIPANT_ALREADY_JOINED = "ERR_PARTICIPANT_ALREADY_JOINED",
+    ERR_TOURNAMENT_NOT_FOUND = "ERR_TOURNAMENT_NOT_FOUND",
+    ERR_PARTICIPANT_NOT_FOUND = "ERR_PARTICIPANT_NOT_FOUND",
+    ERR_ADMIN_CANNOT_LEAVE = "ERR_ADMIN_CANNOT_LEAVE",
+    ERR_NO_ONGOING_ROUNDS = "ERR_NO_ONGOING_ROUNDS",
+    ERR_NO_COMPLETED_ROUNDS = "ERR_NO_COMPLETED_ROUNDS",
+    ERR_TOURNAMENT_NOT_DELETABLE = "ERR_TOURNAMENT_NOT_DELETABLE",
+    ERR_ONLY_ADMIN_CAN_DELETE = "ERR_ONLY_ADMIN_CAN_DELETE",
+    ERR_TOURNAMENT_NOT_FOUND_UUID = "ERR_TOURNAMENT_NOT_FOUND_UUID",
+    ERR_ONLY_ADMIN_CAN_START = "ERR_ONLY_ADMIN_CAN_START",
+    ERR_TOURNAMENT_NOT_STARTABLE = "ERR_TOURNAMENT_NOT_STARTABLE",
+    ERR_NOT_ENOUGH_PARTICIPANTS = "ERR_NOT_ENOUGH_PARTICIPANTS",
+    ERR_MATCH_NOT_JOINABLE = "ERR_MATCH_NOT_JOINABLE",
+    ERR_PARTICIPANT_DISCONNECTED = "ERR_PARTICIPANT_DISCONNECTED",
+    SUCCESS_WINNER_ADDED = "SUCCESS_WINNER_ADDED",
+    SUCCESS_TOURNAMENT_COMPLETED = "SUCCESS_TOURNAMENT_COMPLETED",
+    SUCCESS_NEXT_ROUND_STARTED = "SUCCESS_NEXT_ROUND_STARTED",
+    ERR_TOURNAMENT_NOT_MATCH_JOINABLE = "ERR_TOURNAMENT_NOT_MATCH_JOINABLE",
+    ERR_ROUND_NOT_FOUND = "ERR_ROUND_NOT_FOUND",
+    ERR_ROUND_COMPLETED = "ERR_ROUND_COMPLETED",
+    ERR_MATCH_STATE_NOT_JOINABLE = "ERR_MATCH_STATE_NOT_JOINABLE",
+    ERR_MATCH_STATE_NOT_LEAVABLE = "ERR_MATCH_STATE_NOT_LEAVABLE",
+    ERR_PARTICIPANT_NOT_IN_TOURNAMENT = "ERR_PARTICIPANT_NOT_IN_TOURNAMENT",
+    ERR_PARTICIPANT_ALREADY_IN_MATCH = "ERR_PARTICIPANT_ALREADY_IN_MATCH",
+    ERR_PARTICIPANT_ALREADY_DISCONNECTED = "ERR_PARTICIPANT_ALREADY_DISCONNECTED",
+    SUCCESS_PARTICIPANT_JOINED = "SUCCESS_PARTICIPANT_JOINED",
+    SUCCESS_PARTICIPANT_LEFT = "SUCCESS_PARTICIPANT_LEFT",
+    SUCCESS_TOURNAMENT_DELETED = "SUCCESS_TOURNAMENT_DELETED",
+    SUCCESS_PARTICIPANTS_RETRIEVED = "SUCCESS_PARTICIPANTS_RETRIEVED",
+    SUCCESS_TOURNAMENT_RETRIEVED_UUID = "SUCCESS_TOURNAMENT_RETRIEVED_UUID",
+    SUCCESS_TOURNAMENT_STARTED = "SUCCESS_TOURNAMENT_STARTED",
+    SUCCESS_PARTICIPANT_JOINED_MATCH = "SUCCESS_PARTICIPANT_JOINED_MATCH",
+    SUCCESS_PARTICIPANT_LEAVED_MATCH = "SUCCESS_PARTICIPANT_LEAVED_MATCH",
+    ERR_PARTICIPANT_NOT_FOUND_ROUND = "ERR_PARTICIPANT_NOT_FOUND_ROUND",
+    ERR_TOURNAMENT_NOT_ADD_WINNERS = "ERR_TOURNAMENT_NOT_ADD_WINNERS",
+    ERR_NO_ROUNDS_FOUND = "ERR_NO_ROUNDS_FOUND",
+    ERR_ROUND_NUMBER_MISMATCH = "ERR_ROUND_NUMBER_MISMATCH",
+    ERR_WINNER_NOT_IN_MATCHES = "ERR_WINNER_NOT_IN_MATCHES",
+    ERR_RIVAL_ALREADY_WON = "ERR_RIVAL_ALREADY_WON",
+    ERR_WINNER_ALREADY_ADDED = "ERR_WINNER_ALREADY_ADDED",
 }
 
-export interface ILoginResponse {
-	token: string;
-	user: IUser;
+export enum AuthResponseMessages {
+    AUTH_HEADER_MISSING_OR_INVALID = "AUTH_HEADER_MISSING_OR_INVALID",
+    TOKEN_MISSING = "TOKEN_MISSING",
+    INVALID_TOKEN = "INVALID_TOKEN",
+    TOKEN_VALID = "TOKEN_VALID",
+
+    EMAIL_AND_PASSWORD_REQUIRED = "EMAIL_AND_PASSWORD_REQUIRED",
+    EMAIL_LENGTH_INVALID = "EMAIL_LENGTH_INVALID",
+    INVALID_EMAIL_FORMAT = "INVALID_EMAIL_FORMAT",
+    INVALID_EMAIL = "INVALID_EMAIL",
+    INVALID_PASSWORD = "INVALID_PASSWORD",
+    LOGIN_SUCCESS = "LOGIN_SUCCESS",
+
+    REGISTRATION_FIELDS_REQUIRED = "REGISTRATION_FIELDS_REQUIRED",
+    USERNAME_NOT_ALPHANUMERIC = "USERNAME_NOT_ALPHANUMERIC",
+    USERNAME_LENGTH_INVALID = "USERNAME_LENGTH_INVALID",
+    PASSWORD_LENGTH_INVALID = "PASSWORD_LENGTH_INVALID",
+    USERNAME_EXISTS = "USERNAME_EXISTS",
+    EMAIL_EXISTS = "EMAIL_EXISTS",
+    USER_REGISTERED = "USER_REGISTERED",
+
+    USER_NOT_FOUND = "USER_NOT_FOUND",
+    EMAIL_ALREADY_IN_USE = "EMAIL_ALREADY_IN_USE",
+    USER_UPDATED = "USER_UPDATED",
+    NO_CHANGES_MADE = "NO_CHANGES_MADE",
 }
 
-//#endregion
-
-//#region  REGISTER
-
-export interface IRegisterRequest {
-	name: string;
-	surname: string;
-	username: string;
-	email: string;
-	password: string;
-}
-/*
-!burada kayıt olan kişi girişe mi yönlendirilecek yoksa içeri mi alınacak ?
-? içeri alınacaksa token ve user bilgisi dönecek
-*/
-export interface IRegisterResponse {
-	token: string;
-	user: IUser;
-}
-
-//#endregion
-
-//#region USER
 export interface IUser {
 	id: number;
 	username: string;
 	name: string;
 	surname: string;
 	email: string;
-	language: string;		// kayıtlı dil
-	avatar: string;			// avatar url
+	language: string;
+	avatar: string;
 }
 
-export interface IUserSettings {
-	ball_color: string;				// top rengi
-	background_color: string;		// arka plan rengi
-	fisrt_player_color: string;		// 1. oyuncu rengi
-	second_player_color: string;	// 2. oyuncu rengi
-	language: string;				// dil
-}
-//#endregion
-
-//#region SETTINGS SECTİON
-
-export interface ISettingsRequest {
-	token: string;
-}
-
-export interface ISettingsResponse {
-	user_settings: IUserSettings;
-}
-
-export interface ISettingsUpdateRequest {
-	token: string;
-	user_settings: IUserSettings;
-}
-
-//#endregion
-
-//#region PROFILE SETTINGS SECTION
-export interface IProfileSettingsRequest {
-	token: string;
-}
-
-export interface IProfileSettingsResponse {
-	user: IUser;
-}
-
-/*
-! burada update ederken fornttan girilenleri girildiği şekilde girilmeyenleri eski hakiyle günceleyeceğim,
-! farklı olanları update eder geçeriz
-*/
-export interface IProfileSettingsUpdateRequest {
-	token: string;
-	user: IUser;
-}
-//#endregion
-
-//#region TOURNAMENT SECTION
-
-
-
-/*
-! burada token dan userı direk çeker kullanırız
-*/
-export interface ITournamentCreateRequest {
-	name: string; // Tournament name
-}
-
-export interface ITournamentCreateResponse {
-	tournament: ITournament;
-}
-
-export interface IJoinTournamentRequest {
-	tournament_id: string; // Tournament ID
-}
-
-export interface IJoinTournamentResponse {
-	tournament: ITournament;
-}
-
-export interface ILeaveTournamentRequest {
-	tournament_id: string; // Tournament ID
-}
-
-export interface ILeaveTournamentResponse {
-}
-
-export interface ITournamentListRequest {
-	token: string;
-}
-
-export interface ITournamentPlayerListResponse {
-	tournament_id: string; // Tournament ID
-	players: IUser[]; // Players in the tournament
-}
-
-/*
-! turnuva kurucusu Başlat a tıkladığında içerideki oyuncuların eşleştirilmesi yapılacak
-! ve bana tüm eşleştirme dönecek
-! 
-*/
-export interface ITournamentStartRequest {
-	tournament_id: string; // Tournament ID
-}
-
-//#endregion
-
-//#region LOGEOUT
-
-export interface ILogoutRequest {
-	token: string;
-}
-//#endregion
-
-//! token hederda olacğı için istek içerisinden tokenlar silinecek
-
-interface ITournamentUser {
-	user_id: string;
+export interface ITournamentUser {
+	uuid: string;
 	username: string;
 }
 
 export interface ITournament{
 	id: number;
-	code: string; // Tournament code
-	name: string; // Tournament name
-	admin_id: string; // Admin user ID
-	participants: ITournamentUser[]; // Users in the tournament
+	code: string;
+	name: string;
+	admin_id: string;
+	lobby_members: ITournamentUser[];
+	status?: string;
+	participants?: ITournamentUser[];
+    tournament_start?:{}
 }

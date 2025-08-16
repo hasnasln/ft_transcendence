@@ -1,5 +1,3 @@
-import { Button } from "@babylonjs/gui";
-
 const en = {
 	"singin": {
 	  "register-b": "Register",
@@ -174,7 +172,7 @@ const en = {
 	  "play": "Play"
 	},
 	"game": {
-	  "strat": "__Start Game",
+	  "strat": "Start Game",
 	  "continue": "Continue Game",
 	  "new": "Start New Game",
 	  "goHome": "Return Home"
@@ -184,17 +182,17 @@ const en = {
 		"title": "Pong Arena",
 		"subTitle": "Select Game Mode",
 		"Button": {
-		  "AI": "_Play vs AI",
-		  "Local": "_Local Play",
-		  "Online": "_Online Play"
+		  "AI": "Play vs AI",
+		  "Local": "Local Play",
+		  "Online": "Online Play"
 		}
 	  },
 	  "Difficulty": {
 		"title": "Select Difficulty",
 		"Button": {
-		  "easy": "_Easy",
-		  "medium": "_Medium",
-		  "hard": "_Hard"
+		  "easy": "Easy",
+		  "medium": "Medium",
+		  "hard": "Hard"
 		}
 	  }
 	},
@@ -218,6 +216,82 @@ const en = {
 		"update-error": "Error during update!",
 		"password-update-error": "Error during password update!"
 	  }
+	},
+		"auth-messages": {
+		"AUTH_HEADER_MISSING_OR_INVALID": "Authorization header missing or invalid",
+		"TOKEN_MISSING": "Token missing",
+		"INVALID_TOKEN": "Invalid token",
+		"TOKEN_VALID": "Token valid",
+		"EMAIL_AND_PASSWORD_REQUIRED": "Email and password required",
+		"EMAIL_LENGTH_INVALID": "Email length invalid",
+		"INVALID_EMAIL_FORMAT": "Invalid email format",
+		"INVALID_EMAIL": "Invalid email",
+		"INVALID_PASSWORD": "Invalid password",
+		"LOGIN_SUCCESS": "Login successful",
+		"REGISTRATION_FIELDS_REQUIRED": "Registration fields required",
+		"USERNAME_NOT_ALPHANUMERIC": "Username must contain only letters and numbers",
+		"USERNAME_LENGTH_INVALID": "Username length invalid",
+		"PASSWORD_LENGTH_INVALID": "Password length invalid",
+		"USERNAME_EXISTS": "This username already exists",
+		"EMAIL_EXISTS": "This email address already exists",
+		"USER_REGISTERED": "User registered successfully",
+		"USER_NOT_FOUND": "User not found",
+		"EMAIL_ALREADY_IN_USE": "Email address already in use",
+		"USER_UPDATED": "User updated",
+		"NO_CHANGES_MADE": "No changes made"
+	},
+	"tournament-messages": {
+		"ERR_INVALID_TOKEN": "Invalid or expired authentication token",
+		"ERR_INTERNAL_SERVER": "Internal server error during token validation",
+		"ERR_TOURNAMENT_NAME_REQUIRED": "Tournament name field is missing in the request",
+		"ERR_TOURNAMENT_NAME_EMPTY": "Tournament name cannot be empty or contain only whitespace",
+		"ERR_TOURNAMENT_NAME_INVALID_CHARS": "Tournament name can only contain letters and numbers",
+		"ERR_TOURNAMENT_NAME_EXISTS": "Tournament name already exists in the system",
+		"ERR_PARTICIPANT_ALREADY_IN_TOURNAMENT": "Participant is already in another tournament",
+		"ERR_TOURNAMENT_NAME_TOO_LONG": "Tournament name exceeds the maximum length of 20 characters",
+		"SUCCESS_TOURNAMENT_CREATED": "Tournament created successfully",
+		"ERR_MAX_10_PARTICIPANTS": "Tournament cannot have more than 10 participants",
+		"ERR_TOURNAMENT_NOT_JOINABLE": "Tournament is not in a state to join",
+		"ERR_PARTICIPANT_ALREADY_JOINED": "Participant already joined a tournament",
+		"ERR_TOURNAMENT_NOT_FOUND": "Tournament not found",
+		"ERR_PARTICIPANT_NOT_FOUND": "Participant isn't found in the tournament",
+		"ERR_ADMIN_CANNOT_LEAVE": "Tournament admin cannot leave the tournament",
+		"ERR_NO_ONGOING_ROUNDS": "No ongoing rounds found in the tournament",
+		"ERR_NO_COMPLETED_ROUNDS": "No completed rounds found in the tournament",
+		"ERR_TOURNAMENT_NOT_DELETABLE": "Tournament is not in a state to be deleted",
+		"ERR_ONLY_ADMIN_CAN_DELETE": "Only the tournament admin can delete the tournament",
+		"ERR_TOURNAMENT_NOT_FOUND_UUID": "Tournament isn't found for the given UUID",
+		"ERR_ONLY_ADMIN_CAN_START": "Only the tournament admin can start the tournament",
+		"ERR_TOURNAMENT_NOT_STARTABLE": "Tournament is not in a state to be started",
+		"ERR_NOT_ENOUGH_PARTICIPANTS": "Not enough participants to start the tournament",
+		"ERR_MATCH_NOT_JOINABLE": "Match status for a participant is not joinable",
+		"ERR_PARTICIPANT_DISCONNECTED": "Participant is disconnected and cannot be a winner",
+		"SUCCESS_WINNER_ADDED": "Winner added successfully",
+		"SUCCESS_TOURNAMENT_COMPLETED": "Tournament completed successfully",
+		"SUCCESS_NEXT_ROUND_STARTED": "Winner added and the next round started successfully",
+		"ERR_TOURNAMENT_NOT_MATCH_JOINABLE": "Tournament is not in a state to join matches",
+		"ERR_ROUND_NOT_FOUND": "Round isn't found in a tournament",
+		"ERR_ROUND_COMPLETED": "Round is already completed",
+		"ERR_MATCH_STATE_NOT_JOINABLE": "Match for a participant is not in a state to join",
+		"ERR_MATCH_STATE_NOT_LEAVABLE": "Match for a participant is not in a state to leave",
+		"ERR_PARTICIPANT_NOT_IN_TOURNAMENT": "Participant is not in the tournament",
+		"ERR_PARTICIPANT_ALREADY_IN_MATCH": "Participant is already joined in the match",
+		"ERR_PARTICIPANT_ALREADY_DISCONNECTED": "Participant is already disconnected",
+		"SUCCESS_PARTICIPANT_JOINED": "Participant joined tournament successfully",
+		"SUCCESS_PARTICIPANT_LEFT": "Participant left tournament successfully",
+		"SUCCESS_TOURNAMENT_DELETED": "Tournament deleted successfully",
+		"SUCCESS_PARTICIPANTS_RETRIEVED": "Participants retrieved successfully",
+		"SUCCESS_TOURNAMENT_RETRIEVED_UUID": "Tournament for UUID retrieved successfully",
+		"SUCCESS_TOURNAMENT_STARTED": "Tournament started successfully",
+		"SUCCESS_PARTICIPANT_JOINED_MATCH": "Participant joined the match successfully",
+		"SUCCESS_PARTICIPANT_LEAVED_MATCH": "Participant leaved the match successfully",
+		"ERR_PARTICIPANT_NOT_FOUND_ROUND": "Participant isn't found in any match of round",
+		"ERR_TOURNAMENT_NOT_ADD_WINNERS": "Tournament is not in a state to add winners",
+		"ERR_NO_ROUNDS_FOUND": "No rounds found in the tournament",
+		"ERR_ROUND_NUMBER_MISMATCH": "Round number does not match the current active round",
+		"ERR_WINNER_NOT_IN_MATCHES": "Winner is not part of the current matches",
+		"ERR_RIVAL_ALREADY_WON": "Rival participant has already won in this round",
+		"ERR_WINNER_ALREADY_ADDED": "Winner has already been added for this round"
 	}
   }
   
@@ -352,7 +426,7 @@ const tr  = {
 			'Creater-description': "Turnuvayı organize eden kişi",
 			'ActivePlayer': "Aktif Oyuncu",
 			'ActivePlayer-description': "Aktif katılımcı sayısı ve kapasite",
-			'Status': "Statu",
+			'Status': "Durum",
 			'Status-description' : "Turnuva mevcut durumu",
 		},
 		"AdminPanel":{
@@ -397,7 +471,7 @@ const tr  = {
 		"play": "Oyna"
 	},
 	"game":{
-		"strat": "__Oyunu Başlat",
+		"strat": "Oyunu Başlat",
 		"continue": "Oyuna Devam Et",
 		"new": "Yeni Oyun Başlat",
 		"goHome": "Ana Sayfaya Dön"
@@ -407,17 +481,18 @@ const tr  = {
 			"title": "Pong Arena",
 			"subTitle" : "Oyun Modunu Seçin",
 			"Button": {
-				"AI": "_Yapay Zekaya Karşı",
-				"Local": "_Yerel Oyun",
-				"Online": "_Çevrim İçi Oyun"
+				"AI": "Yapay Zekaya Karşı",
+				"Local": "Yerel Oyun",
+				"Online": "Çevrim İçi Oyun",
+				"Home": "Ana Sayfaya Dön"
 			},
 		},
 		"Difficulty":{
 			"title": "Zorluk Seviyesini Seçin",
 			"Button": {
-				"easy": "_Kolay",
-				"medium": "_Orta",
-				"hard": "_Zor"
+				"easy": "Kolay",
+				"medium": "Orta",
+				"hard": "Zor"
 			}
 		}
 	},
@@ -462,6 +537,82 @@ const tr  = {
 			"update-error": "Güncelleme sırasında hata oluştu!",
 			"password-update-error": "Şifre güncelleme sırasında hata oluştu!"
 		}
+	},
+		"auth-messages": {
+		"AUTH_HEADER_MISSING_OR_INVALID": "Yetkilendirme başlığı eksik veya geçersiz",
+		"TOKEN_MISSING": "Token eksik",
+		"INVALID_TOKEN": "Geçersiz token",
+		"TOKEN_VALID": "Token geçerli",
+		"EMAIL_AND_PASSWORD_REQUIRED": "E-posta ve şifre gerekli",
+		"EMAIL_LENGTH_INVALID": "E-posta uzunluğu geçersiz",
+		"INVALID_EMAIL_FORMAT": "Geçersiz e-posta formatı",
+		"INVALID_EMAIL": "Geçersiz e-posta",
+		"INVALID_PASSWORD": "Geçersiz şifre",
+		"LOGIN_SUCCESS": "Giriş başarılı",
+		"REGISTRATION_FIELDS_REQUIRED": "Kayıt alanları gerekli",
+		"USERNAME_NOT_ALPHANUMERIC": "Kullanıcı adı sadece harf ve rakam içerebilir",
+		"USERNAME_LENGTH_INVALID": "Kullanıcı adı uzunluğu geçersiz",
+		"PASSWORD_LENGTH_INVALID": "Şifre uzunluğu geçersiz",
+		"USERNAME_EXISTS": "Bu kullanıcı adı zaten kullanımda",
+		"EMAIL_EXISTS": "Bu e-posta adresi zaten kullanımda",
+		"USER_REGISTERED": "Kullanıcı başarıyla kaydedildi",
+		"USER_NOT_FOUND": "Kullanıcı bulunamadı",
+		"EMAIL_ALREADY_IN_USE": "E-posta adresi zaten kullanımda",
+		"USER_UPDATED": "Kullanıcı güncellendi",
+		"NO_CHANGES_MADE": "Hiçbir değişiklik yapılmadı"
+	},
+	"tournament-messages": {
+		"ERR_INVALID_TOKEN": "Geçersiz veya süresi dolmuş token",
+		"ERR_INTERNAL_SERVER": "Sunucu iç hata",
+		"ERR_TOURNAMENT_NAME_REQUIRED": "Turnuva adı gerekli",
+		"ERR_TOURNAMENT_NAME_EMPTY": "Turnuva adı boş olamaz",
+		"ERR_TOURNAMENT_NAME_INVALID_CHARS": "Turnuva adı sadece harf ve rakam içerebilir",
+		"ERR_TOURNAMENT_NAME_EXISTS": "Bu turnuva adı zaten var",
+		"ERR_PARTICIPANT_ALREADY_IN_TOURNAMENT": "Zaten başka bir turnuvadasınız",
+		"ERR_TOURNAMENT_NAME_TOO_LONG": "Turnuva adı en fazla 20 karakter olabilir",
+		"SUCCESS_TOURNAMENT_CREATED": "Turnuva başarıyla oluşturuldu",
+		"ERR_MAX_10_PARTICIPANTS": "Turnuvada en fazla 10 katılımcı olabilir",
+		"ERR_TOURNAMENT_NOT_JOINABLE": "Bu turnuvaya katılım mümkün değil",
+		"ERR_PARTICIPANT_ALREADY_JOINED": "Zaten bu turnuvaya katıldınız",
+		"ERR_TOURNAMENT_NOT_FOUND": "Turnuva bulunamadı",
+		"ERR_PARTICIPANT_NOT_FOUND": "Katılımcı turnuvada bulunamadı",
+		"ERR_ADMIN_CANNOT_LEAVE": "Turnuva yöneticisi turnuvayı terk edemez",
+		"ERR_NO_ONGOING_ROUNDS": "Devam eden round bulunamadı",
+		"ERR_NO_COMPLETED_ROUNDS": "Tamamlanmış round bulunamadı",
+		"ERR_TOURNAMENT_NOT_DELETABLE": "Turnuva silinebilir durumda değil",
+		"ERR_ONLY_ADMIN_CAN_DELETE": "Sadece turnuva yöneticisi turnuvayı silebilir",
+		"ERR_TOURNAMENT_NOT_FOUND_UUID": "Kullanıcı için turnuva bulunamadı",
+		"ERR_ONLY_ADMIN_CAN_START": "Sadece turnuva yöneticisi turnuvayı başlatabilir",
+		"ERR_TOURNAMENT_NOT_STARTABLE": "Turnuva başlatılabilir durumda değil",
+		"ERR_NOT_ENOUGH_PARTICIPANTS": "Turnuvayı başlatmak için yeterli katılımcı yok",
+		"ERR_MATCH_NOT_JOINABLE": "Maça katılım mümkün değil",
+		"ERR_PARTICIPANT_DISCONNECTED": "Katılımcı bağlantısı kesildi ve kazanan olamaz",
+		"SUCCESS_WINNER_ADDED": "Kazanan başarıyla eklendi",
+		"SUCCESS_TOURNAMENT_COMPLETED": "Turnuva başarıyla tamamlandı",
+		"SUCCESS_NEXT_ROUND_STARTED": "Kazanan eklendi ve sonraki round başladı",
+		"ERR_TOURNAMENT_NOT_MATCH_JOINABLE": "Turnuva maç katılımı için uygun durumda değil",
+		"ERR_ROUND_NOT_FOUND": "Round bulunamadı",
+		"ERR_ROUND_COMPLETED": "Round zaten tamamlanmış",
+		"ERR_MATCH_STATE_NOT_JOINABLE": "Maç katılım için uygun durumda değil",
+		"ERR_MATCH_STATE_NOT_LEAVABLE": "Maçtan çıkış için uygun durumda değil",
+		"ERR_PARTICIPANT_NOT_IN_TOURNAMENT": "Katılımcı turnuvada değil",
+		"ERR_PARTICIPANT_ALREADY_IN_MATCH": "Katılımcı zaten maçta",
+		"ERR_PARTICIPANT_ALREADY_DISCONNECTED": "Katılımcı zaten bağlantısı kesilmiş",
+		"SUCCESS_PARTICIPANT_JOINED": "Turnuvaya başarıyla katıldınız",
+		"SUCCESS_PARTICIPANT_LEFT": "Turnuvadan başarıyla ayrıldınız",
+		"SUCCESS_TOURNAMENT_DELETED": "Turnuva başarıyla silindi",
+		"SUCCESS_PARTICIPANTS_RETRIEVED": "Katılımcılar başarıyla alındı",
+		"SUCCESS_TOURNAMENT_RETRIEVED_UUID": "Turnuva bilgileri başarıyla alındı",
+		"SUCCESS_TOURNAMENT_STARTED": "Turnuva başarıyla başlatıldı",
+		"SUCCESS_PARTICIPANT_JOINED_MATCH": "Maça başarıyla katıldınız",
+		"SUCCESS_PARTICIPANT_LEAVED_MATCH": "Maçtan başarıyla ayrıldınız",
+		"ERR_PARTICIPANT_NOT_FOUND_ROUND": "Katılımcı round'da bulunamadı",
+		"ERR_TOURNAMENT_NOT_ADD_WINNERS": "Turnuva kazanan ekleme için uygun durumda değil",
+		"ERR_NO_ROUNDS_FOUND": "Hiç round bulunamadı",
+		"ERR_ROUND_NUMBER_MISMATCH": "Round numarası mevcut aktif round ile uyuşmuyor",
+		"ERR_WINNER_NOT_IN_MATCHES": "Kazanan mevcut maçlarda yer almıyor",
+		"ERR_RIVAL_ALREADY_WON": "Rakip zaten bu round'da kazanmış",
+		"ERR_WINNER_ALREADY_ADDED": "Bu round için kazanan zaten eklenmiş"
 	}
 }
 
@@ -640,7 +791,7 @@ const fr = {
 	  "play": "Jouer"
 	},
 	"game": {
-	  "strat": "__Démarrer le jeu",
+	  "strat": "Démarrer le jeu",
 	  "continue": "Continuer le jeu",
 	  "new": "Commencer un nouveau jeu",
 	  "goHome": "Retour à l’accueil"
@@ -650,17 +801,17 @@ const fr = {
 		"title": "Pong Arena",
 		"subTitle": "Sélectionnez le mode de jeu",
 		"Button": {
-		  "AI": "_Jouer contre l’IA",
-		  "Local": "_Jeu local",
-		  "Online": "_Jeu en ligne"
+		  "AI": "Jouer contre l’IA",
+		  "Local": "Jeu local",
+		  "Online": "Jeu en ligne"
 		}
 	  },
 	  "Difficulty": {
 		"title": "Choisissez la difficulté",
 		"Button": {
-		  "easy": "_Facile",
-		  "medium": "_Moyen",
-		  "hard": "_Difficile"
+		  "easy": "Facile",
+		  "medium": "Moyen",
+		  "hard": "Difficile"
 		}
 	  }
 	},
@@ -765,7 +916,7 @@ export class LanguageManager
 			const data = el.getAttribute('data-langm-tmp');
 			if (data)
 				rawContent = rawContent + " " + data
-			if (path=='palaceholder' && el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement)
+			if (path=='placeholder' && el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement)
 				el.placeholder = rawContent;
 			else if(path =='title')
 				el.setAttribute(path, rawContent);

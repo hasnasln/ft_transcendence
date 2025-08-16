@@ -1,16 +1,25 @@
+import { TournamentResponseMessages } from '../../api/types';
+import { exmp } from '../../languageManager';
+
 export class TournamentEventHandler {
     private container: HTMLElement | null = null;
 
-    setupEventDelegation(container: HTMLElement): void {
+    setupEventDelegation(container: HTMLElement, clickHandler?: (event: Event) => void, inputHandler?: (event: Event) => void): void {
         this.container = container;
         container.addEventListener('click', (event) => {
-            this.handleClickEvent(event);
+            if (clickHandler) {
+                clickHandler(event);
+            } else {
+                this.handleClickEvent(event);
+            }
         });
         container.addEventListener('submit', (event) => {
             this.handleFormSubmission(event);
         });
         container.addEventListener('input', (event) => {
-            this.handleInputChange(event);
+            if (inputHandler) {
+                inputHandler(event);
+            }
         });
     }
 
@@ -18,12 +27,6 @@ export class TournamentEventHandler {
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 this.handleEscapeKey();
-            }
-            if ((event.ctrlKey || event.metaKey) && event.key === 'r') {
-                event.preventDefault();
-            }
-            if (event.key === 'F5') {
-                event.preventDefault();
             }
             if (event.key === 'Enter') {
                 this.handleEnterKey(event);
@@ -34,11 +37,11 @@ export class TournamentEventHandler {
     setupGlobalErrorHandling(): void {
         window.addEventListener('unhandledrejection', (event) => {
             console.error('Unhandled promise rejection:', event.reason);
-            this.showGlobalError('Beklenmeyen bir hata oluştu. Lütfen sayfayı yenileyin.');
+            this.showGlobalError(exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_INTERNAL_SERVER}`));
         });
         window.addEventListener('error', (event) => {
             console.error('Global error:', event.error);
-            this.showGlobalError('Bir hata oluştu. Lütfen sayfayı yenileyin.');
+            this.showGlobalError(exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_INTERNAL_SERVER}`));
         });
     }
 
@@ -60,14 +63,6 @@ export class TournamentEventHandler {
         const submitButton = form.querySelector('[data-action]') as HTMLElement;
         if (submitButton) {
             const action = submitButton.getAttribute('data-action');
-        }
-    }
-
-    private handleInputChange(event: Event): void {
-        const input = event.target as HTMLInputElement;
-        const inputId = input.id;
-        if (inputId === 'createInput' || inputId === 'joinInput') {
-            this.performRealTimeValidation(input);
         }
     }
 
@@ -104,56 +99,6 @@ export class TournamentEventHandler {
         return button.hasAttribute('disabled') || 
                button.classList.contains('disabled') ||
                (button as HTMLButtonElement).disabled;
-    }
-
-    private performRealTimeValidation(input: HTMLInputElement): void {
-        const value = input.value.trim();
-        const inputType = input.id === 'createInput' ? 'create' : 'join';
-        this.clearInputError(inputType);
-        if (value.length > 0 && value.length < 3) {
-            this.showInputError(inputType, 'En az 3 karakter gerekli');
-            return;
-        }
-        if (inputType === 'create' && value.length > 50) {
-            this.showInputError(inputType, 'En fazla 50 karakter olabilir');
-            return;
-        }
-        if (value.length >= 3) {
-            this.showInputSuccess(inputType);
-        }
-    }
-
-    private showInputSuccess(inputType: string): void {
-        const input = document.getElementById(`${inputType}Input`) as HTMLInputElement;
-        if (input) {
-            input.style.borderColor = '#10b981';
-            input.style.boxShadow = '0 0 0 2px rgba(16, 185, 129, 0.2)';
-        }
-    }
-
-    private clearInputError(inputType: string): void {
-        const input = document.getElementById(`${inputType}Input`) as HTMLInputElement;
-        const errorElement = document.getElementById(`${inputType}_error_message`);
-        if (input) {
-            input.style.borderColor = '';
-            input.style.boxShadow = '';
-        }
-        if (errorElement) {
-            errorElement.style.visibility = 'hidden';
-            errorElement.textContent = '';
-        }
-    }
-
-    private showInputError(inputType: 'join' | 'create', message: string): void {
-        const errorElement = document.getElementById(`${inputType}_error_message`);
-        if (errorElement) {
-            errorElement.textContent = message;
-            errorElement.style.visibility = 'visible';
-            setTimeout(() => {
-                errorElement.style.visibility = 'hidden';
-                errorElement.textContent = '';
-            }, 5000);
-        }
     }
 
     private showGlobalError(message: string): void {

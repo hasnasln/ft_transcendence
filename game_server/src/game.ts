@@ -1,12 +1,15 @@
-import { InputProvider } from "./inputProviders";
-import { Player } from "./matchManager";
-import { GameEmitter } from "./gameEmitter";
-import { ScoringManager } from "./scoringManager";
-import { GameOrchestrator } from "./orchestrator";
-import { Ball, DEFAULT_GAME_ENTITY_CONFIG, GameEntityFactory, Ground, Paddle } from "./gameEntity";
+import {InputProvider} from "./inputProviders";
+import {MatchManager, Player} from "./matchManager";
+import {GameEmitter} from "./gameEmitter";
+import {ScoringManager} from "./scoringManager";
+import {GameOrchestrator} from "./orchestrator";
+import {Ball, DEFAULT_GAME_ENTITY_CONFIG, GameEntityFactory, GameEnvironment} from "./gameEntity";
+import {patchWinnersToTournament} from "./tournament";
+import {emitError} from "./errorHandling";
 
 export type Side = 'leftPlayer' | 'rightPlayer';
 export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament';
+export type GamePhase = 'unset' | 'waiting' | 'ready' | 'playing' | 'completed';
 
 export interface GameStatus {
 	currentGameStarted: boolean;
@@ -16,7 +19,7 @@ export interface GameStatus {
 	tournamentName?: string;
 	roundNo?: number;
 	finalMatch?: boolean
-};
+}
 
 export interface GameConstants {
 	groundWidth: number;
@@ -24,15 +27,19 @@ export interface GameConstants {
 	ballRadius: number;
 	paddleWidth: number;
 	paddleHeight: number;
+	paddleSpeed: number;
 }
 
 export interface GameState {
-	matchOver: boolean;
 	setOver: boolean;
 	isPaused: boolean;
-	matchWinner?: Side;
-	matchDisconnection: boolean;
 	roundNumber?: number;
+	phase: GamePhase;
+}
+
+export interface GameEndInfo {
+	matchWinner?: Side;
+	endReason: 'normal' | 'disconnection' | 'unknown';
 }
 
 export interface PaddleState {
@@ -46,178 +53,177 @@ export interface Position {
 }
 
 export class Game {
-	public ball: Ball;
-	public leftPaddle: Paddle;
-	public rightPaddle: Paddle;
-	public ground: Ground;
-
-	// Game Status
-	public matchOver = true;
+	public environment: GameEnvironment;
 	public scoringManager: ScoringManager = new ScoringManager(this);
 
-	public isPaused = true;
-	public matchWinner: Side | undefined = undefined; //todo encapsulate this to scoring manager
-	public matchDisconnection: boolean = false;
+	public isPaused = false;
+	public winner: Side | undefined = undefined;
+	public aPlayerDisconnected: boolean = false;
 	public lastUpdatedTime: number | undefined = undefined;
-
-	//  Meta
-	public roomId: string;
-	public gameMode: GameMode;
-	public lastPaddleUpdate: PaddleState | undefined = undefined;
+	public lastBallNotifiedTime: number= 0;
+	public lastPaddleNotifiedTime: number= 0;
+	public tournament?: { code: string, roundNo: number, finalMatch: boolean }
 
 	public leftInput: InputProvider | undefined;
 	public rightInput: InputProvider | undefined;
-	
-	public state: 'waiting' | 'in-progress' | 'paused' | 'completed' = 'waiting';
-	public reMatch: boolean = false; //todo: this is a temporary solution to handle rematch requests. It should be handled in MatchManager.
+	public players: Player[];
 
-	public players: [Player, Player];
-	public tournament?: { code: string, roundNo: number, finalMatch: boolean }
-	public readyTimeout: NodeJS.Timeout | null = null;
+	public roomId: string;
+	public gameMode: GameMode;
+	public state: GamePhase = 'waiting';
 
-	constructor(roomId: string, player1: Player, player2: Player, gameMode: GameMode) {
-		const config = DEFAULT_GAME_ENTITY_CONFIG;
-		this.players = [player1, player2];
-		this.ball = GameEntityFactory.getInstance().createDefaultBall(config);
-		this.leftPaddle = GameEntityFactory.getInstance().createDefaultLeftPaddle(config);
-		this.rightPaddle = GameEntityFactory.getInstance().createDefaultRightPaddle(config);
-		this.ground = GameEntityFactory.getInstance().createDefaultGround(config);
+	constructor(roomId: string, players: Player[], gameMode: GameMode, environment: GameEnvironment) {
+		if (players.length === 0) {
+			throw new Error("Game constructor: players must be specified.");
+		}
+		this.players = players;
 		this.roomId = roomId;
 		this.gameMode = gameMode;
+		this.environment = environment;
 	}
 
 	public resetBall(lastScorer: "leftPlayer" | "rightPlayer") {
 		this.lastUpdatedTime = undefined;
-		this.ball.reset();
+		this.environment.ball.reset();
 
 		setTimeout(() => {
-			this.ball.shove(lastScorer);
+			this.environment.ball.shove(lastScorer);
 			this.lastUpdatedTime = Date.now();
+			GameEmitter.getInstance().emitBallState(this, true);
 		}, 1000);
 	}
 
-	public scorePoint(winner: Side) {
-		if (this.matchOver || this.isPaused) return;
+	private startNewRound(lastScorer?: Side) {
+		if (!lastScorer) {
+			lastScorer = Math.random() < 0.5 ? 'leftPlayer' : 'rightPlayer';
+		}
+		this.resetBall(lastScorer);
+		GameEmitter.getInstance().emitGameConstants(this);
+		GameEmitter.getInstance().emitBallState(this, true);
+		GameEmitter.getInstance().emitSetState(this);
+		GameEmitter.getInstance().emitGameState(this);
+	}
 
-		this.scoringManager.onScore(winner); 
+	public scorePoint(scorer: Side) {
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} scored point for ${scorer}.`);
+		if (this.state === 'completed' || this.isPaused) return;
 
+		this.scoringManager.onScore(scorer);
 		if (this.scoringManager.continueNewRound()) {
-			this.resetBall(winner);
+			this.startNewRound(scorer);
 		} else {
-			this.matchOver = true;
-			this.matchWinner = this.scoringManager.getMatchWinner()!;
+			this.finalize();
+		}
+	}
+
+	public finalize(winner?: string) {
+		this.end();
+		if (winner) {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} finishes incomplete match.`);
+			this.winner = (winner === this.leftInput!.getUsername() ? 'leftPlayer' : 'rightPlayer') as Side;
+			this.aPlayerDisconnected = true;
+		} else {
+			this.winner = this.scoringManager.getMatchWinner()!
+			this.aPlayerDisconnected = false;
 		}
 
-		GameEmitter.getInstance().emitBallState(this);
-		GameEmitter.getInstance().emitSetState(this);
+		if (this.gameMode === 'tournament') {
+			const winnerInput = this.winner === 'leftPlayer' ? this.leftInput : this.rightInput;
+			const uuid = winnerInput!.getUuid();
+			const username = winnerInput!.getUsername();
+			try {
+				patchWinnersToTournament(this.tournament?.code as string, this.tournament?.roundNo as number, { uuid, username });
+			} catch (err: any) {
+				emitError(err.message, this.roomId);
+			}
+		}
+
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} finalized with winner: ${this.winner}.`);
+
 		GameEmitter.getInstance().emitGameState(this);
+		GameEmitter.getInstance().emitGameFinish(this);
+
+		if (this.gameMode === 'localGame' || this.gameMode === 'vsAI')
+			MatchManager.getInstance().clearGame(this);
 	}
 
-	public finishIncompleteMatch(username?: string) {
-		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} finishes incomplete match.`);
-		this.state = 'completed';
-		let inCompleteWinner: Side | undefined = undefined;
-		if (username)
-			inCompleteWinner = (username === this.leftInput!.getUsername() ? 'leftPlayer' : 'rightPlayer') as Side;
-		this.matchOver = true;
-		this.matchWinner = inCompleteWinner;
-		this.matchDisconnection = true;
-		GameEmitter.getInstance().emitGameState(this);
-	}
-
-	public pauseGameLoop() {
-		if (!this.matchOver)
-			this.isPaused = true;
-		this.lastUpdatedTime = undefined;
-		GameOrchestrator.getInstance().remove(this);
-		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game paused.`);
-	}
-
-	public resumeGameLoop() {
-		this.isPaused = false;
-		
-		GameOrchestrator.getInstance().add(this);
-		this.lastUpdatedTime = Date.now();
-		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game resume now.`);
-	}
-
-	public startGameLoop() {
-		GameEmitter.getInstance().emitGameConstants(this);
-		GameEmitter.getInstance().emitSetState(this);
-
-		this.matchOver = false;
-		this.scoringManager.isSetOver();
-		this.scoringManager.setSetOver(false); //todo not sure if needed
-		this.isPaused = false;
+	public start() {
+		if (this.state !== "waiting") {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game cannot be started.`);
+			return;
+		}
+		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} started.`);
 
 		this.leftInput?.init?.();
 		this.rightInput?.init?.();
 
-		GameEmitter.getInstance().emitGameState(this);		
-
-		const sides = [
-			{ socket: typeof this.leftInput!.getSocket === 'function' ? this.leftInput!.getSocket()! : null },
-			{ socket: typeof this.rightInput!.getSocket === 'function' ? this.rightInput!.getSocket()! : null }
-		];
-
-		//todo handle this in a global way. and gracefully off it.
-		sides.forEach(({ socket }) => {
-			if (!socket) return;
-			socket.on("pause-resume", (data: { status: string }) => {
-				if (data.status === "pause" && !this.isPaused)
-					this.pauseGameLoop();
-				else if (data.status === "resume" && this.isPaused)
-					this.resumeGameLoop();
-			});
-		});
-
-		if (!this.isPaused) {
-			const initialPlayer = Math.random() < 0.5 ? 'leftPlayer' : 'rightPlayer';
-			this.resetBall(initialPlayer);
-		}
-
+		this.state = 'playing';
+		this.startNewRound()
 		GameOrchestrator.getInstance().add(this);
 	}
 
-	start() {
-		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} started.`);
-		this.state = 'in-progress';
-		this!.startGameLoop();
-	}
+	public pause() {
+		if (this.state === 'completed') {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game cannot be paused, it is either over or already in progress.`);
+			return;
+		}
+		if (this.isPaused) {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game is already paused.`);
+			return;
+		}
 
-	pause() {
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} paused.`);
-		this.state = 'paused';
-		this!.pauseGameLoop();
+		this.isPaused = true;
+		this.lastUpdatedTime = undefined;
+		GameOrchestrator.getInstance().remove(this);
 	}
 
-	resume() {
+	public resume() {
+		if (this.state === 'completed') {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game cannot be resumed, it is either over or already in progress.`);
+			return;
+		}
+		if (!this.isPaused) {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game is already running.`);
+			return;
+		}
+
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} resumes.`);
-		this.state = 'in-progress';
-		this!.resumeGameLoop();
+		this.isPaused = false;
+		this.lastUpdatedTime = Date.now();
+		GameOrchestrator.getInstance().add(this);
 	}
 
-	end() {
+	public end() {
+		if (this.state === 'completed') {
+			console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} game is already ended.`);
+			return;
+		}
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} ended.`);
 		this.state = 'completed';
+		GameEmitter.getInstance().invalidateCache(this.roomId);
+		GameOrchestrator.getInstance().remove(this);
 	}
 
 	public getBall() {
-		return this.ball;
+		return this.environment.ball;
 	}
 
 	public getGround() {
-		return this.ground;
+		return this.environment.ground;
 	}
 
 	public getPaddleSpeed() {
 		return DEFAULT_GAME_ENTITY_CONFIG.paddleSpeed * GameEntityFactory.UCF;
 	}
 
-	public getPaddle2() {
-		return this.rightPaddle;
+	public getRightPaddle() {
+		return this.environment.rightPaddle;
 	}
 
+	public getLeftPaddle() {
+		return this.environment.leftPaddle;
+	}
 }
 
 export { Ball };

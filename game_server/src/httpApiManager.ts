@@ -1,7 +1,7 @@
-export interface IApiResponseWrapper {
-    success: boolean;
-    message?: string;
-    data?: any; // Data can be of any type, depending on the API response
+export interface ApiResult {
+	statusCode: number;
+    message: string;
+    data?: any;
 }
 
 export class HTTPMethod extends String {
@@ -12,24 +12,43 @@ export class HTTPMethod extends String {
     public static PATCH: string = 'PATCH';
 }
 
-export function apiCall(url: string, method: string, headers: HeadersInit, body?: BodyInit, token?: string): Promise<Response> {
-	try {
-		const options: RequestInit = {
-			method,
-			headers: {
-				...headers,
-				Authorization: token ? `Bearer ${token}` : '',
-			},
-		};
-		if (body) {
-			options.body = body;
-		}
+export function tournamentApiCall(endpoint: string, method: string, headers?: HeadersInit, body?: BodyInit, token?: string): Promise<ApiResult> {
+	const url = process.env.TOURNAMENT_SERVICE_URL ?? 'http://tournament.transendence.com';
+	headers = headers || {};
+	return apiCall(`${url}/api/${endpoint}`, method, {
+		...headers,
+		'Content-Type': 'application/json',
+		"x-api-key": process.env.X_API_KEY ?? "bypassauth",
+	}, body, token);
+}
 
-		console.log("options", options);
-		console.log("url", url);
-		return fetch(url, options);
-	} catch (error) {
-		console.error('Error in fetch:', error);
-		throw error;
+export async function apiCall(url: string, method: string, headers: HeadersInit, body?: BodyInit, token?: string): Promise<ApiResult> {
+	const options: RequestInit = {
+		method,
+		headers: {
+			...headers,
+			Authorization: token ? `Bearer ${token}` : '',
+		},
+	};
+	if (body) {
+		options.body = body;
+	}
+	console.log("options", options);
+	console.log("url", url);
+
+	const response = await fetch(url, options);
+	const contentType = response.headers.get('Content-Type') || '';
+	if (contentType.includes('application/json')) {
+		let responseBody;
+		try {
+			responseBody = await response.json();
+		} catch (error) {
+			console.error('Error in fetch:', error);
+			throw error;
+		}
+		return { statusCode: response.status, message: response.ok ? responseBody.message : responseBody.error, data: responseBody.data } satisfies ApiResult;
+	} else {
+		const text = await response.text();
+		return { statusCode: -1, message: text, data: null } satisfies ApiResult;
 	}
 }

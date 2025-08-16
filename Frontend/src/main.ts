@@ -1,11 +1,6 @@
-import './style.css';
-import { Router, ServerErrorPage } from './router';
-import { HomePage } from './pages/home';
-import { TournamentPage } from './pages/TournamentPagev2';
-import { PlayPage } from './pages/play-page';
-import { RegisterPage } from './pages/register';
-import { LoginPage } from './pages/login';
-import { GamePage } from './pages/game';
+import './global.css';
+import { Router } from './router';
+import {_apiManager} from "./api/APIManager";
 
 function bootstrap() {
 	const router = Router.getInstance();
@@ -25,14 +20,20 @@ function bootstrap() {
 		}
 	});
 
-	router.registerPage("/", new HomePage());
-	router.registerPage("/tournament", new TournamentPage());
-	router.registerPage("/play", new PlayPage());
-	router.registerPage("/game", new GamePage());
-	router.registerPage("/register", new RegisterPage());
-	router.registerPage("/login", new LoginPage());
-	router.registerPage("/500", new ServerErrorPage());
+	router.lazyRegisterPage("/tournament", {path: "TournamentPage", pageName: "TournamentPage"});
+	router.lazyRegisterPage("/login", {path: "login", pageName: "LoginPage"});
+	router.lazyRegisterPage("/register", {path: "register", pageName: "RegisterPage"});
+	router.lazyRegisterPage("/play", {path: "PlayPage", pageName: "PlayPage"});
+	router.lazyRegisterPage("/game", {path: "game", pageName: "GamePage"});
+	router.lazyRegisterPage("/", {path: "home", pageName: "HomePage"});
+	router.lazyRegisterPage("/500", {path: "ServerErrorPage", pageName: "ServerErrorPage"});
+	router.lazyRegisterPage("/404", {path: "NotFoundPage", pageName: "NotFoundPage"});
+
 	router.go(window.location.pathname, true);
+	if (_apiManager.isTokenExpired()) {
+		_apiManager.logout();
+		router.go('/login');
+	}
 }
 
 bootstrap();

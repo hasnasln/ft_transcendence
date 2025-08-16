@@ -1,91 +1,22 @@
 import { _apiManager } from '../../api/APIManager';
 import { getTournamentFormat, getOptimalTournamentSize, calculateByes } from './MainRenderer';
+import { TournamentResponseMessages } from '../../api/types';
+import { exmp } from '../../languageManager';
 
 export class TournamentValidation {
-    validateCreateInput(input: HTMLInputElement): { isValid: boolean; tournamentName: string; message: string } {
-        const tournamentName = input?.value?.trim() || '';
-        if (!tournamentName) {
-            return {
-                isValid: false,
-                tournamentName: '',
-                message: '⚠️ Lütfen turnuva adını girin!'
-            };
-        }
-        if (tournamentName.length < 3) {
-            return {
-                isValid: false,
-                tournamentName: '',
-                message: '⚠️ Turnuva adı en az 3 karakter olmalıdır!'
-            };
-        }
-        if (tournamentName.length > 50) {
-            return {
-                isValid: false,
-                tournamentName: '',
-                message: '⚠️ Turnuva adı en fazla 50 karakter olabilir!'
-            };
-        }
-        return {
-            isValid: true,
-            tournamentName,
-            message: ''
-        };
-    }
-
-    validateJoinInput(input: HTMLInputElement): { isValid: boolean; tournamentId: string; message: string } {
-        const tournamentId = input?.value?.trim() || '';
-        if (!tournamentId) {
-            return {
-                isValid: false,
-                tournamentId: '',
-                message: '⚠️ Lütfen turnuva ID\'sini girin!'
-            };
-        }
-        if (tournamentId.length < 3) {
-            return {
-                isValid: false,
-                tournamentId: '',
-                message: '⚠️ Turnuva ID en az 3 karakter olmalıdır!'
-            };
-        }
-        return {
-            isValid: true,
-            tournamentId,
-            message: ''
-        };
-    }
-
-    validateTournamentStart(playerCount: number): { isValid: boolean; message: string } {
-        const minPlayers = 2;
-        const maxPlayers = 10;
-        if (playerCount < minPlayers) {
-            return {
-                isValid: false,
-                message: `⚠️ Turnuva başlatmak için en az ${minPlayers} oyuncu gerekli!\n\nŞu an: ${playerCount} oyuncu`
-            };
-        }
-        if (playerCount > maxPlayers) {
-            return {
-                isValid: false,
-                message: `⚠️ Turnuva maksimum ${maxPlayers} oyuncu ile sınırlıdır!\n\nŞu an: ${playerCount} oyuncu`
-            };
-        }
-        return { isValid: true, message: '' };
-    }
-
     async validateTournamentStatus(data: any, status: boolean): Promise<{ isValid: boolean; message: string }> {
         const response = await _apiManager.getTournament(data.code);
         if (!response.data.tournament_start && !status) {
             return {
                 isValid: false,
-                message: '⚠️ Turnuva henüz başlatılmamış!\n\nAdmin tarafından turnuva başlatılmasını bekleyin.'
+                message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_STARTABLE}`)
             };
         }
         const playButton = document.getElementById('play-button');
         if (playButton && playButton.style.visibility === 'hidden') {
             return {
                 isValid: false,
-                message: '🎮 Oyun zaten başlatılmış!\n\nLütfen bekleyin...'
+                message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_MATCH_JOINABLE}`)
             };
         }
         return { isValid: true, message: '' };

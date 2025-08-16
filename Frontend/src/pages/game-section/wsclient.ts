@@ -1,12 +1,39 @@
-import { io, Socket } from "socket.io-client";
 import { GameEventBus } from "./gameEventBus";
 import { Router } from "../../router";
 import { gameInstance } from "../play";
 import { _apiManager } from "../../api/APIManager";
 
+export class SocketIOWrapper {
+    private static instance: SocketIOWrapper;
+    private static loaded = false;
+
+    Socket!: typeof import("socket.io-client").Socket;
+    io!: typeof import("socket.io-client").io;
+
+    public static getInstance(): SocketIOWrapper {
+        if (!SocketIOWrapper.instance) {
+            SocketIOWrapper.instance = new SocketIOWrapper();
+        }
+        return SocketIOWrapper.instance;
+    }
+
+    public static async load(): Promise<void> {
+        if (SocketIOWrapper.loaded) return;
+        SocketIOWrapper.loaded = true;
+        console.log("loading Socket.IO modules...");
+        const { Socket } = await import("socket.io-client");
+        const { io } = await import("socket.io-client");
+
+        const instance = SocketIOWrapper.getInstance();
+        instance.Socket = Socket;
+        instance.io = io;
+        console.log("Socket.IO modules loaded.");
+    }
+}
+
 export class WebSocketClient {
     private static instance: WebSocketClient;
-    private socket: Socket | null = null;
+    private socket: any | null = null;
     private hasConnectedOnce: boolean = false;
 
     public static getInstance(): WebSocketClient {
@@ -16,7 +43,7 @@ export class WebSocketClient {
         return WebSocketClient.instance;
     }
 
-    public getSocket(): Socket | null {
+    public getSocket(): any | null {
         return this.socket;
     }
 
@@ -27,7 +54,6 @@ export class WebSocketClient {
             this.socket = null;
         }
         this.hasConnectedOnce = false;
-        console.log("WebSocketClient reset.");
     }
 
     public emit(event: string, data?: any): void {
@@ -38,30 +64,41 @@ export class WebSocketClient {
         this.socket.emit(event, data);
     }
 
-    public on(event: string, callback: (...args: any[]) => void): void {
+    public on(event: string, callback: (...args: any[]) => void, timeout?: number): void {
         if (!this.socket) {
             console.error("Event could not listened. Socket is not initialized: event: '" + event + "'");
             return;
         }
-        this.socket.on(event, callback);
+
+        if (timeout) {
+            this.socket.timeout(timeout).on(event, callback);
+        } else {
+            this.socket.on(event, callback);
+        }
     }
 
-    public once(event: string, callback: (...args: any[]) => void): void {
+    public once(event: string, callback: (...args: any[]) => void, timeout?: number): void {
         if (!this.socket) {
             console.error("Once event could not listened. Socket is not initialized: event: '" + event + "'");
             return;
         }
-        this.socket.once(event, callback);
-    }
 
+        if (timeout) {
+            this.socket.timeout(timeout).once(event, callback);
+        } else {
+            this.socket.once(event, callback);
+        }
+    }
 
     public off(event: string): void {
         this.socket?.off(event);
     }
 
     public async connect(url: string): Promise<void> {
+        await SocketIOWrapper.load();
         console.log("Connecting to WebSocket server at:", url);
         this.reset();
+        const io = SocketIOWrapper.getInstance().io;
         return new Promise((resolve, reject) => {
             if (this.socket) {
                 reject("socket already exists");
@@ -78,7 +115,7 @@ export class WebSocketClient {
                 autoConnect: true,
                 rememberUpgrade: true,
                 reconnection: true,
-                reconnectionAttempts: 5,
+                reconnectionAttempts: 15,
                 reconnectionDelay: 200, // 200ms
                 randomizationFactor: 0,
                 timeout: 20_000,
@@ -120,8 +157,7 @@ export class WebSocketClient {
 
         this.socket.on('disconnect', (reason: string) => {
             if (reason === 'io server disconnect') {
-                this.socket?.off();
-                this.socket = null;
+                this.reset();
             }
 
             GameEventBus.getInstance().emit({ type: 'DISCONNECTED', payload: {
@@ -130,11 +166,11 @@ export class WebSocketClient {
             }});
         });
         
-        this.socket.io.on("reconnect_attempt", (n) => GameEventBus.getInstance().emit({ type: 'RECONNECTION_ATTEMPT', payload: { attempts: n } }));
-        this.socket.io.on("reconnect_error", (err) => GameEventBus.getInstance().emit({ type: 'RECONNECTION_ATTEMPT_FAILED', payload: { reason: err.message } }));
-        this.socket.io.on("reconnect", (n) => GameEventBus.getInstance().emit({ type: 'RECONNECTED', payload: { attempts: n } }));
+        this.socket.io.on("reconnect_attempt", (n:any) => GameEventBus.getInstance().emit({ type: 'RECONNECTION_ATTEMPT', payload: { attempts: n } }));
+        this.socket.io.on("reconnect_error", (err:any) => GameEventBus.getInstance().emit({ type: 'RECONNECTION_ATTEMPT_FAILED', payload: { reason: err.message } }));
+        this.socket.io.on("reconnect", (n:any) => GameEventBus.getInstance().emit({ type: 'RECONNECTED', payload: { attempts: n } }));
         this.socket.io.on("reconnect_failed", () => GameEventBus.getInstance().emit({ type: 'RECONNECTION_GAVE_UP' }));
-        this.socket.on("connect_error", (err) => GameEventBus.getInstance().emit({ type: 'CONNECTION_ERROR', payload: { reason: err.message } }));
+        this.socket.on("connect_error", (err:any) => GameEventBus.getInstance().emit({ type: 'CONNECTION_ERROR', payload: { reason: err.message } }));
 
         this.socket.on('gameServerError', (errorMessage: string) => {
             console.error("Game server error:", errorMessage);

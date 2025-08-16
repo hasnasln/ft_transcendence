@@ -1,5 +1,4 @@
-import { _apiManager } from '../../api/APIManager';
-import { ITournament } from '../../api/types';
+import { ITournament} from '../../api/types';
 import { TournamentIcons } from './IconsHelper';
 
 export function ShowTournament(container: HTMLElement, tdata: ITournament): void {
@@ -12,7 +11,11 @@ export function ShowTournament(container: HTMLElement, tdata: ITournament): void
 function createTournamentPageHTML(tdata: ITournament): string {
     return `
         <div id="tournament-div02" class="min-h-screen w-full p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-            ${createBackgroundElements()}
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                <div class="absolute top-20 left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+                <div class="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl animate-pulse delay-2000"></div>
+            </div>
             <div class="max-w-7xl mx-auto space-y-8 relative z-10">
                 ${createHeaderSection(tdata)}
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -23,15 +26,7 @@ function createTournamentPageHTML(tdata: ITournament): string {
         </div>
     `;
 }
-function createBackgroundElements(): string {
-    return `
-        <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute top-20 left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-            <div class="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl animate-pulse delay-2000"></div>
-        </div>
-    `;
-}
+
 function createHeaderSection(tdata: ITournament): string {
     return `
         <div class="text-center mb-8">
@@ -57,18 +52,24 @@ function createInfoPanel(tdata: ITournament): string {
     `;
 }
 function createDetailsCard(tdata: ITournament): string {
-    console.log("----fatna---->", tdata);
     return `
         <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 lg:p-8 shadow-xl">
             ${createCardHeader()}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 ${createInfoCard('IdCard', tdata.code, TournamentIcons.getTournamentIdIcon(), 'from-purple-500 to-indigo-500')}
-                ${createInfoCard('Creater', tdata.participants[0]?.username || 'Unknown', TournamentIcons.getUserIcon(), 'from-blue-500 to-cyan-500')}
-                ${createInfoCard('ActivePlayer', `${tdata.participants.length} / 10`, TournamentIcons.getPlayersIcon(), 'from-green-500 to-emerald-500')}
+                ${createInfoCard('Creater', getAdminUsername(tdata) || 'Unknown', TournamentIcons.getUserIcon(), 'from-blue-500 to-cyan-500')}
+                ${createInfoCard('ActivePlayer', `${tdata.lobby_members.length} / 10`, TournamentIcons.getPlayersIcon(), 'from-green-500 to-emerald-500')}
                 ${createInfoCard('Status', 'Aktif', TournamentIcons.getStatusIcon(), 'from-pink-500 to-rose-500')}
             </div>
         </div>
     `;
+}
+function getAdminUsername(tdata: ITournament): string
+{
+    for(let i = 0; i < tdata.lobby_members.length; i++)
+        if(tdata.lobby_members[i].uuid === tdata.admin_id)
+            return tdata.lobby_members[i].username;
+    return "fatma bulamadi"
 }
 function createCardHeader(): string {
     return `
@@ -140,7 +141,7 @@ function createAdminPanel(tdata: ITournament): string {
     if (tdata.admin_id !== localStorage.getItem('uuid')) {
         return '';
     }
-    const playerCount = tdata.participants.length;
+    const playerCount = tdata.lobby_members.length;
     const minPlayers = 2;
     const maxPlayers = 10;
     const canStart = playerCount >= minPlayers && playerCount <= maxPlayers;
@@ -152,12 +153,12 @@ function createAdminPanel(tdata: ITournament): string {
                     class="text-lg sm:text-xl font-bold text-white mb-2">!_!
                 </h3>
             </div>
-            ${createStartButton(canStart, playerCount, minPlayers, maxPlayers)}
-            ${createStartInfo(canStart, playerCount, minPlayers, maxPlayers)}
+            ${createStartButton(canStart, playerCount, minPlayers)}
+            ${createStartInfo(canStart, playerCount)}
         </div>
     `;
 }
-function createStartButton(canStart: boolean, playerCount: number, minPlayers: number, maxPlayers: number): string {
+function createStartButton(canStart: boolean, playerCount: number, minPlayers: number): string {
     const buttonClass = canStart 
         ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-lg hover:shadow-green-500/25' 
         : 'bg-gray-600 text-gray-300 cursor-not-allowed';
@@ -186,13 +187,7 @@ function createStartButton(canStart: boolean, playerCount: number, minPlayers: n
     `;
 }
 
-/**
- * buton2 nin ikinci açıklaması gereksiz, turnuva tam dolu olduğu zaman yeni bir kişi zaten giremiyor.
- * 
- * buton2 nin aktif olduğu durmda ${getTournamentFormat(playerCount)} • ${calculateByes(playerCount)} bye
- * kısmı için herhangi bir düzenleme yapmadım ama lazım
- *  */
-function createStartInfo(canStart: boolean, playerCount: number, minPlayers: number, maxPlayers: number): string {
+function createStartInfo(canStart: boolean, playerCount: number): string {
     if (canStart) {
         return `
             <div class="tournament-start-info mt-4">
@@ -205,9 +200,8 @@ function createStartInfo(canStart: boolean, playerCount: number, minPlayers: num
                         </p>
                     </div>
                     <div class="text-center">
-                        <p
-                            class="text-green-300 text-xs">
-                            ${getTournamentFormat(playerCount)} • ${calculateByes(playerCount)} bye
+                        <p class="text-green-300 text-xs">
+                            ${getTournamentFormat(playerCount)}${calculateByes(playerCount) > 0 ? ` • ${calculateByes(playerCount)} bye` : ''}
                         </p>
                     </div>
                 </div>
@@ -220,16 +214,13 @@ function createStartInfo(canStart: boolean, playerCount: number, minPlayers: num
                     <div class="flex items-center justify-center space-x-2 mb-2">
                         ${TournamentIcons.getWarningIcon()}
                         <p 
-                            data-langm-key="tournament-second-page.AdminPanel.Button2.${playerCount < minPlayers ? 'deactive-1' : 'deactive-2'}"
+                            data-langm-key="tournament-second-page.AdminPanel.Button2.deactive-1"
                             class="text-yellow-400 font-semibold text-sm">!_!
                         </p>
                     </div>
                     <div class="text-center">
                         <p
-                            data-langm-key="tournament-second-page.AdminPanel.Button2.${playerCount < minPlayers 
-                                ? `description-1`
-                                : `description-2`
-                            }"
+                            data-langm-key="tournament-second-page.AdminPanel.Button2.description-1"
                             class="text-yellow-300 text-xs">!_!
                         </p>
                     </div>
@@ -305,37 +296,12 @@ export function listPlayers(container: HTMLElement, tdata: ITournament): void {
     container.innerHTML = createPlayersListHTML(tdata);
 }
 function createPlayersListHTML(tdata: ITournament): string {
-    if (tdata.participants.length === 0) {
-        return createEmptyPlayersState();
-    }
-    const playersHTML = tdata.participants.map((player, index) => 
+    const playersHTML = tdata.lobby_members.map((player, index) => 
         createPlayerCard(player, index, tdata.admin_id)
     ).join('');
     return `
         ${playersHTML}
-        ${createCapacityIndicator(tdata.participants.length)}
-    `;
-}
-
-// Bu fonsiyon turnuva içerisnde 0 oyuncu olduğu durumda aktif olan bir fonsiyon
-// bizde turnuva oluşturucusu hep içeride olduğu için aşağıdaki fonsiyona gerek yok:
-// createEmptyPlayersState
-function createEmptyPlayersState(): string {
-    return `
-        <div class="flex flex-col items-center justify-center py-16 text-center">
-            <div class="w-24 h-24 bg-gradient-to-br from-gray-500/20 to-gray-700/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-sm border border-white/10">
-                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                </svg>
-            </div>
-            <h4 class="text-xl font-bold text-white mb-2">Waiting for Players</h4>
-            <p class="text-gray-400 font-medium">Turnuvaya katılımcı bekleniyor...</p>
-            <div class="mt-4 flex space-x-2">
-                <div class="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                <div class="w-2 h-2 bg-pink-500 rounded-full animate-pulse delay-100"></div>
-                <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse delay-200"></div>
-            </div>
-        </div>
+        ${createCapacityIndicator(tdata.lobby_members.length)}
     `;
 }
 
