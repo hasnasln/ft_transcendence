@@ -37,7 +37,7 @@ export class RegisterPage implements Page {
                         />
 
                         <input
-                            data-langm-key="register.passwor"
+                            data-langm-key="register.password"
                             data-langm-path="placeholder"
                             type="password"
                             id="password"
@@ -46,9 +46,11 @@ export class RegisterPage implements Page {
                         />
 
                         <input
+                            data-langm-key="register.confirmPassword"
+                            data-langm-path="placeholder"
                             type="password"
                             id="repeat-password"
-                            placeholder="${exmp.getLang("register.confirmPassword") || "Şifre Tekrar"}"
+                            placeholder="!_!"
                             class="input-premium w-full"
                         />
 
