@@ -141,6 +141,7 @@ export class Game {
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} finalized with winner: ${this.winner}.`);
 
 		GameEmitter.getInstance().emitGameState(this);
+		GameEmitter.getInstance().emitSetState(this); // oyun sonunda set kısmını da güncellemek için
 		GameEmitter.getInstance().emitGameFinish(this);
 
 		if (this.gameMode === 'localGame' || this.gameMode === 'vsAI')
