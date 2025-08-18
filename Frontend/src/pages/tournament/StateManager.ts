@@ -26,7 +26,7 @@ export class TournamentStateManager {
         const uid = localStorage.getItem('uuid');
         this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid));
         await this.delay(500);
-        this.completeRefresh(updatedData);
+        this.completeRefresh(response.data!);
     }
 
     async handleCreateSuccess(container: HTMLElement, tournamentData: ITournament): Promise<void> {
@@ -137,8 +137,6 @@ export class TournamentStateManager {
             if (startButton && startInfo) {
                 if (canStart) {
                     this.renderCanStartTournament(startButton, startInfo, playerCount);
-                } else {
-                    this.renderCannotStartTournament(startButton, startInfo, playerCount, minPlayers, maxPlayers);
                 }
             }
         }
@@ -156,13 +154,6 @@ export class TournamentStateManager {
         startButton.className = 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold px-6 py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl';
         (startButton as HTMLButtonElement).disabled = false;
         startInfo.innerHTML = this.uiManager.createCanStartInfoHTML(playerCount);
-    }
-
-    private renderCannotStartTournament(startButton: HTMLElement, startInfo: Element, playerCount: number, minPlayers: number, maxPlayers: number): void {
-        startButton.innerHTML = this.uiManager.createCannotStartButtonHTML();
-        startButton.className = 'bg-red-500/50 text-red-200 px-6 py-3 rounded-lg cursor-not-allowed opacity-75';
-        (startButton as HTMLButtonElement).disabled = true;
-        startInfo.innerHTML = this.uiManager.createCannotStartInfoHTML(playerCount, minPlayers, maxPlayers);
     }
 
     private delay(ms: number): Promise<void> {

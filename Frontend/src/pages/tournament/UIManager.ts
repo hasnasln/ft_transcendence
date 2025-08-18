@@ -27,16 +27,6 @@ export class TournamentUIManager {
             </div>
         `;
     }
-    createCannotStartButtonHTML(): string {
-        return `
-            <div class="flex items-center justify-center space-x-2 opacity-50">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
-                </svg>
-                <span>Başlatılamaz</span>
-            </div>
-        `;
-    }
 
     createCanStartInfoHTML(playerCount: number): string {
         return `
@@ -49,25 +39,6 @@ export class TournamentUIManager {
                 </div>
                 <div class="text-center">
                     <p class="text-green-300 text-xs">${playerCount} oyuncu ile turnuva başlatabilirsiniz</p>
-                </div>
-            </div>
-        `;
-    }
-
-    createCannotStartInfoHTML(playerCount: number, minPlayers: number, maxPlayers: number): string {
-        const reason = playerCount < minPlayers ? 
-            `En az ${minPlayers} oyuncu gerekli` : 
-            `Maksimum ${maxPlayers} oyuncu olabilir`;
-        return `
-            <div class="bg-orange-500/20 border border-orange-500/30 rounded-xl p-4">
-                <div class="flex items-center justify-center space-x-2 mb-2">
-                    <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                    </svg>
-                    <p class="text-orange-400 font-semibold text-sm">Turnuva Başlatılamaz</p>
-                </div>
-                <div class="text-center">
-                    <p class="text-orange-300 text-xs">${reason} (Şu an: ${playerCount})</p>
                 </div>
             </div>
         `;
