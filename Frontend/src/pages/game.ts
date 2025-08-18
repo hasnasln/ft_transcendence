@@ -212,16 +212,40 @@ export class GamePage implements Page {
 
 		<div id="roundDiv" class="absolute top-[5%] left-[67%] -translate-x-1/2 hidden flex justify-center items-center px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.2vw] text-[#eee] z-10"></div>
 
-		<div id="set-toast" class="absolute 
-		rotate-90 right-[22%] text-[3vw]
-		sm:rotate-0 sm:right-auto 
-		sm:top-[20%] sm:left-1/2 sm:-translate-x-1/2 bg-black text-white sm:text-[1.5vw] px-[2vw] py-[1vw] rounded-[8px] z-10 hidden"></div>
+		<div id="set-toast" class="absolute left-1/2
+		right-[15%] rotate-90 w-[30vh] h-[15vw] text-2xl
+		sm:right-auto sm:rotate-0 sm:w-auto sm:h-auto sm:text-xl
+		sm:top-[20%] left-1/2 sm:-translate-x-1/2 text-white sm:text-[1.8vw] px-[2vw] py-[1vw] rounded-2xl z-10 hidden" style="
+			background: 
+				linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(10, 10, 30, 0.95)),
+				radial-gradient(circle at center, rgba(0, 255, 255, 0.08) 0%, transparent 70%),
+				linear-gradient(rgba(0, 255, 255, 0.08) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(0, 255, 255, 0.08) 1px, transparent 1px);
+			background-size: auto, auto, 25px 25px, 25px 25px;
+			backdrop-filter: blur(20px);
+			border: 2px solid #00ffff;
+			box-shadow: 
+				0 0 30px rgba(0, 255, 255, 0.4),
+				inset 0 0 30px rgba(0, 255, 255, 0.1);
+		"></div>
 		
 
-		<div id="end-message" class="absolute
-		rotate-90 right-[20%] text-[3vw]
-		sm:rotate-0 sm:right-auto 
-		sm:top-[30%] sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 bg-black text-white sm:text-[2vw] px-[4vw] py-[2vw] rounded-[12px] z-10 hidden"></div>
+		<div id="end-message" class="absolute left-1/2
+		right-[15%] rotate-90 w-[30vh] h-[15vw] text-2xl
+		sm:right-auto sm:rotate-0 sm:w-auto sm:h-auto sm:text-xl
+		sm:top-[20%] left-1/2 sm:-translate-x-1/2 text-white sm:text-[1.8vw] px-[2vw] py-[1vw] rounded-2xl z-10 hidden" style="
+			background: 
+				linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(10, 10, 30, 0.95)),
+				radial-gradient(circle at center, rgba(0, 255, 255, 0.08) 0%, transparent 70%),
+				linear-gradient(rgba(0, 255, 255, 0.08) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(0, 255, 255, 0.08) 1px, transparent 1px);
+			background-size: auto, auto, 25px 25px, 25px 25px;
+			backdrop-filter: blur(20px);
+			border: 2px solid #00ffff;
+			box-shadow: 
+				0 0 30px rgba(0, 255, 255, 0.4),
+				inset 0 0 30px rgba(0, 255, 255, 0.1);
+		"></div>
 		
 		
 		<div id="info" class="absolute left-1/2

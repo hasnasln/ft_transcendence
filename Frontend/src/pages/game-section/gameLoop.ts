@@ -48,21 +48,30 @@ export class GameLoop {
 			gameInstance.uiManager.ball!.ball.position = new Vector3(x, y, -gameInstance.gameInfo!.constants?.ballRadius!);
 		}
 
+		let localPaddles = [gameInstance.uiManager.paddle1];
+		let remotePaddles = [gameInstance.uiManager.paddle2];
+
+		if (gameInstance.gameInfo!.mode === "localGame")
 		{
-			const localPaddles = [gameInstance.uiManager.paddle1];
+			localPaddles = [gameInstance.uiManager.paddle1, gameInstance.uiManager.paddle2];
+			remotePaddles = [];
+		}
+
+		{
 			localPaddles.forEach(paddle => {
-				const unit = GameInputHandler.getInstance().getDirectionSign() * gameInstance.gameInfo!.constants!.paddleSpeed;
-				const prevPadPos: number = gameInstance.gameInfo!.paddle!.p1y;
+				const side = paddle === gameInstance.uiManager.paddle1 ? "left" : "right";
+				const unit = GameInputHandler.getInstance().getDirectionSign(side) * gameInstance.gameInfo!.constants!.paddleSpeed;
+				const prevPadPos: number = side === "left" ? gameInstance.gameInfo!.paddle!.p1y : gameInstance.gameInfo!.paddle!.p2y;
 				const nextPadPos: number = prevPadPos + unit * dt;
 				const allowedRange = gameInstance.gameInfo!.constants!.groundHeight / 2 - gameInstance.gameInfo!.constants!.paddleHeight / 2;
 				if (nextPadPos < allowedRange && nextPadPos > -allowedRange) {
 					paddle.position.y = nextPadPos; /* client-side prediction */
 					//console.log("eva: ", nextPadPos);
 				}
-				gameInstance.gameInfo!.paddle!.p1y = nextPadPos;
+				 side === "left" ? gameInstance.gameInfo!.paddle!.p1y = nextPadPos : gameInstance.gameInfo!.paddle!.p2y = nextPadPos;
 			})
 
-			const remotePaddles = [gameInstance.uiManager.paddle2];
+			
 			remotePaddles.forEach(paddle => {
 				paddle.position.y = gameInstance.gameInfo!.paddle?.p2y!;
 			})
