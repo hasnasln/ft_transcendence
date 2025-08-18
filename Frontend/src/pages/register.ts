@@ -107,11 +107,17 @@ async function submit(e: Event): Promise<void> {
             ModernOverlay.show(`auth-messages.${response.message}`, 'error');
             return;
         }
+
+        try {
+            sessionStorage.setItem('pendingEmail', email);
+        } catch (error: any) {
+            console.error('Error saving email to session storage:', error);
+        }
         
         ModernOverlay.show(`auth-messages.${response.message}`, 'success');
 
         setTimeout(() => {
-            Router.getInstance().go('/login');
+            Router.getInstance().go('/email-verify');
         }, 1500);
         
     } catch (error: any) {
