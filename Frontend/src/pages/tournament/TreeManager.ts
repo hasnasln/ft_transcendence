@@ -34,7 +34,7 @@ export class TournamentTreeManager {
                 if (response.data.status != 'created')
                 {
                     // const x = this.renderTournamentTree(response.data?.tournament_start?.rounds!);
-                    const x = this.renderTournamentTree(tournament10.tournament_start?.rounds!);
+                    const x = this.renderTournamentTree(response.data?.tournament_start?.rounds!);
                     const treeContainer = document.getElementById('tree-container');
                     if (!treeContainer) return;
                     treeContainer.innerHTML = x;

@@ -357,10 +357,12 @@ function getScoreBoard(): string {
 					p-[2px] lg:p-[10px]
 					">
 						<span class="current-time-container
-						mb-2 lg:mb-8 ">
+						mb-2">
 							<span class="event-current-time">
-								<span id="roundNo" class="event-clock">(Round 1)</span>
-								<span class="current-part">PONG</span>
+								<span id="sets-home" class="mr-2 font-weight-bold
+								text-[15px] lg:text-[30px] text-sky-600">0</span>
+								<span id="sets-away" class="current-part
+								text-[15px] lg:text-[30px] text-red-500">0</span>
 							</span>
 							<span class="progress-dots" data-progress="1S">
 								<span class="load"></span>

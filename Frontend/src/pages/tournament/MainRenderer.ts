@@ -42,12 +42,12 @@ function createHeaderSection(tdata: ITournament): string {
     `;
 }
 
-
+// eklenen satır turnuva başlatıldıktan sonra admine ihtiyac olmadığı için admin paneli hiç oluşturmuyuruz.
 function createInfoPanel(tdata: ITournament): string {
     return `
         <div class="lg:col-span-2 space-y-6">
             ${createDetailsCard(tdata)}
-            ${createAdminPanel(tdata)}
+            ${tdata.status == "created" ? createAdminPanel(tdata) : ''}
         </div>
     `;
 }
