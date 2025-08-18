@@ -220,27 +220,38 @@ export function updateScoreBoard() {
 		gameInstance.uiManager.scoreTable.innerText = `${gameInstance.gameInfo.setState?.points.leftPlayer}  :  ${gameInstance.gameInfo.setState?.points.rightPlayer}`;
 	}
 	
-	const roundDisplay = document.getElementById("roundNo");
-	if (roundDisplay) {
-		if (gameInstance.gameInfo.mode === 'tournament') {
-			if (gameInstance.gameStatus.finalMatch) {
-				roundDisplay.innerText = `Final`;
-			} else {
-				const roundNumber = gameInstance.gameInfo.state?.roundNumber || 1;
-				const roundNoFromStatus = gameInstance.gameStatus.roundNo;
-				
-				const actualRound = roundNoFromStatus || roundNumber || 1;
-				roundDisplay.innerText = `Round ${actualRound}`;
-			}
-		} else {
-			const leftSets = gameInstance.gameInfo.setState?.sets.leftPlayer || 0;
-			const rightSets = gameInstance.gameInfo.setState?.sets.rightPlayer || 0;
-			const totalSets = leftSets + rightSets;
-			const currentRound = totalSets + 1;
-			
-			roundDisplay.innerText = `Round ${currentRound}`;
-		}
+	// maç bitiminde 3 yazması gereken yerde 2 yazıp bitiriyor, maç bitiminde, son 
+	// sayı emit olarak gönderiliyor, bu yüzden burada 2 yazıyor.
+	// emitleri kontrol ettim geliyor
+	const setsHome = document.getElementById("sets-home");
+	const setsAway = document.getElementById("sets-away");
+	if (setsHome && setsAway) {
+		setsHome.textContent = `${gameInstance.gameInfo.setState?.sets.leftPlayer}`;
+		setsAway.textContent = `${gameInstance.gameInfo.setState?.sets.rightPlayer}`;
 	}
+
+	// Rount no tarzında bir şey yazmayacağımız için aşağı ksımı silebilirz
+	// const roundDisplay = document.getElementById("roundNo");
+	// if (roundDisplay) {
+	// 	if (gameInstance.gameInfo.mode === 'tournament') {
+	// 		if (gameInstance.gameStatus.finalMatch) {
+	// 			roundDisplay.innerText = `Final`;
+	// 		} else {
+	// 			const roundNumber = gameInstance.gameInfo.state?.roundNumber || 1;
+	// 			const roundNoFromStatus = gameInstance.gameStatus.roundNo;
+				
+	// 			const actualRound = roundNoFromStatus || roundNumber || 1;
+	// 			roundDisplay.innerText = `Round ${actualRound}`;
+	// 		}
+	// 	} else {
+	// 		const leftSets = gameInstance.gameInfo.setState?.sets.leftPlayer || 0;
+	// 		const rightSets = gameInstance.gameInfo.setState?.sets.rightPlayer || 0;
+	// 		const totalSets = leftSets + rightSets;
+	// 		const currentRound = totalSets + 1;
+			
+	// 		roundDisplay.innerText = `Round ${currentRound}`;
+	// 	}
+	// }
 	
 	if (gameInstance.gameInfo.mode === 'tournament') {
 		if (gameInstance.uiManager.roundNoTable) {
