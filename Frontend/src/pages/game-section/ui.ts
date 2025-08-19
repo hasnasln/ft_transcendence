@@ -1,8 +1,6 @@
 import { gameInstance } from "../play";
 import { GameInfo, MatchPlayers } from "./network";
 import { Router } from "../../router";
-import { moveButton } from "../../components/mov-button";
-
 import { BallController } from "./ball";
 
 import { BabylonJsWrapper } from "./3d";
@@ -283,11 +281,6 @@ export function initializeGameUI() {
 
 	prepareScoreBoards();
 	updateScoreBoard();
-	
-	moveButton(document.getElementById("game-wrapper")!, 'left');
-	if (gameInstance.gameStatus.game_mode === "localGame") {
-		moveButton(document.getElementById("game-wrapper")!, 'right');
-	}
 }
 
 export function showSetToast(gameInfo: GameInfo, message: string): Promise<void> {
