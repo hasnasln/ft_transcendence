@@ -383,7 +383,7 @@ function getGoBackButton(): string {
 		absolute
 		rotate-90 sm:rotate-0
 		top-[5%] right-[5%] sm:right-auto sm:top-[10%] sm:left-1/2 sm:-translate-x-1/2
-		sm:top-[10%] sm:sm:top-[5%] sm:left-[5%] sm:left-auto 
+		sm:top-[10%] sm:top-[5%] sm:left-[5%]
 		z-50
 		bg-red-500 text-white home group w-[50px] h-[50px] border border-red-600 rounded-full
 		flex items-center justify-center
