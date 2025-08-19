@@ -78,7 +78,7 @@ export class TournamentTreeManager {
     private createTreeModalOverlay(treeData: any): void {
         const overlay = document.createElement('div');
         overlay.id = 'tree-overlay';
-        overlay.innerHTML = this.uiManager.createTreeModalHTML(treeData);
+        overlay.innerHTML = this.uiManager.createTreeModalHTML();
         document.body.appendChild(overlay);
     }
 
