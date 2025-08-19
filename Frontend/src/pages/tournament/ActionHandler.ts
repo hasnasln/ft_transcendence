@@ -1,6 +1,6 @@
 import { ITournament, TournamentResponseMessages } from '../../api/types';
 import { _apiManager } from '../../api/APIManager';
-import { exmp } from '../../languageManager';
+import { ModernOverlay } from '../../components/ModernOverlay';
 
 export class TournamentActionHandler {
     private data: ITournament;
@@ -16,120 +16,117 @@ export class TournamentActionHandler {
             this.status = newStatus;
         }
     }
-    async createTournament(tournamentName: string): Promise<{ success: boolean; data?: ITournament; message: string }> {
+    async createTournament(tournamentName: string): Promise<{ success: boolean; data?: ITournament; message?: string }> {
         try {
             const response = await _apiManager.createTournament(tournamentName);
             if (response.success === false) {
                 const messageKey = response.message as TournamentResponseMessages;
-                const translatedMessage = exmp.getLang(`tournament-messages.${messageKey}`);
+                ModernOverlay.show(`tournament-messages.${messageKey}`, 'error');
+                
                 return {
-                    success: false,
-                    message: translatedMessage || response.message || 'Turnuva oluşturulamadı'
+                    success: false
                 };
             }
             const tdata = this.mapToTournamentData(response.data);
-            const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_CREATED}`);
+            ModernOverlay.show(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_CREATED}`, 'success');
             return {
                 success: true,
-                data: tdata,
-                message: successMessage
+                data: tdata
             };
         } catch (error) {
             console.error('Create tournament error:', error);
+            ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
             return {
-                success: false,
-                message: exmp.getLang('tournament-messages.ERR_INTERNAL_SERVER')
+                success: false
             };
         }
     }
-    async joinTournament(tournamentId: string): Promise<{ success: boolean; data?: ITournament; message: string }> {
+    async joinTournament(tournamentId: string): Promise<{ success: boolean; data?: ITournament; message?: string }> {
         try {
             if (localStorage.getItem('tdata') === null) {
                 const joinResponse = await _apiManager.joinTournament(tournamentId);
                 if (joinResponse.success === false) {
                     const messageKey = joinResponse.message as TournamentResponseMessages;
-                    const translatedMessage = exmp.getLang(`tournament-messages.${messageKey}`);
+                    ModernOverlay.show(`tournament-messages.${messageKey}`, 'error');
+                    
                     return {
-                        success: false,
-                        message: translatedMessage || joinResponse.message || 'Turnuvaya katılım başarısız'
+                        success: false
                     };
                 }
                 const tournamentResponse = await _apiManager.getTournament(tournamentId);
                 if (tournamentResponse.success === false) {
                     const messageKey = tournamentResponse.message as TournamentResponseMessages;
-                    const translatedMessage = exmp.getLang(`tournament-messages.${messageKey}`);
+                    ModernOverlay.show(`tournament-messages.${messageKey}`, 'error');
+                    
                     return {
-                        success: false,
-                        message: translatedMessage || 'Turnuva bilgileri alınamadı'
+                        success: false
                     };
                 }
                 const tdata = this.mapToTournamentData(tournamentResponse.data);
-                tdata.participants = tdata.lobby_members; // Add participants field
-                const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_PARTICIPANT_JOINED}`);
+                tdata.participants = tdata.lobby_members;
+                ModernOverlay.show(`tournament-messages.${TournamentResponseMessages.SUCCESS_PARTICIPANT_JOINED}`, 'success');
                 return {
                     success: true,
-                    data: tdata,
-                    message: successMessage
+                    data: tdata
                 };
             } else {
                 const existingData = JSON.parse(localStorage.getItem('tdata')!);
+                ModernOverlay.show(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_RETRIEVED_UUID}`, 'success');
                 return {
                     success: true,
-                    data: existingData,
-                    message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_RETRIEVED_UUID}`)
+                    data: existingData
                 };
             }
         } catch (error) {
             console.error('Join tournament error:', error);
+            ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
             return {
-                success: false,
-                message: exmp.getLang('tournament-messages.ERR_INTERNAL_SERVER')
+                success: false
             };
         }
     }
 
-    async startTournament(): Promise<{ success: boolean; message: string }> {
+    async startTournament(): Promise<{ success: boolean; message?: string }> {
         try {        
             const response = await _apiManager.startTournament(this.data.code);
             if (response.success === true) {
-                const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_STARTED}`);
+                ModernOverlay.show(`tournament-messages.${TournamentResponseMessages.SUCCESS_TOURNAMENT_STARTED}`, 'success');
                 return {
-                    success: true,
-                    message: successMessage
+                    success: true
                 };
             } else {
                 const messageKey = response.message as TournamentResponseMessages;
-                const translatedMessage = exmp.getLang(`tournament-messages.${messageKey}`);
+                ModernOverlay.show(`tournament-messages.${messageKey}`, 'error');
+                
                 return {
-                    success: false,
-                    message: translatedMessage || response.message || 'Turnuva başlatılırken hata oluştu'
+                    success: false
                 };
             }
         } catch (error) {
             console.error('Start tournament API error:', error);
+            ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
             return {
-                success: false,
-                message: exmp.getLang('tournament-messages.ERR_INTERNAL_SERVER')
+                success: false
             };
         }
     }
 
-    async refreshTournament(): Promise<{ success: boolean; data?: ITournament; message: string }> {
+    async refreshTournament(): Promise<{ success: boolean; data?: ITournament; message?: string }> {
         try {
             const response = await _apiManager.getTournament(this.data.code);
  
             if (response.success === false) {
                 const messageKey = response.message as TournamentResponseMessages;
-                const translatedMessage = exmp.getLang(`tournament-messages.${messageKey}`);
+                ModernOverlay.show(`tournament-messages.${messageKey}`, 'error');
+                
                 return {
-                    success: false,
-                    message: translatedMessage || response.message || 'Turnuva verileri alınamadı'
+                    success: false
                 };
             }
             if (!response.data) {
+                ModernOverlay.show('tournament-messages.ERR_TOURNAMENT_NOT_FOUND', 'error');
                 return {
-                    success: false,
-                    message: exmp.getLang('tournament-messages.ERR_TOURNAMENT_NOT_FOUND')
+                    success: false
                 };
             }
             const updatedData: ITournament = {
@@ -140,21 +137,19 @@ export class TournamentActionHandler {
                 lobby_members: response.data.participants || response.data.users || [],
                 participants: response.data.participants || response.data.users || []
             };
-            const successMessage = exmp.getLang(`tournament-messages.${TournamentResponseMessages.SUCCESS_PARTICIPANTS_RETRIEVED}`);
             return {
                 success: true,
-                data: updatedData,
-                message: successMessage
+                data: updatedData
             };
         } catch (error) {
             console.error('Refresh API error:', error);
+            ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
             return {
-                success: false,
-                message: exmp.getLang('tournament-messages.ERR_INTERNAL_SERVER')
+                success: false
             };
         }
     }
-    async exitTournament(): Promise<{ success: boolean; message: string }> {
+    async exitTournament(): Promise<{ success: boolean; message?: string }> {
         const isAdmin = this.data.admin_id === localStorage.getItem('uuid');
         try {
             let response;
@@ -170,10 +165,10 @@ export class TournamentActionHandler {
 
             if (!response.success) {
                 const messageKey = response.message as TournamentResponseMessages;
-                const translatedMessage = exmp.getLang(`tournament-messages.${messageKey}`);
+                ModernOverlay.show(`tournament-messages.${messageKey}`, 'error');
+                
                 return {
-                    success: false,
-                    message: translatedMessage || response.message || 'Turnuvadan çıkarken hata oluştu'
+                    success: false
                 };
             }
 
@@ -181,18 +176,17 @@ export class TournamentActionHandler {
                 ? TournamentResponseMessages.SUCCESS_TOURNAMENT_DELETED
                 : TournamentResponseMessages.SUCCESS_PARTICIPANT_LEFT;
             
-            const successMessage = exmp.getLang(`tournament-messages.${successMessageKey}`);
+            ModernOverlay.show(`tournament-messages.${successMessageKey}`, 'success');
 
             return {
-                success: response.success,
-                message: successMessage || response.message || 'İşlem başarıyla tamamlandı'
+                success: response.success
             };
 
         } catch (error) {
             console.error('Exit action error:', error);
+            ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
             return {
-                success: false,
-                message: exmp.getLang('tournament-messages.ERR_INTERNAL_SERVER')
+                success: false
             };
         }
     }
