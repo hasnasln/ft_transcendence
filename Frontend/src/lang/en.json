@@ -142,6 +142,22 @@
 		"please-wait": "Please wait...",
 		"starting-button": "STARTING..."
 	},
+	"tournament-ui": {
+		"tournament-started": "Tournament Started!",
+		"players-can-join-matches": "Players can join their matches",
+		"start-tournament": "START TOURNAMENT",
+		"tournament-can-start": "Tournament Can Start",
+		"can-start-with-players": "players can start the tournament",
+		"tournament-tree": "🏆 Tournament Bracket",
+		"close": "Close",
+		"tree-tip": "💡 Tip: You can see match results and player pairings in the bracket",
+		"refresh": "Refresh",
+		"creating-tree": "Creating Tournament Bracket...",
+		"preparing-data": "Preparing data...",
+		"starting-game": "STARTING GAME...",
+		"start-game": "START GAME",
+		"tournament-started-button": "TOURNAMENT STARTED"
+	},
 	"home": {
 		"play-b": "Play Now",
 		"settings-b": "Settings",

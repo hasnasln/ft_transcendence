@@ -123,6 +123,22 @@
 		"please-wait": "Lütfen bekleyin...",
 		"starting-button": "BAŞLATILIYOR..."
 	},
+	"tournament-ui": {
+		"tournament-started": "Turnuva Başlatıldı!",
+		"players-can-join-matches": "Oyuncular maçlarına katılabilir",
+		"start-tournament": "TURNUVAYI BAŞLAT",
+		"tournament-can-start": "Turnuva Başlatılabilir",
+		"can-start-with-players": "oyuncu ile turnuva başlatabilirsiniz",
+		"tournament-tree": "🏆 Turnuva Ağacı",
+		"close": "Kapat",
+		"tree-tip": "💡 İpucu: Ağaçta maç sonuçlarını ve oyuncu eşleşmelerini görebilirsiniz",
+		"refresh": "Yenile",
+		"creating-tree": "Turnuva Ağacı Oluşturuluyor...",
+		"preparing-data": "Veriler hazırlanıyor...",
+		"starting-game": "OYUN BAŞLATILIYOR...",
+		"start-game": "OYUNA BAŞLA",
+		"tournament-started-button": "TURNUVA BAŞLATILDI"
+	},
 	"register-errors": {
 		"required": {
 			"name": "İsim gerekli",

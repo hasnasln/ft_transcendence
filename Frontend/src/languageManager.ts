@@ -314,6 +314,22 @@ const en = {
 		"please-wait": "Please wait...",
 		"starting-button": "STARTING..."
 	},
+	"tournament-ui": {
+		"tournament-started": "Tournament Started!",
+		"players-can-join-matches": "Players can join their matches",
+		"start-tournament": "START TOURNAMENT",
+		"tournament-can-start": "Tournament Can Start",
+		"can-start-with-players": "players can start the tournament",
+		"tournament-tree": "🏆 Tournament Bracket",
+		"close": "Close",
+		"tree-tip": "💡 Tip: You can see match results and player pairings in the bracket",
+		"refresh": "Refresh",
+		"creating-tree": "Creating Tournament Bracket...",
+		"preparing-data": "Preparing data...",
+		"starting-game": "STARTING GAME...",
+		"start-game": "START GAME",
+		"tournament-started-button": "TOURNAMENT STARTED"
+	},
 };
 
 const tr  = {
@@ -658,6 +674,22 @@ const tr  = {
 		"please-wait": "Lütfen bekleyin...",
 		"starting-button": "BAŞLATILIYOR..."
 	},
+	"tournament-ui": {
+		"tournament-started": "Turnuva Başlatıldı!",
+		"players-can-join-matches": "Oyuncular maçlarına katılabilir",
+		"start-tournament": "TURNUVAYI BAŞLAT",
+		"tournament-can-start": "Turnuva Başlatılabilir",
+		"can-start-with-players": "oyuncu ile turnuva başlatabilirsiniz",
+		"tournament-tree": "🏆 Turnuva Ağacı",
+		"close": "Kapat",
+		"tree-tip": "💡 İpucu: Ağaçta maç sonuçlarını ve oyuncu eşleşmelerini görebilirsiniz",
+		"refresh": "Yenile",
+		"creating-tree": "Turnuva Ağacı Oluşturuluyor...",
+		"preparing-data": "Veriler hazırlanıyor...",
+		"starting-game": "OYUN BAŞLATILIYOR...",
+		"start-game": "OYUNA BAŞLA",
+		"tournament-started-button": "TURNUVA BAŞLATILDI"
+	},
 }
 
 
@@ -975,6 +1007,22 @@ const fr = {
 		"preparing-system": "Préparation du système de tournoi...",
 		"please-wait": "Veuillez patienter...",
 		"starting-button": "DÉMARRAGE..."
+	},
+	"tournament-ui": {
+		"tournament-started": "Tournoi Démarré!",
+		"players-can-join-matches": "Les joueurs peuvent rejoindre leurs matchs",
+		"start-tournament": "DÉMARRER LE TOURNOI",
+		"tournament-can-start": "Le Tournoi Peut Démarrer",
+		"can-start-with-players": "joueurs peuvent démarrer le tournoi",
+		"tournament-tree": "🏆 Arbre du Tournoi",
+		"close": "Fermer",
+		"tree-tip": "💡 Astuce: Vous pouvez voir les résultats des matchs et les paires de joueurs dans l'arbre",
+		"refresh": "Actualiser",
+		"creating-tree": "Création de l'Arbre du Tournoi...",
+		"preparing-data": "Préparation des données...",
+		"starting-game": "DÉMARRAGE DU JEU...",
+		"start-game": "DÉMARRER LE JEU",
+		"tournament-started-button": "TOURNOI DÉMARRÉ"
 	}
   }
 

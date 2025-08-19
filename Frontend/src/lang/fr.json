@@ -135,6 +135,22 @@
 		"please-wait": "Veuillez patienter...",
 		"starting-button": "DÉMARRAGE..."
 	},
+	"tournament-ui": {
+		"tournament-started": "Tournoi Démarré!",
+		"players-can-join-matches": "Les joueurs peuvent rejoindre leurs matchs",
+		"start-tournament": "DÉMARRER LE TOURNOI",
+		"tournament-can-start": "Le Tournoi Peut Démarrer",
+		"can-start-with-players": "joueurs peuvent démarrer le tournoi",
+		"tournament-tree": "🏆 Arbre du Tournoi",
+		"close": "Fermer",
+		"tree-tip": "💡 Astuce: Vous pouvez voir les résultats des matchs et les paires de joueurs dans l'arbre",
+		"refresh": "Actualiser",
+		"creating-tree": "Création de l'Arbre du Tournoi...",
+		"preparing-data": "Préparation des données...",
+		"starting-game": "DÉMARRAGE DU JEU...",
+		"start-game": "DÉMARRER LE JEU",
+		"tournament-started-button": "TOURNOI DÉMARRÉ"
+	},
 	"home": {
 		"play-b": "Jouer maintenant",
 		"settings-b": "Paramètres",
