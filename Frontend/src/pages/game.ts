@@ -416,9 +416,18 @@ function getScoreBoard(): string {
 					">
 						<span class="current-time-container
 						mb-2">
+							<span class="
+							font-weight-bold
+							text-[15px] lg:text-[25px] text-sky-600
+							bg-gradient-to-r from-sky-600 to-red-600 text-transparent bg-clip-text
+							">Setler</span>
 							<span class="event-current-time">
-								<span id="sets-home" class="mr-2 font-weight-bold
-								text-[15px] lg:text-[30px] text-sky-600">0</span>
+								<span id="sets-home" class="mr-1 font-weight-bold
+								text-[15px] lg:text-[30px] text-sky-600
+								">0</span>
+								<span class="custom-sep font-weight-bold text-[15px] lg:text-[30px]">
+								-
+								</span>
 								<span id="sets-away" class="current-part
 								text-[15px] lg:text-[30px] text-red-500">0</span>
 							</span>
