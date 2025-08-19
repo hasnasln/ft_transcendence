@@ -406,7 +406,7 @@ function getScoreBoard(): string {
 				<span class="team-info team-home">
 					<span class="team-info-container">
 						<span id="blue-team" class="team-name-info
-						text-[15px] lg:text-[25px]
+						text-[15px] lg:text-[21px]
 						">P1</span>
 					</span>
 				</span>
@@ -446,7 +446,7 @@ function getScoreBoard(): string {
 				<span class="team-info team-away">
 					<span class="team-info-container">
 						<span id="red-team" class="team-name-info
-						text-[15px] lg:text-[25px]									
+						text-[15px] lg:text-[21px]									
 						">P2</span>
 					</span>
 				</span>
