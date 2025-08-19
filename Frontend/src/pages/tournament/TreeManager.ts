@@ -4,7 +4,7 @@ import { ITournament } from '../../api/types';
 import { TournamentIcons } from './IconsHelper';
 import { tournament10, tournament5 } from './10and5';
 import {ParticipantStatus, Participant, TournamentStatus, MatchStatus, TournamentData, TournamentStart, Round, Match} from './10and5';
-import { exmp } from '../../languageManager';
+import { exmp } from '../../lang/languageManager';
 
 export class TournamentTreeManager {
     private data: ITournament;
@@ -27,6 +27,7 @@ export class TournamentTreeManager {
                 this.createTreeModalOverlay(response.data);
                 console.log('Tournament data:', response.data);
             }
+            exmp.applyLanguage();
             return response;
         })
         .then((response) => {
@@ -34,17 +35,26 @@ export class TournamentTreeManager {
             if (response.success) {
                 if (response.data.status != 'created')
                 {
-                    // const x = this.renderTournamentTree(response.data?.tournament_start?.rounds!);
-                    const x = this.renderTournamentTree(response.data?.tournament_start?.rounds!);
                     const treeContainer = document.getElementById('tree-container');
                     if (!treeContainer) return;
-                    treeContainer.innerHTML = x;
-                    setTimeout(() => exmp.applyLanguage(), 2000);
+                    treeContainer.innerHTML = this.renderTournamentTree(response.data?.tournament_start?.rounds!);
+                    exmp.applyLanguage();
                 }
                 else {
                     const treeContainer = document.getElementById('tree-container');
                     if (!treeContainer) return;
-                    ModernOverlay.show('tournament-messages.ERR_TOURNAMENT_NOT_STARTED', 'error');
+                    treeContainer.innerHTML = `
+                        <div class="flex flex-col items-center justify-center py-12 text-center">
+                            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Ağaç Oluşturulamadı</h3>
+                            <p class="text-gray-600 text-sm">Turnuva henüz başlatılmadığı için bla bla lba</p>
+                            <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">Sayfayı Yenile</button>
+                        </div>
+                    `;
+                    exmp.applyLanguage();
                 }
             } else {
                 ModernOverlay.show(`tournament-messages.${response.messageKey}`, 'error');
@@ -172,10 +182,10 @@ export class TournamentTreeManager {
                 <div class="flex items-center space-x-2">
                     <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     <span data-langm-key="tournament-tree.refreshing">Yenileniyor...</span>
-                </div>
-            `;
-            setTimeout(() => exmp.applyLanguage(), 2000);
+                    </div>
+                    `;
         }
+        exmp.applyLanguage();
         try {
             await this.delay(500); 
             if (refreshButton) {
@@ -185,7 +195,6 @@ export class TournamentTreeManager {
                         <span data-langm-key="tournament-tree.refresh">Yenile</span>
                     </div>
                 `;
-                setTimeout(() => exmp.applyLanguage(), 2000);
                 this.handleTree(false); 
             }
         } catch (error) {
@@ -197,7 +206,7 @@ export class TournamentTreeManager {
                         <span data-langm-key="tournament-tree.refresh">Yenile</span>
                     </div>
                 `;
-                setTimeout(() => exmp.applyLanguage(), 2000);
+                exmp.applyLanguage();
             }
         }
     }
