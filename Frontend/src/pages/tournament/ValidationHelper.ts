@@ -1,8 +1,8 @@
 import { _apiManager } from '../../api/APIManager';
 import { getTournamentFormat, getOptimalTournamentSize, calculateByes } from './MainRenderer';
 import { TournamentResponseMessages } from '../../api/types';
-import { exmp } from '../../languageManager';
 import { ModernOverlay } from '../../components/ModernOverlay';
+import { askUser } from '../../router';
 
 export class TournamentValidation {
     async validateTournamentStatus(data: any, status: boolean): Promise<{ isValid: boolean; message: string }> {
@@ -25,42 +25,41 @@ export class TournamentValidation {
         return { isValid: true, message: '' };
     }
 
-    createStartConfirmationMessage(playerCount: number): string {
+    async askTournamentConfirmation(title: string, message: string): Promise<boolean> {
+        const fullMessage = `${title}\n\n\n${message}`;
+        return await askUser(fullMessage);
+    }
+
+    async confirmTournamentStart(playerCount: number): Promise<boolean> {
         const format = getTournamentFormat(playerCount);
         const optimalSize = getOptimalTournamentSize(playerCount);
         const byes = calculateByes(playerCount);
-        let message = `🏆 Turnuva Başlatma Onayı\n\n`;
-        message += `📊 Oyuncu Sayısı: ${playerCount}\n`;
-        message += `⚡ Format: ${format}\n`;
-        message += `🎯 Optimal Boyut: ${optimalSize}\n`;
-        if (byes > 0) {
-            message += `🎭 Bye Alan: ${byes} oyuncu\n`;
-        }
-        message += `\n⚠️ Dikkat:\n`;
-        message += `• Turnuva başladıktan sonra yeni oyuncu katılamaz\n`;
-        message += `• Tüm oyuncular maçlarına katılabilir\n`;
-        message += `• Bu işlem geri alınamaz\n`;
-        message += `\n🎮 Turnuva başlatılsın mı?`;
-        return message;
+        
+        let message = `${playerCount} oyuncu ile turnuva başlatılacak.\n\n`;
+        message += `⚠️ Bu işlem geri alınamaz!`;
+
+        return this.askTournamentConfirmation(
+            '🏆 Turnuva Başlatma Onayı',
+            message
+        );
     }
 
-    createExitConfirmationMessage(isAdmin: boolean): string {
+    async confirmTournamentExit(isAdmin: boolean): Promise<boolean> {
+        let title: string;
+        let message: string;
+        let confirmText: string;
+
         if (isAdmin) {
-            return `🚨 Turnuva Silme Onayı\n\n` +
-                   `Turnuva admin'i olarak çıkış yapmak turnuvayı tamamen silecektir!\n\n` +
-                   `⚠️ Bu işlem geri alınamaz!\n` +
-                   `• Tüm katılımcılar turnuvadan çıkarılacak\n` +
-                   `• Turnuva verileri silinecek\n` +
-                   `• Devam eden maçlar sonlandırılacak\n\n` +
-                   `Turnuvayı silmek istediğinizden emin misiniz?`;
+            title = '🚨 Turnuva Silme Onayı';
+            message = `Admin olarak çıkarsanız turnuva silinecek!\n\n`;
+            message += `⚠️ Bu işlem geri alınamaz!`;
+            confirmText = 'Sil';
         } else {
-            return `👋 Turnuvadan Ayrılma Onayı\n\n` +
-                   `Turnuvadan ayrılmak istediğinizden emin misiniz?\n\n` +
-                   `⚠️ Dikkat:\n` +
-                   `• Turnuvadaki yeriniz kaybolacak\n` +
-                   `• Tekrar katılmak için admin onayı gerekebilir\n` +
-                   `• Devam eden maçlarınız iptal edilecek\n\n` +
-                   `Ayrılmak istiyor musunuz?`;
+            title = '👋 Turnuvadan Ayrıl';
+            message = `Turnuvadan ayrılmak istediğinizden emin misiniz?`;
+            confirmText = 'Ayrıl';
         }
+
+        return this.askTournamentConfirmation(title, message);
     }
 }
