@@ -177,6 +177,7 @@ export class GameUI {
 	}
 
 	public async setupScene(): Promise<void> {
+		console.log("------------------------------->Setting up game scene...");
 		initializeGameUI();
 
 		const sceneSetup = createScene();

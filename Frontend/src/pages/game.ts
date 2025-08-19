@@ -1,9 +1,11 @@
 import { exmp } from "../languageManager";
 import { Page, Router } from "../router";
-import { GameEventBus } from "./game-section/gameEventBus";
 import { WebSocketClient } from "./game-section/wsclient";
 import {gameInstance, GameManager} from "./play";
 import { retroGridBackground } from "./PlayPage";
+import { listenPlayerInputs } from "./game-section/keyboard";
+import { GameLoop } from "./game-section/gameLoop";
+import {GameEventBus, listenGameBusEvents} from './game-section/gameEventBus';
 
 export class GamePage implements Page {
 
@@ -167,6 +169,7 @@ export class GamePage implements Page {
 			case "go-back":
 				this.goBack();
 			case "ready-button":
+				console.log("Ready button clicked");
 				GameEventBus.getInstance().emit({ type: 'READY_BUTTON_CLICK' });
 				break;
 		}
@@ -185,9 +188,7 @@ export class GamePage implements Page {
 				Router.getInstance().go("/play", true);
 			}
 		});
-
-		
-
+		listenGameBusEvents();
 		exmp.applyLanguage();
 	}
 

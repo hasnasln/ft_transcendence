@@ -210,14 +210,21 @@ export function listenGameBusEvents() {
 	});
 
 	GameEventBus.getInstance().on('ENTER_PLAYING_PHASE',  async () => {
+		console.log("-------------------hasan");
 		console.log(`game phase: ${gameInstance.gameStatus.phase} => playing`);
 		gameInstance.gameStatus.phase = "playing";
 		await gameInstance.uiManager.setupScene();
 		listenPlayerInputs(gameInstance.gameInfo!);
 		console.log("Game Loop started due to playing phase entry.");
-
+		console.log("-------------------hasan2");
+		console.log("-------------------hasan3");
 		GameLoop.getInstance().start();
+		const x = document.getElementById("progress-container");
+		if (x) {
+			x.classList.add("hidden");
+		}
 	});
+
 
 	GameEventBus.getInstance().on('REMATCH_APPROVAL', (event) => {
 		if (!event.payload.approval) {

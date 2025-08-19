@@ -60,6 +60,7 @@ export class TournamentGameManager {
     }
 
     private async initializeGame(): Promise<void> {
+        console.log('Initializing game with tournament data:', this.data.code);
         gameInstance.preparePlayProcess(true, this.data.code)
             .then(() => {
                 Router.getInstance().go("/game");

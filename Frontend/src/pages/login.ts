@@ -84,6 +84,7 @@ export class LoginPage implements Page {
 					this.handleLogin();
 					break;
 				case 'open':
+					console.log("open");
 					const menu = document.getElementById("langDropdownMenu");
 					menu!.classList.toggle('hidden');
 					break;
@@ -111,7 +112,7 @@ export class LoginPage implements Page {
 			// Eğer tıklanan yer buton ya da menünün içindeyse hiçbir şey yapma
 			if (btn!.contains(target) || menu!.contains(target)) return;
 			// Dışarı tıklanmışsa menüyü kapat
-			menu!.classList.add('hidden');
+			menu!.classList.toggle('hidden');
 		});
 
 	}
