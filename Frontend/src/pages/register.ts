@@ -60,13 +60,13 @@ export class RegisterPage implements Page {
                             style="visibility: hidden; height: auto;"
                         ></div>
 
-                        <button type="submit" class="btn-premium w-full mt-4">
-                            ${exmp.getLang("singin.register-b") || "Kayıt Ol"}
+                        <button type="submit" class="btn-premium w-full mt-4" data-langm-key="singin.register-b">
+                            !_!
                         </button>
 
                         <p class="text-center text-premium mt-6">
-                            <button id="show-login" type="button" class="link-premium">
-                                ${exmp.getLang("singin.login-b") || "Giriş Yap"}
+                            <button id="show-login" type="button" class="link-premium" data-langm-key="singin.login-b">
+                                !_!
                             </button>
                         </p>
                     </form>
