@@ -330,6 +330,12 @@ const en = {
 		"start-game": "START GAME",
 		"tournament-started-button": "TOURNAMENT STARTED"
 	},
+	"tournament-tree": {
+		"round": ". ROUND",
+		"vs": "VS",
+		"refreshing": "Refreshing...",
+		"refresh": "Refresh"
+	},
 };
 
 const tr  = {
@@ -690,6 +696,12 @@ const tr  = {
 		"start-game": "OYUNA BAŞLA",
 		"tournament-started-button": "TURNUVA BAŞLATILDI"
 	},
+	"tournament-tree": {
+		"round": ". TUR",
+		"vs": "VS",
+		"refreshing": "Yenileniyor...",
+		"refresh": "Yenile"
+	},
 }
 
 
@@ -1023,6 +1035,12 @@ const fr = {
 		"starting-game": "DÉMARRAGE DU JEU...",
 		"start-game": "DÉMARRER LE JEU",
 		"tournament-started-button": "TOURNOI DÉMARRÉ"
+	},
+	"tournament-tree": {
+		"round": ". TOUR",
+		"vs": "VS",
+		"refreshing": "Actualisation...",
+		"refresh": "Actualiser"
 	}
   }
 
