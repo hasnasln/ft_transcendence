@@ -266,7 +266,7 @@ function buttonAgent(e: MouseEvent, page: Page): void {
 }
 
 
-async function askUser(message: string): Promise<boolean> {
+export async function askUser(message: string): Promise<boolean> {
 	const html = `
     <div id="confirmation-dialog" class="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50" style="z-index:10000;">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-sm w-full mx-4 p-6 text-center">
