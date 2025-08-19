@@ -95,7 +95,7 @@ export class TournamentUIManager {
         return container;
     }
 
-    createTreeModalHTML(treeData: any): string {
+    createTreeModalHTML(): string {
         return `
             <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
                 <div class="relative bg-white rounded-lg max-w-6xl max-h-[90vh] overflow-auto p-6">
@@ -112,33 +112,6 @@ export class TournamentUIManager {
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">🏆 Turnuva Ağacı</h2>
                 <button id="close-tree-modal" class="p-2 hover:bg-gray-100 rounded-full transition-colors"title="Kapat">${TournamentIcons.getCloseIcon()}</button>
-            </div>
-        `;
-    }
-
-    // kullandığımız kısmı sildim - bence gerek yok yine de bakalım
-    createTreeInfoSection(playerCount: number): string {
-        const { getTournamentFormat, getOptimalTournamentSize, calculateByes } = this.getTournamentUtils();
-        return `
-            <div class="bg-gray-100 rounded-lg p-4 mb-6">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div class="text-center">
-                        <div class="font-semibold text-gray-600 mb-1">Oyuncu Sayısı</div>
-                        <div class="text-blue-600 font-bold text-lg">${playerCount}</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="font-semibold text-gray-600 mb-1">Format</div>
-                        <div class="text-green-600 font-bold text-lg">${getTournamentFormat(playerCount)}</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="font-semibold text-gray-600 mb-1">Optimal Boyut</div>
-                        <div class="text-purple-600 font-bold text-lg">${getOptimalTournamentSize(playerCount)}</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="font-semibold text-gray-600 mb-1">Bye Alan</div>
-                        <div class="text-orange-600 font-bold text-lg">${calculateByes(playerCount)} oyuncu</div>
-                    </div>
-                </div>
             </div>
         `;
     }
@@ -176,19 +149,6 @@ export class TournamentUIManager {
         `;
     }
 
-    createTreeErrorHTML(message: string): string {
-        return `
-            <div class="flex flex-col items-center justify-center py-12 text-center">
-                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                    <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
-                </div>
-                <p class="text-gray-600 text-sm">${message}</p>
-                <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">Sayfayı Yenile</button>
-            </div>
-        `;
-    }
-
     createLoadingButtonHTML(): string {
         return `
             <div class="flex items-center justify-center space-x-2">
@@ -215,26 +175,5 @@ export class TournamentUIManager {
                 <span>TURNUVA BAŞLATILDI</span>
             </div>
         `;
-    }
-
-    private getTournamentUtils() {
-        return {
-            getTournamentFormat: (playerCount: number) => {
-                if (playerCount <= 2) return "Tek maç";
-                if (playerCount <= 4) return "Yarı final + Final"; 
-                if (playerCount <= 8) return "Çeyrek final + Yarı final + Final";
-                if (playerCount <= 10) return "10 oyunculu eleme + Çeyrek + Yarı + Final";
-                return `${playerCount} oyunculu eleme turnuvası`;
-            },
-            getOptimalTournamentSize: (playerCount: number) => {
-                const sizes = [2, 4, 8, 16];
-                return sizes.find(size => size >= playerCount) || 16;
-            },
-            calculateByes: (playerCount: number) => {
-                const sizes = [2, 4, 8, 16];
-                const optimalSize = sizes.find(size => size >= playerCount) || 16;
-                return optimalSize - playerCount;
-            }
-        };
     }
 }
