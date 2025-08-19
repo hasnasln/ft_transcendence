@@ -415,28 +415,28 @@ function getScoreBoard(): string {
 					p-[2px] lg:p-[10px]
 					">
 						<span class="current-time-container
-						mb-2">
+						mb-1 leading-none">
 							<span class="
 							font-weight-bold
-							text-[15px] lg:text-[25px] text-sky-600
+							text-[10px] lg:text-[18px] text-sky-600
 							bg-gradient-to-r from-sky-600 to-red-600 text-transparent bg-clip-text
 							">Setler</span>
-							<span class="event-current-time">
+							<span class="event-current-time leading-none">
 								<span id="sets-home" class="mr-1 font-weight-bold
-								text-[15px] lg:text-[30px] text-sky-600
+								text-[10px] lg:text-[20px] text-sky-600
 								">0</span>
-								<span class="custom-sep font-weight-bold text-[15px] lg:text-[30px]">
+								<span class="custom-sep font-weight-bold text-[10px] lg:text-[20px]">
 								-
 								</span>
 								<span id="sets-away" class="current-part
-								text-[15px] lg:text-[30px] text-red-500">0</span>
+								text-[10px] lg:text-[20px] text-red-500">0</span>
 							</span>
 							<span class="progress-dots" data-progress="1S">
 								<span class="load"></span>
 							</span>
 						</span>
 						<span class="score-container
-						text-[15px] lg:text-[30px] xl:text-[45px]">
+						text-[15px] lg:text-[30px] xl:text-[45px] leading-none">
 							<span id="score-home" class="score-home">0</span>
 							<span class="custom-sep">-</span>
 							<span id="score-away" class="score-away">0</span>
