@@ -1,5 +1,6 @@
 import { TournamentIcons } from './IconsHelper';
-import { exmp } from '../../languageManager';
+import { exmp } from '../../lang/languageManager';	
+
 
 export class TournamentLoadingManager {
     private lastActionTimes = new Map<string, number>();

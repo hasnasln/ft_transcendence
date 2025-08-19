@@ -1,4 +1,4 @@
-import { exmp } from "../languageManager";
+import { exmp } from '../lang/languageManager';	
 import { Page, Router } from "../router";
 import { WebSocketClient } from "./game-section/wsclient";
 import {gameInstance, GameManager} from "./play";

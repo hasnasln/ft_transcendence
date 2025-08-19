@@ -1,6 +1,6 @@
 import { _apiManager } from "../api/APIManager";
 import { Router } from "../router";
-import { exmp } from "../languageManager";
+import { exmp } from '../lang/languageManager';	
 import { Page } from '../router';
 import { ModernOverlay } from "../components/ModernOverlay.js";
 

@@ -1,5 +1,5 @@
 import { Page } from "../router";
-import { exmp } from "../languageManager";
+import { exmp } from '../lang/languageManager';	
 import { _apiManager } from "../api/APIManager";
 import { ToastManager } from "../ToastManager";
 

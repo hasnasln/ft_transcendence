@@ -1,6 +1,6 @@
 import { Settings } from './Settings';
 import { Profile } from './profile';
-import { exmp } from '../languageManager';
+import { exmp } from '../lang/languageManager';	
 import { Router, Page } from '../router';
 
 
