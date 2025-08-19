@@ -42,10 +42,10 @@ export class TournamentTreeManager {
                 else {
                     const treeContainer = document.getElementById('tree-container');
                     if (!treeContainer) return;
-                    this.uiManager.createTreeErrorHTML("Turnuva henüz başlatılmadı.");
+                    ModernOverlay.show('tournament-messages.ERR_TOURNAMENT_NOT_STARTED', 'error');
                 }
             } else {
-                this.showTreeError(response.messageKey!);
+                ModernOverlay.show(`tournament-messages.${response.messageKey}`, 'error');
             }
         })
         .then(() => {
@@ -195,10 +195,6 @@ export class TournamentTreeManager {
                 `;
             }
         }
-    }
-
-    private showTreeError(errorMessage: string): void {
-        ModernOverlay.show(errorMessage, 'error');
     }
 
     private delay(ms: number): Promise<void> {
