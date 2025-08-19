@@ -128,11 +128,19 @@ export class LoginPage implements Page {
 		try {
 			const response = await _apiManager.login(nicnameOrMail, passwordValue);
 			if (!response.success) {
-				ModernOverlay.show(`auth-messages.${response.message}`, 'error');
+				if (response.message && exmp.getLang(`auth-messages.${response.message}`) !== `auth-messages.${response.message}`) {
+					ModernOverlay.show(`auth-messages.${response.message}`, 'error');
+				} else {
+				 	ModernOverlay.show('singin-errors.INVALID_CREDENTIALS', 'error');
+				}
 				return;
 			}
 
-			ModernOverlay.show(`auth-messages.${response.message}`, 'success');
+			if (response.message && exmp.getLang(`auth-messages.${response.message}`) !== `auth-messages.${response.message}`) {
+				ModernOverlay.show(`auth-messages.${response.message}`, 'success');
+			} else {
+				ModernOverlay.show('singin-success', 'success');
+			}
 
 			setTimeout(() => {
 				Router.getInstance().go('/');
