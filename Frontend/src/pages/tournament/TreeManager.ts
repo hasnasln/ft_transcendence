@@ -4,6 +4,7 @@ import { ITournament } from '../../api/types';
 import { TournamentIcons } from './IconsHelper';
 import { tournament10, tournament5 } from './10and5';
 import {ParticipantStatus, Participant, TournamentStatus, MatchStatus, TournamentData, TournamentStart, Round, Match} from './10and5';
+import { exmp } from '../../languageManager';
 
 export class TournamentTreeManager {
     private data: ITournament;
@@ -38,6 +39,7 @@ export class TournamentTreeManager {
                     const treeContainer = document.getElementById('tree-container');
                     if (!treeContainer) return;
                     treeContainer.innerHTML = x;
+                    setTimeout(() => exmp.applyLanguage(), 2000);
                 }
                 else {
                     const treeContainer = document.getElementById('tree-container');
@@ -111,7 +113,7 @@ export class TournamentTreeManager {
         const roundsHtml = rounds.map((round) => `
             <div class="tournament-round">
                 <div class="round-title">
-                    ${round.round_number}. TUR
+                    <span data-langm-key="tournament-tree.round">${round.round_number}. TUR</span>
                 </div>
                 <div class="matches-container">
                     ${round.matches.map(match => `
@@ -131,7 +133,7 @@ export class TournamentTreeManager {
                                     ${round.winners && this.thisisWinner(round.winners, match.participant1) ? '<span class="trophy">🏆</span>' : ''}
                                 </div>
                             </div>
-                            <div class="vs-divider">VS</div>
+                            <div class="vs-divider" data-langm-key="tournament-tree.vs">VS</div>
                             <div class="player ${
                                 match.status === MatchStatus.CREATED ? '' : 
                                 round.winners && this.thisisWinner(round.winners, match.participant2) ? 'winner' : 'loser'
@@ -169,9 +171,10 @@ export class TournamentTreeManager {
             refreshButton.innerHTML = `
                 <div class="flex items-center space-x-2">
                     <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span>Yenileniyor...</span>
+                    <span data-langm-key="tournament-tree.refreshing">Yenileniyor...</span>
                 </div>
             `;
+            setTimeout(() => exmp.applyLanguage(), 2000);
         }
         try {
             await this.delay(500); 
@@ -179,10 +182,11 @@ export class TournamentTreeManager {
                 refreshButton.innerHTML = `
                     <div class="flex items-center space-x-2">
                         ${TournamentIcons.getRefreshIcon()}
-                        <span>Yenile</span>
+                        <span data-langm-key="tournament-tree.refresh">Yenile</span>
                     </div>
                 `;
-                this.handleTree(false); // Refresh the tree data
+                setTimeout(() => exmp.applyLanguage(), 2000);
+                this.handleTree(false); 
             }
         } catch (error) {
             console.error('Error refreshing tree:', error);
@@ -190,9 +194,10 @@ export class TournamentTreeManager {
                 refreshButton.innerHTML = `
                     <div class="flex items-center space-x-2">
                         ${TournamentIcons.getRefreshIcon()}
-                        <span>Yenile</span>
+                        <span data-langm-key="tournament-tree.refresh">Yenile</span>
                     </div>
                 `;
+                setTimeout(() => exmp.applyLanguage(), 2000);
             }
         }
     }
