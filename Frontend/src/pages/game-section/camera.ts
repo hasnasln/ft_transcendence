@@ -44,7 +44,7 @@ export class CameraController {
             const key = evt.key;
 
             switch (true) {
-                case (evt.altKey && (evt.key === 'r' || evt.key === 'R')):
+                case (evt.shiftKey && (evt.key === 'r' || evt.key === 'R')):
                     if (this.rotationActive) {
                         console.log("resetcamera olacak");
                         this.resetCamera();

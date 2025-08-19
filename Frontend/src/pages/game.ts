@@ -221,7 +221,13 @@ export class GamePage implements Page {
 			<div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all ease-out" style="width: 100%;"></div>
 		</div>
 
-		<div id="roundDiv" class="absolute top-[5%] left-[67%] -translate-x-1/2 hidden flex justify-center items-center px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.2vw] text-[#eee] z-10"></div>
+		<div id="roundDiv" class="absolute top-[5%] left-[70%] -translate-x-1/2 hidden flex justify-center items-center px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.2vw] text-[#eee] z-10">
+		<span id="roundNo" class="text-blue-500">Round : </span>
+		</div>
+
+		<div id="tournamentIdDiv" class="absolute top-[5%] left-[30%] -translate-x-1/2 hidden flex justify-center items-center px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.2vw] text-[#eee] z-10">
+		<span id="tournamentCode" class="text-blue-500">Turnuva Adı: </span>
+		</div>
 
 		<div id="set-toast" class="absolute left-1/2
 		right-[15%] rotate-90 w-[30vh] h-[15vw] text-2xl
@@ -452,9 +458,6 @@ function getScoreBoard(): string {
 					</span>
 				</span>
 			</div>
-		</div>
-		<div id="tournamentIdDiv" class="absolute top-[15%] left-1/2 -translate-x-1/2 hidden px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1vw] text-[#eee] z-10">
-			<span id="tournamentCode" class="text-blue-500">Turnuva ID : </span>
 		</div>
 	`;
 }

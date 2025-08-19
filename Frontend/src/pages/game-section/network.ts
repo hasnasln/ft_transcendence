@@ -24,6 +24,7 @@ export interface GameState {
     setOver: boolean;
     isPaused: boolean;
     roundNumber?: number;
+    tournamentName?: string;
     phase: GamePhase;
 }
 
