@@ -1,5 +1,3 @@
-import { TournamentResponseMessages } from '../../api/types';
-import { exmp } from '../../languageManager';
 import { ModernOverlay } from '../../components/ModernOverlay';
 
 export class TournamentEventHandler {
