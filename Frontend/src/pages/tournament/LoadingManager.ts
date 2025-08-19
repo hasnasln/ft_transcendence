@@ -1,4 +1,5 @@
 import { TournamentIcons } from './IconsHelper';
+import { exmp } from '../../languageManager';
 
 export class TournamentLoadingManager {
     private lastActionTimes = new Map<string, number>();
@@ -134,6 +135,7 @@ export class TournamentLoadingManager {
         target.setAttribute('data-original-content', originalContent);
         if (action !== 'refresh') { 
             target.innerHTML = this.createGenericLoadingHTML();
+            setTimeout(() => exmp.applyLanguage(), 0);
         }
     }
 
@@ -154,12 +156,14 @@ export class TournamentLoadingManager {
         overlay.id = 'create-loading-overlay';
         overlay.innerHTML = this.createCreateLoadingHTML();
         document.body.appendChild(overlay);
+        setTimeout(() => exmp.applyLanguage(), 0);
     }
     showJoinLoading(): void {
         const overlay = document.createElement('div');
         overlay.id = 'join-loading-overlay';
         overlay.innerHTML = this.createJoinLoadingHTML();
         document.body.appendChild(overlay);
+        setTimeout(() => exmp.applyLanguage(), 0);
     }
     showStartLoading(): void {
         const overlay = document.createElement('div');
@@ -172,6 +176,7 @@ export class TournamentLoadingManager {
             startButton.innerHTML = this.createStartLoadingButtonHTML();
             (startButton as HTMLButtonElement).disabled = true;
         }
+        setTimeout(() => exmp.applyLanguage(), 0);
     }
 
     showExitLoading(isAdmin: boolean): void {
@@ -179,6 +184,7 @@ export class TournamentLoadingManager {
         overlay.id = 'exit-loading-overlay';
         overlay.innerHTML = this.createExitLoadingHTML(isAdmin);
         document.body.appendChild(overlay);
+        setTimeout(() => exmp.applyLanguage(), 0);
     }
 
     removeLoadingOverlay(type: string): void {
