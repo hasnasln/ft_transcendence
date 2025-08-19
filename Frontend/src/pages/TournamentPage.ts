@@ -424,13 +424,11 @@ export class TournamentPage implements Page {
     }
     private async getStartConfirmation(): Promise<boolean> {
         const playerCount = this.data!.lobby_members.length;
-        const confirmationMessage = this.validation.createStartConfirmationMessage(playerCount);
-        return confirm(confirmationMessage);
+        return await this.validation.confirmTournamentStart(playerCount);
     }
     private async getExitConfirmation(): Promise<{ confirmed: boolean; isAdmin: boolean }> {
         const isAdmin = this.data!.admin_id === localStorage.getItem('uuid');
-        const confirmationMessage = this.validation.createExitConfirmationMessage(isAdmin);
-        const confirmed = confirm(confirmationMessage);
+        const confirmed = await this.validation.confirmTournamentExit(isAdmin);
         return { confirmed, isAdmin };
     }
     private updateManagersData(newData: ITournament): void {
