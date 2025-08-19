@@ -1,4 +1,4 @@
-import { exmp } from '../languageManager';
+import { exmp } from '../lang/languageManager';
 import { _apiManager } from '../api/APIManager';
 import { ITournament, ITournamentUser, TournamentResponseMessages} from '../api/types';
 import { Router, Page } from '../router';
@@ -233,7 +233,8 @@ export class TournamentPage implements Page {
                 await this.gameManager.handlePlay();
                 break;
             case 'tree':
-                await this.treeManager.handleTree();
+                await this.treeManager.handleTree()
+                .then(() => {exmp.applyLanguage});
                 break;
             case 'show-create':
                 this.handleShowCreate(container);
@@ -318,6 +319,7 @@ export class TournamentPage implements Page {
     private async handleRefresh(): Promise<void> {
         try {
             this.notificationManager.showRefreshLoading(this.loadingManager);
+            exmp.applyLanguage();
             const refreshResult = await this.actionHandler.refreshTournament();
 
             if (refreshResult.success && refreshResult.data) {
