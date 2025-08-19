@@ -301,6 +301,19 @@ const en = {
 		"ERR_RIVAL_ALREADY_WON": "Opponent has already won",
 		"ERR_WINNER_ALREADY_ADDED": "Winner already added"
 },
+	"tournament-loading": {
+		"processing": "Processing...",
+		"creating-tournament": "Creating Tournament...",
+		"joining-tournament": "Joining Tournament...",
+		"starting-tournament": "Starting Tournament...",
+		"deleting-tournament": "Deleting Tournament...",
+		"leaving-tournament": "Leaving Tournament...",
+		"updating": "Updating...",
+		"fetching-data": "Fetching tournament data",
+		"preparing-system": "Preparing tournament system...",
+		"please-wait": "Please wait...",
+		"starting-button": "STARTING..."
+	},
 };
 
 const tr  = {
@@ -575,7 +588,9 @@ const tr  = {
 		"EMAIL_SENT_SUCCESSFULLY": "E-posta başarıyla gönderildi",
 		"EMAIL_SEND_FAILED": "E-posta gönderilemedi",
 		"USER_NOT_VERIFIED": "Kullanıcı doğrulanmamış",
-		"USER_ALREADY_VERIFIED": "Kullanıcı zaten doğrulanmış"
+		"USER_ALREADY_VERIFIED": "Kullanıcı zaten doğrulanmış",
+		// bizim fronttan dönen mesajlar
+		"PASSWORD_MISMATCH": "Şifreler uyuşmuyor"
 },
 	"tournament-messages": {
 		"ERR_INVALID_TOKEN": "Geçersiz token",
@@ -629,6 +644,19 @@ const tr  = {
 		"ERR_WINNER_NOT_IN_MATCHES": "Kazanan maçlarda bulunmuyor",
 		"ERR_RIVAL_ALREADY_WON": "Rakip zaten kazandı",
 		"ERR_WINNER_ALREADY_ADDED": "Kazanan zaten eklendi"
+	},
+	"tournament-loading": {
+		"processing": "İşleniyor...",
+		"creating-tournament": "Turnuva Oluşturuluyor...",
+		"joining-tournament": "Turnuvaya Katılınıyor...",
+		"starting-tournament": "Turnuva Başlatılıyor...",
+		"deleting-tournament": "Turnuva Siliniyor...",
+		"leaving-tournament": "Turnuvadan Ayrılınıyor...",
+		"updating": "Güncelleştiriliyor...",
+		"fetching-data": "Turnuva verileri alınıyor",
+		"preparing-system": "Turnuva sistemi hazırlanıyor...",
+		"please-wait": "Lütfen bekleyin...",
+		"starting-button": "BAŞLATILIYOR..."
 	},
 }
 
@@ -934,7 +962,20 @@ const fr = {
 		"ERR_WINNER_NOT_IN_MATCHES": "Vainqueur introuvable dans les matchs",
 		"ERR_RIVAL_ALREADY_WON": "L’adversaire a déjà gagné",
 		"ERR_WINNER_ALREADY_ADDED": "Vainqueur déjà ajouté"
-}
+	},
+	"tournament-loading": {
+		"processing": "Traitement en cours...",
+		"creating-tournament": "Création du tournoi...",
+		"joining-tournament": "Rejoindre le tournoi...",
+		"starting-tournament": "Démarrage du tournoi...",
+		"deleting-tournament": "Suppression du tournoi...",
+		"leaving-tournament": "Quitter le tournoi...",
+		"updating": "Mise à jour...",
+		"fetching-data": "Récupération des données du tournoi",
+		"preparing-system": "Préparation du système de tournoi...",
+		"please-wait": "Veuillez patienter...",
+		"starting-button": "DÉMARRAGE..."
+	}
   }
 
 type TranslationObject = {
