@@ -173,7 +173,18 @@ function getDifficulty(): string {
 			class="relative z-10 text-red-200">!_!
 			</span>
 		</button">
-		<button id="go-back" class=" flex align-center justify-center text-white home group relative w-[80%] h-[15%] transition-all duration-300 transform  cursor-pointer"
+			${getGoBackButton()}
+	</div>`;
+}
+
+
+function getGoBackButton(): string {
+	return `
+		<button id="go-back" class="
+		bg-red-500 text-white home group w-[50px] h-[50px] border border-red-600 rounded-full
+		flex items-center justify-center
+		hover:bg-red-600 hover:border-red-700 hover:shadow-red-500/25 hover:shadow-lg hover:scale-105
+		transition-all duration-300 transform  cursor-pointer"
 			style="
 				padding: 0.5rem;
 			">
@@ -210,7 +221,11 @@ export class PlayPage implements Page {
 	}
 
 	private goBack() {
-		console.log("Going back to menu");
+		console.log("Going back to the previous page");
+		// gameInstance.finalize();
+		Router.getInstance().invalidatePage("/game");
+		Router.getInstance().invalidatePage("/play");
+		Router.getInstance().go("/play", true );
 	}
 
 	private goHome() {

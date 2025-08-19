@@ -164,12 +164,19 @@ export class GamePage implements Page {
 			case "turnHomePage-button":
 				turnToHomePageButtonClick();
 				break;
+			case "go-back":
+				this.goBack();
 			case "ready-button":
 				GameEventBus.getInstance().emit({ type: 'READY_BUTTON_CLICK' });
 				break;
 		}
 	}
 
+	public goBack(): void {
+		Router.getInstance().invalidatePage("/game");
+		Router.getInstance().invalidatePage("/play");
+		Router.getInstance().go("/play", true );
+	}
 
 	public onLoad(): void {
 		document.addEventListener("click", (event) => {
@@ -206,7 +213,10 @@ export class GamePage implements Page {
 			</button>
 		</div>
 
-		<div id="progress-container" class="hidden w-64 mx-auto bg-gray-700 rounded-full h-2.5">
+		<div id="progress-container" class="
+		rotate-90 sm:rotate-0
+		absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+		hidden w-64 mx-auto bg-gray-700 rounded-full h-2.5">
 			<div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all ease-out" style="width: 100%;"></div>
 		</div>
 
@@ -274,8 +284,10 @@ function getButtons(): string {
 	return `
 	<div id="move-buttons"
 		class="absolute lg:hidden
-		-top-10 right-[40%] rotate-90 w-[70px] h-[160px] 
-		sm:rotate-0 sm:top-[30%] sm:left-[3%] sm:right-auto sm:w-auto sm:h-auto
+		-top-10 right-[50%] translate-x-[50%]
+		rotate-90 w-[70px] h-[160px]
+		sm:rotate-0 sm:top-1/2 sm:translate-y-[-50%] 
+		 sm:left-[3%] sm:right-auto sm:w-auto sm:h-auto
 		bg-white/10 backdrop-blur-md border border-white/20 z-[100] flex flex-col justify-center items-center gap-4 p-3 rounded-2xl shadow-lg">
 		
 		<button id="up_touch_buttons" class="w-[50px] h-[50px] bg-gradient-to-b from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 active:scale-90 transition-all rounded-full flex items-center justify-center shadow-md">
@@ -359,8 +371,30 @@ function getButtons(): string {
 				>!_!</span>
 			</div>
 		</button>
-	</div>
+
+		</div>
+		${getGoBackButton()}
 	`;
+}
+
+function getGoBackButton(): string {
+	return `
+		<button id="go-back" class="
+		absolute
+		rotate-90 sm:rotate-0
+		top-[5%] right-[5%] sm:right-auto sm:top-[10%] sm:left-1/2 sm:-translate-x-1/2
+		sm:top-[10%] sm:sm:top-[5%] sm:left-[5%] sm:left-auto 
+		z-50
+		bg-red-500 text-white home group w-[50px] h-[50px] border border-red-600 rounded-full
+		flex items-center justify-center
+		hover:bg-red-600 hover:border-red-700 hover:shadow-red-500/25 hover:shadow-lg hover:scale-105
+		transition-all duration-300 transform  cursor-pointer"
+			style="
+				padding: 0.5rem;
+			">
+			<svg class="w-6 h-6 text-white group-hover:text-gray-300 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 12H5m7-7-7 7 7 7"/></svg>
+		</button>
+	</div>`;
 }
 
 function getScoreBoard(): string {
