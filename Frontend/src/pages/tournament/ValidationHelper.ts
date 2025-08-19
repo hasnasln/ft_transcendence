@@ -2,21 +2,24 @@ import { _apiManager } from '../../api/APIManager';
 import { getTournamentFormat, getOptimalTournamentSize, calculateByes } from './MainRenderer';
 import { TournamentResponseMessages } from '../../api/types';
 import { exmp } from '../../languageManager';
+import { ModernOverlay } from '../../components/ModernOverlay';
 
 export class TournamentValidation {
     async validateTournamentStatus(data: any, status: boolean): Promise<{ isValid: boolean; message: string }> {
         const response = await _apiManager.getTournament(data.code);
         if (!response.data.tournament_start && !status) {
+            ModernOverlay.show('tournament-messages.ERR_TOURNAMENT_NOT_STARTABLE', 'error');
             return {
                 isValid: false,
-                message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_STARTABLE}`)
+                message: `tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_STARTABLE}`
             };
         }
         const playButton = document.getElementById('play-button');
         if (playButton && playButton.style.visibility === 'hidden') {
+            ModernOverlay.show('tournament-messages.ERR_TOURNAMENT_NOT_MATCH_JOINABLE', 'error');
             return {
                 isValid: false,
-                message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_MATCH_JOINABLE}`)
+                message: `tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_MATCH_JOINABLE}`
             };
         }
         return { isValid: true, message: '' };
