@@ -217,17 +217,18 @@ const en = {
 		"password-update-error": "Error during password update!"
 	  }
 	},
-		"auth-messages": {
-		"AUTH_HEADER_MISSING_OR_INVALID": "Authorization header missing or invalid",
+	"auth-messages": {
 		"TOKEN_MISSING": "Token missing",
 		"INVALID_TOKEN": "Invalid token",
 		"TOKEN_VALID": "Token valid",
+
 		"EMAIL_AND_PASSWORD_REQUIRED": "Email and password required",
 		"EMAIL_LENGTH_INVALID": "Email length invalid",
 		"INVALID_EMAIL_FORMAT": "Invalid email format",
 		"INVALID_EMAIL": "Invalid email",
 		"INVALID_PASSWORD": "Invalid password",
 		"LOGIN_SUCCESS": "Login successful",
+
 		"REGISTRATION_FIELDS_REQUIRED": "Registration fields required",
 		"USERNAME_NOT_ALPHANUMERIC": "Username must contain only letters and numbers",
 		"USERNAME_LENGTH_INVALID": "Username length invalid",
@@ -235,10 +236,16 @@ const en = {
 		"USERNAME_EXISTS": "This username already exists",
 		"EMAIL_EXISTS": "This email address already exists",
 		"USER_REGISTERED": "User registered successfully",
+
 		"USER_NOT_FOUND": "User not found",
 		"EMAIL_ALREADY_IN_USE": "Email address already in use",
 		"USER_UPDATED": "User updated",
-		"NO_CHANGES_MADE": "No changes made"
+		"NO_CHANGES_MADE": "No changes made",
+
+		"EMAIL_SENT_SUCCESSFULLY": "Email sent successfully",
+		"EMAIL_SEND_FAILED": "Failed to send email",
+		"USER_NOT_VERIFIED": "User not verified",
+		"USER_ALREADY_VERIFIED": "User already verified"
 	},
 	"tournament-messages": {
 		"ERR_INVALID_TOKEN": "Invalid or expired authentication token",
@@ -539,28 +546,36 @@ const tr  = {
 		}
 	},
 		"auth-messages": {
-		"AUTH_HEADER_MISSING_OR_INVALID": "Yetkilendirme başlığı eksik veya geçersiz",
+
 		"TOKEN_MISSING": "Token eksik",
 		"INVALID_TOKEN": "Geçersiz token",
 		"TOKEN_VALID": "Token geçerli",
+
 		"EMAIL_AND_PASSWORD_REQUIRED": "E-posta ve şifre gerekli",
 		"EMAIL_LENGTH_INVALID": "E-posta uzunluğu geçersiz",
 		"INVALID_EMAIL_FORMAT": "Geçersiz e-posta formatı",
 		"INVALID_EMAIL": "Geçersiz e-posta",
 		"INVALID_PASSWORD": "Geçersiz şifre",
 		"LOGIN_SUCCESS": "Giriş başarılı",
+
 		"REGISTRATION_FIELDS_REQUIRED": "Kayıt alanları gerekli",
-		"USERNAME_NOT_ALPHANUMERIC": "Kullanıcı adı sadece harf ve rakam içerebilir",
+		"USERNAME_NOT_ALPHANUMERIC": "Kullanıcı adı yalnızca harf ve rakam içermelidir",
 		"USERNAME_LENGTH_INVALID": "Kullanıcı adı uzunluğu geçersiz",
 		"PASSWORD_LENGTH_INVALID": "Şifre uzunluğu geçersiz",
-		"USERNAME_EXISTS": "Bu kullanıcı adı zaten kullanımda",
-		"EMAIL_EXISTS": "Bu e-posta adresi zaten kullanımda",
+		"USERNAME_EXISTS": "Bu kullanıcı adı zaten mevcut",
+		"EMAIL_EXISTS": "Bu e-posta adresi zaten mevcut",
 		"USER_REGISTERED": "Kullanıcı başarıyla kaydedildi",
+
 		"USER_NOT_FOUND": "Kullanıcı bulunamadı",
 		"EMAIL_ALREADY_IN_USE": "E-posta adresi zaten kullanımda",
 		"USER_UPDATED": "Kullanıcı güncellendi",
-		"NO_CHANGES_MADE": "Hiçbir değişiklik yapılmadı"
-	},
+		"NO_CHANGES_MADE": "Herhangi bir değişiklik yapılmadı",
+
+		"EMAIL_SENT_SUCCESSFULLY": "E-posta başarıyla gönderildi",
+		"EMAIL_SEND_FAILED": "E-posta gönderilemedi",
+		"USER_NOT_VERIFIED": "Kullanıcı doğrulanmamış",
+		"USER_ALREADY_VERIFIED": "Kullanıcı zaten doğrulanmış"
+},
 	"tournament-messages": {
 		"ERR_INVALID_TOKEN": "Geçersiz veya süresi dolmuş token",
 		"ERR_INTERNAL_SERVER": "Sunucu iç hata",
@@ -835,7 +850,37 @@ const fr = {
 		"update-error": "Erreur lors de la mise à jour !",
 		"password-update-error": "Erreur lors de la mise à jour du mot de passe !"
 	  }
-	}
+	},
+	"auth-messages": {
+		"TOKEN_MISSING": "Jeton manquant",
+		"INVALID_TOKEN": "Jeton invalide",
+		"TOKEN_VALID": "Jeton valide",
+
+		"EMAIL_AND_PASSWORD_REQUIRED": "E-mail et mot de passe requis",
+		"EMAIL_LENGTH_INVALID": "Longueur de l’e-mail invalide",
+		"INVALID_EMAIL_FORMAT": "Format de l’e-mail invalide",
+		"INVALID_EMAIL": "E-mail invalide",
+		"INVALID_PASSWORD": "Mot de passe invalide",
+		"LOGIN_SUCCESS": "Connexion réussie",
+
+		"REGISTRATION_FIELDS_REQUIRED": "Champs d’inscription requis",
+		"USERNAME_NOT_ALPHANUMERIC": "Le nom d’utilisateur doit contenir uniquement des lettres et des chiffres",
+		"USERNAME_LENGTH_INVALID": "Longueur du nom d’utilisateur invalide",
+		"PASSWORD_LENGTH_INVALID": "Longueur du mot de passe invalide",
+		"USERNAME_EXISTS": "Ce nom d’utilisateur existe déjà",
+		"EMAIL_EXISTS": "Cette adresse e-mail existe déjà",
+		"USER_REGISTERED": "Utilisateur enregistré avec succès",
+
+		"USER_NOT_FOUND": "Utilisateur non trouvé",
+		"EMAIL_ALREADY_IN_USE": "Adresse e-mail déjà utilisée",
+		"USER_UPDATED": "Utilisateur mis à jour",
+		"NO_CHANGES_MADE": "Aucun changement effectué",
+
+		"EMAIL_SENT_SUCCESSFULLY": "E-mail envoyé avec succès",
+		"EMAIL_SEND_FAILED": "Échec de l’envoi de l’e-mail",
+		"USER_NOT_VERIFIED": "Utilisateur non vérifié",
+		"USER_ALREADY_VERIFIED": "Utilisateur déjà vérifié"
+	},
   }
   
 
