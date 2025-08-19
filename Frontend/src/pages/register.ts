@@ -101,19 +101,30 @@ async function submit(e: Event): Promise<void> {
     
     const registerData: IApiRegister = { username, email, password };
     
-   try {
+    try {
         const response = await _apiManager.register(registerData);
         if (!response.success) {
-            ModernOverlay.show(`auth-messages.${response.message}`, 'error');
+            if (response.message && exmp.getLang(`auth-messages.${response.message}`) !== `auth-messages.${response.message}`) {
+                ModernOverlay.show(`auth-messages.${response.message}`, 'error');
+            } 
+            else if (response.message && exmp.getLang(`register-errors.${response.message}`) !== `register-errors.${response.message}`) {
+                ModernOverlay.show(`register-errors.${response.message}`, 'error');
+            }
+            else {
+                ModernOverlay.show('register-errors.registerFailed', 'error');
+            }
             return;
         }
         
-        ModernOverlay.show(`auth-messages.${response.message}`, 'success');
-
+        if (response.message && exmp.getLang(`auth-messages.${response.message}`) !== `auth-messages.${response.message}`) {
+            ModernOverlay.show(`auth-messages.${response.message}`, 'success');
+        } else {
+            ModernOverlay.show('register-success', 'success');
+        }
+        
         setTimeout(() => {
             Router.getInstance().go('/login');
-        }, 1500);
-        
+        }, 3000);
     } catch (error: any) {
         ModernOverlay.show('register-errors.networkError', 'error');
         console.error('Registration error:', error);
