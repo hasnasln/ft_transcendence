@@ -110,6 +110,19 @@
 		"ERR_RIVAL_ALREADY_WON": "Rakip zaten bu round'da kazanmış",
 		"ERR_WINNER_ALREADY_ADDED": "Bu round için kazanan zaten eklenmiş"
 	},
+	"tournament-loading": {
+		"processing": "İşleniyor...",
+		"creating-tournament": "Turnuva Oluşturuluyor...",
+		"joining-tournament": "Turnuvaya Katılınıyor...",
+		"starting-tournament": "Turnuva Başlatılıyor...",
+		"deleting-tournament": "Turnuva Siliniyor...",
+		"leaving-tournament": "Turnuvadan Ayrılınıyor...",
+		"updating": "Güncelleştiriliyor...",
+		"fetching-data": "Turnuva verileri alınıyor",
+		"preparing-system": "Turnuva sistemi hazırlanıyor...",
+		"please-wait": "Lütfen bekleyin...",
+		"starting-button": "BAŞLATILIYOR..."
+	},
 	"register-errors": {
 		"required": {
 			"name": "İsim gerekli",

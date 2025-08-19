@@ -122,6 +122,19 @@
 		"ERR_RIVAL_ALREADY_WON": "Le participant rival a déjà gagné dans ce round",
 		"ERR_WINNER_ALREADY_ADDED": "Le gagnant a déjà été ajouté pour ce round"
 	},
+	"tournament-loading": {
+		"processing": "Traitement en cours...",
+		"creating-tournament": "Création du tournoi...",
+		"joining-tournament": "Rejoindre le tournoi...",
+		"starting-tournament": "Démarrage du tournoi...",
+		"deleting-tournament": "Suppression du tournoi...",
+		"leaving-tournament": "Quitter le tournoi...",
+		"updating": "Mise à jour...",
+		"fetching-data": "Récupération des données du tournoi",
+		"preparing-system": "Préparation du système de tournoi...",
+		"please-wait": "Veuillez patienter...",
+		"starting-button": "DÉMARRAGE..."
+	},
 	"home": {
 		"play-b": "Jouer maintenant",
 		"settings-b": "Paramètres",

@@ -129,6 +129,19 @@
 		"ERR_RIVAL_ALREADY_WON": "Rival participant has already won in this round",
 		"ERR_WINNER_ALREADY_ADDED": "Winner has already been added for this round"
 	},
+	"tournament-loading": {
+		"processing": "Processing...",
+		"creating-tournament": "Creating Tournament...",
+		"joining-tournament": "Joining Tournament...",
+		"starting-tournament": "Starting Tournament...",
+		"deleting-tournament": "Deleting Tournament...",
+		"leaving-tournament": "Leaving Tournament...",
+		"updating": "Updating...",
+		"fetching-data": "Fetching tournament data",
+		"preparing-system": "Preparing tournament system...",
+		"please-wait": "Please wait...",
+		"starting-button": "STARTING..."
+	},
 	"home": {
 		"play-b": "Play Now",
 		"settings-b": "Settings",
