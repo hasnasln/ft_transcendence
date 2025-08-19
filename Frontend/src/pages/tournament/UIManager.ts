@@ -1,5 +1,6 @@
 import { TournamentIcons } from './IconsHelper';
-import { exmp } from '../../languageManager';
+import { exmp } from '../../lang/languageManager';	
+
 
 export class TournamentUIManager {
     createTournamentStartedInfoHTML(): string {
@@ -165,6 +166,20 @@ export class TournamentUIManager {
             <div class="flex items-center justify-center space-x-2">
                 ${TournamentIcons.getGameIcon()}
                 <span data-langm-key="tournament-ui.start-game">!_!</span>
+            </div>
+        `;
+    }
+
+    createTreeErrorHTML(): string {
+        return `
+            <div class="flex flex-col items-center justify-center py-12 text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Ağaç Oluşturulamadı</h3>
+                <p class="text-gray-600 text-sm">Turnuva ağacı render edilirken bir hata oluştu.</p>
+                <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">Sayfayı Yenile</button>
             </div>
         `;
     }
