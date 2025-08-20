@@ -9,7 +9,7 @@ export class RegisterPage implements Page {
 
     evaluate(): string {
         return `<div class="min-h-screen flex items-center justify-center relative overflow-hidden" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #1e3a8a 75%, #1e40af 100%)">
-ü            <div class="absolute inset-0 opacity-5 pointer-events-none">
+            <div class="absolute inset-0 opacity-5 pointer-events-none">
                 <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <pattern id="registerGrid" width="50" height="50" patternUnits="userSpaceOnUse">
