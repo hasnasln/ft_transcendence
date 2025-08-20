@@ -1,4 +1,4 @@
-import { exmp } from "./languageManager";
+import { exmp } from "./lang/languageManager";
 
 export class ToastManager {
 	private static container: HTMLElement | null = null;

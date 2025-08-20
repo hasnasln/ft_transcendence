@@ -1,5 +1,4 @@
-import { TournamentResponseMessages } from '../../api/types';
-import { exmp } from '../../languageManager';
+import { ModernOverlay } from '../../components/ModernOverlay';
 
 export class TournamentEventHandler {
     private container: HTMLElement | null = null;
@@ -37,11 +36,11 @@ export class TournamentEventHandler {
     setupGlobalErrorHandling(): void {
         window.addEventListener('unhandledrejection', (event) => {
             console.error('Unhandled promise rejection:', event.reason);
-            this.showGlobalError(exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_INTERNAL_SERVER}`));
+            ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
         });
         window.addEventListener('error', (event) => {
             console.error('Global error:', event.error);
-            this.showGlobalError(exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_INTERNAL_SERVER}`));
+            ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
         });
     }
 
@@ -99,26 +98,5 @@ export class TournamentEventHandler {
         return button.hasAttribute('disabled') || 
                button.classList.contains('disabled') ||
                (button as HTMLButtonElement).disabled;
-    }
-
-    private showGlobalError(message: string): void {
-        const toast = document.createElement('div');
-        toast.className = 'global-error-toast';
-        toast.innerHTML = `
-            <div class="fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm">
-                <div class="flex items-center space-x-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                    </svg>
-                    <span>${message}</span>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => {
-            if (toast.parentNode) {
-                document.body.removeChild(toast);
-            }
-        }, 5000);
     }
 }

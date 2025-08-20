@@ -3,7 +3,6 @@ import { ModernOverlay } from '../../components/ModernOverlay';
 import { ITournament, TournamentResponseMessages } from '../../api/types';
 import { gameInstance } from '../play';
 import { Router } from '../../router';
-import { exmp } from '../../languageManager';
 
 export class TournamentGameManager {
     private data: ITournament;
@@ -22,21 +21,21 @@ export class TournamentGameManager {
         try {
             const validationResult = await this.validation.validateTournamentStatus(this.data, this.status);
             if (!validationResult.isValid) {
-                this.showValidationError(validationResult.message);
+                ModernOverlay.show(`tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_STARTABLE}`, 'error');
                 return;
             }
             
             this.setPlayButtonLoading();
             const finalCheck = await this.performFinalTournamentCheck();
             if (!finalCheck.isValid) {
-                this.showValidationError(finalCheck.message);
+                ModernOverlay.show(`tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_STARTABLE}`, 'error');
                 return;
             }
             
             await this.initializeGame();
         } catch (error) {
             console.error('Error starting game:', error);
-            this.showGameError(exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_INTERNAL_SERVER}`));
+            ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
             this.handleGameError();
         }
     }
@@ -54,13 +53,14 @@ export class TournamentGameManager {
         if (!response.data?.tournament_start) {
             return {
                 isValid: false,
-                message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_STARTABLE}`)
+                message: `tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_STARTABLE}`
             };
         }
         return { isValid: true, message: '' };
     }
 
     private async initializeGame(): Promise<void> {
+        console.log('Initializing game with tournament data:', this.data.code);
         gameInstance.preparePlayProcess(true, this.data.code)
             .then(() => {
                 Router.getInstance().go("/game");
@@ -89,14 +89,6 @@ export class TournamentGameManager {
             playButton.innerHTML = this.uiManager.createNormalPlayButtonHTML();
             (playButton as HTMLButtonElement).disabled = false;
         }
-    }
-
-    private showValidationError(message: string): void {
-        ModernOverlay.show(message, 'error');
-    }
-
-    private showGameError(message: string): void {
-        ModernOverlay.show(message, 'error');
     }
 
     updateData(newData: ITournament, newStatus: boolean): void {

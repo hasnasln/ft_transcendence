@@ -1,9 +1,11 @@
-import { exmp } from "../languageManager";
+import { exmp } from '../lang/languageManager';	
 import { Page, Router } from "../router";
-import { GameEventBus } from "./game-section/gameEventBus";
 import { WebSocketClient } from "./game-section/wsclient";
 import {gameInstance, GameManager} from "./play";
 import { retroGridBackground } from "./PlayPage";
+import { listenPlayerInputs } from "./game-section/keyboard";
+import { GameLoop } from "./game-section/gameLoop";
+import {GameEventBus, listenGameBusEvents} from './game-section/gameEventBus';
 
 export class GamePage implements Page {
 
@@ -164,12 +166,20 @@ export class GamePage implements Page {
 			case "turnHomePage-button":
 				turnToHomePageButtonClick();
 				break;
+			case "go-back":
+				this.goBack();
 			case "ready-button":
+				console.log("Ready button clicked");
 				GameEventBus.getInstance().emit({ type: 'READY_BUTTON_CLICK' });
 				break;
 		}
 	}
 
+	public goBack(): void {
+		Router.getInstance().invalidatePage("/game");
+		Router.getInstance().invalidatePage("/play");
+		Router.getInstance().go("/play", true );
+	}
 
 	public onLoad(): void {
 		document.addEventListener("click", (event) => {
@@ -178,9 +188,7 @@ export class GamePage implements Page {
 				Router.getInstance().go("/play", true);
 			}
 		});
-
-		
-
+		listenGameBusEvents();
 		exmp.applyLanguage();
 	}
 
@@ -206,22 +214,55 @@ export class GamePage implements Page {
 			</button>
 		</div>
 
-		<div id="progress-container" class="hidden w-64 mx-auto bg-gray-700 rounded-full h-2.5">
+		<div id="progress-container" class="
+		rotate-90 sm:rotate-0
+		absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+		hidden w-64 mx-auto bg-gray-700 rounded-full h-2.5">
 			<div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all ease-out" style="width: 100%;"></div>
 		</div>
 
-		<div id="roundDiv" class="absolute top-[5%] left-[67%] -translate-x-1/2 hidden flex justify-center items-center px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.2vw] text-[#eee] z-10"></div>
+		<div id="roundDiv" class="absolute top-[5%] left-[70%] -translate-x-1/2 hidden flex justify-center items-center px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.2vw] text-[#eee] z-10">
+		<span id="roundNo" class="text-blue-500">Round : </span>
+		</div>
 
-		<div id="set-toast" class="absolute 
-		rotate-90 right-[22%] text-[3vw]
-		sm:rotate-0 sm:right-auto 
-		sm:top-[20%] sm:left-1/2 sm:-translate-x-1/2 bg-black text-white sm:text-[1.5vw] px-[2vw] py-[1vw] rounded-[8px] z-10 hidden"></div>
+		<div id="tournamentIdDiv" class="absolute top-[5%] left-[30%] -translate-x-1/2 hidden flex justify-center items-center px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.2vw] text-[#eee] z-10">
+		<span id="tournamentCode" class="text-blue-500">Turnuva Adı: </span>
+		</div>
+
+		<div id="set-toast" class="absolute left-1/2
+		right-[15%] rotate-90 w-[30vh] h-[15vw] text-2xl
+		sm:right-auto sm:rotate-0 sm:w-auto sm:h-auto sm:text-xl
+		sm:top-[20%] left-1/2 sm:-translate-x-1/2 text-white sm:text-[1.8vw] px-[2vw] py-[1vw] rounded-2xl z-10 hidden" style="
+			background: 
+				linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(10, 10, 30, 0.95)),
+				radial-gradient(circle at center, rgba(0, 255, 255, 0.08) 0%, transparent 70%),
+				linear-gradient(rgba(0, 255, 255, 0.08) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(0, 255, 255, 0.08) 1px, transparent 1px);
+			background-size: auto, auto, 25px 25px, 25px 25px;
+			backdrop-filter: blur(20px);
+			border: 2px solid #00ffff;
+			box-shadow: 
+				0 0 30px rgba(0, 255, 255, 0.4),
+				inset 0 0 30px rgba(0, 255, 255, 0.1);
+		"></div>
 		
 
-		<div id="end-message" class="absolute
-		rotate-90 right-[20%] text-[3vw]
-		sm:rotate-0 sm:right-auto 
-		sm:top-[30%] sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 bg-black text-white sm:text-[2vw] px-[4vw] py-[2vw] rounded-[12px] z-10 hidden"></div>
+		<div id="end-message" class="absolute left-1/2
+		right-[15%] rotate-90 w-[30vh] h-[15vw] text-2xl
+		sm:right-auto sm:rotate-0 sm:w-auto sm:h-auto sm:text-xl
+		sm:top-[20%] left-1/2 sm:-translate-x-1/2 text-white sm:text-[1.8vw] px-[2vw] py-[1vw] rounded-2xl z-10 hidden" style="
+			background: 
+				linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(10, 10, 30, 0.95)),
+				radial-gradient(circle at center, rgba(0, 255, 255, 0.08) 0%, transparent 70%),
+				linear-gradient(rgba(0, 255, 255, 0.08) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(0, 255, 255, 0.08) 1px, transparent 1px);
+			background-size: auto, auto, 25px 25px, 25px 25px;
+			backdrop-filter: blur(20px);
+			border: 2px solid #00ffff;
+			box-shadow: 
+				0 0 30px rgba(0, 255, 255, 0.4),
+				inset 0 0 30px rgba(0, 255, 255, 0.1);
+		"></div>
 		
 		
 		<div id="info" class="absolute left-1/2
@@ -250,8 +291,10 @@ function getButtons(): string {
 	return `
 	<div id="move-buttons"
 		class="absolute lg:hidden
-		-top-10 right-[40%] rotate-90 w-[70px] h-[160px] 
-		sm:rotate-0 sm:top-[30%] sm:left-[3%] sm:right-auto sm:w-auto sm:h-auto
+		-top-10 right-[50%] translate-x-[50%]
+		rotate-90 w-[70px] h-[160px]
+		sm:rotate-0 sm:top-1/2 sm:translate-y-[-50%] 
+		 sm:left-[3%] sm:right-auto sm:w-auto sm:h-auto
 		bg-white/10 backdrop-blur-md border border-white/20 z-[100] flex flex-col justify-center items-center gap-4 p-3 rounded-2xl shadow-lg">
 		
 		<button id="up_touch_buttons" class="w-[50px] h-[50px] bg-gradient-to-b from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 active:scale-90 transition-all rounded-full flex items-center justify-center shadow-md">
@@ -320,23 +363,46 @@ function getButtons(): string {
 		w-[25vh] h-[10vw] text-xs flex items-center justify-center
 			sm:right-auto sm:rotate-0 sm:w-auto sm:h-auto sm:text-[1.5vw]
 			sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:top-[75%] sm:px-[2.8vw] sm:py-[1.2vw] 
-			text-red-200 rounded-2xl cursor-pointer z-30 transition-all duration-300 transform hidden font-semibold" style="
-			background: linear-gradient(135deg, rgba(255, 0, 100, 0.15), rgba(255, 0, 150, 0.15));
-			border: 2px solid rgba(255, 0, 100, 0.4);
-			box-shadow: 0 0 20px rgba(255, 0, 100, 0.3), inset 0 0 20px rgba(255, 0, 100, 0.05);
-			backdrop-filter: blur(10px);
-		" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 30px rgba(255, 0, 100, 0.5), inset 0 0 30px rgba(255, 0, 100, 0.1)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 0 20px rgba(255, 0, 100, 0.3), inset 0 0 20px rgba(255, 0, 100, 0.05)';">
-			<div class="flex items-center gap-2">
-				<svg class="w-[3vw] h-[3vw] sm:w-[1.8vw] h-[1.8vw]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+			text-white rounded-2xl cursor-pointer z-30 transition-all duration-300 transform hidden font-semibold group hover:scale-105 hover:shadow-lg" style="
+			background: linear-gradient(135deg, rgba(14, 165, 233, 0.6), rgba(29, 78, 216, 0.7));
+			border: 2px solid rgba(14, 165, 233, 0.8);
+			box-shadow: 0 4px 20px rgba(14, 165, 233, 0.4);
+			backdrop-filter: blur(15px);
+		">
+			<div class="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-indigo-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+			<div class="flex items-center gap-2 relative z-10">
+				<svg class="w-[3vw] h-[3vw] sm:w-[1.8vw] sm:h-[1.8vw] group-hover:scale-110 transition-transform duration-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
 					<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
 				</svg>
 				<span
 				data-langm-key="game.goHome"
-				>!_!</span>
+				class="group-hover:text-blue-100 transition-colors duration-300">!_!</span>
 			</div>
 		</button>
-	</div>
+
+		</div>
+		${getGoBackButton()}
 	`;
+}
+
+function getGoBackButton(): string {
+	return `
+		<button id="go-back" class="
+		absolute
+		rotate-90 sm:rotate-0
+		top-[5%] right-[5%] sm:right-auto sm:top-[10%] sm:left-1/2 sm:-translate-x-1/2
+		sm:top-[10%] sm:top-[5%] sm:left-[5%]
+		z-50
+		bg-red-500 text-white home group w-[50px] h-[50px] border border-red-600 rounded-full
+		flex items-center justify-center
+		hover:bg-red-600 hover:border-red-700 hover:shadow-red-500/25 hover:shadow-lg hover:scale-105
+		transition-all duration-300 transform  cursor-pointer"
+			style="
+				padding: 0.5rem;
+			">
+			<svg class="w-6 h-6 text-white group-hover:text-gray-300 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 12H5m7-7-7 7 7 7"/></svg>
+		</button>
+	</div>`;
 }
 
 function getScoreBoard(): string {
@@ -348,7 +414,7 @@ function getScoreBoard(): string {
 				<span class="team-info team-home">
 					<span class="team-info-container">
 						<span id="blue-team" class="team-name-info
-						text-[15px] lg:text-[25px]
+						text-[15px] lg:text-[21px]
 						">P1</span>
 					</span>
 				</span>
@@ -357,19 +423,28 @@ function getScoreBoard(): string {
 					p-[2px] lg:p-[10px]
 					">
 						<span class="current-time-container
-						mb-2">
-							<span class="event-current-time">
-								<span id="sets-home" class="mr-2 font-weight-bold
-								text-[15px] lg:text-[30px] text-sky-600">0</span>
+						mb-1 leading-none">
+							<span class="
+							font-weight-bold
+							text-[10px] lg:text-[18px] text-sky-600
+							bg-gradient-to-r from-sky-600 to-red-600 text-transparent bg-clip-text
+							">Setler</span>
+							<span class="event-current-time leading-none">
+								<span id="sets-home" class="mr-1 font-weight-bold
+								text-[10px] lg:text-[20px] text-sky-600
+								">0</span>
+								<span class="custom-sep font-weight-bold text-[10px] lg:text-[20px]">
+								-
+								</span>
 								<span id="sets-away" class="current-part
-								text-[15px] lg:text-[30px] text-red-500">0</span>
+								text-[10px] lg:text-[20px] text-red-500">0</span>
 							</span>
 							<span class="progress-dots" data-progress="1S">
 								<span class="load"></span>
 							</span>
 						</span>
 						<span class="score-container
-						text-[15px] lg:text-[30px] xl:text-[45px]">
+						text-[15px] lg:text-[30px] xl:text-[45px] leading-none">
 							<span id="score-home" class="score-home">0</span>
 							<span class="custom-sep">-</span>
 							<span id="score-away" class="score-away">0</span>
@@ -379,14 +454,11 @@ function getScoreBoard(): string {
 				<span class="team-info team-away">
 					<span class="team-info-container">
 						<span id="red-team" class="team-name-info
-						text-[15px] lg:text-[25px]									
+						text-[15px] lg:text-[21px]									
 						">P2</span>
 					</span>
 				</span>
 			</div>
-		</div>
-		<div id="tournamentIdDiv" class="absolute top-[15%] left-1/2 -translate-x-1/2 hidden px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1vw] text-[#eee] z-10">
-			<span id="tournamentCode" class="text-blue-500">Turnuva ID : </span>
 		</div>
 	`;
 }

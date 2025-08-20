@@ -1,4 +1,6 @@
 import { TournamentIcons } from './IconsHelper';
+import { exmp } from '../../lang/languageManager';	
+
 
 export class TournamentLoadingManager {
     private lastActionTimes = new Map<string, number>();
@@ -7,7 +9,7 @@ export class TournamentLoadingManager {
         return `
             <div class="flex items-center justify-center space-x-2">
                 <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <span>İşleniyor...</span>
+                <span data-langm-key="tournament-loading.processing">!_!</span>
             </div>
         `;
     }
@@ -20,13 +22,13 @@ export class TournamentLoadingManager {
                         <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                             ${TournamentIcons.getCreateIcon()}
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-4">Turnuva Oluşturuluyor...</h3>
+                        <h3 class="text-xl font-bold text-white mb-4" data-langm-key="tournament-loading.creating-tournament">!_!</h3>
                         <div class="flex items-center justify-center space-x-2">
                             <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                             <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse delay-100"></div>
                             <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse delay-200"></div>
                         </div>
-                        <p class="text-gray-300 text-sm mt-4">Lütfen bekleyin...</p>
+                        <p class="text-gray-300 text-sm mt-4" data-langm-key="tournament-loading.please-wait">!_!</p>
                     </div>
                 </div>
             </div>
@@ -41,13 +43,13 @@ export class TournamentLoadingManager {
                         <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                             ${TournamentIcons.getJoinIcon()}
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-4">Turnuvaya Katılınıyor...</h3>
+                        <h3 class="text-xl font-bold text-white mb-4" data-langm-key="tournament-loading.joining-tournament">!_!</h3>
                         <div class="flex items-center justify-center space-x-2">
                             <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
                             <div class="w-2 h-2 bg-purple-400 rounded-full animate-pulse delay-100"></div>
                             <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-200"></div>
                         </div>
-                        <p class="text-gray-300 text-sm mt-4">Lütfen bekleyin...</p>
+                        <p class="text-gray-300 text-sm mt-4" data-langm-key="tournament-loading.please-wait">!_!</p>
                     </div>
                 </div>
             </div>
@@ -62,13 +64,13 @@ export class TournamentLoadingManager {
                         <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                             ${TournamentIcons.getStartIcon()}
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-4">Turnuva Başlatılıyor...</h3>
+                        <h3 class="text-xl font-bold text-white mb-4" data-langm-key="tournament-loading.starting-tournament">!_!</h3>
                         <div class="flex items-center justify-center space-x-2">
                             <div class="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
                             <div class="w-2 h-2 bg-red-400 rounded-full animate-pulse delay-100"></div>
                             <div class="w-2 h-2 bg-orange-400 rounded-full animate-pulse delay-200"></div>
                         </div>
-                        <p class="text-gray-300 text-sm mt-4">Turnuva sistemi hazırlanıyor...</p>
+                        <p class="text-gray-300 text-sm mt-4" data-langm-key="tournament-loading.preparing-system">!_!</p>
                     </div>
                 </div>
             </div>
@@ -91,8 +93,8 @@ export class TournamentLoadingManager {
                 <div class="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center mb-4 backdrop-blur-sm border border-white/10">
                     <div class="w-6 h-6 border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin"></div>
                 </div>
-                <h4 class="text-lg font-bold text-white mb-2">Güncelleştiriliyor...</h4>
-                <p class="text-gray-400 text-sm">Turnuva verileri alınıyor</p>
+                <h4 class="text-lg font-bold text-white mb-2" data-langm-key="tournament-loading.updating">!_!</h4>
+                <p class="text-gray-400 text-sm" data-langm-key="tournament-loading.fetching-data">!_!</p>
                 <div class="mt-4 flex space-x-2">
                     <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
                     <div class="w-2 h-2 bg-purple-400 rounded-full animate-pulse delay-100"></div>
@@ -103,7 +105,7 @@ export class TournamentLoadingManager {
     }
 
     createExitLoadingHTML(isAdmin: boolean): string {
-        const loadingText = isAdmin ? 'Turnuva Siliniyor...' : 'Turnuvadan Ayrılınıyor...';
+        const loadingTextKey = isAdmin ? 'tournament-loading.deleting-tournament' : 'tournament-loading.leaving-tournament';
         const loadingIcon = isAdmin ? TournamentIcons.getDeleteIcon() : TournamentIcons.getExitIcon();
         return `
             <div class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
@@ -112,13 +114,13 @@ export class TournamentLoadingManager {
                         <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                             ${loadingIcon}
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-4">${loadingText}</h3>
+                        <h3 class="text-xl font-bold text-white mb-4" data-langm-key="${loadingTextKey}">!_!</h3>
                         <div class="flex items-center justify-center space-x-2">
                             <div class="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
                             <div class="w-2 h-2 bg-pink-400 rounded-full animate-pulse delay-100"></div>
                             <div class="w-2 h-2 bg-red-400 rounded-full animate-pulse delay-200"></div>
                         </div>
-                        <p class="text-gray-300 text-sm mt-4">Lütfen bekleyin...</p>
+                        <p class="text-gray-300 text-sm mt-4" data-langm-key="tournament-loading.please-wait">!_!</p>
                     </div>
                 </div>
             </div>
@@ -134,6 +136,7 @@ export class TournamentLoadingManager {
         target.setAttribute('data-original-content', originalContent);
         if (action !== 'refresh') { 
             target.innerHTML = this.createGenericLoadingHTML();
+            setTimeout(() => exmp.applyLanguage(), 0);
         }
     }
 
@@ -154,12 +157,14 @@ export class TournamentLoadingManager {
         overlay.id = 'create-loading-overlay';
         overlay.innerHTML = this.createCreateLoadingHTML();
         document.body.appendChild(overlay);
+        setTimeout(() => exmp.applyLanguage(), 0);
     }
     showJoinLoading(): void {
         const overlay = document.createElement('div');
         overlay.id = 'join-loading-overlay';
         overlay.innerHTML = this.createJoinLoadingHTML();
         document.body.appendChild(overlay);
+        setTimeout(() => exmp.applyLanguage(), 0);
     }
     showStartLoading(): void {
         const overlay = document.createElement('div');
@@ -172,6 +177,7 @@ export class TournamentLoadingManager {
             startButton.innerHTML = this.createStartLoadingButtonHTML();
             (startButton as HTMLButtonElement).disabled = true;
         }
+        setTimeout(() => exmp.applyLanguage(), 0);
     }
 
     showExitLoading(isAdmin: boolean): void {
@@ -179,6 +185,7 @@ export class TournamentLoadingManager {
         overlay.id = 'exit-loading-overlay';
         overlay.innerHTML = this.createExitLoadingHTML(isAdmin);
         document.body.appendChild(overlay);
+        setTimeout(() => exmp.applyLanguage(), 0);
     }
 
     removeLoadingOverlay(type: string): void {
@@ -203,7 +210,7 @@ export class TournamentLoadingManager {
         return `
             <div class="flex items-center justify-center space-x-2">
                 <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <span>BAŞLATILIYOR...</span>
+                <span data-langm-key="tournament-loading.starting-button">!_!</span>
             </div>
         `;
     }

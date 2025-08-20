@@ -1,63 +1,73 @@
 import { _apiManager } from '../../api/APIManager';
 import { getTournamentFormat, getOptimalTournamentSize, calculateByes } from './MainRenderer';
 import { TournamentResponseMessages } from '../../api/types';
-import { exmp } from '../../languageManager';
+import { ModernOverlay } from '../../components/ModernOverlay';
+import { askUser } from '../../router';
+import { exmp } from '../../lang/languageManager';
 
 export class TournamentValidation {
     async validateTournamentStatus(data: any, status: boolean): Promise<{ isValid: boolean; message: string }> {
         const response = await _apiManager.getTournament(data.code);
         if (!response.data.tournament_start && !status) {
+            ModernOverlay.show('tournament-messages.ERR_TOURNAMENT_NOT_STARTABLE', 'error');
             return {
                 isValid: false,
-                message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_STARTABLE}`)
+                message: `tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_STARTABLE}`
             };
         }
         const playButton = document.getElementById('play-button');
         if (playButton && playButton.style.visibility === 'hidden') {
+            ModernOverlay.show('tournament-messages.ERR_TOURNAMENT_NOT_MATCH_JOINABLE', 'error');
             return {
                 isValid: false,
-                message: exmp.getLang(`tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_MATCH_JOINABLE}`)
+                message: `tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_MATCH_JOINABLE}`
             };
         }
         return { isValid: true, message: '' };
     }
 
-    createStartConfirmationMessage(playerCount: number): string {
+    async askTournamentConfirmation(title: string, message: string, acceptText: string = "", cancelText: string = ""): Promise<boolean> {
+        const defaultAcceptText = acceptText || exmp.getLang('tournament-confirmation.exit-participant-accept');
+        const defaultCancelText = cancelText || exmp.getLang('tournament-confirmation.cancel');
+        const fullMessage = `${title}\n\n${message}`;
+        return await askUser(fullMessage, defaultAcceptText, defaultCancelText);
+    }
+
+    async confirmTournamentStart(playerCount: number): Promise<boolean> {
         const format = getTournamentFormat(playerCount);
         const optimalSize = getOptimalTournamentSize(playerCount);
         const byes = calculateByes(playerCount);
-        let message = `🏆 Turnuva Başlatma Onayı\n\n`;
-        message += `📊 Oyuncu Sayısı: ${playerCount}\n`;
-        message += `⚡ Format: ${format}\n`;
-        message += `🎯 Optimal Boyut: ${optimalSize}\n`;
-        if (byes > 0) {
-            message += `🎭 Bye Alan: ${byes} oyuncu\n`;
-        }
-        message += `\n⚠️ Dikkat:\n`;
-        message += `• Turnuva başladıktan sonra yeni oyuncu katılamaz\n`;
-        message += `• Tüm oyuncular maçlarına katılabilir\n`;
-        message += `• Bu işlem geri alınamaz\n`;
-        message += `\n🎮 Turnuva başlatılsın mı?`;
-        return message;
+        
+        const title = exmp.getLang('tournament-confirmation.start-title');
+        const messagePart = exmp.getLang('tournament-confirmation.start-message-with-players');
+        const warning = exmp.getLang('tournament-confirmation.start-warning');
+        const acceptText = exmp.getLang('tournament-confirmation.start-accept');
+        const cancelText = exmp.getLang('tournament-confirmation.cancel');
+        
+        let message = `${playerCount} ${messagePart}\n\n${warning}`;
+
+        return this.askTournamentConfirmation(title, message, acceptText, cancelText);
     }
 
-    createExitConfirmationMessage(isAdmin: boolean): string {
+    async confirmTournamentExit(isAdmin: boolean): Promise<boolean> {
+        let title: string;
+        let message: string;
+        let confirmText: string;
+        
+        const cancelText = exmp.getLang('tournament-confirmation.cancel');
+
         if (isAdmin) {
-            return `🚨 Turnuva Silme Onayı\n\n` +
-                   `Turnuva admin'i olarak çıkış yapmak turnuvayı tamamen silecektir!\n\n` +
-                   `⚠️ Bu işlem geri alınamaz!\n` +
-                   `• Tüm katılımcılar turnuvadan çıkarılacak\n` +
-                   `• Turnuva verileri silinecek\n` +
-                   `• Devam eden maçlar sonlandırılacak\n\n` +
-                   `Turnuvayı silmek istediğinizden emin misiniz?`;
+            title = exmp.getLang('tournament-confirmation.exit-admin-title');
+            const adminMessage = exmp.getLang('tournament-confirmation.exit-admin-message');
+            const adminWarning = exmp.getLang('tournament-confirmation.exit-admin-warning');
+            message = `${adminMessage}\n\n${adminWarning}`;
+            confirmText = exmp.getLang('tournament-confirmation.exit-admin-accept');
         } else {
-            return `👋 Turnuvadan Ayrılma Onayı\n\n` +
-                   `Turnuvadan ayrılmak istediğinizden emin misiniz?\n\n` +
-                   `⚠️ Dikkat:\n` +
-                   `• Turnuvadaki yeriniz kaybolacak\n` +
-                   `• Tekrar katılmak için admin onayı gerekebilir\n` +
-                   `• Devam eden maçlarınız iptal edilecek\n\n` +
-                   `Ayrılmak istiyor musunuz?`;
+            title = exmp.getLang('tournament-confirmation.exit-participant-title');
+            message = exmp.getLang('tournament-confirmation.exit-participant-message');
+            confirmText = exmp.getLang('tournament-confirmation.exit-participant-accept');
         }
+
+        return this.askTournamentConfirmation(title, message, confirmText, cancelText);
     }
 }

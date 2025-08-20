@@ -160,8 +160,8 @@ export class APIManager {
 			result.code = response.status;
 			result.data = response.ok ? data : null;
 
-			const backendKey = response.ok ? (data.message || 'USER_REGISTERED') : (data.error || data.message || '');
-			result.messageKey = backendKey;
+			result.message = response.ok ? (data.message || 'USER_REGISTERED') : (data.error || data.message || '');
+			result.messageKey = result.message;
 
 			return result;
 		} catch (error) {

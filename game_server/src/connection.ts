@@ -67,7 +67,7 @@ export class ConnectionHandler {
 
     public acceptConnection(socket: Socket, player: Player): boolean {
         if (this.connectedPlayersMap.has(player.username)) {
-            emitError("Şu anda oyun sunucusuna başka bir oturumdan bağlandınız. Yalnızca bir oturumdan oynayabilirsiniz!", socket.id);
+            emitError('gameServerError',"Şu anda oyun sunucusuna başka bir oturumdan bağlandınız. Yalnızca bir oturumdan oynayabilirsiniz!", socket.id);
             socket.disconnect(true);
             return false;
         }
@@ -96,7 +96,7 @@ export class ConnectionHandler {
             try {
                 MatchManager.getInstance().handleReconnect(player, game);
             } catch (err: any) {
-                emitError(err.message, socket.id);
+                emitError('gameServerError', err.message, socket.id);
                 socket.disconnect(true);
                 console.log(err);
                 return;
