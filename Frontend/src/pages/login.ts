@@ -4,6 +4,8 @@ import { exmp } from '../lang/languageManager';
 import { Page } from '../router';
 import { ModernOverlay } from "../components/ModernOverlay.js";
 
+let flag = false;
+
 
 export class LoginPage implements Page {
 	evaluate(): string {
@@ -62,59 +64,48 @@ export class LoginPage implements Page {
 	}
 
 	onLoad?(): void {
-
 		addFlagLangDropdown();
-
 		exmp.applyLanguage();
-		
-		const login_form = document.getElementById('login-main');
-		if (!login_form) { console.log("hata var"); return;}
-		login_form.addEventListener('click', (event) => {
-			event.preventDefault();
-			const target = (event.target as HTMLElement).closest('[data-action]');
-			if (!target)
-				return;
-			const action = target.getAttribute('data-action');
-			if (!action) return;
-			switch (action) {
-				case 'register':
-					Router.getInstance().go('/register');
-					break;
-				case 'singin':
-					this.handleLogin();
-					break;
-				case 'open':
-					console.log("open");
-					const menu = document.getElementById("langDropdownMenu");
-					menu!.classList.toggle('hidden');
-					break;
-				case 'tr':
-				case 'fr':
-				case 'en':
-				{
-					const menu = document.getElementById("langDropdownMenu");
-					(document.getElementById('selectedLangFlag') as HTMLElement).textContent = getFlag(action);
-					(document.getElementById('selectedLangText') as HTMLElement).textContent = action;
-					menu!.classList.add('hidden');
-					exmp.setLanguage(action);
-					console.log("bla bla bla")
-					break;
+		if(!flag) {
+			flag = true;
+			const login_form = document.getElementById('login-main');
+			if (!login_form) { console.log("hata var"); return;}
+			login_form.addEventListener('click', (event) => {
+				const target = (event.target as HTMLElement).closest('[data-action]');
+				if (!target)
+					return;
+				const action = target.getAttribute('data-action');
+				if (!action) return;
+				switch (action) {
+					case 'register':
+						event.preventDefault();
+						Router.getInstance().go('/register');
+						break;
+					case 'singin':
+						event.preventDefault();
+						this.handleLogin();
+						break;
+					case 'open':
+						const menu = document.getElementById("langDropdownMenu");
+						menu!.classList.toggle('hidden');
+						break;
+					case 'tr':
+					case 'fr':
+					case 'en':
+					{
+						const menu = document.getElementById("langDropdownMenu");
+						(document.getElementById('selectedLangFlag') as HTMLElement).textContent = getFlag(action);
+						(document.getElementById('selectedLangText') as HTMLElement).textContent = action;
+						menu!.classList.add('hidden');
+						exmp.setLanguage(action);
+						console.log("bla bla bla")
+						break;
+					}
+					default:
+						console.warn(`Unknown action: ${action}`);
 				}
-				default:
-					console.warn(`Unknown action: ${action}`);
-			}
-		});
-		
-		const btn = document.getElementById("langDropdownBtn");
-		const menu = document.getElementById("langDropdownMenu");
-		document.addEventListener('click', (e) => {
-			const target = e.target as Node;
-			// Eğer tıklanan yer buton ya da menünün içindeyse hiçbir şey yapma
-			if (btn!.contains(target) || menu!.contains(target)) return;
-			// Dışarı tıklanmışsa menüyü kapat
-			menu!.classList.toggle('hidden');
-		});
-
+			});
+		}
 	}
 
 	private getInputValue(id: string): string {
@@ -126,31 +117,28 @@ export class LoginPage implements Page {
 		const nicnameOrMail = this.getInputValue('nicname_or_mail_input');
 		const passwordValue = this.getInputValue('password_input');
 		
-		try {
-			const response = await _apiManager.login(nicnameOrMail, passwordValue);
-			if (!response.success) {
-				if (response.message && exmp.getLang(`auth-messages.${response.message}`) !== `auth-messages.${response.message}`) {
-					ModernOverlay.show(`auth-messages.${response.message}`, 'error');
-				} else {
-				 	ModernOverlay.show('singin-errors.INVALID_CREDENTIALS', 'error');
+			_apiManager.login(nicnameOrMail, passwordValue)
+			.then((response) => {
+				if (!response.success) {
+					if (response.message && exmp.getLang(`auth-messages.${response.message}`) !== `auth-messages.${response.message}`) {
+						ModernOverlay.show(`auth-messages.${response.message}`, 'error');
+					} else {
+						 ModernOverlay.show('singin-errors.INVALID_CREDENTIALS', 'error');
+					}
+					return Promise.reject();
 				}
-				return;
-			}
-
-			if (response.message && exmp.getLang(`auth-messages.${response.message}`) !== `auth-messages.${response.message}`) {
-				ModernOverlay.show(`auth-messages.${response.message}`, 'success');
-			} else {
-				ModernOverlay.show('singin-success', 'success');
-			}
-
-			setTimeout(() => {
-				Router.getInstance().go('/');
-			}, 1000);
-			
-		} catch (error: any) {
-			ModernOverlay.show('singin-errors.networkError', 'error');
-			console.error('Login error:', error);
-		}
+	
+				if (response.message && exmp.getLang(`auth-messages.${response.message}`) !== `auth-messages.${response.message}`) {
+					ModernOverlay.show(`auth-messages.${response.message}`, 'success');
+				} else {
+					ModernOverlay.show('singin-success', 'success');
+				}
+			})
+			.then(() => {Router.getInstance().go('/');})
+			.catch ((error: any) => {
+				// ModernOverlay.show('singin-errors.networkError', 'error');
+				console.error('Login error:', error);
+			});
 	}
 }
 
