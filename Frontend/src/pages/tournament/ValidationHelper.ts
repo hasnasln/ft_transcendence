@@ -29,7 +29,7 @@ export class TournamentValidation {
     async askTournamentConfirmation(title: string, message: string, acceptText: string = "", cancelText: string = ""): Promise<boolean> {
         const defaultAcceptText = acceptText || exmp.getLang('tournament-confirmation.exit-participant-accept');
         const defaultCancelText = cancelText || exmp.getLang('tournament-confirmation.cancel');
-        const fullMessage = `${title}\n\n\n${message}`;
+        const fullMessage = `${title}\n\n${message}`;
         return await askUser(fullMessage, defaultAcceptText, defaultCancelText);
     }
 
