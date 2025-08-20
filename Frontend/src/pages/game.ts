@@ -363,19 +363,20 @@ function getButtons(): string {
 		w-[25vh] h-[10vw] text-xs flex items-center justify-center
 			sm:right-auto sm:rotate-0 sm:w-auto sm:h-auto sm:text-[1.5vw]
 			sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:top-[75%] sm:px-[2.8vw] sm:py-[1.2vw] 
-			text-red-200 rounded-2xl cursor-pointer z-30 transition-all duration-300 transform hidden font-semibold" style="
-			background: linear-gradient(135deg, rgba(255, 0, 100, 0.15), rgba(255, 0, 150, 0.15));
-			border: 2px solid rgba(255, 0, 100, 0.4);
-			box-shadow: 0 0 20px rgba(255, 0, 100, 0.3), inset 0 0 20px rgba(255, 0, 100, 0.05);
-			backdrop-filter: blur(10px);
-		" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 30px rgba(255, 0, 100, 0.5), inset 0 0 30px rgba(255, 0, 100, 0.1)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 0 20px rgba(255, 0, 100, 0.3), inset 0 0 20px rgba(255, 0, 100, 0.05)';">
-			<div class="flex items-center gap-2">
-				<svg class="w-[3vw] h-[3vw] sm:w-[1.8vw] h-[1.8vw]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+			text-white rounded-2xl cursor-pointer z-30 transition-all duration-300 transform hidden font-semibold group hover:scale-105 hover:shadow-lg" style="
+			background: linear-gradient(135deg, rgba(14, 165, 233, 0.6), rgba(29, 78, 216, 0.7));
+			border: 2px solid rgba(14, 165, 233, 0.8);
+			box-shadow: 0 4px 20px rgba(14, 165, 233, 0.4);
+			backdrop-filter: blur(15px);
+		">
+			<div class="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-indigo-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+			<div class="flex items-center gap-2 relative z-10">
+				<svg class="w-[3vw] h-[3vw] sm:w-[1.8vw] sm:h-[1.8vw] group-hover:scale-110 transition-transform duration-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
 					<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
 				</svg>
 				<span
 				data-langm-key="game.goHome"
-				>!_!</span>
+				class="group-hover:text-blue-100 transition-colors duration-300">!_!</span>
 			</div>
 		</button>
 
