@@ -184,7 +184,8 @@ export const en = {
 		"Button": {
 		  "AI": "Play vs AI",
 		  "Local": "Local Play",
-		  "Online": "Online Play"
+		  "Online": "Online Play",
+		  "Home": "Return Home"
 		}
 	  },
 	  "Difficulty": {
