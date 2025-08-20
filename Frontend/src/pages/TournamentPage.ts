@@ -242,6 +242,9 @@ export class TournamentPage implements Page {
             case 'show-join':
                 this.handleShowJoin(container);
                 break;
+            case 'go-home':
+                Router.getInstance().go('/');
+                break;
             default:
                 console.warn(`Unknown action: ${action}`);
                 break;
