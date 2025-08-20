@@ -10,11 +10,25 @@ export function ShowTournament(container: HTMLElement, tdata: ITournament): void
 }
 function createTournamentPageHTML(tdata: ITournament): string {
     return `
-        <div id="tournament-div02" class="min-h-screen w-full p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+        <div id="tournament-div02" class="min-h-screen w-full p-4 sm:p-6 lg:p-8 relative overflow-hidden" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #1e3a8a 75%, #1e40af 100%)">
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
-                <div class="absolute top-20 left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-                <div class="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl animate-pulse delay-2000"></div>
+                <div class="absolute inset-0 opacity-5">
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <pattern id="tournamentGrid" width="50" height="50" patternUnits="userSpaceOnUse">
+                                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="white" stroke-width="0.5"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#tournamentGrid)" />
+                    </svg>
+                </div>
+                
+                <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400/30 rounded-full animate-float"></div>
+                <div class="absolute top-3/4 right-1/4 w-3 h-3 bg-cyan-300/25 rounded-full animate-float-delayed"></div>
+                <div class="absolute top-1/2 left-3/4 w-1 h-1 bg-indigo-300/40 rounded-full animate-float-slow"></div>
+                <div class="absolute bottom-1/4 left-1/2 w-2 h-2 bg-blue-300/30 rounded-full animate-float"></div>
+                <div class="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-sky-300/25 rounded-full animate-float-delayed"></div>
+                <div class="absolute bottom-1/3 left-1/3 w-2 h-2 bg-blue-400/20 rounded-full animate-float-slow"></div>
             </div>
             <div class="max-w-7xl mx-auto space-y-8 relative z-10">
                 ${createHeaderSection(tdata)}
