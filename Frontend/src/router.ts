@@ -266,7 +266,7 @@ function buttonAgent(e: MouseEvent, page: Page): void {
 }
 
 
-export async function askUser(message: string): Promise<boolean> {
+export async function askUser(message: string, acceptText: string = "Ayrıl", cancelText: string = "Vazgeç"): Promise<boolean> {
 	const html = `
     <div id="confirmation-dialog" class="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50" style="z-index:10000;">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-sm w-full mx-4 p-6 text-center">
@@ -274,10 +274,10 @@ export async function askUser(message: string): Promise<boolean> {
           ${message}
         </h3>
         <button id="confirmation-dialog-accept" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none">
-          Ayrıl
+          ${acceptText}
         </button>
         <button id="confirmation-dialog-cancel" class="px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700 focus:outline-none">
-          Vazgeç
+          ${cancelText}
         </button>
       </div>
     </div>`;
