@@ -81,6 +81,25 @@ export class GameEventBus {
 		this.onceListeners[event.type] = [];
 	}
 
+	public off(eventType: GameEventType, handler: EventHandler): void {
+		this.offByFilter(eventType, h => h.handler === handler);
+	}
+
+	public offAllByLabel(label: string): void {
+		for (const eventType of gameEventTypes) {
+			this.offByFilter(eventType as GameEventType, h => h.labels.includes(label));
+		}
+	}
+
+	public offByFilter(eventType: GameEventType, filter: (h: LabelledEventHandler) => boolean): void {
+		if (this.listeners[eventType]) {
+			this.listeners[eventType] = this.listeners[eventType].filter(h => !filter(h));
+		}
+		if (this.onceListeners[eventType]) {
+			this.onceListeners[eventType] = this.onceListeners[eventType].filter(h => !filter(h));
+		}
+	}
+
 	public once(eventType: GameEventType, handler: EventHandler, ...labels: string[]): void {
 		if (!this.onceListeners[eventType]) {
 			this.onceListeners[eventType] = [];
