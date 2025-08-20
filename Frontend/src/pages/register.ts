@@ -8,8 +8,27 @@ import { ModernOverlay } from "../components/ModernOverlay.js";
 export class RegisterPage implements Page {
 
     evaluate(): string {
-        return `<div class="min-h-screen flex items-center justify-center bg-animated-gradient">
-            <main id="register_main" class="glass-container p-10 mx-16 max-w-full lg:max-w-md w-full relative animate-fadeIn">
+        return `<div class="min-h-screen flex items-center justify-center relative overflow-hidden" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #1e3a8a 75%, #1e40af 100%)">
+ü            <div class="absolute inset-0 opacity-5 pointer-events-none">
+                <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <pattern id="registerGrid" width="50" height="50" patternUnits="userSpaceOnUse">
+                            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="white" stroke-width="0.5"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#registerGrid)" />
+                </svg>
+            </div>
+            
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400/30 rounded-full animate-float"></div>
+                <div class="absolute top-3/4 right-1/4 w-3 h-3 bg-cyan-300/25 rounded-full animate-float-delayed"></div>
+                <div class="absolute top-1/2 left-3/4 w-1 h-1 bg-indigo-300/40 rounded-full animate-float-slow"></div>
+                <div class="absolute bottom-1/4 left-1/2 w-2 h-2 bg-blue-300/30 rounded-full animate-float"></div>
+                <div class="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-sky-300/25 rounded-full animate-float-delayed"></div>
+                <div class="absolute bottom-1/3 left-1/3 w-2 h-2 bg-blue-400/20 rounded-full animate-float-slow"></div>
+            </div>
+            <main id="register_main" class="glass-container p-10 mx-16 max-w-full lg:max-w-md w-full relative animate-fadeIn z-10 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-3xl shadow-2xl">
                 <section id="section-register" class="animate-fadeIn">
                     <form id="register-form" class="flex flex-col space-y-8" autocomplete="off" novalidate>
                         <h2 class="text-4xl font-extrabold text-center mb-8 title-gradient"
