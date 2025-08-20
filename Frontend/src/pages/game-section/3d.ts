@@ -107,12 +107,4 @@ export class BabylonJsWrapper {
 
         console.log("BabylonJS modules loaded successfully.");
     }
-
-    public getMesh(): typeof import("@babylonjs/core/Meshes/mesh").Mesh {
-        return this.Mesh;
-    }
-
-    public getEngine(): typeof import("@babylonjs/core/Engines/engine").Engine {
-        return this.Engine;
-    }
 }
