@@ -306,7 +306,7 @@ export class TournamentPage implements Page {
             this.loadingManager.removeLoadingOverlay('start');
             
             if (startResult.success) {
-                await this.stateManager.handleStartSuccess();
+                this.handleRefresh();
                 this.updateManagersStatus(true);
             }
             // Error handling is now done automatically by ActionHandler
@@ -330,6 +330,7 @@ export class TournamentPage implements Page {
             console.error('Refresh error:', error);
             ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
         }
+        exmp.applyLanguage();
     }
     private async exitTournament(container: HTMLElement): Promise<void> {
         try {

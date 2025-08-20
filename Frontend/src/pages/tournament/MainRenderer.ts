@@ -20,7 +20,7 @@ function createTournamentPageHTML(tdata: ITournament): string {
                 ${createHeaderSection(tdata)}
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
                     ${createInfoPanel(tdata)}
-                    ${createPlayersPanel()}
+                    ${createPlayersPanel(tdata)}
                 </div>
             </div>
         </div>
@@ -229,7 +229,7 @@ function createStartInfo(canStart: boolean, playerCount: number): string {
         `;
     }
 }
-function createPlayersPanel(): string {
+function createPlayersPanel(tdata: ITournament): string {
     return `
         <div class="lg:col-span-1 space-y-6">
             <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 shadow-xl sticky top-4">
@@ -237,7 +237,7 @@ function createPlayersPanel(): string {
                 <div id="list-player" class="space-y-3 max-h-64 sm:max-h-80 lg:max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent pr-2">
                     <!-- Players will be dynamically loaded here -->
                 </div>
-                ${createPlayButton()}
+                ${tdata.status == "ongoing" ? createPlayButton(): ''}
             </div>
         </div>
     `;
