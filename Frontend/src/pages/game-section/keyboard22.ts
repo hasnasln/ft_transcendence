@@ -17,21 +17,6 @@ export class GameInputHandler {
 		return GameInputHandler.instance;
 	}
 
-	public setMode(mode: "local" | "remote"): void {
-		this.mode = mode;
-	}
-
-	public getDirectionSign(): 1 | -1 | 0 {
-		switch (this.direction) {
-			case "up":
-				return 1;
-			case "down":
-				return -1;
-			default:
-				return 0;
-		}
-	}
-
 	public keyToDirectionAndSide(key: string): { direction: "up" | "down" | "stop", side: "left" | "right" } | null {
 		if (key == null)
 			return null;
@@ -58,7 +43,7 @@ export class GameInputHandler {
 			throw new Error("KeyboardInputHandler mode is not set. Please set it to 'local' or 'remote'.");
 		}
 	}
-		
+
 	/** returns 'should event cancelled' */
 	public keyDown(key: string): boolean {
 		const event = this.keyToDirectionAndSide(key);
