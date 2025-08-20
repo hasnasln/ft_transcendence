@@ -336,4 +336,18 @@ export const en = {
 		"refreshing": "Refreshing...",
 		"refresh": "Refresh"
 	},
+	"tournament-confirmation": {
+		"start-title": "🏆 Tournament Start Confirmation",
+		"start-message-with-players": "players will start the tournament.",
+		"start-warning": "⚠️ This action cannot be undone!",
+		"start-accept": "Start",
+		"exit-admin-title": "🚨 Tournament Deletion Confirmation",
+		"exit-admin-message": "If you leave as admin, the tournament will be deleted!",
+		"exit-admin-warning": "⚠️ This action cannot be undone!",
+		"exit-admin-accept": "Delete",
+		"exit-participant-title": "👋 Leave Tournament",
+		"exit-participant-message": "Are you sure you want to leave the tournament?",
+		"exit-participant-accept": "Leave",
+		"cancel": "Cancel"
+	},
 };

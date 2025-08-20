@@ -334,5 +334,19 @@ export const fr = {
 		"vs": "VS",
 		"refreshing": "Actualisation...",
 		"refresh": "Actualiser"
-	}
+	},
+	"tournament-confirmation": {
+		"start-title": "🏆 Confirmation de Démarrage du Tournoi",
+		"start-message-with-players": "joueurs vont démarrer le tournoi.",
+		"start-warning": "⚠️ Cette action ne peut pas être annulée!",
+		"start-accept": "Démarrer",
+		"exit-admin-title": "🚨 Confirmation de Suppression du Tournoi",
+		"exit-admin-message": "Si vous partez en tant qu'administrateur, le tournoi sera supprimé!",
+		"exit-admin-warning": "⚠️ Cette action ne peut pas être annulée!",
+		"exit-admin-accept": "Supprimer",
+		"exit-participant-title": "👋 Quitter le Tournoi",
+		"exit-participant-message": "Êtes-vous sûr de vouloir quitter le tournoi?",
+		"exit-participant-accept": "Quitter",
+		"cancel": "Annuler"
+	},
 }

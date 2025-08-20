@@ -362,4 +362,18 @@ export const tr  = {
 		"refreshing": "Yenileniyor...",
 		"refresh": "Yenile"
 	},
+	"tournament-confirmation": {
+		"start-title": "🏆 Turnuva Başlatma Onayı",
+		"start-message-with-players": "oyuncu ile turnuva başlatılacak.",
+		"start-warning": "⚠️ Bu işlem geri alınamaz!",
+		"start-accept": "Başlat",
+		"exit-admin-title": "🚨 Turnuva Silme Onayı", 
+		"exit-admin-message": "Admin olarak çıkarsanız turnuva silinecek!",
+		"exit-admin-warning": "⚠️ Bu işlem geri alınamaz!",
+		"exit-admin-accept": "Sil",
+		"exit-participant-title": "👋 Turnuvadan Ayrıl",
+		"exit-participant-message": "Turnuvadan ayrılmak istediğinizden emin misiniz?",
+		"exit-participant-accept": "Ayrıl",
+		"cancel": "Vazgeç"
+	},
 }
