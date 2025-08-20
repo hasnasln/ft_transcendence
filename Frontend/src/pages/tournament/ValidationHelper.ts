@@ -25,9 +25,9 @@ export class TournamentValidation {
         return { isValid: true, message: '' };
     }
 
-    async askTournamentConfirmation(title: string, message: string): Promise<boolean> {
+    async askTournamentConfirmation(title: string, message: string, acceptText: string = "Ayrıl", cancelText: string = "Vazgeç"): Promise<boolean> {
         const fullMessage = `${title}\n\n\n${message}`;
-        return await askUser(fullMessage);
+        return await askUser(fullMessage, acceptText, cancelText);
     }
 
     async confirmTournamentStart(playerCount: number): Promise<boolean> {
@@ -40,7 +40,9 @@ export class TournamentValidation {
 
         return this.askTournamentConfirmation(
             '🏆 Turnuva Başlatma Onayı',
-            message
+            message,
+            'Başlat',
+            'Vazgeç'
         );
     }
 
@@ -60,6 +62,6 @@ export class TournamentValidation {
             confirmText = 'Ayrıl';
         }
 
-        return this.askTournamentConfirmation(title, message);
+        return this.askTournamentConfirmation(title, message, confirmText, 'Vazgeç');
     }
 }
