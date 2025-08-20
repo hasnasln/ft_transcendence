@@ -63,7 +63,6 @@ function getMenu(): string {
 	animation: borderGlow 3s ease-in-out infinite;
   ">
   
-  <!-- Başlık -->
   <div class="text-center mb-6 px-4">
 	<h2 data-langm-key="play.Menu.title"
 		class="text-white text-3xl sm:text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-3">
@@ -75,7 +74,6 @@ function getMenu(): string {
 	</p>
   </div>
 
-  <!-- Butonlar -->
   ${buttonData.map(({id, key, icon, gradient, hover, shadow}) => `
 	<div class="group relative
 		w-full sm:w-[90%] md:w-[80%] lg:w-[70%]
@@ -86,17 +84,13 @@ function getMenu(): string {
 		style="border: 1px solid rgba(0, 255, 255, 0.3);
 			   box-shadow: 0 0 15px rgba(0, 255, 255, 0.2), inset 0 0 15px rgba(0, 255, 255, 0.05);">
 		
-		<!-- Hover efekti -->
 		<div class="absolute inset-0 bg-gradient-to-r from-cyan-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 		
-		<!-- Icon -->
 		<span class="text-xl sm:text-2xl filter drop-shadow-lg">${icon}</span>
 		
-		<!-- Text -->
 		<span data-langm-key="${key}"
 			  class="relative z-10 text-cyan-100">${'!_!'}</span>
 
-		<!-- Ok simgesi -->
 		<div class="absolute right-4 transform translate-x-2 group-hover:translate-x-0 transition-transform duration-300 opacity-0 group-hover:opacity-100">
 		  ${id === 'go-home' ? '' :
 		  `<svg class="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -267,7 +261,6 @@ export function retroGridBackground(inner: string) {
 		radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.08) 0%, transparent 50%),
 		radial-gradient(circle at 40% 40%, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
 	">
-		<!-- Büyük grid çizgileri -->
 		<div class="absolute inset-0 pointer-events-none"
 			style="
 				background-image: 
@@ -277,7 +270,6 @@ export function retroGridBackground(inner: string) {
 				animation: gridPulse 4s ease-in-out infinite;
 			">
 		</div>
-		<!-- Küçük grid çizgileri -->
 		<div class="absolute inset-0 pointer-events-none"
 			style="
 				background-image: 
@@ -287,7 +279,6 @@ export function retroGridBackground(inner: string) {
 				animation: gridPulse 6s ease-in-out infinite reverse;
 			">
 		</div>
-		<!-- Yüzen orblar -->
 		<div class="absolute inset-0 overflow-hidden pointer-events-none">
 			<div class="absolute top-[10%] left-[10%] w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full 
 						bg-gradient-to-r from-cyan-400/10 to-blue-400/10 blur-xl"
@@ -302,7 +293,6 @@ export function retroGridBackground(inner: string) {
 					style="animation: floatingOrbs 10s ease-in-out infinite;">
 			</div>
  		</div>
-		<!-- İçerik -->
 		${inner}
 	</div>`
 }
