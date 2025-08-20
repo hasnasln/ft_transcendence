@@ -33,10 +33,6 @@ export class EmailVerifyPage implements Page {
 
                         <p id="cooldown-text" class="text-center text-sm text-premium mt-2"></p>
                     </div>
-
-                    <p class="text-center text-premium mt-6">
-                        <button id="back-to-login" type="button" class="link-premium" data-langm-key="emailVerify.backToLogin">!_!</button>
-                    </p>
                 </section>
             </main>
         </div>`;
@@ -70,9 +66,6 @@ export class EmailVerifyPage implements Page {
             case "resend-btn":
                 this.handleResend();
                 break;
-            case "back-to-login":
-                Router.getInstance().go("/login");
-                break;
         }
     }
 
@@ -101,7 +94,7 @@ export class EmailVerifyPage implements Page {
         try {
             const resp = await _apiManager.verifyEmailToken(code);
             if (!resp || !resp.success) {
-                ModernOverlay.show(`auth-messages.${resp?.message ?? "verificationFailed"}`, "error");
+                ModernOverlay.show(`auth-messages.${resp?.message}`, "error");
                 return;
             }
 

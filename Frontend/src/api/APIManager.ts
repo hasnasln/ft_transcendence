@@ -124,7 +124,7 @@ export class APIManager {
 				localStorage.setItem('email', data.email);
 			} else {
 				result.success = false;
-				result.message = data.message;
+				result.message = data.error;
 			}
 			
 			return result;
@@ -151,7 +151,7 @@ export class APIManager {
 		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		console.log("Register data:", registerData);
 		try {
-			const response = await this.apiCall(`http://auth.transendence.com:8081/api/auth/register`, HTTPMethod.POST, {
+			const response = await this.apiCall(`${this.baseUrl}/register`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
 			}, JSON.stringify(registerData));
 
@@ -173,7 +173,7 @@ export class APIManager {
     public async verifyEmailToken(token: string): Promise<IApiResponseWrapper> {
         const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
         try {
-            const response = await this.apiCall(`http://auth.transendence.com:8081/api/auth/verify`, HTTPMethod.PATCH, {
+            const response = await this.apiCall(`${this.baseUrl}/verify`, HTTPMethod.PATCH, {
                 'Content-Type': 'application/json',
             }, JSON.stringify({ token }));
 
@@ -181,7 +181,7 @@ export class APIManager {
             result.code = response.status;
             result.success = response.ok;
             result.data = response.ok ? data : null;
-            result.message = data.message;
+            result.message = response.ok ? data.message : (data.error || data.message);
 
             return result;
         } catch (error) {

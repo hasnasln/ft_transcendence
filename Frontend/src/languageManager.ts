@@ -59,8 +59,8 @@ const en = {
 		"username": "This username is already taken",
 		"email": "This email is already registered"
 	  },
-	  "USERNAME_ALREADY_EXISTS": "This username is already taken",
-	  "EMAIL_ALREADY_EXISTS": "This email is already registered",
+	  "USERNAME_EXISTS": "This username is already taken",
+	  "EMAIL_EXISTS": "This email is already registered",
 	  "WEAK_PASSWORD": "Password too weak, please choose a stronger password",
 	  "registerFailed": "Registration failed",
 	  "serverError": "Server error, please try again later",
@@ -217,7 +217,7 @@ const en = {
 		"password-update-error": "Error during password update!"
 	  }
 	},
-		"auth-messages": {
+    "auth-messages": {
 		"AUTH_HEADER_MISSING_OR_INVALID": "Authorization header missing or invalid",
 		"TOKEN_MISSING": "Token missing",
 		"INVALID_TOKEN": "Invalid token",
@@ -238,9 +238,35 @@ const en = {
 		"USER_NOT_FOUND": "User not found",
 		"EMAIL_ALREADY_IN_USE": "Email address already in use",
 		"USER_UPDATED": "User updated",
-		"NO_CHANGES_MADE": "No changes made"
+		"NO_CHANGES_MADE": "No changes made",
+        "EMAIL_SENT_SUCCESSFULLY": "Email sent successfully",
+        "EMAIL_SEND_FAILED": "Email send failed",
+        "USER_NOT_VERIFIED": "User not verified",
+        "USER_ALREADY_VERIFIED": "User already verified",
+        "USER_VERIFIED": "User verified successfully"
 	},
-	"tournament-messages": {
+
+    "register-messages": {
+        "verifyEmailBeforeLogin": "Please check your inbox and verify your email before logging in."
+    },
+
+    "emailVerify": {
+        "title": "Email Verification",
+        "subtitle": "Enter the verification code sent to your email.",
+        "codePlaceholder": "Verification code",
+        "confirm": "Confirm",
+        "resend": "Resend email",
+        "backToLogin": "Back to login",
+        "cooldownText": "{s} seconds left to resend",
+
+        "errors": {
+            "missingEmail": "Email information not found. Please register again.",
+            "missingCode": "Please enter the verification code.",
+            "networkError": "Network error. Please try again."
+        }
+    },
+
+    "tournament-messages": {
 		"ERR_INVALID_TOKEN": "Invalid or expired authentication token",
 		"ERR_INTERNAL_SERVER": "Internal server error during token validation",
 		"ERR_TOURNAMENT_NAME_REQUIRED": "Tournament name field is missing in the request",
@@ -356,7 +382,7 @@ const tr  = {
 			"username": "Bu kullanıcı adı zaten alınmış",
 			"email": "Bu e-posta zaten kayıtlı"
 		},
-		"USERNAME_ALREADY_EXISTS": "Bu kullanıcı adı zaten alınmış",
+		"USERNAME_EXISTS": "Bu kullanıcı adı zaten alınmış",
 		"EMAIL_ALREADY_EXISTS": "Bu e-posta zaten kayıtlı",
 		"WEAK_PASSWORD": "Şifre çok zayıf, daha güçlü bir şifre seçin",
 		"registerFailed": "Kayıt işlemi başarısız",
@@ -364,7 +390,26 @@ const tr  = {
 		"networkError": "Ağ bağlantı hatası, internet bağlantınızı kontrol edin"
 	},
 
-	"home":{
+    "register-messages": {
+        "verifyEmailBeforeLogin": "Giriş yapmadan önce e-postanı kontrol edip doğrula."
+    },
+
+    "emailVerify": {
+        "title": "E-posta Doğrulama",
+        "subtitle": "E-posta adresine gönderilen doğrulama kodunu gir.",
+        "codePlaceholder": "Doğrulama kodu",
+        "confirm": "Onayla",
+        "resend": "Tekrar mail gönder",
+        "backToLogin": "Giriş ekranına dön",
+        "cooldownText": "Tekrar göndermek için {s} saniye kaldı",
+        "errors": {
+            "missingEmail": "E-posta bilgisi bulunamadı. Lütfen yeniden kayıt ol.",
+            "missingCode": "Lütfen doğrulama kodunu gir.",
+            "networkError": "Ağ hatası. Lütfen tekrar dene."
+        }
+    },
+
+    "home":{
 		"play-b": "Şimdi Oyna",
 		"settings-b": "Ayarlar",
 		"profile-b": "Profil",
@@ -559,7 +604,12 @@ const tr  = {
 		"USER_NOT_FOUND": "Kullanıcı bulunamadı",
 		"EMAIL_ALREADY_IN_USE": "E-posta adresi zaten kullanımda",
 		"USER_UPDATED": "Kullanıcı güncellendi",
-		"NO_CHANGES_MADE": "Hiçbir değişiklik yapılmadı"
+		"NO_CHANGES_MADE": "Hiçbir değişiklik yapılmadı",
+        "EMAIL_SENT_SUCCESSFULLY": "Email başarıyla gönderildi",
+        "EMAIL_SEND_FAILED": "Email gönderilemedi",
+        "USER_NOT_VERIFIED": "Kullanıcı henüz doğrulanmamış",
+        "USER_ALREADY_VERIFIED": "Kullanıcı zaten doğrulanmış",
+        "USER_VERIFIED": "Kullanıcı başarıyla doğrulandı"
 	},
 	"tournament-messages": {
 		"ERR_INVALID_TOKEN": "Geçersiz veya süresi dolmuş token",
@@ -678,14 +728,34 @@ const fr = {
 		"username": "Ce nom d’utilisateur est déjà pris",
 		"email": "Cet e‑mail est déjà enregistré"
 	  },
-	  "USERNAME_ALREADY_EXISTS": "Ce nom d’utilisateur est déjà pris",
-	  "EMAIL_ALREADY_EXISTS": "Cet e‑mail est déjà enregistré",
+	  "USERNAME_EXISTS": "Ce nom d’utilisateur est déjà pris",
+	  "EMAIL_EXISTS": "Cet e‑mail est déjà enregistré",
 	  "WEAK_PASSWORD": "Mot de passe trop faible, veuillez choisir un mot plus sécurisé",
 	  "registerFailed": "Échec de l’inscription",
 	  "serverError": "Erreur serveur, veuillez réessayer plus tard",
 	  "networkError": "Erreur réseau, veuillez vérifier votre connexion"
 	},
-	"home": {
+
+    "register-messages": {
+        "verifyEmailBeforeLogin": "Avant de vous connecter, veuillez vérifier votre e-mail dans votre boîte de réception."
+    },
+
+    "emailVerify": {
+        "title": "Vérification de l’e-mail",
+        "subtitle": "Saisissez le code de vérification envoyé à votre e‑mail.",
+        "codePlaceholder": "Code de vérification",
+        "confirm": "Confirmer",
+        "resend": "Renvoyer l’e‑mail",
+        "backToLogin": "Retour à la connexion",
+        "cooldownText": "Vous pourrez renvoyer dans {s} secondes",
+        "errors": {
+            "missingEmail": "Adresse e‑mail introuvable. Veuillez vous réinscrire.",
+            "missingCode": "Veuillez saisir le code de vérification.",
+            "networkError": "Erreur réseau. Veuillez réessayer."
+        }
+    },
+
+    "home": {
 	  "play-b": "Jouer maintenant",
 	  "settings-b": "Paramètres",
 	  "profile-b": "Profil",

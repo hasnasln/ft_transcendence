@@ -60,6 +60,20 @@ export class RegisterPage implements Page {
                             style="visibility: hidden; height: auto;"
                         ></div>
 
+                        <div id="slider-captcha" class="select-none mt-2">
+                            <div class="relative w-full h-12 rounded-full bg-gray-200 overflow-hidden shadow-inner">
+                                <div id="slider-progress" class="absolute left-0 top-0 h-full bg-green-500/70" style="width: 0;"></div>
+                                <div id="slider-text" class="absolute inset-0 flex items-center justify-center text-gray-600 font-medium">
+                                    Kaydırarak doğrula
+                                </div>
+                                <div id="slider-handle"
+                                     class="absolute left-0 top-0 h-12 w-12 bg-white rounded-full shadow-md border border-gray-300 flex items-center justify-center cursor-pointer select-none"
+                                     style="touch-action: none;">
+                                    ➤
+                                </div>
+                            </div>
+                        </div>
+
                         <button type="submit" class="btn-premium w-full mt-4">
                             ${exmp.getLang("singin.register-b") || "Kayıt Ol"}
                         </button>
@@ -78,6 +92,113 @@ export class RegisterPage implements Page {
     onLoad(): void {
         exmp.applyLanguage();
         renderRegister(Router.getInstance().rootContainer());
+
+        // Slider CAPTCHA
+        const form = document.getElementById('register-form') as HTMLFormElement | null;
+        const errorDiv = document.getElementById('error-div') as HTMLDivElement | null;
+        const submitBtn = form?.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+
+        const slider = document.getElementById('slider-captcha') as HTMLDivElement | null;
+        const handle = document.getElementById('slider-handle') as HTMLDivElement | null;
+        const progress = document.getElementById('slider-progress') as HTMLDivElement | null;
+        const text = document.getElementById('slider-text') as HTMLDivElement | null;
+
+        if (submitBtn) submitBtn.disabled = true;
+
+        if (!slider || !handle || !progress || !text) return;
+
+        let dragging = false;
+        let startX = 0;
+        let startLeft = 0;
+        let verified = false;
+
+        const track = handle.parentElement as HTMLDivElement;
+
+        const setVerified = () => {
+            verified = true;
+            if (submitBtn) submitBtn.disabled = false;
+            text.textContent = "Doğrulandı ✓";
+            text.classList.remove('text-gray-600');
+            text.classList.add('text-green-700', 'font-semibold');
+            handle.style.left = `${track.clientWidth - handle.clientWidth}px`;
+            progress.style.width = `${track.clientWidth}px`;
+            handle.classList.add('border-green-500');
+        };
+
+        const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max);
+
+        const onMove = (clientX: number) => {
+            if (!dragging || verified) return;
+            const delta = clientX - startX;
+            const maxLeft = track.clientWidth - handle.clientWidth;
+            const newLeft = clamp(startLeft + delta, 0, maxLeft);
+            handle.style.left = `${newLeft}px`;
+            progress.style.width = `${newLeft + handle.clientWidth}px`;
+
+            // Eşik: %92 sonrası otomatik doğrula, "snap" efekti
+            if (newLeft >= maxLeft * 0.92) {
+                setVerified();
+                removeListeners();
+            }
+        };
+
+        const onPointerDown = (e: MouseEvent | TouchEvent) => {
+            if (verified) return;
+            dragging = true;
+            startLeft = parseFloat(handle.style.left || '0');
+            startX = (e instanceof TouchEvent) ? e.touches[0].clientX : (e as MouseEvent).clientX;
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onPointerUp);
+            document.addEventListener('touchmove', onTouchMove, { passive: false });
+            document.addEventListener('touchend', onPointerUp);
+        };
+
+        const onMouseMove = (e: MouseEvent) => onMove(e.clientX);
+        const onTouchMove = (e: TouchEvent) => {
+            e.preventDefault();
+            onMove(e.touches[0].clientX);
+        };
+
+        const onPointerUp = () => {
+            if (!dragging) return;
+            dragging = false;
+            if (verified) return;
+
+            // Bitirmediyse geri dön
+            handle.style.transition = 'left 200ms ease';
+            progress.style.transition = 'width 200ms ease';
+            handle.style.left = '0px';
+            progress.style.width = '0px';
+            setTimeout(() => {
+                handle.style.transition = '';
+                progress.style.transition = '';
+            }, 220);
+
+            removeListeners();
+        };
+
+        const removeListeners = () => {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onPointerUp);
+            document.removeEventListener('touchmove', onTouchMove);
+            document.removeEventListener('touchend', onPointerUp);
+        };
+
+        handle.addEventListener('mousedown', onPointerDown);
+        handle.addEventListener('touchstart', onPointerDown, { passive: true });
+
+        form?.addEventListener('submit', (e) => {
+            if (!verified) {
+                e.preventDefault();
+                if (errorDiv) {
+                    errorDiv.textContent = "Lütfen kaydırarak doğrulayın.";
+                    errorDiv.style.visibility = 'visible';
+                }
+                if (submitBtn) submitBtn.disabled = true;
+                return false;
+            }
+            return true;
+        });
     }
 }
 
@@ -104,7 +225,7 @@ async function submit(e: Event): Promise<void> {
    try {
         const response = await _apiManager.register(registerData);
         if (!response.success) {
-            ModernOverlay.show(`auth-messages.${response.message}`, 'error');
+            ModernOverlay.show(`auth-messages.${response.messageKey}`, 'error');
             return;
         }
 
@@ -113,8 +234,7 @@ async function submit(e: Event): Promise<void> {
         } catch (error: any) {
             console.error('Error saving email to session storage:', error);
         }
-        
-        ModernOverlay.show(`auth-messages.${response.message}`, 'success');
+        ModernOverlay.show(`auth-messages.${response.messageKey}`, 'success');
 
         setTimeout(() => {
             Router.getInstance().go('/email-verify');
