@@ -1,6 +1,6 @@
 import { exmp } from '../lang/languageManager';
 import { _apiManager } from '../api/APIManager';
-import { ITournament, ITournamentUser, TournamentResponseMessages} from '../api/types';
+import { ITournament, ITournamentUser} from '../api/types';
 import { Router, Page } from '../router';
 import { ModernOverlay } from '../components/ModernOverlay';
 import { t_first_section } from './tournament/FormComponents';
