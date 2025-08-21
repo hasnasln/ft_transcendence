@@ -1,5 +1,4 @@
 import { Router } from "../router";
-import { TournamentResponseMessages, AuthResponseMessages } from "./types";
 
 export class HTTPMethod extends String {
 	public static GET: string = 'GET';
