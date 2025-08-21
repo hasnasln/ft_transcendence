@@ -117,31 +117,14 @@ export class TournamentActionHandler {
             const response = await _apiManager.getTournament(this.data.code);
  
             if (response.success === false) {
-                const messageKey = response.message as TournamentResponseMessages;
-                ModernOverlay.show(`tournament-messages.${messageKey}`, 'error');
-                
+                ModernOverlay.show(`tournament-messages.${response.messageKey}`, 'error');
                 return {
                     success: false
                 };
             }
-            if (!response.data) {
-                ModernOverlay.show('tournament-messages.ERR_TOURNAMENT_NOT_FOUND', 'error');
-                return {
-                    success: false
-                };
-            }
-            const updatedData: TournamentData = {
-                id: response.data.id || this.data.id,
-                code: response.data.code || this.data.code,
-                name: response.data.name || this.data.name,
-                admin_id: response.data.admin_id || this.data.admin_id,
-                lobby_members: response.data.participants || response.data.users || [],
-                participants: response.data.participants || response.data.users || [],
-                status: response.data.status || this.data.status
-            };
             return {
                 success: true,
-                data: updatedData
+                data: this.data
             };
         } catch (error) {
             console.error('Refresh API error:', error);
@@ -161,14 +144,10 @@ export class TournamentActionHandler {
                 response = await _apiManager.leaveTournament(this.data.code);
             }
 
-            if (response.code === 404) {
-                response.success = true;
-            }
-
             if (!response.success) {
-                const messageKey = response.message as TournamentResponseMessages;
+                const messageKey = response.messageKey as TournamentResponseMessages;
                 ModernOverlay.show(`tournament-messages.${messageKey}`, 'error');
-                
+
                 return {
                     success: false
                 };
