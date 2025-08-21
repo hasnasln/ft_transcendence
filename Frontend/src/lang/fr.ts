@@ -114,6 +114,8 @@ export const fr = {
 	  "m-create-button": "<---"
 	},
 	"tournament-second-page": {
+	  "title": "Panneau de Contrôle du Tournoi",
+	  "home-button": "Accueil",
 	  "DetailsCard": {
 		"header": "Détails du tournoi",
 		"header2": "Statistiques détaillées",
@@ -348,6 +350,12 @@ export const fr = {
 		"exit-participant-title": "👋 Quitter le Tournoi",
 		"exit-participant-message": "Êtes-vous sûr de vouloir quitter le tournoi?",
 		"exit-participant-accept": "Quitter",
+		"cancel": "Annuler"
+	},
+	"confirmation-dialog": {
+		"leave-page-title": "⚠️ Confirmation de Quitter la Page",
+		"leave-page-message": "Êtes-vous sûr de vouloir quitter la page?",
+		"accept": "Quitter",
 		"cancel": "Annuler"
 	},
 }

@@ -1,16 +1,17 @@
 import { _apiManager } from '../../api/APIManager';
 import { ModernOverlay } from '../../components/ModernOverlay';
-import { ITournament, TournamentResponseMessages } from '../../api/types';
+import {  TournamentResponseMessages } from '../../api/types';
+import { TournamentData } from './tournamentTypes';
 import { gameInstance } from '../play';
 import { Router } from '../../router';
 
 export class TournamentGameManager {
-    private data: ITournament;
+    private data: TournamentData;
     private status: boolean;
     private validation: any;
     private uiManager: any;
 
-    constructor(data: ITournament, status: boolean, validation: any, uiManager: any) {
+    constructor(data: TournamentData, status: boolean, validation: any, uiManager: any) {
         this.data = data;
         this.status = status;
         this.validation = validation;
@@ -91,7 +92,7 @@ export class TournamentGameManager {
         }
     }
 
-    updateData(newData: ITournament, newStatus: boolean): void {
+    updateData(newData: TournamentData, newStatus: boolean): void {
         this.data = newData;
         this.status = newStatus;
     }

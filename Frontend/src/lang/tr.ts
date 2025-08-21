@@ -115,6 +115,8 @@ export const tr  = {
 		"m-create-button": "<---"
 	},
 	"tournament-second-page":{
+		"title": "Turnuva Kontrol Paneli",
+		"home-button": "Ana Sayfa",
 		"DetailsCard": {
 			"header": "Turnuva Bilgileri",
 			"header2": "Detaylı istatistikler",
@@ -374,6 +376,12 @@ export const tr  = {
 		"exit-participant-title": "👋 Turnuvadan Ayrıl",
 		"exit-participant-message": "Turnuvadan ayrılmak istediğinizden emin misiniz?",
 		"exit-participant-accept": "Ayrıl",
+		"cancel": "Vazgeç"
+	},
+	"confirmation-dialog": {
+		"leave-page-title": "⚠️ Sayfa Ayrılma Onayı",
+		"leave-page-message": "Sayfadan ayrılmak istediğinizden emin misiniz?",
+		"accept": "Ayrıl",
 		"cancel": "Vazgeç"
 	},
 }

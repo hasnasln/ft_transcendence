@@ -90,6 +90,7 @@ export class LoginPage implements Page {
 			const login_form = document.getElementById('login-main');
 			if (!login_form) { console.log("hata var"); return;}
 			login_form.addEventListener('click', (event) => {
+				event.preventDefault();
 				const target = (event.target as HTMLElement).closest('[data-action]');
 				if (!target)
 					return;
@@ -97,11 +98,9 @@ export class LoginPage implements Page {
 				if (!action) return;
 				switch (action) {
 					case 'register':
-						event.preventDefault();
 						Router.getInstance().go('/register');
 						break;
 					case 'singin':
-						event.preventDefault();
 						this.handleLogin();
 						break;
 					case 'open':
@@ -117,7 +116,6 @@ export class LoginPage implements Page {
 						(document.getElementById('selectedLangText') as HTMLElement).textContent = action;
 						menu!.classList.add('hidden');
 						exmp.setLanguage(action);
-						console.log("bla bla bla")
 						break;
 					}
 					default:

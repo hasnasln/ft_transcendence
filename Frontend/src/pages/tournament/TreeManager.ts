@@ -1,16 +1,15 @@
 import { _apiManager } from '../../api/APIManager';
 import { ModernOverlay } from '../../components/ModernOverlay';
-import { ITournament } from '../../api/types';
 import { TournamentIcons } from './IconsHelper';
-import { tournament10, tournament5 } from './10and5';
-import {ParticipantStatus, Participant, TournamentStatus, MatchStatus, TournamentData, TournamentStart, Round, Match} from './10and5';
+import { tournament10, tournament5 } from './tournamentTypes';
+import {Participant, MatchStatus, TournamentData,  Round} from './tournamentTypes';
 import { exmp } from '../../lang/languageManager';
 
 export class TournamentTreeManager {
-    private data: ITournament;
+    private data: TournamentData;
     private uiManager: any;
 
-    constructor(data: ITournament, uiManager: any) {
+    constructor(data: TournamentData, uiManager: any) {
         this.data = data;
         this.uiManager = uiManager;
     }
@@ -215,7 +214,7 @@ export class TournamentTreeManager {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    updateData(newData: ITournament): void {
+    updateData(newData: TournamentData): void {
         this.data = newData;
     }
 }

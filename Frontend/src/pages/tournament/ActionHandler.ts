@@ -1,22 +1,23 @@
-import { ITournament, TournamentResponseMessages } from '../../api/types';
+import { TournamentResponseMessages } from '../../api/types';
+import { TournamentData } from './tournamentTypes';
 import { _apiManager } from '../../api/APIManager';
 import { ModernOverlay } from '../../components/ModernOverlay';
 
 export class TournamentActionHandler {
-    private data: ITournament;
+    private data: TournamentData;
     private status: boolean;
 
-    constructor(data: ITournament, status: boolean) {
+    constructor(data: TournamentData, status: boolean) {
         this.data = data;
         this.status = status;
     }
-    updateData(newData: ITournament, newStatus?: boolean): void {
+    updateData(newData: TournamentData, newStatus?: boolean): void {
         this.data = newData;
         if (newStatus !== undefined) {
             this.status = newStatus;
         }
     }
-    async createTournament(tournamentName: string): Promise<{ success: boolean; data?: ITournament; message?: string }> {
+    async createTournament(tournamentName: string): Promise<{ success: boolean; data?: TournamentData; message?: string }> {
         try {
             const response = await _apiManager.createTournament(tournamentName);
             if (response.success === false) {
@@ -41,7 +42,7 @@ export class TournamentActionHandler {
             };
         }
     }
-    async joinTournament(tournamentId: string): Promise<{ success: boolean; data?: ITournament; message?: string }> {
+    async joinTournament(tournamentId: string): Promise<{ success: boolean; data?: TournamentData; message?: string }> {
         try {
             if (localStorage.getItem('tdata') === null) {
                 const joinResponse = await _apiManager.joinTournament(tournamentId);
@@ -111,7 +112,7 @@ export class TournamentActionHandler {
         }
     }
 
-    async refreshTournament(): Promise<{ success: boolean; data?: ITournament; message?: string }> {
+    async refreshTournament(): Promise<{ success: boolean; data?: TournamentData; message?: string }> {
         try {
             const response = await _apiManager.getTournament(this.data.code);
  
@@ -129,13 +130,14 @@ export class TournamentActionHandler {
                     success: false
                 };
             }
-            const updatedData: ITournament = {
+            const updatedData: TournamentData = {
                 id: response.data.id || this.data.id,
                 code: response.data.code || this.data.code,
                 name: response.data.name || this.data.name,
                 admin_id: response.data.admin_id || this.data.admin_id,
                 lobby_members: response.data.participants || response.data.users || [],
-                participants: response.data.participants || response.data.users || []
+                participants: response.data.participants || response.data.users || [],
+                status: response.data.status || this.data.status
             };
             return {
                 success: true,
@@ -191,13 +193,15 @@ export class TournamentActionHandler {
         }
     }
 
-    private mapToTournamentData(data: any): ITournament {
+    private mapToTournamentData(data: any): TournamentData {
         return {
             id: data.id,
             code: data.code,
             name: data.name,
             admin_id: data.admin_id,
-            lobby_members: data.participants || data.users || []
+            lobby_members: data.lobby_members,
+            participants: data.participants,
+            status: data.status
         };
     }
 }

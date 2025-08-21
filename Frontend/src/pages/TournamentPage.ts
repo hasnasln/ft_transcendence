@@ -1,6 +1,6 @@
 import { exmp } from '../lang/languageManager';
 import { _apiManager } from '../api/APIManager';
-import { ITournament, ITournamentUser} from '../api/types';
+import { TournamentData, Participant } from './tournament/tournamentTypes';
 import { Router, Page } from '../router';
 import { ModernOverlay } from '../components/ModernOverlay';
 import { t_first_section } from './tournament/FormComponents';
@@ -18,7 +18,7 @@ import { TournamentNotificationManager } from './tournament/NotificationManager'
 
 export class TournamentPage implements Page {
     private flag: boolean = false;
-    private data: ITournament | null = null;
+    private data: TournamentData | null = null;
     private status: boolean = false;
     private actionHandler!: TournamentActionHandler;
     private loadingManager!: TournamentLoadingManager;
@@ -34,7 +34,7 @@ export class TournamentPage implements Page {
     constructor() {
     }
 
-    private loadTournamentData(defaultData: ITournament ): ITournament {
+    private loadTournamentData(defaultData: TournamentData ): TournamentData {
         try {
             const storedData = localStorage.getItem('tdata');
             if (!storedData || storedData === '{}' || storedData === 'null') {
@@ -76,7 +76,7 @@ export class TournamentPage implements Page {
         return tempDiv.outerHTML;
     }
 
-    private renderTournament(tdata: ITournament): string {
+    private renderTournament(tdata: TournamentData): string {
         const tempDiv = document.createElement('div');
         tempDiv.id = "tournament-main";
         tempDiv.className = "flex flex-col items-center justify-center min-h-screen w-full absolute top-0 left-0 z-0 bg-gradient-to-br bg-gray-300";
@@ -92,14 +92,7 @@ export class TournamentPage implements Page {
             return resposeWraper;
         })
         .then((responseWraper) => {
-            const defaultData: ITournament = {
-                id: -1,
-                code: '',
-                name: '',
-                admin_id: '',
-                lobby_members: [],
-            };
-            this.data = this.loadTournamentData(defaultData);
+            this.data = this.loadTournamentData(responseWraper.data);
 
             this.actionHandler = new TournamentActionHandler(this.data, this.status);
             this.loadingManager = new TournamentLoadingManager();
@@ -117,7 +110,7 @@ export class TournamentPage implements Page {
             if (localStorage.getItem('tdata') === null) {
                 htmlcontent = this.renderFirstSection();
             } else {
-                const tdata: ITournament = JSON.parse(localStorage.getItem('tdata')!);
+                const tdata: TournamentData = JSON.parse(localStorage.getItem('tdata')!);
                 htmlcontent = this.renderTournament(tdata);
                 this.flag = true;
             }
@@ -138,7 +131,7 @@ export class TournamentPage implements Page {
         });
     }
 
-    public amIPlaying(players: ITournamentUser[]): boolean {
+    public amIPlaying(players: Participant[]): boolean {
         const uuid = localStorage.getItem('uuid');
         if (!uuid) return false;
         return players.some(player => player.uuid === uuid);
@@ -437,7 +430,7 @@ export class TournamentPage implements Page {
         const confirmed = await this.validation.confirmTournamentExit(isAdmin);
         return { confirmed, isAdmin };
     }
-    private updateManagersData(newData: ITournament): void {
+    private updateManagersData(newData: TournamentData): void {
         this.data = newData;
         this.actionHandler.updateData(newData, this.status);
         this.treeManager.updateData(newData);

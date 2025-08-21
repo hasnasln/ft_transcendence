@@ -33,7 +33,10 @@ function bootstrap() {
 	router.go(window.location.pathname, true);
 	if (_apiManager.isTokenExpired()) {
 		_apiManager.logout();
-		router.go('/login');
+		if (window.location.pathname == '/register')
+			router.go('/register');
+		else if (window.location.pathname == '/login')
+			router.go('/login');
 	}
 }
 
