@@ -79,21 +79,21 @@ export class RegisterPage implements Page {
                             style="visibility: hidden; height: auto;"
                         ></div>
 
-                        <button type="submit" class="btn-premium w-full mt-4" data-langm-key="singin.register-b">
-                            !_!
-                        <div id="slider-captcha" class="select-none mt-2">
-                            <div class="relative w-full h-12 rounded-full bg-gray-200 overflow-hidden shadow-inner">
-                                <div id="slider-progress" class="absolute left-0 top-0 h-full bg-green-500/70" style="width: 0;"></div>
-                                <div id="slider-text" class="absolute inset-0 flex items-center justify-center text-gray-600 font-medium">
-                                    Kaydırarak doğrula
-                                </div>
-                                <div id="slider-handle"
-                                     class="absolute left-0 top-0 h-12 w-12 bg-white rounded-full shadow-md border border-gray-300 flex items-center justify-center cursor-pointer select-none"
-                                     style="touch-action: none;">
-                                    ➤
-                                </div>
-                            </div>
-                        </div>
+<!--                        <button type="submit" class="btn-premium w-full mt-4" data-langm-key="singin.register-b">-->
+<!--                            !_!-->
+<!--                        <div id="slider-captcha" class="select-none mt-2">-->
+<!--                            <div class="relative w-full h-12 rounded-full bg-gray-200 overflow-hidden shadow-inner">-->
+<!--                                <div id="slider-progress" class="absolute left-0 top-0 h-full bg-green-500/70" style="width: 0;"></div>-->
+<!--                                <div id="slider-text" class="absolute inset-0 flex items-center justify-center text-gray-600 font-medium">-->
+<!--                                    Kaydırarak doğrula-->
+<!--                                </div>-->
+<!--                                <div id="slider-handle"-->
+<!--                                     class="absolute left-0 top-0 h-12 w-12 bg-white rounded-full shadow-md border border-gray-300 flex items-center justify-center cursor-pointer select-none"-->
+<!--                                     style="touch-action: none;">-->
+<!--                                    ➤-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
 
                         <button type="submit" class="btn-premium w-full mt-4">
                             ${exmp.getLang("singin.register-b") || "Kayıt Ol"}
@@ -115,6 +115,7 @@ export class RegisterPage implements Page {
         renderRegister(Router.getInstance().rootContainer());
 
         // Slider CAPTCHA
+        /**
         const form = document.getElementById('register-form') as HTMLFormElement | null;
         const errorDiv = document.getElementById('error-div') as HTMLDivElement | null;
         const submitBtn = form?.querySelector('button[type="submit"]') as HTMLButtonElement | null;
@@ -220,6 +221,7 @@ export class RegisterPage implements Page {
             }
             return true;
         });
+            */
     }
 }
 
@@ -255,7 +257,7 @@ async function submit(e: Event): Promise<void> {
             else {
                 ModernOverlay.show('register-errors.registerFailed', 'error');
             }
-            ModernOverlay.show(`auth-messages.${response.messageKey}`, 'error');
+            // ModernOverlay.show(`auth-messages.${response.messageKey}`, 'error');
             return;
         }
 
