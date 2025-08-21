@@ -376,4 +376,10 @@ export const tr  = {
 		"exit-participant-accept": "Ayrıl",
 		"cancel": "Vazgeç"
 	},
+	"confirmation-dialog": {
+		"leave-page-title": "⚠️ Sayfa Ayrılma Onayı",
+		"leave-page-message": "Sayfadan ayrılmak istediğinizden emin misiniz?",
+		"accept": "Ayrıl",
+		"cancel": "Vazgeç"
+	},
 }

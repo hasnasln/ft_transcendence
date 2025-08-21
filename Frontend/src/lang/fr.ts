@@ -350,4 +350,10 @@ export const fr = {
 		"exit-participant-accept": "Quitter",
 		"cancel": "Annuler"
 	},
+	"confirmation-dialog": {
+		"leave-page-title": "⚠️ Confirmation de Quitter la Page",
+		"leave-page-message": "Êtes-vous sûr de vouloir quitter la page?",
+		"accept": "Quitter",
+		"cancel": "Annuler"
+	},
 }

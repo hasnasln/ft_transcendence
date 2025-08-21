@@ -351,4 +351,10 @@ export const en = {
 		"exit-participant-accept": "Leave",
 		"cancel": "Cancel"
 	},
+	"confirmation-dialog": {
+		"leave-page-title": "⚠️ Leave Page Confirmation",
+		"leave-page-message": "Are you sure you want to leave the page?",
+		"accept": "Leave",
+		"cancel": "Cancel"
+	},
 };
