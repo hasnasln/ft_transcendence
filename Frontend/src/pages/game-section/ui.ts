@@ -1,8 +1,6 @@
 import { gameInstance } from "../play";
 import { GameInfo, MatchPlayers } from "./network";
 import { Router } from "../../router";
-import { moveButton } from "../../components/mov-button";
-
 import { BallController } from "./ball";
 
 import { BabylonJsWrapper } from "./3d";
@@ -177,6 +175,7 @@ export class GameUI {
 	}
 
 	public async setupScene(): Promise<void> {
+		console.log("------------------------------->Setting up game scene...");
 		initializeGameUI();
 
 		const sceneSetup = createScene();
@@ -229,29 +228,6 @@ export function updateScoreBoard() {
 		setsHome.textContent = `${gameInstance.gameInfo.setState?.sets.leftPlayer}`;
 		setsAway.textContent = `${gameInstance.gameInfo.setState?.sets.rightPlayer}`;
 	}
-
-	// Rount no tarzında bir şey yazmayacağımız için aşağı ksımı silebilirz
-	// const roundDisplay = document.getElementById("roundNo");
-	// if (roundDisplay) {
-	// 	if (gameInstance.gameInfo.mode === 'tournament') {
-	// 		if (gameInstance.gameStatus.finalMatch) {
-	// 			roundDisplay.innerText = `Final`;
-	// 		} else {
-	// 			const roundNumber = gameInstance.gameInfo.state?.roundNumber || 1;
-	// 			const roundNoFromStatus = gameInstance.gameStatus.roundNo;
-				
-	// 			const actualRound = roundNoFromStatus || roundNumber || 1;
-	// 			roundDisplay.innerText = `Round ${actualRound}`;
-	// 		}
-	// 	} else {
-	// 		const leftSets = gameInstance.gameInfo.setState?.sets.leftPlayer || 0;
-	// 		const rightSets = gameInstance.gameInfo.setState?.sets.rightPlayer || 0;
-	// 		const totalSets = leftSets + rightSets;
-	// 		const currentRound = totalSets + 1;
-			
-	// 		roundDisplay.innerText = `Round ${currentRound}`;
-	// 	}
-	// }
 	
 	if (gameInstance.gameInfo.mode === 'tournament') {
 		if (gameInstance.uiManager.roundNoTable) {
@@ -259,14 +235,12 @@ export function updateScoreBoard() {
 				gameInstance.uiManager.roundNoTable.innerText = `Final`;
 			} else {
 				const roundNumber = gameInstance.gameInfo.state?.roundNumber || 1;
-				const roundNoFromStatus = gameInstance.gameStatus.roundNo;
-				const actualRound = roundNoFromStatus || roundNumber || 1;
-				gameInstance.uiManager.roundNoTable.innerText = `Round ${actualRound}`;
+				gameInstance.uiManager.roundNoTable.innerText = `Round ${roundNumber}`;
 			}
 		}
 
 		if (gameInstance.uiManager.tournamentIDTable) {
-			gameInstance.uiManager.tournamentIDTable.innerText = `Turnuva ID : ${gameInstance.gameStatus.tournamentCode}`;
+			gameInstance.uiManager.tournamentIDTable.innerText = `Turnuva Adı : ${gameInstance.gameInfo.state?.tournamentName}`;
 		}
 	}
 }
@@ -282,11 +256,6 @@ export function initializeGameUI() {
 
 	prepareScoreBoards();
 	updateScoreBoard();
-	
-	moveButton(document.getElementById("game-wrapper")!, 'left');
-	if (gameInstance.gameStatus.game_mode === "localGame") {
-		moveButton(document.getElementById("game-wrapper")!, 'right');
-	}
 }
 
 export function showSetToast(gameInfo: GameInfo, message: string): Promise<void> {

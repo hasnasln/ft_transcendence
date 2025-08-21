@@ -1,22 +1,22 @@
 import { _apiManager } from '../../api/APIManager';
-import { ITournament } from '../../api/types';
+import {TournamentData } from './tournamentTypes';
 import { ShowTournament } from './MainRenderer';
 import { t_first_section } from './FormComponents';
 
 export class TournamentStateManager {
-    private data: ITournament;
+    private data: TournamentData;
     private status: boolean;
     private uiManager: any;
     private loadingManager: any;
 
-    constructor(data: ITournament, status: boolean, uiManager: any, loadingManager: any) {
+    constructor(data: TournamentData, status: boolean, uiManager: any, loadingManager: any) {
         this.data = data;
         this.status = status;
         this.uiManager = uiManager;
         this.loadingManager = loadingManager;
     }
 
-    async handleRefreshSuccess(updatedData: ITournament): Promise<void> {
+    async handleRefreshSuccess(updatedData: TournamentData): Promise<void> {
         this.data.lobby_members = updatedData.lobby_members;
         const response = await _apiManager.getTournament(this.data.code);
         const tournamentStarted = response.data?.tournament_start || false;
@@ -29,7 +29,7 @@ export class TournamentStateManager {
         this.completeRefresh(response.data!);
     }
 
-    async handleCreateSuccess(container: HTMLElement, tournamentData: ITournament): Promise<void> {
+    async handleCreateSuccess(container: HTMLElement, tournamentData: TournamentData): Promise<void> {
         localStorage.setItem('tdata', JSON.stringify(tournamentData));
         this.data = tournamentData;
         this.loadingManager.removeLoadingOverlay('create');
@@ -37,7 +37,7 @@ export class TournamentStateManager {
         this.renderCreatedTournamentPage(container, tournamentData);
     }
 
-    async handleJoinSuccess(container: HTMLElement, tournamentData: ITournament): Promise<void> {
+    async handleJoinSuccess(container: HTMLElement, tournamentData: TournamentData): Promise<void> {
         localStorage.setItem('tdata', JSON.stringify(tournamentData));
         this.data = tournamentData;
         this.loadingManager.removeLoadingOverlay('join');
@@ -79,17 +79,17 @@ export class TournamentStateManager {
         }
     }
 
-    private completeRefresh(updatedData: ITournament): void {
+    private completeRefresh(updatedData: TournamentData): void {
         this.reRenderTournamentPage(updatedData);
     }
 
-    private renderCreatedTournamentPage(container: HTMLElement, tdata: ITournament): void {    
+    private renderCreatedTournamentPage(container: HTMLElement, tdata: TournamentData): void {    
         container.innerHTML = '';
         ShowTournament(container, tdata);
         this.updateTournamentInfo();
     }
 
-    private renderTournamentPage(container: HTMLElement, tdata: ITournament): void {
+    private renderTournamentPage(container: HTMLElement, tdata: TournamentData): void {
         container.innerHTML = '';
         ShowTournament(container, tdata);
         this.updateTournamentInfo();
@@ -105,7 +105,7 @@ export class TournamentStateManager {
         }, 2000);
     }
 
-    private reRenderTournamentPage(updatedData: ITournament): void {
+    private reRenderTournamentPage(updatedData: TournamentData): void {
         const container = this.uiManager.findTournamentContainer();
         if (container) {
             container.innerHTML = '';
@@ -160,7 +160,7 @@ export class TournamentStateManager {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    updateData(newData: ITournament): void {
+    updateData(newData: TournamentData): void {
         this.data = newData;
     }
 

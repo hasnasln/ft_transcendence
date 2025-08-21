@@ -19,7 +19,19 @@ export class TournamentIcons
 		return `<svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>`;
 	}
 	public static getTreeIcon(): string {
-		return `<svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>`;
+		return `<svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+			<rect x="9" y="2" width="6" height="4" rx="1"/>
+			<rect x="2" y="10" width="6" height="4" rx="1"/>
+			<rect x="16" y="10" width="6" height="4" rx="1"/>
+			<rect x="9" y="18" width="6" height="4" rx="1"/>
+			<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v2"/>
+			<path stroke-linecap="round" stroke-linejoin="round" d="M12 8h-7"/>
+			<path stroke-linecap="round" stroke-linejoin="round" d="M12 8h7"/>
+			<path stroke-linecap="round" stroke-linejoin="round" d="M5 10v-2"/>
+			<path stroke-linecap="round" stroke-linejoin="round" d="M19 10v-2"/>
+			<path stroke-linecap="round" stroke-linejoin="round" d="M12 14v2"/>
+			<path stroke-linecap="round" stroke-linejoin="round" d="M12 16v2"/>
+		</svg>`;
 	}
 	public static getExitIcon(): string {
 		return `<svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>`;
@@ -36,6 +48,10 @@ export class TournamentIcons
 	public static getStatusIcon(): string {
 		return `<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>`;
 	}
+	
+	public static getTimeIcon(): string {
+		return `<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
+	}
 	public static getGameIcon(): string {
 		return `<svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m-6-8h12a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>`;
 	}
@@ -44,7 +60,19 @@ export class TournamentIcons
 	}
 
 	public static getTreeLoadingIcon(): string {
-		return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>`;
+		return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+			<rect x="9" y="2" width="6" height="4" rx="1"/>
+			<rect x="2" y="10" width="6" height="4" rx="1"/>
+			<rect x="16" y="10" width="6" height="4" rx="1"/>
+			<rect x="9" y="18" width="6" height="4" rx="1"/>
+			<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v2"/>
+			<path stroke-linecap="round" stroke-linejoin="round" d="M12 8h-7"/>
+			<path stroke-linecap="round" stroke-linejoin="round" d="M12 8h7"/>
+			<path stroke-linecap="round" stroke-linejoin="round" d="M5 10v-2"/>
+			<path stroke-linecap="round" stroke-linejoin="round" d="M19 10v-2"/>
+			<path stroke-linecap="round" stroke-linejoin="round" d="M12 14v2"/>
+			<path stroke-linecap="round" stroke-linejoin="round" d="M12 16v2"/>
+		</svg>`;
 	}
 	public static getCloseIcon(): string {
 		return `<svg class="w-6 h-6 text-gray-500 hover:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;

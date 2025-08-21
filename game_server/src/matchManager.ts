@@ -101,7 +101,7 @@ export class MatchManager {
 		this.startPlayProcess(game);
 	}
 
-	public createRemoteGame(player1: Player, player2: Player, tournament?: { code: string, roundNo: number, finalMatch: boolean }) {
+	public createRemoteGame(player1: Player, player2: Player, tournament?: { code: string, roundNo: number, finalMatch: boolean, name: string }) {
         const builder = new GameBuilder()
             .withRoomId(`room_${player1.username}_${player2.username}`)
             .withPlayers(player1, player2)
@@ -110,7 +110,7 @@ export class MatchManager {
             .withRightInput(() => new RemotePlayerInput(player2));
 
         if (tournament)
-            builder.withTournament(tournament.code, tournament.roundNo, tournament.finalMatch);
+            builder.withTournament(tournament.code, tournament.roundNo, tournament.finalMatch, tournament.name);
         const game = builder.build();
 
 		this.startPlayProcess(game);
@@ -147,10 +147,10 @@ export class MatchManager {
 			if (matchedPlayers.length == 1)
 				return;
 
-			this.createRemoteGame(matchedPlayers[0], matchedPlayers[1], { code: tournamentCode, roundNo: match.roundNumber, finalMatch: match.finalMatch });
+			this.createRemoteGame(matchedPlayers[0], matchedPlayers[1], { code: tournamentCode, roundNo: match.roundNumber, finalMatch: match.finalMatch, name: tournament.name });
 		} catch (err: any) {
 			console.error("Tournament match error:", err);
-			emitError(err.message, player.socket.id);
+			emitError('tournamentError', err.message, player.socket.id);
 		}
 	}
 

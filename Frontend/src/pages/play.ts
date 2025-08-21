@@ -110,6 +110,7 @@ export class GameManager {
 
 	private enterWaitingPhase = async (status: GameStatus): Promise<void> => {
 		this.gameStatus = status;
+		console.log("----------------------***********************Entering waiting phase with status: ", this.gameStatus);
 		WebSocketClient.getInstance().once("match-cancelled", handleMatchCancellation, 20_000);
 		WebSocketClient.getInstance().emit("create", this.gameStatus);
 
@@ -169,7 +170,6 @@ export class GameManager {
 		if (Router.getInstance().getCurrentPath() !== '/game') {
 			throw new Error("GameManager should be started from /game path, but current path is: " + Router.getInstance().getCurrentPath());
 		}
-
 		this.uiManager.cacheDOMElements();
 		GamePage.enablePage();
 		GameEventBus.getInstance().emit({ type: 'CONNECTING_TO_SERVER' });
@@ -193,6 +193,9 @@ export class GameManager {
 				.then(() => this.enterReadyPhase())
 				.then(() => listenStateUpdates(this.gameInfo!)) // start listening to the game server
 				.then(() => waitGameStart(this.gameInfo!)) // wait game server for start the game
+				.then(() => {
+					console.log("---------------------------------------------**********>Game started successfully.");
+				})
 				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }));
 			});
 	}

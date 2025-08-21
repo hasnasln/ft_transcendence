@@ -7,7 +7,7 @@ export class GameBuilder {
     private _roomId!: string;
     private _players!: Player[];
     private _gameMode?: GameMode;
-    private _tournament?: { code: string; roundNo: number; finalMatch: boolean };
+    private _tournament?: { code: string; roundNo: number; finalMatch: boolean, name: string };
     private _leftInput?: (g: Game) => InputProvider;
     private _rightInput?: (g: Game) => InputProvider;
 
@@ -26,8 +26,8 @@ export class GameBuilder {
         return this;
     }
 
-    withTournament(code: string, roundNo: number, finalMatch: boolean): this {
-        this._tournament = { code, roundNo, finalMatch };
+    withTournament(code: string, roundNo: number, finalMatch: boolean, name: string): this {
+        this._tournament = { code, roundNo, finalMatch, name };
         return this;
     }
 

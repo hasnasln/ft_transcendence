@@ -36,7 +36,11 @@ export class Router {
 				if (gamePage.getGameInstance().gameStatus.currentGameStarted) {
 					const target = window.location.pathname;
 					history.replaceState({blocked:true}, '', '/game');
-					askUser("Are you sure you want to leave the page?")
+					
+					const { exmp } = await import('./lang/languageManager');
+					const confirmMessage = exmp.getLang("confirmation-dialog.leave-page-message");
+					
+					askUser(confirmMessage)
 						.then((result) => {
 							if (result) {
 								this.invalidatePage("/game");
@@ -266,19 +270,46 @@ function buttonAgent(e: MouseEvent, page: Page): void {
 }
 
 
-async function askUser(message: string): Promise<boolean> {
+export async function askUser(message: string, acceptText?: string, cancelText?: string): Promise<boolean> {
+	const { exmp } = await import('./lang/languageManager');
+	
+	const defaultAcceptText = acceptText || exmp.getLang("confirmation-dialog.accept");
+	const defaultCancelText = cancelText || exmp.getLang("confirmation-dialog.cancel");
+
 	const html = `
-    <div id="confirmation-dialog" class="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50" style="z-index:10000;">
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-sm w-full mx-4 p-6 text-center">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+    <div id="confirmation-dialog" class="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="z-index:10000;">
+      <div class="rounded-3xl shadow-2xl max-w-sm w-full mx-4 p-8 text-center transform transition-all duration-300 scale-105"
+		   style="
+			background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+			border: 2px solid rgba(59, 130, 246, 0.4);
+			box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(59, 130, 246, 0.3);
+			backdrop-filter: blur(20px);
+		   ">
+        <h3 class="text-xl font-bold text-white mb-6 leading-relaxed" style="white-space: pre-line;">
           ${message}
         </h3>
-        <button id="confirmation-dialog-accept" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none">
-          Ayrıl
-        </button>
-        <button id="confirmation-dialog-cancel" class="px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700 focus:outline-none">
-          Vazgeç
-        </button>
+        <div class="flex gap-4 justify-center">
+          <button id="confirmation-dialog-accept" 
+				  class="px-6 py-3 text-sm font-semibold text-white rounded-2xl transition-all duration-300 transform hover:scale-105 group relative overflow-hidden"
+				  style="
+					background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
+					border: 2px solid rgba(239, 68, 68, 0.6);
+					box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+				  ">
+            <div class="absolute inset-0 bg-gradient-to-r from-red-400/20 to-red-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <span class="relative z-10">${defaultAcceptText}</span>
+          </button>
+          <button id="confirmation-dialog-cancel" 
+				  class="px-6 py-3 text-sm font-semibold text-white rounded-2xl transition-all duration-300 transform hover:scale-105 group relative overflow-hidden"
+				  style="
+					background: linear-gradient(135deg, rgba(75, 85, 99, 0.8), rgba(55, 65, 81, 0.9));
+					border: 2px solid rgba(75, 85, 99, 0.6);
+					box-shadow: 0 4px 20px rgba(75, 85, 99, 0.4);
+				  ">
+            <div class="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-gray-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <span class="relative z-10">${defaultCancelText}</span>
+          </button>
+        </div>
       </div>
     </div>`;
 

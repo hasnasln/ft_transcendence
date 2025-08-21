@@ -52,6 +52,7 @@ export class GameEmitter {
 			setOver: game.scoringManager.isSetOver(),
 			isPaused: game.isPaused,
 			roundNumber: game.tournament?.roundNo,
+			tournamentName: game.tournament?.name,
 			phase: game.state
 		};
 

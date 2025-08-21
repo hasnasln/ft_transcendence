@@ -69,12 +69,6 @@ export class GameEventBus {
 		}
 		return GameEventBus.instance;
 	}
-
-	public reset(): void {
-		this.listeners = {};
-		this.onceListeners = {};
-	}
-
 	// concurrent. ensure enqueued.
 	public async emit(event: GameEvent): Promise<void> {
 		console.log(`Event emitted: ${event.type}`, event.payload);
@@ -85,20 +79,6 @@ export class GameEventBus {
 		if (onceHandlers.length === 0) return;
 		await Promise.all(onceHandlers.map(handler => handler.handler(event)));
 		this.onceListeners[event.type] = [];
-	}
-
-	public once(eventType: GameEventType, handler: EventHandler, ...labels: string[]): void {
-		if (!this.onceListeners[eventType]) {
-			this.onceListeners[eventType] = [];
-		}
-		this.onceListeners[eventType].push({ labels, handler });
-	}
-
-	public on(eventType: GameEventType, handler: EventHandler, ...labels: string[]): void {
-		if (!this.listeners[eventType]) {
-			this.listeners[eventType] = [];
-		}
-		this.listeners[eventType].push({ labels, handler });
 	}
 
 	public off(eventType: GameEventType, handler: EventHandler): void {
@@ -118,6 +98,20 @@ export class GameEventBus {
 		if (this.onceListeners[eventType]) {
 			this.onceListeners[eventType] = this.onceListeners[eventType].filter(h => !filter(h));
 		}
+	}
+
+	public once(eventType: GameEventType, handler: EventHandler, ...labels: string[]): void {
+		if (!this.onceListeners[eventType]) {
+			this.onceListeners[eventType] = [];
+		}
+		this.onceListeners[eventType].push({ labels, handler });
+	}
+
+	public on(eventType: GameEventType, handler: EventHandler, ...labels: string[]): void {
+		if (!this.listeners[eventType]) {
+			this.listeners[eventType] = [];
+		}
+		this.listeners[eventType].push({ labels, handler });
 	}
 }
 
@@ -210,14 +204,21 @@ export function listenGameBusEvents() {
 	});
 
 	GameEventBus.getInstance().on('ENTER_PLAYING_PHASE',  async () => {
+		console.log("-------------------hasan");
 		console.log(`game phase: ${gameInstance.gameStatus.phase} => playing`);
 		gameInstance.gameStatus.phase = "playing";
 		await gameInstance.uiManager.setupScene();
 		listenPlayerInputs(gameInstance.gameInfo!);
 		console.log("Game Loop started due to playing phase entry.");
-
+		console.log("-------------------hasan2");
+		console.log("-------------------hasan3");
 		GameLoop.getInstance().start();
+		const x = document.getElementById("progress-container");
+		if (x) {
+			x.classList.add("hidden");
+		}
 	});
+
 
 	GameEventBus.getInstance().on('REMATCH_APPROVAL', (event) => {
 		if (!event.payload.approval) {

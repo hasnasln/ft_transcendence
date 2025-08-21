@@ -1,6 +1,6 @@
 import { Settings } from './Settings';
 import { Profile } from './profile';
-import { exmp } from '../languageManager';
+import { exmp } from '../lang/languageManager';	
 import { Router, Page } from '../router';
 
 
@@ -49,26 +49,37 @@ export class HomePage implements Page {
 
         const hideOnSmall = window.innerWidth < 1024 || window.innerHeight < 600 ? 'opacity-0 pointer-events-none' : '';
 
-        return `<div id="maindiv" class="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.4),transparent_70%)] after:absolute after:inset-0 after:bg-[radial-gradient(circle_at_70%_80%,rgba(255,119,198,0.3),transparent_70%)]">
+        return `<div id="maindiv" class="relative min-h-screen w-full overflow-hidden" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #1e3a8a 75%, #1e40af 100%)">
 					<div class="absolute inset-0 overflow-hidden pointer-events-none">
-						<div class="absolute top-1/4 left-1/4 w-2 h-2 bg-white/20 rounded-full animate-float"></div>
-						<div class="absolute top-3/4 right-1/4 w-3 h-3 bg-purple-300/30 rounded-full animate-float-delayed"></div>
-						<div class="absolute top-1/2 left-3/4 w-1 h-1 bg-pink-300/40 rounded-full animate-float-slow"></div>
-						<div class="absolute bottom-1/4 left-1/2 w-2 h-2 bg-blue-300/25 rounded-full animate-float"></div>
-						<div class="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-cyan-300/30 rounded-full animate-float-delayed"></div>
-						<div class="absolute bottom-1/3 left-1/3 w-2 h-2 bg-indigo-300/25 rounded-full animate-float-slow"></div>
+						<div class="absolute inset-0 opacity-5">
+							<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+								<defs>
+									<pattern id="homeGrid" width="50" height="50" patternUnits="userSpaceOnUse">
+										<path d="M 50 0 L 0 0 0 50" fill="none" stroke="white" stroke-width="0.5"/>
+									</pattern>
+								</defs>
+								<rect width="100%" height="100%" fill="url(#homeGrid)" />
+							</svg>
+						</div>
+						
+						<div class="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400/30 rounded-full animate-float"></div>
+						<div class="absolute top-3/4 right-1/4 w-3 h-3 bg-cyan-300/25 rounded-full animate-float-delayed"></div>
+						<div class="absolute top-1/2 left-3/4 w-1 h-1 bg-indigo-300/40 rounded-full animate-float-slow"></div>
+						<div class="absolute bottom-1/4 left-1/2 w-2 h-2 bg-blue-300/30 rounded-full animate-float"></div>
+						<div class="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-sky-300/25 rounded-full animate-float-delayed"></div>
+						<div class="absolute bottom-1/3 left-1/3 w-2 h-2 bg-blue-400/20 rounded-full animate-float-slow"></div>
 					</div>
 
 					<div class="relative z-10 min-h-screen w-full flex flex-col justify-between items-center py-6 px-4 lg:py-8 lg:px-8">
 						<div class="flex-1 flex flex-col items-center justify-center w-full max-w-6xl mx-auto text-center space-y-4 lg:space-y-6">
 							<div class="flex flex-col items-center justify-center text-center space-y-2 lg:space-y-3">
-								<h1 class="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-center bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent tracking-tight leading-none animate-pulse drop-shadow-2xl">
+								<h1 class="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-center bg-gradient-to-r from-white via-blue-100 to-cyan-100 bg-clip-text text-transparent tracking-tight leading-none animate-pulse drop-shadow-2xl">
 									TRANSCENDENCE
 								</h1>
 							</div>
 
 							<div class="flex items-center justify-center w-full">
-								<ul class="flex flex-col gap-3 p-6 bg-white/5 backdrop-blur-3xl rounded-3xl border border-white/10 shadow-2xl w-fit transition-all duration-700 hover:bg-white/10 hover:border-white/20 hover:shadow-purple-500/20 hover:shadow-2xl ring-1 ring-white/5">
+								<ul class="flex flex-col gap-3 p-6 bg-white/10 backdrop-blur-3xl rounded-3xl border border-white/20 shadow-2xl w-fit transition-all duration-700 hover:bg-white/15 hover:border-white/30 hover:shadow-blue-500/30 hover:shadow-2xl ring-1 ring-white/10">
 									${mainMenuButton('home.play-b', 'play', 'bg-violet-400', 'border-violet-400', 'text-purple-800', 'border-purple-300', 'bg-purple-100', getPlayIconHTML())}
 									${mainMenuButton('home.settings-b', 'settings', 'bg-indigo-400', 'border-indigo-400', 'text-blue-800', 'border-blue-300', 'bg-blue-100', getSettingsIconHTML())}
 									${mainMenuButton('home.profile-b',  'profile', 'bg-blue-500', 'border-blue-500', 'text-green-800', 'border-green-300', 'bg-green-100', getProfileIconHTML())}
@@ -155,20 +166,19 @@ export class HomePage implements Page {
 function profileCard(name: string, linkedin: string, github: string, avatar: string): string {	
 	return `
 		<div class="profile-card w-[160px] h-[220px] md:w-[180px] md:h-[240px] lg:w-[200px] lg:h-[260px] xl:w-[220px] xl:h-[280px] group cursor-pointer transform transition-all duration-300 hover:scale-105 opacity-90 hover:opacity-100">
-			<div class="relative w-full h-full bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 rounded-xl p-[2px] overflow-hidden transition-all duration-500 hover:scale-105 hover:rotate-1">
-				<div class="absolute inset-0 bg-white/20  rounded-xl"></div>
+			<div class="relative w-full h-full bg-gradient-to-br from-blue-400 via-cyan-500 to-indigo-500 rounded-xl p-[2px] overflow-hidden transition-all duration-500 hover:scale-105 hover:rotate-1">
+				<div class="absolute inset-0 bg-white/20 rounded-xl"></div>
 				
-				<div class="relative w-full h-full bg-white/90  rounded-xl p-3 md:p-4 flex flex-col items-center justify-between overflow-hidden">
+				<div class="relative w-full h-full bg-white/90 rounded-xl p-3 md:p-4 flex flex-col items-center justify-between overflow-hidden">
 					<div class="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-						<div class="absolute top-[10%] left-[20%] w-1 h-1 bg-purple-300 rounded-full opacity-60 animate-float"></div>
-						<div class="absolute top-[30%] right-[15%] w-1.5 h-1.5 bg-pink-300 rounded-full opacity-40 animate-float-delayed"></div>
-						<div class="absolute bottom-[20%] left-[10%] w-1 h-1 bg-blue-300 rounded-full opacity-50 animate-float-slow"></div>
+						<div class="absolute top-[10%] left-[20%] w-1 h-1 bg-blue-300 rounded-full opacity-60 animate-float"></div>
+						<div class="absolute top-[30%] right-[15%] w-1.5 h-1.5 bg-cyan-300 rounded-full opacity-40 animate-float-delayed"></div>
+						<div class="absolute bottom-[20%] left-[10%] w-1 h-1 bg-indigo-300 rounded-full opacity-50 animate-float-slow"></div>
 					</div>
 					
 					<div class="relative z-10 flex flex-col items-center">
 						<div class="relative mb-2 md:mb-3">
-							<!-- Glowing ring animation -->
-							<div class="absolute inset-0 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 animate-spin-slow opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+							<div class="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 animate-spin-slow opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
 							
 							<img 
 								src="${avatar}" 
@@ -180,7 +190,7 @@ function profileCard(name: string, linkedin: string, github: string, avatar: str
 						</div>
 						
 						<div class="text-center mb-2 md:mb-3">
-							<h1 class="text-xs md:text-sm lg:text-base font-bold text-gray-800 mb-1 group-hover:text-purple-600 transition-colors duration-300 leading-tight">
+							<h1 class="text-xs md:text-sm lg:text-base font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors duration-300 leading-tight">
 								${name}
 							</h1>
 							<p class="text-xs text-gray-600 font-medium">Full Stack Developer</p>
@@ -189,7 +199,7 @@ function profileCard(name: string, linkedin: string, github: string, avatar: str
 					
 					<div class="relative z-10 w-full space-y-1 md:space-y-2">
 						<a href="${linkedin}" target="_blank" rel="noopener noreferrer" 
-							class="flex items-center gap-2 p-2 bg-white/60  rounded-lg border border-white/20 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300 group/link">
+							class="flex items-center gap-2 p-2 bg-white/60 rounded-lg border border-white/20 hover:bg-blue-50 hover:border-blue-200 transition-all duration-300 group/link">
 							<div class="w-4 h-4 md:w-5 md:h-5 bg-blue-600 rounded flex items-center justify-center group-hover/link:scale-110 transition-transform duration-300">
 								<svg class="w-2 h-2 md:w-3 md:h-3 fill-white" viewBox="0 0 24 24">
 									<path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 10.268h-3v-4.604c0-1.099-.021-2.513-1.532-2.513-1.532 0-1.768 1.197-1.768 2.434v4.683h-3v-9h2.881v1.233h.041c.401-.761 1.379-1.563 2.841-1.563 3.039 0 3.6 2.001 3.6 4.599v4.731z"/>
@@ -201,7 +211,7 @@ function profileCard(name: string, linkedin: string, github: string, avatar: str
 						</a>
 						
 						<a href="${github}" target="_blank" rel="noopener noreferrer"
-							class="flex items-center gap-2 p-2 bg-white/60  rounded-lg border border-white/20 hover:bg-gray-50 hover:border-gray-200 transition-all duration-300 group/link">
+							class="flex items-center gap-2 p-2 bg-white/60 rounded-lg border border-white/20 hover:bg-gray-50 hover:border-gray-200 transition-all duration-300 group/link">
 							<div class="w-4 h-4 md:w-5 md:h-5 bg-gray-800 rounded flex items-center justify-center group-hover/link:scale-110 transition-transform duration-300">
 								<svg class="w-2 h-2 md:w-3 md:h-3 fill-white" viewBox="0 0 24 24">
 									<path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.084-.729.084-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.834 2.809 1.304 3.495.997.108-.775.418-1.305.762-1.605-2.665-.305-5.466-1.334-5.466-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.301 1.23a11.52 11.52 0 013.003-.404c1.018.005 2.045.138 3.003.404 2.291-1.553 3.297-1.23 3.297-1.23.653 1.653.242 2.873.118 3.176.77.84 1.235 1.91 1.235 3.221 0 4.609-2.803 5.624-5.475 5.921.43.371.823 1.102.823 2.222v3.293c0 .322.218.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
@@ -220,17 +230,17 @@ function profileCard(name: string, linkedin: string, github: string, avatar: str
 
 function mainMenuButton(langkey: string, action: string, floaterBgColor: string, floaterBorderColor: string, textColor: string, iconBorderColor: string, iconBgColor: string, icon: string): string {
 	return `
-		<li class="group relative w-80 h-14 overflow-hidden rounded-2xl transition-all duration-700 ease-out hover:shadow-2xl hover:shadow-purple-500/30 cursor-pointer bg-gradient-to-br from-white/90 to-gray-50/90 backdrop-blur-2xl border border-white/30 hover:border-purple-300/60 hover:from-white hover:to-purple-50/50 transform hover:scale-105 hover:-translate-y-1 ring-1 ring-white/20 hover:ring-purple-300/40" data-action="${action}">
-			<div class="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-purple-500/15 via-pink-500/15 to-blue-500/15 transition-opacity duration-700 rounded-2xl"></div>
+		<li class="group relative w-80 h-14 overflow-hidden rounded-2xl transition-all duration-700 ease-out hover:shadow-2xl hover:shadow-blue-500/30 cursor-pointer bg-gradient-to-br from-white/90 to-gray-50/90 backdrop-blur-2xl border border-white/30 hover:border-blue-300/60 hover:from-white hover:to-blue-50/50 transform hover:scale-105 hover:-translate-y-1 ring-1 ring-white/20 hover:ring-blue-300/40" data-action="${action}">
+			<div class="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-blue-500/15 via-cyan-500/15 to-indigo-500/15 transition-opacity duration-700 rounded-2xl"></div>
 			
 			<div class="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
-				<div class="absolute top-2 left-2 w-1 h-1 bg-purple-400 rounded-full opacity-0 group-hover:opacity-80 group-hover:animate-ping transition-all duration-1000"></div>
-				<div class="absolute top-3 right-3 w-1.5 h-1.5 bg-pink-400 rounded-full opacity-0 group-hover:opacity-60 group-hover:animate-pulse transition-all duration-1000 delay-300"></div>
-				<div class="absolute bottom-3 left-4 w-1 h-1 bg-blue-400 rounded-full opacity-0 group-hover:opacity-70 group-hover:animate-bounce transition-all duration-1000 delay-500"></div>
+				<div class="absolute top-2 left-2 w-1 h-1 bg-blue-400 rounded-full opacity-0 group-hover:opacity-80 group-hover:animate-ping transition-all duration-1000"></div>
+				<div class="absolute top-3 right-3 w-1.5 h-1.5 bg-cyan-400 rounded-full opacity-0 group-hover:opacity-60 group-hover:animate-pulse transition-all duration-1000 delay-300"></div>
+				<div class="absolute bottom-3 left-4 w-1 h-1 bg-indigo-400 rounded-full opacity-0 group-hover:opacity-70 group-hover:animate-bounce transition-all duration-1000 delay-500"></div>
 			</div>
 			
-			<button data-action="${action}" class="relative w-full h-full flex items-center px-2 py-2 ${textColor} font-semibold transition-all duration-700 ease-out focus:outline-none focus:ring-2 focus:ring-purple-500/50 rounded-2xl">
-				<div data-action="${action}" class="relative flex-shrink-0 w-10 h-10 rounded-xl ${iconBgColor} ${iconBorderColor} border-2 shadow-lg flex items-center justify-center transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-xl group-hover:shadow-purple-500/30 before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-white/40 before:to-transparent before:opacity-0 group-hover:before:opacity-100 before:transition-opacity before:duration-500 ring-1 ring-white/20 group-hover:ring-purple-300/50">
+			<button data-action="${action}" class="relative w-full h-full flex items-center px-2 py-2 ${textColor} font-semibold transition-all duration-700 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-2xl">
+				<div data-action="${action}" class="relative flex-shrink-0 w-10 h-10 rounded-xl ${iconBgColor} ${iconBorderColor} border-2 shadow-lg flex items-center justify-center transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-xl group-hover:shadow-blue-500/30 before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-white/40 before:to-transparent before:opacity-0 group-hover:before:opacity-100 before:transition-opacity before:duration-500 ring-1 ring-white/20 group-hover:ring-blue-300/50">
 					${icon}
 				</div>
 				
@@ -238,19 +248,18 @@ function mainMenuButton(langkey: string, action: string, floaterBgColor: string,
 					<span 
 						data-action="${action}" 
 						data-langm-key="${langkey}" 
-						class="block text-lg font-bold tracking-wide text-black group-hover:bg-gradient-to-r group-hover:from-purple-700 group-hover:to-pink-600 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-500 drop-shadow-sm">
+						class="block text-lg font-bold tracking-wide text-black group-hover:bg-gradient-to-r group-hover:from-blue-700 group-hover:to-cyan-600 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-500 drop-shadow-sm">
 					</span>
 				</div>
 				
-				<div data-action="${action}" class="flex-shrink-0 w-6 h-6 ml-auto transform translate-x-0 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-700 delay-200 text-purple-500 drop-shadow-sm">
+				<div data-action="${action}" class="flex-shrink-0 w-6 h-6 ml-auto transform translate-x-0 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-700 delay-200 text-blue-500 drop-shadow-sm">
 					<svg class="w-full h-full transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" data-action="${action}">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6" data-action="${action}"></path>
 					</svg>
 				</div>
 			</button>
 			
-			<!-- Glow border -->
-			<div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 opacity-0 group-hover:opacity-40 transition-opacity duration-700 blur-md -z-10 scale-110"></div>
+			<div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 via-cyan-500 to-indigo-500 opacity-0 group-hover:opacity-40 transition-opacity duration-700 blur-md -z-10 scale-110"></div>
 		</li>
 	`;
 }

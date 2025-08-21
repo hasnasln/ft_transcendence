@@ -1,36 +1,68 @@
-import { ITournament} from '../../api/types';
+import { TournamentData} from './tournamentTypes';
 import { TournamentIcons } from './IconsHelper';
 
-export function ShowTournament(container: HTMLElement, tdata: ITournament): void {
+export function ShowTournament(container: HTMLElement, tdata: TournamentData): void {
     container.innerHTML = createTournamentPageHTML(tdata);
     const playersList = container.querySelector('#list-player');
     if (playersList) {
         listPlayers(playersList as HTMLElement, tdata);
     }
 }
-function createTournamentPageHTML(tdata: ITournament): string {
+function createTournamentPageHTML(tdata: TournamentData): string {
     return `
-        <div id="tournament-div02" class="min-h-screen w-full p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+        <div id="tournament-div02" class="min-h-screen w-full p-4 sm:p-6 lg:p-8 relative overflow-hidden" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #1e3a8a 75%, #1e40af 100%)">
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
-                <div class="absolute top-20 left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-                <div class="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl animate-pulse delay-2000"></div>
+                <div class="absolute inset-0 opacity-5">
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <pattern id="tournamentGrid" width="50" height="50" patternUnits="userSpaceOnUse">
+                                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="white" stroke-width="0.5"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#tournamentGrid)" />
+                    </svg>
+                </div>
+                
+                <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400/30 rounded-full animate-float"></div>
+                <div class="absolute top-3/4 right-1/4 w-3 h-3 bg-cyan-300/25 rounded-full animate-float-delayed"></div>
+                <div class="absolute top-1/2 left-3/4 w-1 h-1 bg-indigo-300/40 rounded-full animate-float-slow"></div>
+                <div class="absolute bottom-1/4 left-1/2 w-2 h-2 bg-blue-300/30 rounded-full animate-float"></div>
+                <div class="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-sky-300/25 rounded-full animate-float-delayed"></div>
+                <div class="absolute bottom-1/3 left-1/3 w-2 h-2 bg-blue-400/20 rounded-full animate-float-slow"></div>
             </div>
             <div class="max-w-7xl mx-auto space-y-8 relative z-10">
                 ${createHeaderSection(tdata)}
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
                     ${createInfoPanel(tdata)}
-                    ${createPlayersPanel()}
+                    ${createPlayersPanel(tdata)}
                 </div>
             </div>
         </div>
     `;
 }
 
-function createHeaderSection(tdata: ITournament): string {
+function createHeaderSection(tdata: TournamentData): string {
     return `
-        <div class="text-center mb-8">
+        <div class="text-center mb-8 relative">
             <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-xl border border-white/10">
+                <button id="home-button" data-action="go-home" 
+                        class="absolute top-4 right-4 sm:top-6 sm:right-6 group p-3 rounded-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                        style="
+                            background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(29, 78, 216, 0.3));
+                            border: 2px solid rgba(59, 130, 246, 0.5);
+                            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.25);
+                            backdrop-filter: blur(15px);
+                        ">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-indigo-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                    <div class="flex items-center gap-2 relative z-10">
+                        <svg class="w-5 h-5 text-blue-100 group-hover:text-white transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
+                        </svg>
+                        <span class="text-blue-100 group-hover:text-white transition-colors duration-300 text-sm font-medium hidden sm:block"
+                              data-langm-key="tournament-second-page.home-button">Ana Sayfa</span>
+                    </div>
+                </button>
+
                 <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text mb-4">
                     ${tdata.name}
                 </h1>
@@ -43,7 +75,7 @@ function createHeaderSection(tdata: ITournament): string {
 }
 
 // eklenen satır turnuva başlatıldıktan sonra admine ihtiyac olmadığı için admin paneli hiç oluşturmuyuruz.
-function createInfoPanel(tdata: ITournament): string {
+function createInfoPanel(tdata: TournamentData): string {
     return `
         <div class="lg:col-span-2 space-y-6">
             ${createDetailsCard(tdata)}
@@ -51,7 +83,7 @@ function createInfoPanel(tdata: ITournament): string {
         </div>
     `;
 }
-function createDetailsCard(tdata: ITournament): string {
+function createDetailsCard(tdata: TournamentData): string {
     return `
         <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 lg:p-8 shadow-xl">
             ${createCardHeader()}
@@ -64,7 +96,7 @@ function createDetailsCard(tdata: ITournament): string {
         </div>
     `;
 }
-function getAdminUsername(tdata: ITournament): string
+function getAdminUsername(tdata: TournamentData): string
 {
     for(let i = 0; i < tdata.lobby_members.length; i++)
         if(tdata.lobby_members[i].uuid === tdata.admin_id)
@@ -137,7 +169,7 @@ function createInfoCard(title_key: string, value_key: string, icon: string, grad
         </div>
     `;
 }
-function createAdminPanel(tdata: ITournament): string {
+function createAdminPanel(tdata: TournamentData): string {
     if (tdata.admin_id !== localStorage.getItem('uuid')) {
         return '';
     }
@@ -229,7 +261,7 @@ function createStartInfo(canStart: boolean, playerCount: number): string {
         `;
     }
 }
-function createPlayersPanel(): string {
+function createPlayersPanel(tdata: TournamentData): string {
     return `
         <div class="lg:col-span-1 space-y-6">
             <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 shadow-xl sticky top-4">
@@ -237,7 +269,7 @@ function createPlayersPanel(): string {
                 <div id="list-player" class="space-y-3 max-h-64 sm:max-h-80 lg:max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent pr-2">
                     <!-- Players will be dynamically loaded here -->
                 </div>
-                ${createPlayButton()}
+                ${tdata.status == "ongoing" ? createPlayButton(): ''}
             </div>
         </div>
     `;
@@ -292,10 +324,10 @@ export function getTournamentFormat(playerCount: number): string {
     return `${playerCount} oyunculu eleme turnuvası`;
 }
 
-export function listPlayers(container: HTMLElement, tdata: ITournament): void {
+export function listPlayers(container: HTMLElement, tdata: TournamentData): void {
     container.innerHTML = createPlayersListHTML(tdata);
 }
-function createPlayersListHTML(tdata: ITournament): string {
+function createPlayersListHTML(tdata: TournamentData): string {
     const playersHTML = tdata.lobby_members.map((player, index) => 
         createPlayerCard(player, index, tdata.admin_id)
     ).join('');

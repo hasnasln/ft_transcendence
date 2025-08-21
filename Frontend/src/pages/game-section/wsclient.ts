@@ -172,13 +172,19 @@ export class WebSocketClient {
         this.socket.io.on("reconnect_failed", () => GameEventBus.getInstance().emit({ type: 'RECONNECTION_GAVE_UP' }));
         this.socket.on("connect_error", (err:any) => GameEventBus.getInstance().emit({ type: 'CONNECTION_ERROR', payload: { reason: err.message } }));
 
+
         this.socket.on('gameServerError', (errorMessage: string) => {
-            console.error("Game server error:", errorMessage);
+            console.error('gameServerError', errorMessage);
+            gameInstance.uiManager.onInfoShown(`Game server Error: ${errorMessage}`);
+            setTimeout(() => {
+                gameInstance.uiManager.onInfoHidden();
+                Router.getInstance().go('/play')
+            }, 5000);
         });
 
         this.socket.on('tournamentError', (errorMessage: string) => {
             console.error('Tournament error:', errorMessage);
-            gameInstance.uiManager.onInfoShown(`Turnuvaya katılma hatası: ${errorMessage}`);
+            gameInstance.uiManager.onInfoShown(`Turnuvaya hatası: ${errorMessage}`);
             setTimeout(() => {
                 gameInstance.uiManager.onInfoHidden();
                 Router.getInstance().go('/tournament')

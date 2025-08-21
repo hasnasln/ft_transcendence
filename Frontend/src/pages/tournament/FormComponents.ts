@@ -34,7 +34,7 @@ function toggleWithJoin():string {
 }
 function toggleWithCreate():string {
     return `
-        <div id="createSection" class="z-[100] hidden w-full flex flex-col items-center justify-center gap-4 text-center px-6 text-white">
+        <div id="createSection" class="z-[100] w-full hidden flex-col items-center justify-center gap-4 text-center px-6 text-white">
             <h1
             data-langm-key="tournament-first-page.m-title-for-showjoin"
             class="text-2xl sm:text-3xl font-bold"></h1>
@@ -56,13 +56,34 @@ function createToggleSection(): string {
 }
 
 export function t_first_section(container: HTMLElement) {
-    container.className = "flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen w-full absolute top-0 left-0 z-0";
+    container.className = "flex flex-col items-center justify-center min-h-screen w-full absolute top-0 left-0 z-0";
+    container.style.background = `
+        linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #1e3a8a 75%, #1e40af 100%)
+    `;
     container.innerHTML = `
-        <div id="tournament-container" class="relative rounded-[30px]  shadow-2xl border border-white/20 w-full max-w-2xl min-h-[480px] overflow-hidden transition-all-ease font-montserrat">
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute inset-0 opacity-5">
+                <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <pattern id="smallGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+                            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="0.5"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#smallGrid)" />
+                </svg>
+            </div>
+        </div>
+        <button id="homeButton" data-action="go-home" class="absolute top-6 left-6 z-20 group bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/30 hover:border-white/50 rounded-xl p-3 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/25">
+            <svg class="w-6 h-6 text-white group-hover:text-blue-200 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+            </svg>
+        </button>
+        
+        <div id="tournament-container" class="relative rounded-[30px] shadow-2xl border border-white/20 w-full max-w-2xl min-h-[480px] overflow-hidden backdrop-blur-sm bg-white/10 transition-all-ease font-montserrat z-10">
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
-                <div class="absolute top-20 left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-                <div class="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl animate-pulse delay-2000"></div>
+                <div class="absolute top-20 left-20 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
+                <div class="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-teal-500/5 rounded-full blur-3xl"></div>
             </div>
             ${createToggleSection()}
             ${joinOrCreate('createPanel', 'create','tournament-first-page.create-title','tournament-first-page.create-placeholder')}

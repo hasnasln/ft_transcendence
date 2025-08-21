@@ -34,6 +34,7 @@ export interface GameState {
 	setOver: boolean;
 	isPaused: boolean;
 	roundNumber?: number;
+	tournamentName?: string;
 	phase: GamePhase;
 }
 
@@ -62,7 +63,7 @@ export class Game {
 	public lastUpdatedTime: number | undefined = undefined;
 	public lastBallNotifiedTime: number= 0;
 	public lastPaddleNotifiedTime: number= 0;
-	public tournament?: { code: string, roundNo: number, finalMatch: boolean }
+	public tournament?: { code: string, roundNo: number, finalMatch: boolean, name: string };
 
 	public leftInput: InputProvider | undefined;
 	public rightInput: InputProvider | undefined;
@@ -134,7 +135,7 @@ export class Game {
 			try {
 				patchWinnersToTournament(this.tournament?.code as string, this.tournament?.roundNo as number, { uuid, username });
 			} catch (err: any) {
-				emitError(err.message, this.roomId);
+				emitError('tournamentError', err.message, this.roomId);
 			}
 		}
 

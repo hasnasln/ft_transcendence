@@ -1,5 +1,5 @@
 import { Page } from "../router";
-import { exmp } from "../languageManager";
+import { exmp } from '../lang/languageManager';
 
 export class Settings implements Page{
 	private isOpen = false;
