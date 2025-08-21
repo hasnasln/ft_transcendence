@@ -197,7 +197,9 @@ export class TournamentActionHandler {
             code: data.code,
             name: data.name,
             admin_id: data.admin_id,
-            lobby_members: data.participants || data.users || []
+            lobby_members: data.lobby_members,
+            participants: data.participants,
+            status: data.status
         };
     }
 }
