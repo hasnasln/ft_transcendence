@@ -1,4 +1,4 @@
-import { TournamentData} from './tournamentTypes';
+import { TournamentData, TournamentStatus} from './tournamentTypes';
 import { TournamentIcons } from './IconsHelper';
 
 export function ShowTournament(container: HTMLElement, tdata: TournamentData): void {
@@ -79,7 +79,7 @@ function createInfoPanel(tdata: TournamentData): string {
     return `
         <div class="lg:col-span-2 space-y-6">
             ${createDetailsCard(tdata)}
-            ${tdata.status == "created" ? createAdminPanel(tdata) : ''}
+            ${tdata.status == TournamentStatus.CREATED ? createAdminPanel(tdata) : ''}
         </div>
     `;
 }
@@ -91,7 +91,7 @@ function createDetailsCard(tdata: TournamentData): string {
                 ${createInfoCard('IdCard', tdata.code, TournamentIcons.getTournamentIdIcon(), 'from-purple-500 to-indigo-500')}
                 ${createInfoCard('Creater', getAdminUsername(tdata) || 'Unknown', TournamentIcons.getUserIcon(), 'from-blue-500 to-cyan-500')}
                 ${createInfoCard('ActivePlayer', `${tdata.lobby_members.length} / 10`, TournamentIcons.getPlayersIcon(), 'from-green-500 to-emerald-500')}
-                ${createInfoCard('Status', 'Aktif', TournamentIcons.getStatusIcon(), 'from-pink-500 to-rose-500')}
+                ${createInfoCard('TournamentTime', getTournamentTimeDisplay(tdata), TournamentIcons.getTimeIcon(), 'from-pink-500 to-rose-500', 'tournament-time-subtitle')}
             </div>
         </div>
     `;
@@ -102,6 +102,18 @@ function getAdminUsername(tdata: TournamentData): string
         if(tdata.lobby_members[i].uuid === tdata.admin_id)
             return tdata.lobby_members[i].username;
     return "fatma bulamadi"
+}
+
+function getTournamentTimeDisplay(tdata: TournamentData): string {
+    if (tdata.status === TournamentStatus.CREATED) {
+        return "tournament-waiting";
+    } else if (tdata.status === TournamentStatus.ONGOING) {
+        return "tournament-ongoing";
+    } else if (tdata.status === TournamentStatus.COMPLETED) {
+        return "tournament-finished";
+    }
+
+    return "tournament-unknown";
 }
 function createCardHeader(): string {
     return `
@@ -142,7 +154,17 @@ function createActionButton(action: string, icon: string, color: string, tooltip
         </button>
     `;
 }
-function createInfoCard(title_key: string, value_key: string, icon: string, gradient: string): string {
+function createInfoCard(title_key: string, value_key: string, icon: string, gradient: string, customSubtitle?: string): string {
+    const tournamentStatusKeys = ["tournament-waiting", "tournament-ongoing", "tournament-finished", "tournament-unknown"];
+    const isLangKey = tournamentStatusKeys.includes(value_key);
+    const valueDisplay = isLangKey 
+        ? `<p class="text-white text-2xl font-bold" data-langm-key="${value_key}">!_!</p>`
+        : `<p class="text-white text-2xl font-bold">${value_key}</p>`;
+    
+    const subtitleContent = customSubtitle 
+        ? `<p class="text-gray-400 text-xs mt-3 leading-relaxed" data-langm-key="${customSubtitle}">!_!</p>`
+        : `<p data-langm-key="tournament-second-page.DetailsCard.${title_key}-description" class="text-gray-400 text-xs mt-3 leading-relaxed">!_!</p>`;
+    
     return `
         <div class="group relative bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-500 hover:scale-105 hover:shadow-2xl">
             <div class="absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-500"></div>
@@ -156,15 +178,11 @@ function createInfoCard(title_key: string, value_key: string, icon: string, grad
                             data-langm-key="tournament-second-page.DetailsCard.${title_key}"
                             class="text-gray-400 text-sm font-medium">!_!
                         </p>
-                        <p class="text-white text-2xl font-bold">${value_key}
-                        </p>
+                        ${valueDisplay}
                     </div>
                 </div>
                 <div class="h-1 bg-gradient-to-r ${gradient} rounded-full opacity-20 group-hover:opacity-50 transition-opacity duration-500"></div>
-                <p
-                data-langm-key="tournament-second-page.DetailsCard.${title_key}-description"
-                    class="text-gray-400 text-xs mt-3 leading-relaxed">!_!
-                </p>
+                ${subtitleContent}
             </div>
         </div>
     `;
@@ -269,7 +287,7 @@ function createPlayersPanel(tdata: TournamentData): string {
                 <div id="list-player" class="space-y-3 max-h-64 sm:max-h-80 lg:max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent pr-2">
                     <!-- Players will be dynamically loaded here -->
                 </div>
-                ${tdata.status == "ongoing" ? createPlayButton(): ''}
+                ${tdata.status == TournamentStatus.ONGOING ? createPlayButton(): ''}
             </div>
         </div>
     `;
