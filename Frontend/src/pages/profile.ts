@@ -546,7 +546,7 @@ export class Profile implements Page {
 		this.getProfileSettings().forEach(({name, type, placeholder, action}) => {
 			innerDivs += `
 			<div class="
-			w-full sm:w-[400%]
+			w-full
 			p-1">
 				<div class="absolute inset-0 pointer-events-none">
 					<div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent  to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
