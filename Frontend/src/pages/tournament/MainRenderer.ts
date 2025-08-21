@@ -1,14 +1,14 @@
-import { ITournament} from '../../api/types';
+import { TournamentData} from './tournamentTypes';
 import { TournamentIcons } from './IconsHelper';
 
-export function ShowTournament(container: HTMLElement, tdata: ITournament): void {
+export function ShowTournament(container: HTMLElement, tdata: TournamentData): void {
     container.innerHTML = createTournamentPageHTML(tdata);
     const playersList = container.querySelector('#list-player');
     if (playersList) {
         listPlayers(playersList as HTMLElement, tdata);
     }
 }
-function createTournamentPageHTML(tdata: ITournament): string {
+function createTournamentPageHTML(tdata: TournamentData): string {
     return `
         <div id="tournament-div02" class="min-h-screen w-full p-4 sm:p-6 lg:p-8 relative overflow-hidden" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #1e3a8a 75%, #1e40af 100%)">
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
@@ -41,7 +41,7 @@ function createTournamentPageHTML(tdata: ITournament): string {
     `;
 }
 
-function createHeaderSection(tdata: ITournament): string {
+function createHeaderSection(tdata: TournamentData): string {
     return `
         <div class="text-center mb-8 relative">
             <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-xl border border-white/10">
@@ -75,7 +75,7 @@ function createHeaderSection(tdata: ITournament): string {
 }
 
 // eklenen satır turnuva başlatıldıktan sonra admine ihtiyac olmadığı için admin paneli hiç oluşturmuyuruz.
-function createInfoPanel(tdata: ITournament): string {
+function createInfoPanel(tdata: TournamentData): string {
     return `
         <div class="lg:col-span-2 space-y-6">
             ${createDetailsCard(tdata)}
@@ -83,7 +83,7 @@ function createInfoPanel(tdata: ITournament): string {
         </div>
     `;
 }
-function createDetailsCard(tdata: ITournament): string {
+function createDetailsCard(tdata: TournamentData): string {
     return `
         <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 lg:p-8 shadow-xl">
             ${createCardHeader()}
@@ -96,7 +96,7 @@ function createDetailsCard(tdata: ITournament): string {
         </div>
     `;
 }
-function getAdminUsername(tdata: ITournament): string
+function getAdminUsername(tdata: TournamentData): string
 {
     for(let i = 0; i < tdata.lobby_members.length; i++)
         if(tdata.lobby_members[i].uuid === tdata.admin_id)
@@ -169,7 +169,7 @@ function createInfoCard(title_key: string, value_key: string, icon: string, grad
         </div>
     `;
 }
-function createAdminPanel(tdata: ITournament): string {
+function createAdminPanel(tdata: TournamentData): string {
     if (tdata.admin_id !== localStorage.getItem('uuid')) {
         return '';
     }
@@ -261,7 +261,7 @@ function createStartInfo(canStart: boolean, playerCount: number): string {
         `;
     }
 }
-function createPlayersPanel(tdata: ITournament): string {
+function createPlayersPanel(tdata: TournamentData): string {
     return `
         <div class="lg:col-span-1 space-y-6">
             <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 shadow-xl sticky top-4">
@@ -324,10 +324,10 @@ export function getTournamentFormat(playerCount: number): string {
     return `${playerCount} oyunculu eleme turnuvası`;
 }
 
-export function listPlayers(container: HTMLElement, tdata: ITournament): void {
+export function listPlayers(container: HTMLElement, tdata: TournamentData): void {
     container.innerHTML = createPlayersListHTML(tdata);
 }
-function createPlayersListHTML(tdata: ITournament): string {
+function createPlayersListHTML(tdata: TournamentData): string {
     const playersHTML = tdata.lobby_members.map((player, index) => 
         createPlayerCard(player, index, tdata.admin_id)
     ).join('');
