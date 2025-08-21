@@ -54,7 +54,6 @@ export class TournamentStateManager {
 
     async handleExitSuccess(container: HTMLElement): Promise<void> {
         this.loadingManager.removeLoadingOverlay('exit');
-        await this.delay(1500);
         localStorage.removeItem('tdata');
         container.innerHTML = '';
         t_first_section(container);
@@ -79,7 +78,7 @@ export class TournamentStateManager {
         }
     }
 
-    private completeRefresh(updatedData: TournamentData): void {
+    public completeRefresh(updatedData: TournamentData): void {
         this.reRenderTournamentPage(updatedData);
     }
 
