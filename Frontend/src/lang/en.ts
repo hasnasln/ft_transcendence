@@ -59,13 +59,31 @@ export const en = {
 		"username": "This username is already taken",
 		"email": "This email is already registered"
 	  },
-	  "USERNAME_ALREADY_EXISTS": "This username is already taken",
-	  "EMAIL_ALREADY_EXISTS": "This email is already registered",
+	  "USERNAME_EXISTS": "This username is already taken",
+	  "EMAIL_EXISTS": "This email is already registered",
 	  "WEAK_PASSWORD": "Password too weak, please choose a stronger password",
 	  "registerFailed": "Registration failed",
 	  "serverError": "Server error, please try again later",
 	  "networkError": "Network error, please check your connection"
 	},
+	"register-messages": {
+        "verifyEmailBeforeLogin": "Please check your inbox and verify your email before logging in."
+    },
+	"emailVerify": {
+        "title": "Email Verification",
+        "subtitle": "Enter the verification code sent to your email.",
+        "codePlaceholder": "Verification code",
+        "confirm": "Confirm",
+        "resend": "Resend email",
+        "backToLogin": "Back to login",
+        "cooldownText": "{s} seconds left to resend",
+
+        "errors": {
+            "missingEmail": "Email information not found. Please register again.",
+            "missingCode": "Please enter the verification code.",
+            "networkError": "Network error. Please try again."
+        }
+    },
 	"home": {
 	  "play-b": "Play Now",
 	  "settings-b": "Settings",

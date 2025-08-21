@@ -59,14 +59,32 @@ export const tr  = {
 			"username": "Bu kullanıcı adı zaten alınmış",
 			"email": "Bu e-posta zaten kayıtlı"
 		},
-		"USERNAME_ALREADY_EXISTS": "Bu kullanıcı adı zaten alınmış",
-		"EMAIL_ALREADY_EXISTS": "Bu e-posta zaten kayıtlı",
+		"USERNAME_EXISTS": "Bu kullanıcı adı zaten alınmış",
+		"EMAIL_EXISTS": "Bu e-posta zaten kayıtlı",
 		"WEAK_PASSWORD": "Şifre çok zayıf, daha güçlü bir şifre seçin",
 		"registerFailed": "Kayıt işlemi başarısız",
 		"serverError": "Sunucu hatası, lütfen daha sonra tekrar deneyin",
 		"networkError": "Ağ bağlantı hatası, internet bağlantınızı kontrol edin"
 	},
 
+	"register-messages": {
+        "verifyEmailBeforeLogin": "Giriş yapmadan önce e-postanı kontrol edip doğrula."
+    },
+
+	"emailVerify": {
+        "title": "E-posta Doğrulama",
+        "subtitle": "E-posta adresine gönderilen doğrulama kodunu gir.",
+        "codePlaceholder": "Doğrulama kodu",
+        "confirm": "Onayla",
+        "resend": "Tekrar mail gönder",
+        "backToLogin": "Giriş ekranına dön",
+        "cooldownText": "Tekrar göndermek için {s} saniye kaldı",
+        "errors": {
+            "missingEmail": "E-posta bilgisi bulunamadı. Lütfen yeniden kayıt ol.",
+            "missingCode": "Lütfen doğrulama kodunu gir.",
+            "networkError": "Ağ hatası. Lütfen tekrar dene."
+        }
+    },
 	"home":{
 		"play-b": "Şimdi Oyna",
 		"settings-b": "Ayarlar",

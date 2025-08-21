@@ -59,13 +59,31 @@ export const fr = {
 		"username": "Ce nom d’utilisateur est déjà pris",
 		"email": "Cet e‑mail est déjà enregistré"
 	  },
-	  "USERNAME_ALREADY_EXISTS": "Ce nom d’utilisateur est déjà pris",
-	  "EMAIL_ALREADY_EXISTS": "Cet e‑mail est déjà enregistré",
+	  "USERNAME_EXISTS": "Ce nom d’utilisateur est déjà pris",
+	  "EMAIL_EXISTS": "Cet e‑mail est déjà enregistré",
 	  "WEAK_PASSWORD": "Mot de passe trop faible, veuillez choisir un mot plus sécurisé",
 	  "registerFailed": "Échec de l’inscription",
 	  "serverError": "Erreur serveur, veuillez réessayer plus tard",
 	  "networkError": "Erreur réseau, veuillez vérifier votre connexion"
 	},
+	"register-messages": {
+        "verifyEmailBeforeLogin": "Avant de vous connecter, veuillez vérifier votre e-mail dans votre boîte de réception."
+    },
+
+    "emailVerify": {
+        "title": "Vérification de l’e-mail",
+        "subtitle": "Saisissez le code de vérification envoyé à votre e‑mail.",
+        "codePlaceholder": "Code de vérification",
+        "confirm": "Confirmer",
+        "resend": "Renvoyer l’e‑mail",
+        "backToLogin": "Retour à la connexion",
+        "cooldownText": "Vous pourrez renvoyer dans {s} secondes",
+        "errors": {
+            "missingEmail": "Adresse e‑mail introuvable. Veuillez vous réinscrire.",
+            "missingCode": "Veuillez saisir le code de vérification.",
+            "networkError": "Erreur réseau. Veuillez réessayer."
+        }
+    },
 	"home": {
 	  "play-b": "Jouer maintenant",
 	  "settings-b": "Paramètres",
