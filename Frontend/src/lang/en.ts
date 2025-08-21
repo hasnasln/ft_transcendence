@@ -376,5 +376,9 @@ export const en = {
 		"accept": "Leave",
 		"cancel": "Cancel"
 	},
-	"tournament-finished": "Tournament Ended"
+	"tournament-waiting": "Waiting",
+	"tournament-ongoing": "Ongoing",
+	"tournament-finished": "Finished", 
+	"tournament-unknown": "Unknown",
+	"tournament-time-subtitle": "Tournament start time and duration"
 };

@@ -375,5 +375,9 @@ export const fr = {
 		"accept": "Quitter",
 		"cancel": "Annuler"
 	},
-	"tournament-finished": "Tournoi Terminé"
+	"tournament-waiting": "En attente",
+	"tournament-ongoing": "En cours",
+	"tournament-finished": "Terminé",
+	"tournament-unknown": "Inconnu",
+	"tournament-time-subtitle": "Heure de début et durée du tournoi"
 }

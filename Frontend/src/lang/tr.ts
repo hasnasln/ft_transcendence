@@ -401,5 +401,9 @@ export const tr  = {
 		"accept": "Ayrıl",
 		"cancel": "Vazgeç"
 	},
-	"tournament-finished": "Turnuva Bitti"
+	"tournament-waiting": "Beklemede",
+	"tournament-ongoing": "Devam Ediyor", 
+	"tournament-finished": "Turnuva Bitti",
+	"tournament-unknown": "Bilinmiyor",
+	"tournament-time-subtitle": "Turnuva başlangıç zamanı ve süre"
 }
