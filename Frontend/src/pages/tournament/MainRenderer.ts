@@ -43,8 +43,26 @@ function createTournamentPageHTML(tdata: ITournament): string {
 
 function createHeaderSection(tdata: ITournament): string {
     return `
-        <div class="text-center mb-8">
+        <div class="text-center mb-8 relative">
             <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-xl border border-white/10">
+                <button id="home-button" data-action="go-home" 
+                        class="absolute top-4 right-4 sm:top-6 sm:right-6 group p-3 rounded-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                        style="
+                            background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(29, 78, 216, 0.3));
+                            border: 2px solid rgba(59, 130, 246, 0.5);
+                            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.25);
+                            backdrop-filter: blur(15px);
+                        ">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-indigo-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                    <div class="flex items-center gap-2 relative z-10">
+                        <svg class="w-5 h-5 text-blue-100 group-hover:text-white transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
+                        </svg>
+                        <span class="text-blue-100 group-hover:text-white transition-colors duration-300 text-sm font-medium hidden sm:block"
+                              data-langm-key="tournament-second-page.home-button">Ana Sayfa</span>
+                    </div>
+                </button>
+
                 <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text mb-4">
                     ${tdata.name}
                 </h1>
