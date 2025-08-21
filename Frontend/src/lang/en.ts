@@ -114,6 +114,8 @@ export const en = {
 	  "m-create-button": "<---"
 	},
 	"tournament-second-page": {
+	  "title": "Tournament Control Panel",
+	  "home-button": "Home",
 	  "DetailsCard": {
 		"header": "Tournament Details",
 		"header2": "Detailed statistics",

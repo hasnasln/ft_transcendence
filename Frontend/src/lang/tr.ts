@@ -115,6 +115,8 @@ export const tr  = {
 		"m-create-button": "<---"
 	},
 	"tournament-second-page":{
+		"title": "Turnuva Kontrol Paneli",
+		"home-button": "Ana Sayfa",
 		"DetailsCard": {
 			"header": "Turnuva Bilgileri",
 			"header2": "Detaylı istatistikler",

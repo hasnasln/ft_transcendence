@@ -114,6 +114,8 @@ export const fr = {
 	  "m-create-button": "<---"
 	},
 	"tournament-second-page": {
+	  "title": "Panneau de Contrôle du Tournoi",
+	  "home-button": "Accueil",
 	  "DetailsCard": {
 		"header": "Détails du tournoi",
 		"header2": "Statistiques détaillées",
