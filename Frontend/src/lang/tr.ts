@@ -131,11 +131,11 @@ export const tr  = {
 			'Creater-description': "Turnuvayı organize eden kişi",
 			'ActivePlayer': "Aktif Oyuncu",
 			'ActivePlayer-description': "Aktif katılımcı sayısı ve kapasite",
-			'Status': "Durum",
-			'Status-description' : "Turnuva mevcut durumu",
+			'TournamentTime': "Turnuva Zamanı",
+			'TournamentTime-description' : "Turnuva başlangıç zamanı ve süre",
 		},
 		"AdminPanel":{
-			"title": "--Admin Paneli",
+			"title": "Admin Paneli",
 			"Button": {
 				"active": "TURNUVAYI BAŞLAT",
 				"deactive-1": "OYUNCU BEKLENİYOR (1/2)",
@@ -166,7 +166,6 @@ export const tr  = {
 			},
 			"PlayButton": "OYUNA BAŞLA"
 		},
-		"title":"Turnuva Kontrol Paneli",
 		"exit": "Turnuvadan Çık",
 		"tournament-id": "Turnuva ID",
 		"tournament-name": "Turnuva Adı",
@@ -384,4 +383,5 @@ export const tr  = {
 		"accept": "Ayrıl",
 		"cancel": "Vazgeç"
 	},
+	"tournament-finished": "Turnuva Bitti"
 }

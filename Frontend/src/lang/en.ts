@@ -130,8 +130,8 @@ export const en = {
 		"Creater-description": "Person organizing the tournament",
 		"ActivePlayer": "Active players",
 		"ActivePlayer-description": "Current number of participants and capacity",
-		"Status": "Status",
-		"Status-description": "Current status of the tournament"
+		"TournamentTime": "Tournament Time",
+		"TournamentTime-description": "Tournament start time and duration"
 	  },
 	  "AdminPanel": {
 		"title": "--Admin Panel",
@@ -164,7 +164,6 @@ export const en = {
 		},
 		"PlayButton": "START GAME"
 	  },
-	  "title": "Tournament Control Panel",
 	  "exit": "Leave Tournament",
 	  "tournament-id": "Tournament ID",
 	  "tournament-name": "Tournament Name",
@@ -359,4 +358,5 @@ export const en = {
 		"accept": "Leave",
 		"cancel": "Cancel"
 	},
+	"tournament-finished": "Tournament Ended"
 };

@@ -130,8 +130,8 @@ export const fr = {
 		"Creater-description": "Personne organisant le tournoi",
 		"ActivePlayer": "Joueurs actifs",
 		"ActivePlayer-description": "Nombre actuel de participants et capacité",
-		"Status": "Statut",
-		"Status-description": "Statut actuel du tournoi"
+		"TournamentTime": "Temps du Tournoi",
+		"TournamentTime-description": "Heure de début et durée du tournoi"
 	  },
 	  "AdminPanel": {
 		"title": "--Panneau Admin",
@@ -164,7 +164,6 @@ export const fr = {
 		},
 		"PlayButton": "DÉMARRER LE JEU"
 	  },
-	  "title": "Panneau de contrôle du tournoi",
 	  "exit": "Quitter le tournoi",
 	  "tournament-id": "ID du tournoi",
 	  "tournament-name": "Nom du tournoi",
@@ -358,4 +357,5 @@ export const fr = {
 		"accept": "Quitter",
 		"cancel": "Annuler"
 	},
+	"tournament-finished": "Tournoi Terminé"
 }
