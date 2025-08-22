@@ -121,7 +121,8 @@ export class TournamentTreeManager {
     {
         console.log('Rendering tournament tree with rounds:', rounds);
 
-        const roundsHtml = rounds.map((round) => {
+        const roundsHtml = rounds.map((round) =>
+        {
             const isFinal =
                 round.expected_winner_count === 1 &&
                 (
@@ -178,11 +179,29 @@ export class TournamentTreeManager {
                 </div>
             `).join('');
 
+            let byeHtml = '';
+            if (round.winners && round.matches.length === 0 && round.winners.length === 1)
+            {
+                const byePlayer = round.winners[0];
+                byeHtml = `
+                    <div class="match-card bye">
+                        <div class="match-status status-BYE">BYE</div>
+                        <div class="player winner">
+                            <span>${byePlayer.username}</span>
+                            <div class="player-status">
+                                <span class="trophy">🏆</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
             return `
                 <div class="tournament-round">
                     ${roundTitleHtml}
                     <div class="matches-container">
                         ${matchesHtml}
+                        ${byeHtml}
                     </div>
                 </div>
             `;

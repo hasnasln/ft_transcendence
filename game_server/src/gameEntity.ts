@@ -146,7 +146,7 @@ export class Ball {
 		this.speedIncreaseFactor = 1.7;
 		this.minimumSpeed = this.firstSpeedFactor;
 		this.velocity = { x: 0, y: 0 };
-		this.position = { x: 0, y: Math.random() * (0.8 * this.groundHeight) - 0.4 * this.groundHeight };
+		this.position = { x: 0, y: (Math.random() * (0.8 * this.groundHeight) - 0.4 * this.groundHeight) * GameEntityFactory.UCF };
     }
 
     public shove(lastScorer: "leftPlayer" | "rightPlayer") {

@@ -295,11 +295,11 @@ export function listenGameBusEvents() {
 		tr.stop();
 		tr.setEnabled(false);
 
-		requestAnimationFrame(() => {
+		setTimeout(() => {
 			tr.reset();
 			tr.setEnabled(true);
 			tr.start();
-		});
+		},100);
 	});
 
 	GameEventBus.getInstance().on('BALL_PADDLE_HIT', event => {
