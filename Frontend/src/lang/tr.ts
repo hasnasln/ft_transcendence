@@ -376,10 +376,12 @@ export const tr  = {
 		"tournament-started-button": "TURNUVA BAŞLATILDI"
 	},
 	"tournament-tree": {
-		"round": ". TUR",
+		"final": "Final",
+		"winner": "Kazanan",
+		"round": "TUR",
 		"vs": "VS",
-		"refreshing": "Yenileniyor...",
-		"refresh": "Yenile"
+		"refresh": "Yenile",
+		"refreshing": "Yenileniyor..."
 	},
 	"tournament-confirmation": {
 		"start-title": "🏆 Turnuva Başlatma Onayı",

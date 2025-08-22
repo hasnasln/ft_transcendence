@@ -350,10 +350,12 @@ export const fr = {
 		"tournament-started-button": "TOURNOI DÉMARRÉ"
 	},
 	"tournament-tree": {
-		"round": ". TOUR",
+		"final": "Finale",
+		"winner": "Gagnant",
+		"round": "TOUR",
 		"vs": "VS",
-		"refreshing": "Actualisation...",
-		"refresh": "Actualiser"
+		"refresh": "Actualiser",
+		"refreshing": "Actualisation..."
 	},
 	"tournament-confirmation": {
 		"start-title": "🏆 Confirmation de Démarrage du Tournoi",

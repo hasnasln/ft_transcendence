@@ -351,10 +351,12 @@ export const en = {
 		"tournament-started-button": "TOURNAMENT STARTED"
 	},
 	"tournament-tree": {
-		"round": ". ROUND",
+		 "final": "Final",
+		"winner": "Winner",
+		"round": "ROUND",
 		"vs": "VS",
-		"refreshing": "Refreshing...",
-		"refresh": "Refresh"
+		"refresh": "Refresh",
+		"refreshing": "Refreshing..."
 	},
 	"tournament-confirmation": {
 		"start-title": "🏆 Tournament Start Confirmation",
