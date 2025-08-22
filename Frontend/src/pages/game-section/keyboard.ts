@@ -53,7 +53,9 @@ export class GameInputHandler {
     else
     {
         switch (key.toLowerCase()) {
+        case "arrowup":
         case "w": return { side: "left", dir: "up" };
+        case "arrowdown":
         case "s": return { side: "left", dir: "down" };
         default: return null;
       }
