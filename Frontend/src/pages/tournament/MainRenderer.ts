@@ -216,7 +216,7 @@ function createStartButton(canStart: boolean, playerCount: number, minPlayers: n
         ? `<div class="flex items-center justify-center space-x-2">
                 ${TournamentIcons.getRocketIcon()}
                 <span
-                    data-langm-key="tournament-second-page.AdminPanel.Button.avtive">!_!
+                    data-langm-key="tournament-second-page.AdminPanel.Button.active">!_!
                 </span>
            </div>`
         : `<div class="flex items-center justify-center space-x-2">
