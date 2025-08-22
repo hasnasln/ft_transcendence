@@ -172,8 +172,8 @@ function onSpaceKeyDown(event: KeyboardEvent) {
 }
 
 function listenTouchButtons() {
-  let up_buttons = document.getElementById("up_touch_buttons");
-  let down_buttons = document.getElementById("down_touch_buttons");
+  let up_buttons = document.getElementById("up_touch_buttons_left");
+  let down_buttons = document.getElementById("down_touch_buttons_left");
 
   up_buttons?.addEventListener("touchstart", () => {
     GameInputHandler.getInstance().keyDown("w");
