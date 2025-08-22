@@ -20,7 +20,6 @@ export class GameInputHandler {
 
   private mode: Mode = "unset";
 
-  // Her taraf için ayrı yön ve basılı tuş bayrakları
   private directions: Record<Side, Direction> = { left: "stop", right: "stop" };
   private keysDown: Record<Side, KeysState> = {
     left: { up: false, down: false },
@@ -29,12 +28,6 @@ export class GameInputHandler {
 
   public setMode(mode: "local" | "remote"): void {
     this.mode = mode;
-  }
-
-  // Geriye dönük uyumluluk için varsayılan side = "left"
-  public getDirectionSign(side: Side): 1 | -1 | 0 {
-    const d = this.directions[side];
-    return d === "up" ? 1 : d === "down" ? -1 : 0;
   }
 
   private mapKey(key: string): { side: Side; dir: Exclude<Direction, "stop"> } | null {

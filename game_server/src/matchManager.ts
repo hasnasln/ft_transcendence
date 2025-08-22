@@ -119,8 +119,10 @@ export class MatchManager {
 
 	public cancelGame(game: Game, cancelMode?: string) {
 		console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} thought to cancel the match: ${cancelMode}`);
-		if (game.state !== 'waiting')
+		console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} game.state: ${game.state}`);
+		if (game.state !== 'waiting' && game.state !== 'ready')
 			return;
+		console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} cancelled: ${cancelMode}`);
 		ConnectionHandler.getInstance().getServer().to(game.roomId).emit("match-cancelled", {});
 		game.players.forEach(player => player.socket.leave(game.roomId));
 		this.clearGame(game);
@@ -250,22 +252,36 @@ export class MatchManager {
 
 		this.waitForApprovals(game)
 			.then(answers => {
-				if (game.tournament) {
-					if (answers.every(answer => answer.answer === 'accept')) {
+				if (game.tournament)
+				{
+					if (answers.every(answer => answer.answer === 'accept'))
+					{
 						this.onGameApproved(game);
 						return;
 					}
 
 					let winner;
-					if (answers.some(answer => answer.answer === 'accept')) {
-						winner = answers.filter(a => a.answer === 'accept').pop()!.player
-					} else {
-						winner = answers[Math.random() > 0.5 ? 0 : 1].player;
-					}
+					let winnerPlayer;
+					if (answers.some(answer => answer.answer === 'accept'))
+						winnerPlayer = answers.filter(a => a.answer === 'accept').pop()!.player
+					else
+						winnerPlayer = answers[Math.random() > 0.5 ? 0 : 1].player;
 
-					patchWinnersToTournament(game.tournament.code, game.tournament.roundNo, winner);
-					return;
-				} else {
+					winner = {uuid : winnerPlayer.uuid, username: winnerPlayer.username};
+
+					console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} tournament match cannot start. Winner by default is ${winner.username}.`);
+					
+					//this.cancelGame(game, 'approval refused');
+					game.finalize(winner.username);
+					ConnectionHandler.getInstance().getServer().to(game.roomId).emit("match-cancelled", {});
+					game.players.forEach(p => p.socket.leave(game.roomId));
+
+					// Patch the winner to the tournament
+					if (!game.tournament)
+						console.error("Tournament info missing in a tournament game.");
+				}
+				else
+				{
 					if (answers.every(answer => answer.answer === 'accept')) {
 						this.onGameApproved(game);
 					} else {

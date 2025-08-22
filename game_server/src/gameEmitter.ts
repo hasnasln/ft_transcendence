@@ -81,7 +81,7 @@ export class GameEmitter {
 			return;
 		}
 
-		if (force || Date.now() - game.lastBallNotifiedTime > 200) {
+		if (force || Date.now() - game.lastBallNotifiedTime > 10) {
 			this.emitWithCache("bu", `${x.toFixed(2)}:${y.toFixed(2)}`, game.roomId);
 			game.lastBallNotifiedTime = Date.now();
 		}
@@ -109,7 +109,7 @@ export class GameEmitter {
 			return;
 		}
 
-		if (force || Date.now() - game.lastPaddleNotifiedTime > 100) {
+		if (force || Date.now() - game.lastPaddleNotifiedTime > 10) {
 			this.emitWithCache("pu", `${p1y.toFixed(2)}:${p2y.toFixed(2)}`, game.roomId);
 			game.lastPaddleNotifiedTime = Date.now();
 		}

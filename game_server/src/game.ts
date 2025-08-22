@@ -6,6 +6,7 @@ import {GameOrchestrator} from "./orchestrator";
 import {Ball, DEFAULT_GAME_ENTITY_CONFIG, GameEntityFactory, GameEnvironment} from "./gameEntity";
 import {patchWinnersToTournament} from "./tournament";
 import {emitError} from "./errorHandling";
+import { ConnectionHandler } from "./connection";
 
 export type Side = 'leftPlayer' | 'rightPlayer';
 export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament';
@@ -74,9 +75,6 @@ export class Game {
 	public state: GamePhase = 'waiting';
 
 	constructor(roomId: string, players: Player[], gameMode: GameMode, environment: GameEnvironment) {
-		if (players.length === 0) {
-			throw new Error("Game constructor: players must be specified.");
-		}
 		this.players = players;
 		this.roomId = roomId;
 		this.gameMode = gameMode;
@@ -137,6 +135,7 @@ export class Game {
 			} catch (err: any) {
 				emitError('tournamentError', err.message, this.roomId);
 			}
+			
 		}
 
 		console.log(`[${new Date().toISOString()}] ${this.roomId.padStart(10)} finalized with winner: ${this.winner}.`);
