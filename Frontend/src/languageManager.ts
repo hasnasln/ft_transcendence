@@ -383,7 +383,7 @@ const tr  = {
 			"email": "Bu e-posta zaten kayıtlı"
 		},
 		"USERNAME_EXISTS": "Bu kullanıcı adı zaten alınmış",
-		"EMAIL_ALREADY_EXISTS": "Bu e-posta zaten kayıtlı",
+		"EMAIL_EXISTS": "Bu e-posta zaten kayıtlı",
 		"WEAK_PASSWORD": "Şifre çok zayıf, daha güçlü bir şifre seçin",
 		"registerFailed": "Kayıt işlemi başarısız",
 		"serverError": "Sunucu hatası, lütfen daha sonra tekrar deneyin",

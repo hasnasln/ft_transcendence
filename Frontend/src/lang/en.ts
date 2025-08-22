@@ -27,7 +27,8 @@ export const en = {
 	  "email": "Enter email",
 	  "password": "Enter password",
 	  "confirmPassword": "Confirm password",
-	  "register": "Register"
+	  "register": "Register",
+      "success": "Approved"
 	},
 	"register-success": "Registration successful! Please log in.",
 	"register-errors": {
