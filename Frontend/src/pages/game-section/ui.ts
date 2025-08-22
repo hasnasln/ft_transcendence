@@ -232,7 +232,7 @@ export function updateScoreBoard() {
 	if (gameInstance.gameInfo.mode === 'tournament') {
 		if (gameInstance.uiManager.roundNoTable) {
 			if (gameInstance.gameStatus.finalMatch) {
-				gameInstance.uiManager.roundNoTable.innerText = `Final`;
+				gameInstance.uiManager.roundNoTable.innerText = `Final maçı`;
 			} else {
 				const roundNumber = gameInstance.gameInfo.state?.roundNumber || 1;
 				gameInstance.uiManager.roundNoTable.innerText = `Round ${roundNumber}`;

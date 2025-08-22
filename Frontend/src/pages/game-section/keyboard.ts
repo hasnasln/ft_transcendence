@@ -53,7 +53,9 @@ export class GameInputHandler {
     else
     {
         switch (key.toLowerCase()) {
+        case "arrowup":
         case "w": return { side: "left", dir: "up" };
+        case "arrowdown":
         case "s": return { side: "left", dir: "down" };
         default: return null;
       }
@@ -170,8 +172,8 @@ function onSpaceKeyDown(event: KeyboardEvent) {
 }
 
 function listenTouchButtons() {
-  let up_buttons = document.getElementById("up_touch_buttons");
-  let down_buttons = document.getElementById("down_touch_buttons");
+  let up_buttons = document.getElementById("up_touch_buttons_left");
+  let down_buttons = document.getElementById("down_touch_buttons_left");
 
   up_buttons?.addEventListener("touchstart", () => {
     GameInputHandler.getInstance().keyDown("w");

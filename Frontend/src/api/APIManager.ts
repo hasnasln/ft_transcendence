@@ -1,5 +1,4 @@
 import { Router } from "../router";
-import { TournamentResponseMessages, AuthResponseMessages } from "./types";
 
 export class HTTPMethod extends String {
 	public static GET: string = 'GET';
@@ -108,8 +107,6 @@ export class APIManager {
 
 			result.code = response.status;
 			const data = await response.json();
-			console.log("Login data:", data);
-			console.log("Login response", response);
 
 			if (response.ok && data.token) {
 				result.success = true;
@@ -160,8 +157,7 @@ export class APIManager {
 			result.code = response.status;
 			result.data = response.ok ? data : null;
 
-			result.message = response.ok ? (data.message || 'USER_REGISTERED') : (data.error || data.message || '');
-			result.messageKey = result.message;
+			result.messageKey = response.ok ? data.message : data.error ;
 
 			return result;
 		} catch (error) {
@@ -276,8 +272,7 @@ export class APIManager {
 			result.code = response.status;
 			result.data = data.data || null;
 
-			const backendKey = data.message || data.error || '';
-			result.messageKey = backendKey;
+			result.messageKey = response.ok ? data.message : data.error ;
 
 			return result;
 		} catch (error) {
@@ -295,8 +290,7 @@ export class APIManager {
 			result.success = response.ok;
 			result.code = response.status;
 
-			const backendKey = response.ok ? data.message : (data.error || data.message || '');
-			result.messageKey = backendKey;
+			result.messageKey = response.ok ? data.message : data.error ;
 
 			return result;
 		} catch (error) {
@@ -315,7 +309,7 @@ export class APIManager {
 			result.success = response.ok;
 			result.code = response.status;
 			result.data = data.data;
-			result.messageKey = data.message;
+			result.messageKey = response.ok ? data.message : data.error ;
 
 			return result;
 		} catch (error) {
@@ -329,14 +323,12 @@ export class APIManager {
 		try {
 			const response = await this.apiCall(`${this.t_url}/${tournamentCode}/leave`, HTTPMethod.POST, {
 			});
-
 			const data = await response.json();
+
 			result.success = response.ok;
 			result.code = response.status;
 			result.data = data.data;
-
-			const backendKey = response.ok ? data.message : (data.error || data.message || '');
-			result.messageKey = backendKey;
+			result.messageKey = response.ok ? data.message : data.error ;
 
 			return result;
 		} catch (error) {
@@ -357,8 +349,7 @@ export class APIManager {
 			result.code = response.status;
 			result.data = data.data;
 
-			const backendKey = response.ok ? data.message : (data.error || data.message || '');
-			result.messageKey = backendKey;
+			result.messageKey = response.ok ? data.message : data.error ;
 
 			return result;
 		} catch (error) {
@@ -380,8 +371,7 @@ export class APIManager {
 				result.code = response.status;
 				result.data = data.data;
 
-				const backendKey = data.message || '';
-				result.messageKey = backendKey;
+				result.messageKey = response.ok ? data.message : data.error ;
 
 			} else {
 				result.success = false;
@@ -406,8 +396,7 @@ export class APIManager {
 			result.success = response.ok;
 			result.code = response.status;
 
-			const backendKey = response.ok ? data.message : (data.error || data.message || '');
-			result.messageKey = backendKey;
+			result.messageKey = response.ok ? data.message : data.error ;
 
 			return result;
 		} catch (error) {

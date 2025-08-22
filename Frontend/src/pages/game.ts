@@ -166,10 +166,13 @@ export class GamePage implements Page {
 			case "turnHomePage-button":
 				turnToHomePageButtonClick();
 				break;
-			case "go-back":
+			case "go-back-g":
 				this.goBack();
 			case "ready-button":
-				console.log("Ready button clicked");
+				const x = document.getElementById("go-back-g");
+				if (x) {
+					x.classList.add("hidden");
+				}
 				GameEventBus.getInstance().emit({ type: 'READY_BUTTON_CLICK' });
 				break;
 		}
@@ -221,12 +224,32 @@ export class GamePage implements Page {
 			<div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all ease-out" style="width: 100%;"></div>
 		</div>
 
-		<div id="roundDiv" class="absolute top-[5%] left-[70%] -translate-x-1/2 hidden flex justify-center items-center px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.2vw] text-[#eee] z-10">
-		<span id="roundNo" class="text-blue-500">Round : </span>
+		<div id="roundDiv" class="absolute
+			rotate-90 sm:rotate-0
+			-right-[10%] bottom-[10%] w-[140px] h-[25px] text-sm 
+			sm:top-[5%] sm:right-[5%] w-250px h-[35px] sm:text-lg
+			lg:right-[3%] lg:top-[5%] lg:w-[250px] lg:h-[40px] lg:text-xl
+			xl:right-[10%] xl:top-[5%] xl:w-[350px] xl:h-[50px] xl:text-2xl
+			flex align-items-center justify-center
+			hidden
+			px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans z-10">
+			<span id="roundNo" class="text-blue-500 truncate whitespace-nowrap">
+				Round:
+			</span>
 		</div>
-
-		<div id="tournamentIdDiv" class="absolute top-[5%] left-[30%] -translate-x-1/2 hidden flex justify-center items-center px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans text-[1.2vw] text-[#eee] z-10">
-		<span id="tournamentCode" class="text-blue-500">Turnuva Adı: </span>
+		<div id="tournamentIdDiv" class="absolute
+			rotate-90 sm:rotate-0
+			-right-[10%] top-[10%] w-[150px] h-[25px] text-sm 
+			sm:top-[5%] sm:left-[5%] w-250px h-[35px] sm:text-lg
+			lg:left-[3%] lg:top-[5%] lg:w-[250px] lg:h-[40px] lg:text-xl
+			xl:left-[10%] xl:top-[5%] xl:w-[350px] xl:h-[50px] xl:text-2xl
+			flex align-items-center justify-center
+			hidden
+			px-[1.5vw] py-[0.3vw] bg-[linear-gradient(145deg,_#1e1e1e,_#2c2c2c)] border-2 border-[#555] rounded-[12px] shadow-[0_0_10px_rgba(255,255,255,0.2),_0_0_20px_rgba(255,255,255,0.1)] font-sans z-10
+			">
+			<span id="tournamentCode" class="text-blue-500 truncate whitespace-nowrap">
+				Turnuva Adı:
+			</span>
 		</div>
 
 		<div id="set-toast" class="absolute left-1/2
@@ -287,28 +310,48 @@ export class GamePage implements Page {
 	}
 }
 
+function mobileButtons(position: string): string {
+	let active_class = ``;
+	if (position === "left") {
+		active_class= `
+		-top-10 right-[50%] translate-x-[50%]
+		sm:rotate-0 sm:top-1/2 sm:translate-y-[-50%] 
+		sm:left-[3%] sm:right-auto sm:w-auto sm:h-auto
+		`
+	} else {
+		active_class = `
+		-bottom-10 left-[50%] translate-x-[-50%]
+		sm:rotate-0 sm:top-1/2 sm:bottom-auto sm:translate-y-[-50%] 
+		sm:right-[3%] sm:left-auto sm:w-auto sm:h-auto
+		`
+	}
+	return `
+		<div id="move-buttons_${position}"
+		class="absolute
+		rotate-90 w-[70px] h-[160px]
+		${active_class}
+		lg:hidden
+		bg-white/10 backdrop-blur-md border border-white/20 z-[100] flex flex-col justify-center items-center gap-4 p-3 rounded-2xl shadow-lg">
+			
+			<button id="up_touch_buttons_${position}" class="w-[50px] h-[50px] bg-gradient-to-b from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 active:scale-90 transition-all rounded-full flex items-center justify-center shadow-md">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+				</svg>
+			</button>
+
+			<button id="down_touch_buttons_${position}" class="w-[50px] h-[50px] bg-gradient-to-b from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 active:scale-90 transition-all rounded-full flex items-center justify-center shadow-md">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+				</svg>
+			</button>
+		</div>
+	`
+}
+
 function getButtons(): string {
 	return `
-	<div id="move-buttons"
-		class="absolute lg:hidden
-		-top-10 right-[50%] translate-x-[50%]
-		rotate-90 w-[70px] h-[160px]
-		sm:rotate-0 sm:top-1/2 sm:translate-y-[-50%] 
-		 sm:left-[3%] sm:right-auto sm:w-auto sm:h-auto
-		bg-white/10 backdrop-blur-md border border-white/20 z-[100] flex flex-col justify-center items-center gap-4 p-3 rounded-2xl shadow-lg">
-		
-		<button id="up_touch_buttons" class="w-[50px] h-[50px] bg-gradient-to-b from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 active:scale-90 transition-all rounded-full flex items-center justify-center shadow-md">
-			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6">
-				<path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-			</svg>
-		</button>
-
-		<button id="down_touch_buttons" class="w-[50px] h-[50px] bg-gradient-to-b from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 active:scale-90 transition-all rounded-full flex items-center justify-center shadow-md">
-			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6">
-				<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-			</svg>
-		</button>
-	</div>
+		${mobileButtons("left")}
+		${mobileButtons("right")}
 
 
 	<div id="buttons-container" class="absolute
@@ -387,7 +430,7 @@ function getButtons(): string {
 
 function getGoBackButton(): string {
 	return `
-		<button id="go-back" class="
+		<button id="go-back-g" class="
 		absolute
 		rotate-90 sm:rotate-0
 		top-[5%] right-[5%] sm:right-auto sm:top-[10%] sm:left-1/2 sm:-translate-x-1/2
@@ -408,8 +451,9 @@ function getGoBackButton(): string {
 function getScoreBoard(): string {
  	return `
 		<div id="scoreboard" class="scoreboard-card absolute 
-		-right-[42%] rotate-90 text-[1vw] lg:text-[3vw]
-		sm:top-0 sm:left-1/2 sm:-translate-x-1/2 sm:rotate-0 sm:right-auto sm:-top-2 hidden z-10">
+		-right-[39%] rotate-90 text-[1vw] lg:text-[3vw]
+		hidden
+		sm:top-0 sm:left-1/2 sm:-translate-x-1/2 sm:rotate-0 sm:right-auto sm:-top-2  z-10">
 			<div data-status="inprogress" class="teams">
 				<span class="team-info team-home">
 					<span class="team-info-container">
