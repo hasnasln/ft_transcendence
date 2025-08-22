@@ -185,7 +185,11 @@ export class RegisterPage implements Page {
             dragging = false;
             if (verified) return;
 
-            // Bitirmediyse geri dön
+            text.setAttribute('data-langm-key', 'register.captcha-text');
+            text.classList.add('text-gray-600');
+            text.classList.remove('text-green-700', 'font-semibold');
+            handle.classList.remove('border-green-500');
+
             handle.style.transition = 'left 200ms ease';
             progress.style.transition = 'width 200ms ease';
             handle.style.left = '0px';

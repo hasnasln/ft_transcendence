@@ -27,8 +27,10 @@ export const tr  = {
 		"email": "E-posta Giriniz",
 		"password": "Şifre Giriniz",
 		"confirmPassword": "Şifreyi Tekrar Giriniz",
-		"register": "Kayıt Ol"
-	},
+		"register": "Kayıt Ol",
+        "captcha-text": "Doğrulamak için kaydırın",
+        "success": "Onaylandı",
+},
 	"register-success": "Kayıt başarılı! Lütfen giriş yapın.",
 	"register-errors": {
 		"required": {

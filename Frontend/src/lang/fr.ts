@@ -27,8 +27,10 @@ export const fr = {
 	  "email": "Entrez l’e‑mail",
 	  "password": "Entrez le mot de passe",
 	  "confirmPassword": "Confirmez le mot de passe",
-	  "register": "S’inscrire"
-	},
+	  "register": "S’inscrire",
+      "captcha-text": "Faites glisser pour vérifier",
+      "success": "Approuvé",
+},
 	"register-success": "Inscription réussie ! Veuillez vous connecter.",
 	"register-errors": {
 	  "required": {

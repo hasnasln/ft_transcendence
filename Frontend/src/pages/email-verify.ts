@@ -146,6 +146,14 @@ export class EmailVerifyPage implements Page {
         resendBtn?.setAttribute("disabled", "true");
         resendBtn?.classList.add("opacity-60", "cursor-not-allowed");
 
+        if (resendBtn) {
+            const existingKey = resendBtn.getAttribute("data-langm-key");
+            if (existingKey) {
+                resendBtn.setAttribute("data-langm-restore-key", existingKey);
+                resendBtn.removeAttribute("data-langm-key");
+            }
+        }
+
         const updateText = () => {
             if (cdText) {
                 cdText.textContent = exmp.getLang("emailVerify.cooldownText")
@@ -171,7 +179,12 @@ export class EmailVerifyPage implements Page {
                 }
                 if (cdText) cdText.textContent = "";
                 if (resendBtn) {
-                    resendBtn.textContent = exmp.getLang("emailVerify.resend") ?? "Tekrar mail gönder";
+                    const restoreKey = resendBtn.getAttribute("data-langm-restore-key");
+                    if (restoreKey) {
+                        resendBtn.setAttribute("data-langm-key", restoreKey);
+                        resendBtn.removeAttribute("data-langm-restore-key");
+                    }
+                    exmp.applyLanguage();
                     resendBtn.removeAttribute("disabled");
                     resendBtn.classList.remove("opacity-60", "cursor-not-allowed");
                 }

@@ -28,6 +28,7 @@ export const en = {
 	  "password": "Enter password",
 	  "confirmPassword": "Confirm password",
 	  "register": "Register",
+      "captcha-text": "Slide to verify",
       "success": "Approved"
 	},
 	"register-success": "Registration successful! Please log in.",
