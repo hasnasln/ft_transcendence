@@ -8,7 +8,8 @@ import {
 	joinMatch,
 	leaveMatch,
 	generateMatchId,
-	patchWinnersToTournament
+	patchWinnersToTournament,
+	TournamentStatus
 } from "./tournament";
 import { emitError } from "./errorHandling";
 import { GameEmitter } from "./gameEmitter";
@@ -126,11 +127,18 @@ export class MatchManager {
 	}
 
 	private async handleTournamentGame(player: Player, tournamentCode: string) {
-		try {
+		try 
+		{
 			const tournament = await getTournament(tournamentCode!);
-			if (!tournament) {
+			if (!tournament)
 				throw new Error(`Tournament with code ${tournamentCode} not found.`);
-			}
+			else if (tournament.status === TournamentStatus.COMPLETED)
+				throw new Error(`Tournament with code ${tournament.name} is already completed.`);
+
+			if(tournament.lobby_members.find(m => m.uuid === player.uuid) === undefined)
+				throw new Error(`You are not registered in the tournament ${tournament.name}.`);
+			else if (tournament.participants.find(p => p.uuid === player.uuid) === undefined)
+				throw new Error(`You eliminated from the tournament ${tournament.name}.`);
 
 			const match = extractMatch(tournament, player.uuid);
 
@@ -148,9 +156,11 @@ export class MatchManager {
 				return;
 
 			this.createRemoteGame(matchedPlayers[0], matchedPlayers[1], { code: tournamentCode, roundNo: match.roundNumber, finalMatch: match.finalMatch, name: tournament.name });
-		} catch (err: any) {
+		}
+		catch (err: any) {
 			console.error("Tournament match error:", err);
 			emitError('tournamentError', err.message, player.socket.id);
+			return
 		}
 	}
 

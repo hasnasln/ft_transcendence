@@ -59,13 +59,31 @@ export const fr = {
 		"username": "Ce nom d’utilisateur est déjà pris",
 		"email": "Cet e‑mail est déjà enregistré"
 	  },
-	  "USERNAME_ALREADY_EXISTS": "Ce nom d’utilisateur est déjà pris",
-	  "EMAIL_ALREADY_EXISTS": "Cet e‑mail est déjà enregistré",
+	  "USERNAME_EXISTS": "Ce nom d’utilisateur est déjà pris",
+	  "EMAIL_EXISTS": "Cet e‑mail est déjà enregistré",
 	  "WEAK_PASSWORD": "Mot de passe trop faible, veuillez choisir un mot plus sécurisé",
 	  "registerFailed": "Échec de l’inscription",
 	  "serverError": "Erreur serveur, veuillez réessayer plus tard",
 	  "networkError": "Erreur réseau, veuillez vérifier votre connexion"
 	},
+	"register-messages": {
+        "verifyEmailBeforeLogin": "Avant de vous connecter, veuillez vérifier votre e-mail dans votre boîte de réception."
+    },
+
+    "emailVerify": {
+        "title": "Vérification de l’e-mail",
+        "subtitle": "Saisissez le code de vérification envoyé à votre e‑mail.",
+        "codePlaceholder": "Code de vérification",
+        "confirm": "Confirmer",
+        "resend": "Renvoyer l’e‑mail",
+        "backToLogin": "Retour à la connexion",
+        "cooldownText": "Vous pourrez renvoyer dans {s} secondes",
+        "errors": {
+            "missingEmail": "Adresse e‑mail introuvable. Veuillez vous réinscrire.",
+            "missingCode": "Veuillez saisir le code de vérification.",
+            "networkError": "Erreur réseau. Veuillez réessayer."
+        }
+    },
 	"home": {
 	  "play-b": "Jouer maintenant",
 	  "settings-b": "Paramètres",
@@ -130,8 +148,8 @@ export const fr = {
 		"Creater-description": "Personne organisant le tournoi",
 		"ActivePlayer": "Joueurs actifs",
 		"ActivePlayer-description": "Nombre actuel de participants et capacité",
-		"Status": "Statut",
-		"Status-description": "Statut actuel du tournoi"
+		"TournamentTime": "Temps du Tournoi",
+		"TournamentTime-description": "Heure de début et durée du tournoi"
 	  },
 	  "AdminPanel": {
 		"title": "--Panneau Admin",
@@ -164,7 +182,6 @@ export const fr = {
 		},
 		"PlayButton": "DÉMARRER LE JEU"
 	  },
-	  "title": "Panneau de contrôle du tournoi",
 	  "exit": "Quitter le tournoi",
 	  "tournament-id": "ID du tournoi",
 	  "tournament-name": "Nom du tournoi",
@@ -333,10 +350,12 @@ export const fr = {
 		"tournament-started-button": "TOURNOI DÉMARRÉ"
 	},
 	"tournament-tree": {
-		"round": ". TOUR",
+		"final": "Finale",
+		"winner": "Gagnant",
+		"round": "TOUR",
 		"vs": "VS",
-		"refreshing": "Actualisation...",
-		"refresh": "Actualiser"
+		"refresh": "Actualiser",
+		"refreshing": "Actualisation..."
 	},
 	"tournament-confirmation": {
 		"start-title": "🏆 Confirmation de Démarrage du Tournoi",
@@ -358,4 +377,9 @@ export const fr = {
 		"accept": "Quitter",
 		"cancel": "Annuler"
 	},
+	"tournament-waiting": "En attente",
+	"tournament-ongoing": "En cours",
+	"tournament-finished": "Terminé",
+	"tournament-unknown": "Inconnu",
+	"tournament-time-subtitle": "Heure de début et durée du tournoi"
 }

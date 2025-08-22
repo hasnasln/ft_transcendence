@@ -174,7 +174,7 @@ function getDifficulty(): string {
 
 function getGoBackButton(): string {
 	return `
-		<button id="go-back" class="
+		<button id="go-back-p" class="
 		bg-red-500 text-white home group w-[50px] h-[50px] border border-red-600 rounded-full
 		flex items-center justify-center
 		hover:bg-red-600 hover:border-red-700 hover:shadow-red-500/25 hover:shadow-lg hover:scale-105
@@ -241,7 +241,7 @@ export class PlayPage implements Page {
 				return this.chooseAIDifficulty('hard');
 			case 'go-home':
 				return this.goHome();
-			case 'go-back':
+			case 'go-back-p':
 				return this.goBack();
 			default:
 				console.warn(`Unknown button clicked: ${buttonId}`);

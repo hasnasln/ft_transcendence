@@ -117,51 +117,109 @@ export class TournamentTreeManager {
         return winner.some(p => p.uuid === participant.uuid);
     }
 
-    private  renderTournamentTree(rounds: Round[]): string {
+    private renderTournamentTree(rounds: Round[]): string
+    {
         console.log('Rendering tournament tree with rounds:', rounds);
-        const roundsHtml = rounds.map((round) => `
+
+        const roundsHtml = rounds.map((round) => {
+            const isFinal =
+                round.expected_winner_count === 1 &&
+                (
+                    (round.is_completed && round.winners?.length === 1) ||
+                    (!round.is_completed && (!round.winners || round.winners.length === 0))
+                );
+
+            const roundTitleHtml = isFinal
+                ? `
+                    <div class="round-title">
+                        <span data-langm-key="tournament-tree.final">Final</span>
+                    </div>
+                `
+                : `
+                    <div class="round-title">
+                        <span class="round-no">${round.round_number}</span>
+                        <span data-langm-key="tournament-tree.round">TUR</span>
+                    </div>
+                `;
+
+            const matchesHtml = round.matches.map(match => `
+                <div class="match-card">
+                    <div class="match-status status-${match.status}">
+                        ${
+                            match.status === MatchStatus.CREATED   ? '⏱' :
+                            match.status === MatchStatus.ONGOING   ? '🎮' :
+                            match.status === MatchStatus.CANCELLED ? 'X'   : '✓'
+                        }
+                    </div>
+
+                    <div class="player ${
+                        match.status === MatchStatus.CREATED
+                            ? ''
+                            : (round.winners && this.thisisWinner(round.winners, match.participant1) ? 'winner' : 'loser')
+                    }">
+                        <span>${match.participant1.username}</span>
+                        <div class="player-status">
+                            ${round.winners && this.thisisWinner(round.winners, match.participant1) ? '<span class="trophy">🏆</span>' : ''}
+                        </div>
+                    </div>
+
+                    <div class="vs-divider" data-langm-key="tournament-tree.vs">VS</div>
+
+                    <div class="player ${
+                        match.status === MatchStatus.CREATED
+                            ? ''
+                            : (round.winners && this.thisisWinner(round.winners, match.participant2) ? 'winner' : 'loser')
+                    }">
+                        <span>${match.participant2.username}</span>
+                        <div class="player-status">
+                            ${round.winners && this.thisisWinner(round.winners, match.participant2) ? '<span class="trophy">🏆</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="tournament-round">
+                    ${roundTitleHtml}
+                    <div class="matches-container">
+                        ${matchesHtml}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // --- ŞAMPİYON BLOĞU ---
+
+        const finalRound = rounds.find(r =>
+            r.is_completed && r.expected_winner_count === 1 && r.winners?.length === 1
+        );
+
+        const champion = finalRound?.winners?.[0];
+
+        const championHtml = champion ? `
             <div class="tournament-round">
                 <div class="round-title">
-                    <span data-langm-key="tournament-tree.round">${round.round_number}. TUR</span>
+                    <span data-langm-key="tournament-tree.winner">Kazanan</span>
                 </div>
                 <div class="matches-container">
-                    ${round.matches.map(match => `
-                        <div class="match-card">
-                            <div class="match-status status-${match.status}">
-                                ${match.status === MatchStatus.CREATED ? '⏱' : 
-                                match.status === MatchStatus.ONGOING ? '🎮' :
-                                match.status === MatchStatus.CANCELLED ? 'X' : '✓'
-                            }
-                            </div>
-                            <div class="player ${
-                                match.status === MatchStatus.CREATED ? '' : 
-                                round.winners && this.thisisWinner(round.winners, match.participant1) ? 'winner' : 'loser'
-                            }">
-                                <span>${match.participant1.username}</span>
-                                <div class="player-status">
-                                    ${round.winners && this.thisisWinner(round.winners, match.participant1) ? '<span class="trophy">🏆</span>' : ''}
-                                </div>
-                            </div>
-                            <div class="vs-divider" data-langm-key="tournament-tree.vs">VS</div>
-                            <div class="player ${
-                                match.status === MatchStatus.CREATED ? '' : 
-                                round.winners && this.thisisWinner(round.winners, match.participant2) ? 'winner' : 'loser'
-                            }">
-                                <span>${match.participant2.username}</span>
-                                <div class="player-status">
-                                    ${round.winners && this.thisisWinner(round.winners, match.participant2) ? '<span class="trophy">🏆</span>' : ''}
-                                </div>
+                    <div class="match-card">
+                        <div class="match-status status-COMPLETED">🏆</div>
+                        <div class="player winner">
+                            <span>${champion.username}</span>
+                            <div class="player-status">
+                                <span class="trophy">🏆</span>
                             </div>
                         </div>
-                    `).join('')}
+                    </div>
                 </div>
             </div>
-        `).join('');
-        
+        ` : '';
+
         return `
             <div class="tournament-container">
                 <div class="tournament-bracket">
                     ${roundsHtml}
+                    ${championHtml}
                 </div>
             </div>
         `;

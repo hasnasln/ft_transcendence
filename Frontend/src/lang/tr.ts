@@ -59,14 +59,32 @@ export const tr  = {
 			"username": "Bu kullanıcı adı zaten alınmış",
 			"email": "Bu e-posta zaten kayıtlı"
 		},
-		"USERNAME_ALREADY_EXISTS": "Bu kullanıcı adı zaten alınmış",
-		"EMAIL_ALREADY_EXISTS": "Bu e-posta zaten kayıtlı",
+		"USERNAME_EXISTS": "Bu kullanıcı adı zaten alınmış",
+		"EMAIL_EXISTS": "Bu e-posta zaten kayıtlı",
 		"WEAK_PASSWORD": "Şifre çok zayıf, daha güçlü bir şifre seçin",
 		"registerFailed": "Kayıt işlemi başarısız",
 		"serverError": "Sunucu hatası, lütfen daha sonra tekrar deneyin",
 		"networkError": "Ağ bağlantı hatası, internet bağlantınızı kontrol edin"
 	},
 
+	"register-messages": {
+        "verifyEmailBeforeLogin": "Giriş yapmadan önce e-postanı kontrol edip doğrula."
+    },
+
+	"emailVerify": {
+        "title": "E-posta Doğrulama",
+        "subtitle": "E-posta adresine gönderilen doğrulama kodunu gir.",
+        "codePlaceholder": "Doğrulama kodu",
+        "confirm": "Onayla",
+        "resend": "Tekrar mail gönder",
+        "backToLogin": "Giriş ekranına dön",
+        "cooldownText": "Tekrar göndermek için {s} saniye kaldı",
+        "errors": {
+            "missingEmail": "E-posta bilgisi bulunamadı. Lütfen yeniden kayıt ol.",
+            "missingCode": "Lütfen doğrulama kodunu gir.",
+            "networkError": "Ağ hatası. Lütfen tekrar dene."
+        }
+    },
 	"home":{
 		"play-b": "Şimdi Oyna",
 		"settings-b": "Ayarlar",
@@ -131,11 +149,11 @@ export const tr  = {
 			'Creater-description': "Turnuvayı organize eden kişi",
 			'ActivePlayer': "Aktif Oyuncu",
 			'ActivePlayer-description': "Aktif katılımcı sayısı ve kapasite",
-			'Status': "Durum",
-			'Status-description' : "Turnuva mevcut durumu",
+			'TournamentTime': "Turnuva Zamanı",
+			'TournamentTime-description' : "Turnuva başlangıç zamanı ve süre",
 		},
 		"AdminPanel":{
-			"title": "--Admin Paneli",
+			"title": "Admin Paneli",
 			"Button": {
 				"active": "TURNUVAYI BAŞLAT",
 				"deactive-1": "OYUNCU BEKLENİYOR (1/2)",
@@ -166,7 +184,6 @@ export const tr  = {
 			},
 			"PlayButton": "OYUNA BAŞLA"
 		},
-		"title":"Turnuva Kontrol Paneli",
 		"exit": "Turnuvadan Çık",
 		"tournament-id": "Turnuva ID",
 		"tournament-name": "Turnuva Adı",
@@ -359,10 +376,12 @@ export const tr  = {
 		"tournament-started-button": "TURNUVA BAŞLATILDI"
 	},
 	"tournament-tree": {
-		"round": ". TUR",
+		"final": "Final",
+		"winner": "Kazanan",
+		"round": "TUR",
 		"vs": "VS",
-		"refreshing": "Yenileniyor...",
-		"refresh": "Yenile"
+		"refresh": "Yenile",
+		"refreshing": "Yenileniyor..."
 	},
 	"tournament-confirmation": {
 		"start-title": "🏆 Turnuva Başlatma Onayı",
@@ -384,4 +403,9 @@ export const tr  = {
 		"accept": "Ayrıl",
 		"cancel": "Vazgeç"
 	},
+	"tournament-waiting": "Beklemede",
+	"tournament-ongoing": "Devam Ediyor", 
+	"tournament-finished": "Turnuva Bitti",
+	"tournament-unknown": "Bilinmiyor",
+	"tournament-time-subtitle": "Turnuva başlangıç zamanı ve süre"
 }
