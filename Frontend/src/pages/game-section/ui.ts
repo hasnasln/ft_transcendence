@@ -311,7 +311,7 @@ export function showEndMessage() {
 			{
 				gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "game.EndMessage.opponent_disconnected_tournament_winner");
 				gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-winner", winnerName || '');
-				gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-tournamnet", gameInstance.gameStatus.tournamentCode || '');
+				gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-tournament", gameInstance.gameStatus.tournamentCode || '');
 			}
 	}
 
