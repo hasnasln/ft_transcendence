@@ -117,6 +117,28 @@ export class TournamentTreeManager {
         return winner.some(p => p.uuid === participant.uuid);
     }
 
+    private findByeParticipant(round: Round): Participant | undefined
+    {
+        if (!round.winners || round.winners.length === 0) {
+            return undefined;
+        }
+
+        for (const winner of round.winners) {
+            const isInMatches = round.matches.some(
+                (match) =>
+                    match.participant1.uuid === winner.uuid ||
+                    match.participant2.uuid === winner.uuid
+            );
+
+            if (!isInMatches) {
+                return winner;
+            }
+        }
+
+        return undefined;
+    }
+
+
     private renderTournamentTree(rounds: Round[]): string
     {
         console.log('Rendering tournament tree with rounds:', rounds);
@@ -180,12 +202,13 @@ export class TournamentTreeManager {
             `).join('');
 
             let byeHtml = '';
-            if (round.winners && round.matches.length === 0 && round.winners.length === 1)
+            let byePlayer = this.findByeParticipant(round);
+
+            if (byePlayer !== undefined)
             {
-                const byePlayer = round.winners[0];
                 byeHtml = `
                     <div class="match-card bye">
-                        <div class="match-status status-BYE">BYE</div>
+                        <div class="match-status status-BYE bg-yellow-300 round-full w-32 h-32">BYE</div>
                         <div class="player winner">
                             <span>${byePlayer.username}</span>
                             <div class="player-status">
