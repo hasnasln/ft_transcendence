@@ -328,6 +328,7 @@ function mobileButtons(position: string): string {
 	return `
 		<div id="move-buttons_${position}"
 		class="absolute
+		hidden
 		rotate-90 w-[70px] h-[160px]
 		${active_class}
 		lg:hidden

@@ -110,7 +110,6 @@ export class GameManager {
 
 	private enterWaitingPhase = async (status: GameStatus): Promise<void> => {
 		this.gameStatus = status;
-		console.log("----------------------***********************Entering waiting phase with status: ", this.gameStatus);
 		WebSocketClient.getInstance().once("match-cancelled", handleMatchCancellation, 20_000);
 		WebSocketClient.getInstance().emit("create", this.gameStatus);
 
@@ -161,7 +160,7 @@ export class GameManager {
 			console.log("GameManager aborted.");
 			if (error) {
 				console.error("GameManager aborted with error: ", error);
-				this.uiManager.onInfoShown("Bir hata oluştu! Lütfen sayfayı yenileyin.");
+				this.uiManager.onInfoShown("game.InfoMessage.unexpected_try_refresh");
 				return;
 			}
 		};
@@ -193,9 +192,6 @@ export class GameManager {
 				.then(() => this.enterReadyPhase())
 				.then(() => listenStateUpdates(this.gameInfo!)) // start listening to the game server
 				.then(() => waitGameStart(this.gameInfo!)) // wait game server for start the game
-				.then(() => {
-					console.log("---------------------------------------------**********>Game started successfully.");
-				})
 				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }));
 			});
 	}
@@ -229,7 +225,7 @@ export class GameManager {
 			return;
 
 		if (this.gameStatus.game_mode === 'localGame' || this.gameStatus.game_mode === 'vsAI') {
-			this.uiManager.onInfoShown("Ağ bağlantısı koptu. Maçınız bitirilecek ...");
+			this.uiManager.onInfoShown("game.InfoMessage.connetion_lost");
 			gameInstance.runAfter(() => {
 				this.uiManager.onInfoHidden();
 				Router.getInstance().invalidatePage("/game");
@@ -239,7 +235,7 @@ export class GameManager {
 		}
 
 		console.log("Network kopması algılandı, oyunu duraklatıyoruz.");
-		this.uiManager.onInfoShown("Ağ bağlantısı koptu. 15 sn içerisinde bağlantı gelirse maçınız devam edecek...");
+		this.uiManager.onInfoShown("game.InfoMessage.network_lost_reconnect_countdown", [{ key: "s", value: "15" }]);
 	}
 
 	public requestRejoin() {
@@ -247,15 +243,15 @@ export class GameManager {
 			return;
 		}
 		console.log("Requesting rejoin to the game server.");
-		gameInstance.uiManager.onInfoShown("Yeniden bağlandı. Oyuna katılma izni isteniyor...");
+		gameInstance.uiManager.onInfoShown("game.InfoMessage.reconnected_request_permission");
 		WebSocketClient.getInstance().once("rejoin-response", (response: { status: string }) => {
 			if (response.status === "approved") {
 				console.log("Rejoin approved, resuming game.");
-				gameInstance.uiManager.onInfoShown("Izin verildi. Oyuna katılınıyor...");
+				gameInstance.uiManager.onInfoShown("game.InfoMessage.permission_granted_joining");
 				gameInstance.runAfter(() => gameInstance.uiManager.onInfoHidden(), 1000);
 			} else {
 				console.log("Rejoin rejected, redirecting to play page.");
-				gameInstance.uiManager.onInfoShown("Izin verilmedi. Ana sayfaya dönülüyor...");
+				gameInstance.uiManager.onInfoShown("game.InfoMessage.permission_denied_redirect_home");
 				gameInstance.runAfter(() => {
 					Router.getInstance().go('/');
 					Router.getInstance().invalidatePage("/game");
@@ -275,7 +271,7 @@ export class GameManager {
 }
 
 function handleMatchCancellation() {
-	gameInstance.uiManager.onInfoShown("Maç iptal edildi. Ana sayfaya yönlendiriliyor...");
+	gameInstance.uiManager.onInfoShown("game.InfoMessage.match_cancelled_redirect_home");
 	gameInstance.runAfter(() => {
 		Router.getInstance().invalidatePage("/play");
 		Router.getInstance().go('/play');

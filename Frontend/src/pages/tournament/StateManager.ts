@@ -1,5 +1,5 @@
 import { _apiManager } from '../../api/APIManager';
-import {TournamentData } from './tournamentTypes';
+import {TournamentData, TournamentStatus } from './tournamentTypes';
 import { ShowTournament } from './MainRenderer';
 import { t_first_section } from './FormComponents';
 
@@ -19,9 +19,10 @@ export class TournamentStateManager {
     async handleRefreshSuccess(updatedData: TournamentData): Promise<void> {
         this.data.lobby_members = updatedData.lobby_members;
         const response = await _apiManager.getTournament(this.data.code);
-        const tournamentStarted = response.data?.tournament_start || false;
+        const tournamentStarted = response.data?.status === TournamentStatus.ONGOING;
         if (tournamentStarted) {
             this.status = true;
+            this.data.status = TournamentStatus.ONGOING;
         }
         const uid = localStorage.getItem('uuid');
         this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid));
@@ -47,6 +48,7 @@ export class TournamentStateManager {
 
     async handleStartSuccess(): Promise<void> {
         this.status = true;
+        this.data.status = TournamentStatus.ONGOING;
         this.loadingManager.removeLoadingOverlay('start');
         await this.delay(2000);
         this.updateUIAfterStart();
@@ -127,7 +129,9 @@ export class TournamentStateManager {
         const minPlayers = 2;
         const maxPlayers = 10;
         
-        if (this.status) {
+        const isTournamentOngoing = this.data.status === TournamentStatus.ONGOING || this.status;
+        
+        if (isTournamentOngoing) {
             if (startButton && startInfo) {
                 this.renderTournamentStarted(startButton, startInfo);
             }
@@ -161,6 +165,11 @@ export class TournamentStateManager {
 
     updateData(newData: TournamentData): void {
         this.data = newData;
+        if (newData.status === TournamentStatus.ONGOING) {
+            this.status = true;
+        } else if (newData.status === TournamentStatus.CREATED) {
+            this.status = false;
+        }
     }
 
     updateStatus(newStatus: boolean): void {

@@ -1,0 +1,10 @@
+route:
+  receiver: 'slack'
+
+receivers:
+  - name: 'slack'
+    slack_configs:
+    - send_resolved: true
+      username: 'notifier_abi'
+      channel: '#general'
+      api_url: 'https://hooks.slack.com/services/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'

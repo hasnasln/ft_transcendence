@@ -6,6 +6,7 @@ import { BallController } from "./ball";
 import { BabylonJsWrapper } from "./3d";
 import { createPaddles, createGround, createWalls, createScene } from "./gameScene";
 import { CameraController } from "./camera";
+import { exmp } from "../../lang/languageManager";
 const B = BabylonJsWrapper.getInstance();
 
 export class GameUI {
@@ -124,9 +125,16 @@ export class GameUI {
 		this.startButton?.classList.add("hidden");
 	}
 
-	public onInfoShown(message: string): void {
-		this.info!.textContent = message;
+	public onInfoShown(key: string, placeholders?: {key:string, value:string} [] ): void {
 		this.info!.classList.remove("hidden");
+		this.info!.setAttribute('data-translate-key', key)
+		if (placeholders){
+			placeholders.forEach((placeholder) => {
+				this.info!.setAttribute(`data-translate-placeholder-value-${placeholder.key}`, placeholder.value);
+			});
+			this.info!.classList.remove("hidden");
+		}
+		exmp.applyLanguage2();
 	}
 
 	public onInfoHidden(): void {
@@ -143,19 +151,20 @@ export class GameUI {
 
 	public onTurnHomeButtonText(text: string): void {
 		if (this.turnToHomePage) {
-			this.turnToHomePage.textContent = text;
+			this.turnToHomePage.setAttribute('data-translate-key', text);
 		}
+		exmp.applyLanguage2();
 	}
 
 	public onTurnToTournamentButton(): void {
-		this.onInfoShown(`Bir üst tura yükseldiniz ! \nBir sonraki roundu bekleyiniz ...`);
-		this.onTurnHomeButtonText("Turnuva sayfasına Dön");
+		this.onInfoShown("game.InfoMessage.round_advanced");
+		this.onTurnHomeButtonText("game.go-tournament-page");
 
 		this.turnToHomePage!.addEventListener("click", () => {
 			this.turnToHomePage!.classList.add("hidden");
 			Router.getInstance().go('/tournament');
 		});
-
+		exmp.applyLanguage2();
 		this.show(this.turnToHomePage);
 	}
 
@@ -163,19 +172,22 @@ export class GameUI {
 		if (gameInstance.gameStatus.game_mode === 'tournament') {
 			gameInstance.gameStatus.finalMatch = matchPlayers.finalMatch!;
 			gameInstance.gameStatus.roundNo = matchPlayers.roundNo;
+			gameInstance.gameStatus.tournamentName = matchPlayers.tournamentName!;
+			
 			
 			if (matchPlayers.finalMatch)
-				this.onInfoShown(`Sıradaki maç: ${gameInstance.tournamentCode} final maçı : vs ${rival}`);
+				this.onInfoShown("game.InfoMessage.next_match_final_vs_rival", [{key:"rival", value: rival}]);
 			else
-				this.onInfoShown(`Sıradaki maç round : ${matchPlayers.roundNo} vs ${rival}`);
+				this.onInfoShown("game.InfoMessage.next_match_final_vs_rival", [{key:"rival", value: rival}, {key:"round", value: `${matchPlayers.roundNo}`}]);
 		} else {
-			this.onInfoShown(`${rival} ile eşleştin`);
+			this.onInfoShown("game.InfoMessage.matched_with_rival", [{key:"rival", value: rival}]);
 		}
-		this.startButton!.innerHTML = `${rival} maçını oyna !`;
+		this.startButton!.setAttribute("data-translate-key", "game.play-game");
+		this.startButton!.setAttribute("data-translate-placeholder-value-rival", rival);
+		exmp.applyLanguage2();
 	}
 
 	public async setupScene(): Promise<void> {
-		console.log("------------------------------->Setting up game scene...");
 		initializeGameUI();
 
 		const sceneSetup = createScene();
@@ -219,9 +231,6 @@ export function updateScoreBoard() {
 		gameInstance.uiManager.scoreTable.innerText = `${gameInstance.gameInfo.setState?.points.leftPlayer}  :  ${gameInstance.gameInfo.setState?.points.rightPlayer}`;
 	}
 	
-	// maç bitiminde 3 yazması gereken yerde 2 yazıp bitiriyor, maç bitiminde, son 
-	// sayı emit olarak gönderiliyor, bu yüzden burada 2 yazıyor.
-	// emitleri kontrol ettim geliyor
 	const setsHome = document.getElementById("sets-home");
 	const setsAway = document.getElementById("sets-away");
 	if (setsHome && setsAway) {
@@ -279,29 +288,38 @@ export async function startNextSet() {
 export function showEndMessage() {
 	if (!gameInstance.gameInfo) return;
 	let winnerName = gameInstance.gameInfo.gameEndInfo?.matchWinner === 'leftPlayer' ? gameInstance.gameInfo.setState?.usernames.left : gameInstance.gameInfo.setState?.usernames.right;
-	gameInstance.uiManager.endMsg!.textContent = `${winnerName} maçı kazandı !`;
-	if (gameInstance.gameInfo.mode === 'tournament' && gameInstance.gameStatus.finalMatch == true)
-		gameInstance.uiManager.endMsg!.textContent = `${winnerName} ${gameInstance.gameStatus.tournamentCode} turnuvasını kazandı !   Tebrikler !`;
+	gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "game.EndMessage.match_winner");
+	gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-winner", winnerName || '');
 
+	if (gameInstance.gameInfo.mode === 'tournament' && gameInstance.gameStatus.finalMatch == true)
+		{console.log(`gameInstance.gameStatus.tournamentName : ${gameInstance.gameStatus.tournamentName}`);
+			gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "game.EndMessage.tournament_winner");
+			gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-winner", winnerName || '');
+			gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-tournament", gameInstance.gameInfo.state?.tournamentName || '');
+		}
 	if (gameInstance.gameInfo.gameEndInfo?.endReason === 'disconnection') {
 		if (gameInstance.gameInfo.mode === 'localGame' || gameInstance.gameInfo.mode === 'vsAI')
-			gameInstance.uiManager.endMsg!.textContent = `Bağlantısı kesildi. Maç bitti !`;
+			gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "disconnected_match_ended");
 		if (gameInstance.gameInfo.mode === 'remoteGame' || gameInstance.gameInfo.mode === 'tournament')
-			gameInstance.uiManager.endMsg!.textContent = `Rakibin bağlantısı kesildi. ${winnerName} maçı kazandı!`;
+			{
+				gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "game.EndMessage.opponent_disconnected_match_winner");
+				gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-winner", winnerName || '');
+			}
 		if (gameInstance.gameInfo.mode === 'tournament' && gameInstance.gameStatus.finalMatch == true)
-			gameInstance.uiManager.endMsg!.textContent = `Rakibin bağlantısı kesildi. ${winnerName} ${gameInstance.gameStatus.tournamentCode} turnuvasını kazandı !   Tebrikler !`;
+			{
+				gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "game.EndMessage.opponent_disconnected_tournament_winner");
+				gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-winner", winnerName || '');
+				gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-tournament", gameInstance.gameInfo.state?.tournamentName || '');
+			}
 	}
 
 	gameInstance.runAfter(() => {
+		exmp.applyLanguage2();
 		gameInstance.uiManager.endMsg!.classList.remove("hidden");
 		if (gameInstance.gameInfo!.mode === 'tournament') {
-			gameInstance.uiManager.turnToHomePage!.textContent = "Turnuva sayfasına Dön";
+			gameInstance.uiManager.turnToHomePage!.setAttribute("data-translate-key", "game.EndMessage.back_to_tournament_page");
 			gameInstance.uiManager.turnToHomePage!.classList.remove("hidden");
 		} else {
-			if (gameInstance.uiManager.startButton && gameInstance.gameInfo?.gameEndInfo?.endReason !== 'disconnection' ) {
-				gameInstance.uiManager.startButton.textContent = "Aynı Maçı Tekrar Oyna";
-				gameInstance.uiManager.startButton.classList.remove("hidden");
-			}
 			gameInstance.uiManager.newMatchButton!.classList.remove("hidden");
 			gameInstance.uiManager.turnToHomePage!.classList.remove("hidden");
 		}

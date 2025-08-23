@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  auth:
+    build: /root/project/drafts/bkas/transcendence/auth
+    image: auth-service:latest
+    container_name: auth-service
+    network_mode: host
+    volumes:
+      - ./auth/database:/app/dist/database/sqlite
+    ports:
+      - "8080:8080"
+    environment:
+      - JWT_SECRET=asdad
+    restart: unless-stopped

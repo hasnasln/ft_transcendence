@@ -7,6 +7,7 @@ export interface MatchPlayers {
     right: { socketId: string, username: string };
     roundNo?: number;
     finalMatch?: boolean
+    tournamentName?: string;
 }
 
 type Side = 'leftPlayer' | 'rightPlayer'
@@ -81,9 +82,9 @@ export function waitForMatchReady(): Promise<MatchPlayers> {
 export function waitForRematchApproval(): Promise<boolean> {
     const rival = gameInstance.currentRival || "rakip";
     return new Promise((resolve) => {
-        gameInstance.uiManager.onInfoShown(`Talebiniz ${rival} oyuncusuna iletildi.`);
+        gameInstance.uiManager.onInfoShown("game.InfoMessage.request_sent_to_rival", [{key:"rival", value: rival}]);
         WebSocketClient.getInstance().on("rematch-ready", () => {
-            gameInstance.uiManager.onInfoShown(`Maç başlıyor`);
+            gameInstance.uiManager.onInfoShown("game.InfoMessage.match_starting");
             gameInstance.runAfter(() => {
                 gameInstance.uiManager.onInfoHidden();
                 resolve(true);
@@ -91,7 +92,7 @@ export function waitForRematchApproval(): Promise<boolean> {
         });
 
         gameInstance.runAfter(() => {
-            gameInstance.uiManager.onInfoShown(`${rival} oyuncusundan onay gelmedi !`);
+            gameInstance.uiManager.onInfoShown("game.InfoMessage.rival_no_confirmation", [{key:"rival", value:rival}]);
             gameInstance.runAfter(() => {
                 gameInstance.uiManager.onInfoHidden();
             }, 2000);

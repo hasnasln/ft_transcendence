@@ -18,7 +18,6 @@ export class ModernOverlay {
         const icon = this.getIcon(type);
         const text = document.createElement('span');
         text.setAttribute('data-langm-key', key);
-        text.textContent = "!_!";
 
         content.appendChild(icon);
         content.appendChild(text);

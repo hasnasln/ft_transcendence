@@ -49,7 +49,7 @@ export class CameraController {
                         console.log("resetcamera olacak");
                         this.resetCamera();
                     }
-                    console.log(`alt + R ye basıldı, this.rotationActive = ${this.rotationActive}`);
+                    console.log(`shift + R ye basıldı, this.rotationActive = ${this.rotationActive}`);
                     this.rotationActive = !this.rotationActive;
                     break;
             }

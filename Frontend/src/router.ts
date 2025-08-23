@@ -3,6 +3,7 @@ export interface Page {
 	evaluate(): string;
 	onLoad?(): void;
 	onUnload?(): void;
+	onShow?(): void;
 }
 
 export interface RouterGuard {
@@ -48,10 +49,8 @@ export class Router {
 							}
 						});
 					return;
-
 				}
 			}
-
 			this.go(event.state.path ?? window.location.pathname, true, true);
 		});
 	}
@@ -161,6 +160,7 @@ export class Router {
 
 			this.activePages.set(path, page);
 			this.setContent(pageContent);
+			page.onShow?.();
 			this.savePageInfo(path, page, popstate);
 
 			// bu sizi rahatsız ediyorsa iyi developersınız demektir.
@@ -209,6 +209,7 @@ export class Router {
 
 		newPageElement.id = Router.CONTENT_CONTAINER_ID;
 		newPageElement.classList.remove('hidden');
+		newPage.onShow?.();
 		this.savePageInfo(newPagePath, newPage, popstate);
 	}
 
@@ -259,8 +260,7 @@ export class Router {
  * them to the page instance */
 function buttonAgent(e: MouseEvent, page: Page): void {
 	if (!page.onButtonClick) return;
-	if (!(e.target instanceof HTMLElement))
-		return;
+	if (!(e.target instanceof Element)) return;
 
 	const buttonId = e.target.closest('button')?.id;
 	if (!buttonId)
