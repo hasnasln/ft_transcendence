@@ -2,7 +2,7 @@ import './global.css';
 import { Router } from './router';
 import {_apiManager} from "./api/APIManager";
 
-function bootstrap() {
+async function bootstrap() {
 	const router = Router.getInstance();
 
 	router.registerGuard({
@@ -29,7 +29,7 @@ function bootstrap() {
 	router.lazyRegisterPage("/500", {path: "ServerErrorPage", pageName: "ServerErrorPage"});
 	router.lazyRegisterPage("/404", {path: "NotFoundPage", pageName: "NotFoundPage"});
 
-	router.go(window.location.pathname, true);
+	await router.go(window.location.pathname, true);
 	if (_apiManager.isTokenExpired()) {
 		_apiManager.logout();
 		if (window.location.pathname == '/register')
