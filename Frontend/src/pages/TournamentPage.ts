@@ -35,7 +35,17 @@ export class TournamentPage implements Page {
 	}
 
 	onShow(): void {
-		this.handleRefresh();
+		_apiManager.haveTournament()
+		.then((resposeWraper) => {
+			console.log('Tournament data fetched from server:', resposeWraper);
+			if (resposeWraper.success === false)localStorage.removeItem('tdata');                                           // tournament verisi yoksa localStorage'dan sil
+			else if (resposeWraper.success === true) localStorage.setItem('tdata', JSON.stringify(resposeWraper.data));     // tournament verisi varsa localStorage'a kaydet
+			return resposeWraper;
+		})
+		.then((responseWraper) => {
+			if (responseWraper.success) 
+				this.handleRefresh();
+		})
 	}
 	private loadTournamentData(defaultData: TournamentData ): TournamentData {
 		try {
@@ -319,6 +329,7 @@ export class TournamentPage implements Page {
 		try {
 			this.notificationManager.showRefreshLoading(this.loadingManager);
 			exmp.applyLanguage();
+			this.data 
 			const refreshResult = await this.actionHandler.refreshTournament();
 
 			if (refreshResult.success && refreshResult.data) {
