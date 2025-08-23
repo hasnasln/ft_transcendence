@@ -1,7 +1,6 @@
 import {en} from "./en";
 import {tr} from "./tr";
 import {fr} from "./fr";
-import { ValueAndUnit } from "@babylonjs/gui";
 
 type TranslationObject = {
 	[key: string]: string | TranslationObject;
