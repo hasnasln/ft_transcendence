@@ -160,7 +160,7 @@ export class TournamentTreeManager {
                 `
                 : `
                     <div class="round-title">
-                        <span class="round-no">${round.round_number}</span>
+                        <span class="round-no">${round.round_number}.</span>
                         <span data-langm-key="tournament-tree.round">TUR</span>
                     </div>
                 `;
