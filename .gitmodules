@@ -1,4 +1,4 @@
 [submodule "backend"]
-	path = backend
+	path = transcendence
 	url = git@github.com:BatuhanKas/transcendence.git
 
