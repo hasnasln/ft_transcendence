@@ -2,6 +2,7 @@ import { _apiManager } from '../../api/APIManager';
 import {TournamentData, TournamentStatus } from './tournamentTypes';
 import { ShowTournament } from './MainRenderer';
 import { t_first_section } from './FormComponents';
+import { ModernOverlay } from '../../components/ModernOverlay';
 
 export class TournamentStateManager {
     private data: TournamentData;
@@ -18,16 +19,21 @@ export class TournamentStateManager {
 
     async handleRefreshSuccess(updatedData: TournamentData): Promise<void> {
         this.data.lobby_members = updatedData.lobby_members;
-        const response = await _apiManager.getTournament(this.data.code);
-        const tournamentStarted = response.data?.status === TournamentStatus.ONGOING;
-        if (tournamentStarted) {
-            this.status = true;
-            this.data.status = TournamentStatus.ONGOING;
-        }
-        const uid = localStorage.getItem('uuid');
-        this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid));
-        await this.delay(500);
-        this.completeRefresh(response.data!);
+        _apiManager.getTournament(this.data.code)
+        .then(async (response) => {
+            const tournamentStarted = response.data?.status === TournamentStatus.ONGOING;
+            if (tournamentStarted) {
+                this.status = true;
+                this.data.status = TournamentStatus.ONGOING;
+            }
+            const uid = localStorage.getItem('uuid');
+            this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid));
+            await this.delay(500);
+            this.completeRefresh(response.data!);
+        })
+        .catch((error) => {
+            ModernOverlay.show('global-error', 'error');
+        })
     }
 
     async handleCreateSuccess(container: HTMLElement, tournamentData: TournamentData): Promise<void> {

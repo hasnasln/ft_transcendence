@@ -1,4 +1,5 @@
 export const tr  = {
+	"global-error": "Bir Hata Oluştu",
 	"singin": {
 		"register-b": "Kayıt Ol",
 		"email-or-nickname-i": "E-posta",

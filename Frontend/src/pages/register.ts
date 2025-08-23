@@ -283,8 +283,7 @@ async function submit(e: Event): Promise<void> {
         }, 1500);
 
     } catch (error: any) {
-        ModernOverlay.show('register-errors.networkError', 'error');
-        console.error('Registration error:', error);
+        ModernOverlay.show('global-error', 'error');
     }
 }
 

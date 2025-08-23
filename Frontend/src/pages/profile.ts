@@ -178,8 +178,7 @@ export class Profile implements Page {
 				ToastManager.ShowToast('error', 'toast.error.password-update-failed');
 			}
 		} catch (error) {
-			console.error('Error updating password:', error);
-			ToastManager.ShowToast('error', 'toast.error.password-update-error');
+			ToastManager.ShowToast('error', 'global-error');
 		}
 	}
 
@@ -224,8 +223,7 @@ export class Profile implements Page {
 				console.error('Unknown action:', x);
 			}
 		} catch (error) {
-			console.error('Error in handleX:', error);
-			ToastManager.ShowToast('error', exmp.getLang("toast.error.update-error"));
+			ToastManager.ShowToast('error', "global-error");
 		}
 		input.value = '';
 	}

@@ -35,8 +35,7 @@ export class TournamentActionHandler {
                 data: tdata
             };
         } catch (error) {
-            console.error('Create tournament error:', error);
-            ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
+            ModernOverlay.show('global-error', 'error');
             return {
                 success: false
             };
@@ -79,8 +78,7 @@ export class TournamentActionHandler {
                 };
             }
         } catch (error) {
-            console.error('Join tournament error:', error);
-            ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
+            ModernOverlay.show('global-error', 'error');
             return {
                 success: false
             };
@@ -105,7 +103,7 @@ export class TournamentActionHandler {
             }
         } catch (error) {
             console.error('Start tournament API error:', error);
-            ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
+            ModernOverlay.show('global-error', 'error');
             return {
                 success: false
             };
@@ -128,7 +126,7 @@ export class TournamentActionHandler {
             };
         } catch (error) {
             console.error('Refresh API error:', error);
-            ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
+            ModernOverlay.show('global-error', 'error');
             return {
                 success: false
             };
@@ -164,8 +162,7 @@ export class TournamentActionHandler {
             };
 
         } catch (error) {
-            console.error('Exit action error:', error);
-            ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
+            ModernOverlay.show('global-error', 'error');
             return {
                 success: false
             };

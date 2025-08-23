@@ -133,7 +133,7 @@ export class APIManager {
 	/*
 	!logout kısmında dil özelliğini setleyebilirz ? bakacağım
 	*/
-	public async logout(): Promise<any> {
+	public async logout(): Promise<any> { // local storage temizlenecek
 		try {
 			this.setToken(null);
 			Router.getInstance().invalidateAllPages();
@@ -160,7 +160,6 @@ export class APIManager {
 
 			return result;
 		} catch (error) {
-			console.error('Error in register:', error);
 			throw error;
 		}
 	}
@@ -251,10 +250,8 @@ export class APIManager {
 				result.messageKey = backendKey;
 
 			}
-			
 			return result;
 		} catch (error) {
-			console.error(`Error in update${name}:`, error);
 			throw error;
 		}
 	}
@@ -293,7 +290,6 @@ export class APIManager {
 
 			return result;
 		} catch (error) {
-			console.error('Error in deleteTournament:', error);
 			throw error;
 		}
 	}
@@ -312,7 +308,6 @@ export class APIManager {
 
 			return result;
 		} catch (error) {
-			console.error('Error in joinTournament:', error);
 			throw error;
 		}
 	}
@@ -331,7 +326,6 @@ export class APIManager {
 
 			return result;
 		} catch (error) {
-			console.error('Error in leaveTournament:', error);
 			throw error;
 		}
 	}
@@ -352,7 +346,6 @@ export class APIManager {
 
 			return result;
 		} catch (error) {
-			console.error('Error in getTournament:', error);
 			throw error;
 		}
 	}
@@ -381,7 +374,6 @@ export class APIManager {
 
 			return result;
 		} catch (error) {
-			console.error('Error in haveTournament:', error);
 			throw error;
 		}	
 	}

@@ -14,6 +14,7 @@ import { TournamentTreeManager } from './tournament/TreeManager';
 import { TournamentGameManager } from './tournament/GameManager';
 import { TournamentStateManager } from './tournament/StateManager';
 import { TournamentNotificationManager } from './tournament/NotificationManager';
+import { ToastManager } from '../ToastManager';
 
 
 export class TournamentPage implements Page {
@@ -46,6 +47,9 @@ export class TournamentPage implements Page {
 			if (responseWraper.success) 
 				this.handleRefresh();
 		})
+		.catch(() => {
+			ToastManager.ShowToast('error', "global-error");
+		});
 	}
 	private loadTournamentData(defaultData: TournamentData ): TournamentData {
 		try {
@@ -141,6 +145,9 @@ export class TournamentPage implements Page {
 			if(this.flag && this.data && this.data.status === "ongoing")
 				this.stateManager.updateRefreshUI(this.flag, this.amIPlaying(this.data!.participants!));
 			exmp.applyLanguage()
+		})
+		.catch(() => {
+			ToastManager.ShowToast('error', "global-error");
 		});
 	}
 
@@ -296,9 +303,8 @@ export class TournamentPage implements Page {
 				this.updateManagersData(joinResult.data);
 			}
 		} catch (error) {
-			console.error('Error joining tournament:', error);
 			this.loadingManager.removeLoadingOverlay('join');
-			ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
+			ModernOverlay.show('global-error', 'error');
 		}
 	}
 
@@ -335,11 +341,17 @@ export class TournamentPage implements Page {
 			if (refreshResult.success && refreshResult.data) {
 				await this.stateManager.handleRefreshSuccess(refreshResult.data);
 				this.updateManagersData(refreshResult.data);
-			} else this.onLoad();
+			}
 		} catch (error) {
 			console.error('Refresh error:', error);
 		}
 		exmp.applyLanguage();
+		setTimeout(() => {
+			const refreshButton = document.querySelector('[data-action="refresh"]') as HTMLElement;
+			const refreshIcon = refreshButton.querySelector('svg') as SVGElement;
+			refreshButton?.classList.remove('animate-spin');
+			refreshIcon?.classList.remove('animate-spin');
+		}, 1000);
 	}
 	private async exitTournament(container: HTMLElement): Promise<void> {
 		try {
@@ -352,11 +364,13 @@ export class TournamentPage implements Page {
 			.then((confirmation: { confirmed: boolean; isAdmin: boolean }) => {
 				this.loadingManager.showExitLoading(confirmation.isAdmin);
 				this.actionHandler.exitTournament()
-				.then(() => {
+				.then((rvalue) => {
 					this.loadingManager.removeLoadingOverlay('exit');
+					return rvalue;
 				})
-				.then(() => {
-					this.stateManager.handleExitSuccess(container);
+				.then((rvalue) => {
+					if(rvalue.success)
+						this.stateManager.handleExitSuccess(container);
 				})
 			});
 		} catch (error) {

@@ -6,24 +6,27 @@ import { askUser } from '../../router';
 import { exmp } from '../../lang/languageManager';
 
 export class TournamentValidation {
-    async validateTournamentStatus(data: any, status: boolean): Promise<{ isValid: boolean; message: string }> {
-        const response = await _apiManager.getTournament(data.code);
-        if (!response.data.tournament_start && !status) {
-            ModernOverlay.show('tournament-messages.ERR_TOURNAMENT_NOT_STARTABLE', 'error');
-            return {
-                isValid: false,
-                message: `tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_STARTABLE}`
-            };
-        }
-        const playButton = document.getElementById('play-button');
-        if (playButton && playButton.style.visibility === 'hidden') {
-            ModernOverlay.show('tournament-messages.ERR_TOURNAMENT_NOT_MATCH_JOINABLE', 'error');
-            return {
-                isValid: false,
-                message: `tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_MATCH_JOINABLE}`
-            };
-        }
-        return { isValid: true, message: '' };
+        validateTournamentStatus(data: any, status: boolean): Promise<{ isValid: boolean; message: string }> {
+        return _apiManager.getTournament(data.code)
+        .then((response) => {
+            if (!response.data.tournament_start && !status) {
+                ModernOverlay.show('tournament-messages.ERR_TOURNAMENT_NOT_STARTABLE', 'error');
+                return {
+                    isValid: false,
+                    message: `tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_STARTABLE}`
+                };
+            }
+            const playButton = document.getElementById('play-button');
+            if (playButton && playButton.style.visibility === 'hidden') {
+                ModernOverlay.show('tournament-messages.ERR_TOURNAMENT_NOT_MATCH_JOINABLE', 'error');
+            }
+            return { isValid: true, message: '' };
+        })
+        .catch((error) => {
+            ModernOverlay.show('global-error', 'error');
+            return Promise.reject();
+        })
+        
     }
 
     async askTournamentConfirmation(title: string, message: string, acceptText: string = "", cancelText: string = ""): Promise<boolean> {

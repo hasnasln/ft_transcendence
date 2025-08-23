@@ -50,14 +50,20 @@ export class TournamentGameManager {
     }
 
     private async performFinalTournamentCheck(): Promise<{ isValid: boolean; message: string }> {
-        const response = await _apiManager.getTournament(this.data.code);
-        if (!response.data?.tournament_start) {
-            return {
-                isValid: false,
-                message: `tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_STARTABLE}`
-            };
+        try
+        {
+            const response = await _apiManager.getTournament(this.data.code);
+            if (!response.data?.tournament_start) {
+                return {
+                    isValid: false,
+                    message: `tournament-messages.${TournamentResponseMessages.ERR_TOURNAMENT_NOT_STARTABLE}`
+                };
+            }
+            return { isValid: true, message: '' };
+        } catch (error) {
+            ModernOverlay.show('global-error', 'error');
+            return {isValid: false, message: 'global-error'};
         }
-        return { isValid: true, message: '' };
     }
 
     private async initializeGame(): Promise<void> {

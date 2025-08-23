@@ -62,7 +62,10 @@ export class TournamentTreeManager {
         .then(() => {
             if (!flag) return; // sadece ilk çağrıda event listener ekle
             this.setupTreeModalEventListeners();
-        });
+        })
+        .catch((error) => {
+            ModernOverlay.show('global-error', 'error');
+        })
     }
 
     private removeExistingTreeModal(): void {
