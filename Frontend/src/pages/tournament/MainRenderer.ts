@@ -68,7 +68,7 @@ function createHeaderSection(tdata: TournamentData): string {
                 </h1>
                 <p
                 data-langm-key="tournament-second-page.title"
-                class="text-base sm:text-lg text-gray-300 mb-6">!_!</p>
+                class="text-base sm:text-lg text-gray-300 mb-6"></p>
             </div>
         </div>
     `;
@@ -125,11 +125,11 @@ function createCardHeader(): string {
                 <div>
                     <h2
                         data-langm-key="tournament-second-page.DetailsCard.header"
-                        class="text-xl sm:text-2xl font-bold text-white mb-1">!_!
+                        class="text-xl sm:text-2xl font-bold text-white mb-1">
                     </h2>
                     <p
                     data-langm-key="tournament-second-page.DetailsCard.header2"
-                        class="text-gray-300 text-sm sm:text-base">!_!
+                        class="text-gray-300 text-sm sm:text-base">
                     </p>
                 </div>
             </div>
@@ -158,12 +158,12 @@ function createInfoCard(title_key: string, value_key: string, icon: string, grad
     const tournamentStatusKeys = ["tournament-waiting", "tournament-ongoing", "tournament-finished", "tournament-unknown"];
     const isLangKey = tournamentStatusKeys.includes(value_key);
     const valueDisplay = isLangKey 
-        ? `<p class="text-white text-2xl font-bold" data-langm-key="${value_key}">!_!</p>`
+        ? `<p class="text-white text-2xl font-bold" data-langm-key="${value_key}"></p>`
         : `<p class="text-white text-2xl font-bold">${value_key}</p>`;
     
     const subtitleContent = customSubtitle 
-        ? `<p class="text-gray-400 text-xs mt-3 leading-relaxed" data-langm-key="${customSubtitle}">!_!</p>`
-        : `<p data-langm-key="tournament-second-page.DetailsCard.${title_key}-description" class="text-gray-400 text-xs mt-3 leading-relaxed">!_!</p>`;
+        ? `<p class="text-gray-400 text-xs mt-3 leading-relaxed" data-langm-key="${customSubtitle}"></p>`
+        : `<p data-langm-key="tournament-second-page.DetailsCard.${title_key}-description" class="text-gray-400 text-xs mt-3 leading-relaxed"></p>`;
     
     return `
         <div class="group relative bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-500 hover:scale-105 hover:shadow-2xl">
@@ -176,7 +176,7 @@ function createInfoCard(title_key: string, value_key: string, icon: string, grad
                     <div class="text-right">
                         <p
                             data-langm-key="tournament-second-page.DetailsCard.${title_key}"
-                            class="text-gray-400 text-sm font-medium">!_!
+                            class="text-gray-400 text-sm font-medium">
                         </p>
                         ${valueDisplay}
                     </div>
@@ -200,7 +200,7 @@ function createAdminPanel(tdata: TournamentData): string {
             <div class="text-center mb-4">
                 <h3
                     data-langm-key="tournament-second-page.AdminPanel.title"
-                    class="text-lg sm:text-xl font-bold text-white mb-2">!_!
+                    class="text-lg sm:text-xl font-bold text-white mb-2">
                 </h3>
             </div>
             ${createStartButton(canStart, playerCount, minPlayers)}
@@ -216,7 +216,7 @@ function createStartButton(canStart: boolean, playerCount: number, minPlayers: n
         ? `<div class="flex items-center justify-center space-x-2">
                 ${TournamentIcons.getRocketIcon()}
                 <span
-                    data-langm-key="tournament-second-page.AdminPanel.Button.active">!_!
+                    data-langm-key="tournament-second-page.AdminPanel.Button.active">
                 </span>
            </div>`
         : `<div class="flex items-center justify-center space-x-2">
@@ -226,7 +226,7 @@ function createStartButton(canStart: boolean, playerCount: number, minPlayers: n
                         ? `deactive-1`
                         : `deactive-2`
                     }"
-                    class="text-xs sm:text-sm">!_!
+                    class="text-xs sm:text-sm">
                </span>
            </div>`;
     const dataAction = canStart ? 'start-tournament' : '';
@@ -246,7 +246,7 @@ function createStartInfo(canStart: boolean, playerCount: number): string {
                         ${TournamentIcons.getCheckIcon()}
                         <p
                             data-langm-key="tournament-second-page.AdminPanel.Button2.active"
-                            class="text-green-400 font-semibold text-sm">!_!
+                            class="text-green-400 font-semibold text-sm">
                         </p>
                     </div>
                     <div class="text-center">
@@ -265,13 +265,13 @@ function createStartInfo(canStart: boolean, playerCount: number): string {
                         ${TournamentIcons.getWarningIcon()}
                         <p 
                             data-langm-key="tournament-second-page.AdminPanel.Button2.deactive-1"
-                            class="text-yellow-400 font-semibold text-sm">!_!
+                            class="text-yellow-400 font-semibold text-sm">
                         </p>
                     </div>
                     <div class="text-center">
                         <p
                             data-langm-key="tournament-second-page.AdminPanel.Button2.description-1"
-                            class="text-yellow-300 text-xs">!_!
+                            class="text-yellow-300 text-xs">
                         </p>
                     </div>
                 </div>
@@ -300,11 +300,11 @@ function createPlayersHeader(): string {
             </div>
             <h3
                 data-langm-key="tournament-second-page.PlayersPanel.title"
-                class="text-lg sm:text-xl font-bold text-white mb-2">!_!
+                class="text-lg sm:text-xl font-bold text-white mb-2">
             </h3>
             <p
                 data-langm-key="tournament-second-page.PlayersPanel.title2"
-                class="text-gray-300 text-sm">!_!
+                class="text-gray-300 text-sm">
             </p>
         </div>
     `;
@@ -315,7 +315,7 @@ function createPlayButton(): string {
             <div class="flex items-center justify-center space-x-2">
                 ${TournamentIcons.getGameIcon()}
                 <span
-                    data-langm-key="tournament-second-page.PlayersPanel.PlayButton">!_!
+                    data-langm-key="tournament-second-page.PlayersPanel.PlayButton">
                 </span>
             </div>
         </button>
@@ -415,7 +415,7 @@ function createCapacityIndicator(currentCapacity: number): string {
             <div class="flex justify-between items-center mb-3">
                 <span
                     data-langm-key="tournament-second-page.PlayersPanel.CapacityIndicator.capacity"
-                    class="text-gray-300 text-sm font-medium">!_!
+                    class="text-gray-300 text-sm font-medium">
                 </span>
                 <span class="text-white font-bold">${currentCapacity} / ${maxCapacity}</span>
             </div>
@@ -424,10 +424,10 @@ function createCapacityIndicator(currentCapacity: number): string {
             </div>
             <div class="flex justify-between items-center mt-2 text-xs text-gray-400">
                 <span
-                    data-langm-key="tournament-second-page.PlayersPanel.CapacityIndicator.min">!_!
+                    data-langm-key="tournament-second-page.PlayersPanel.CapacityIndicator.min">
                 </span>
                 <span
-                    data-langm-key="tournament-second-page.PlayersPanel.CapacityIndicator.max">!_!
+                    data-langm-key="tournament-second-page.PlayersPanel.CapacityIndicator.max">
                 </span>
             </div>
         </div>

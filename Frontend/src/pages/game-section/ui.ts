@@ -152,7 +152,6 @@ export class GameUI {
 	public onTurnHomeButtonText(text: string): void {
 		if (this.turnToHomePage) {
 			this.turnToHomePage.setAttribute('data-translate-key', text);
-			this.turnToHomePage.textContent = "!_!";
 		}
 		exmp.applyLanguage2();
 	}

@@ -66,11 +66,11 @@ function getMenu(): string {
   <div class="text-center mb-6 px-4">
 	<h2 data-langm-key="play.Menu.title"
 		class="text-white text-3xl sm:text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-3">
-	  !_!
+	  
 	</h2>
 	<p data-langm-key="play.Menu.subTitle"
 	   class="text-cyan-200/80 text-base sm:text-lg mt-3 font-medium">
-	  !_!
+	  
 	</p>
   </div>
 
@@ -89,7 +89,7 @@ function getMenu(): string {
 		<span class="text-xl sm:text-2xl filter drop-shadow-lg">${icon}</span>
 		
 		<span data-langm-key="${key}"
-			  class="relative z-10 text-cyan-100">${'!_!'}</span>
+			  class="relative z-10 text-cyan-100"></span>
 
 		<div class="absolute right-4 transform translate-x-2 group-hover:translate-x-0 transition-transform duration-300 opacity-0 group-hover:opacity-100">
 		  ${id === 'go-home' ? '' :
@@ -126,7 +126,7 @@ function getDifficulty(): string {
 		<div class="text-center mb-4">
 			<h3
 			data-langm-key="play.Difficulty.title"
-			class="text-white text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">!_!
+			class="text-white text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
 			</h3>
 			<div class="w-24 h-1 bg-gradient-to-r from-cyan-400 to-blue-400 mx-auto mt-2 rounded-full" style="box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);">
 			</div>
@@ -140,7 +140,7 @@ function getDifficulty(): string {
 			<div class="absolute inset-0 bg-gradient-to-r from-green-400/10 to-emerald-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 			<span
 			data-langm-key="play.Difficulty.Button.easy"
-			class="relative z-10 text-green-200">!_!
+			class="relative z-10 text-green-200">
 			</span>
 		</button>
 		<button id="difficulty-medium" class=" medium group relative w-[80%] h-14 text-white text-xl font-semibold rounded-2xl transition-all duration-300 transform  cursor-pointer overflow-hidden" style="
@@ -152,7 +152,7 @@ function getDifficulty(): string {
 			<div class="absolute inset-0 bg-gradient-to-r from-yellow-400/10 to-orange-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 			<span
 			data-langm-key="play.Difficulty.Button.medium"
-			class="relative z-10 text-yellow-200">!_!
+			class="relative z-10 text-yellow-200">
 			</span>
 		</button>
 		<button id="difficulty-hard" class=" hard group relative w-[80%] h-14 text-white text-xl font-semibold rounded-2xl transition-all duration-300 transform  cursor-pointer overflow-hidden" style="
@@ -164,7 +164,7 @@ function getDifficulty(): string {
 			<div class="absolute inset-0 bg-gradient-to-r from-red-400/10 to-pink-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 			<span
 			data-langm-key="play.Difficulty.Button.hard"
-			class="relative z-10 text-red-200">!_!
+			class="relative z-10 text-red-200">
 			</span>
 		</button">
 			${getGoBackButton()}
