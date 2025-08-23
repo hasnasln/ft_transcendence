@@ -3,7 +3,7 @@ export interface Page {
 	evaluate(): string;
 	onLoad?(): void;
 	onUnload?(): void;
-	onShow?(): void;
+	onUnHide?(): void;
 }
 
 export interface RouterGuard {
@@ -160,7 +160,6 @@ export class Router {
 
 			this.activePages.set(path, page);
 			this.setContent(pageContent);
-			page.onShow?.();
 			this.savePageInfo(path, page, popstate);
 
 			// bu sizi rahatsız ediyorsa iyi developersınız demektir.
@@ -209,7 +208,7 @@ export class Router {
 
 		newPageElement.id = Router.CONTENT_CONTAINER_ID;
 		newPageElement.classList.remove('hidden');
-		newPage.onShow?.();
+		newPage.onUnHide?.();
 		this.savePageInfo(newPagePath, newPage, popstate);
 	}
 

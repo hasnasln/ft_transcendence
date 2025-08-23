@@ -19,7 +19,7 @@ export class TournamentStateManager {
 
     async handleRefreshSuccess(updatedData: TournamentData): Promise<void> {
         this.data.lobby_members = updatedData.lobby_members;
-        _apiManager.getTournament(this.data.code)
+        return _apiManager.getTournament(this.data.code)
         .then(async (response) => {
             const tournamentStarted = response.data?.status === TournamentStatus.ONGOING;
             if (tournamentStarted) {

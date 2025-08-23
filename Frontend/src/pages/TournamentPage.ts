@@ -35,7 +35,7 @@ export class TournamentPage implements Page {
 	constructor() {
 	}
 
-	onShow(): void {
+	onUnHide(): void {
 		_apiManager.haveTournament()
 		.then((resposeWraper) => {
 			console.log('Tournament data fetched from server:', resposeWraper);
@@ -45,11 +45,15 @@ export class TournamentPage implements Page {
 		})
 		.then((responseWraper) => {
 			if (responseWraper.success) 
-				this.handleRefresh();
+				return this.handleRefresh();
 		})
 		.catch(() => {
 			ToastManager.ShowToast('error', "global-error");
+		}).finally(() => {
+			exmp.applyLanguage();
 		});
+		
+
 	}
 	private loadTournamentData(defaultData: TournamentData ): TournamentData {
 		try {
@@ -321,7 +325,7 @@ export class TournamentPage implements Page {
 			this.loadingManager.removeLoadingOverlay('start');
 			
 			if (startResult.success) {
-				this.handleRefresh();
+				await this.handleRefresh();
 				this.updateManagersStatus(true);
 			}
 	
@@ -333,19 +337,19 @@ export class TournamentPage implements Page {
 	}
 	private async handleRefresh(): Promise<void> {
 		try {
-			this.notificationManager.showRefreshLoading(this.loadingManager);
-			exmp.applyLanguage();
-			this.data 
+			this.notificationManager.showRefreshLoading(this.loadingManager);//todo remove ?
 			const refreshResult = await this.actionHandler.refreshTournament();
-
+			
 			if (refreshResult.success && refreshResult.data) {
 				await this.stateManager.handleRefreshSuccess(refreshResult.data);
 				this.updateManagersData(refreshResult.data);
+				console.log('Tournament data refreshed successfully:', refreshResult.data);
 			}
+			
 		} catch (error) {
 			console.error('Refresh error:', error);
 		}
-		exmp.applyLanguage();
+
 		setTimeout(() => {
 			const refreshButton = document.querySelector('[data-action="refresh"]') as HTMLElement;
 			const refreshIcon = refreshButton.querySelector('svg') as SVGElement;
