@@ -188,7 +188,7 @@ export class APIManager {
     public async resendVerification(email: string): Promise<IApiResponseWrapper> {
         const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
         try {
-            const response = await this.apiCall(`http://auth.transendence.com:8081/api/auth/send-mail`, HTTPMethod.POST, {
+            const response = await this.apiCall(`${this.baseUrl}/send-mail`, HTTPMethod.POST, {
                 'Content-Type': 'application/json',
             }, JSON.stringify({ email }));
 
