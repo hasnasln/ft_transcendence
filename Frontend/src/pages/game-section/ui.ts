@@ -295,7 +295,7 @@ export function showEndMessage() {
 
 	if (gameInstance.gameInfo.mode === 'tournament' && gameInstance.gameStatus.finalMatch == true)
 		{
-			gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "tournament_winner");
+			gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "game.EndMessage.tournament_winner");
 			gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-winner", winnerName || '');
 			gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-tournamnet", gameInstance.gameStatus.tournamentCode || '');
 		}
@@ -304,12 +304,12 @@ export function showEndMessage() {
 			gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "disconnected_match_ended");
 		if (gameInstance.gameInfo.mode === 'remoteGame' || gameInstance.gameInfo.mode === 'tournament')
 			{
-				gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "opponent_disconnected_match_winner");
+				gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "game.EndMessage.opponent_disconnected_match_winner");
 				gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-winner", winnerName || '');
 			}
 		if (gameInstance.gameInfo.mode === 'tournament' && gameInstance.gameStatus.finalMatch == true)
 			{
-				gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "opponent_disconnected_tournament_winner");
+				gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "game.EndMessage.opponent_disconnected_tournament_winner");
 				gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-winner", winnerName || '');
 				gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-tournamnet", gameInstance.gameStatus.tournamentCode || '');
 			}
@@ -319,7 +319,7 @@ export function showEndMessage() {
 		exmp.applyLanguage2();
 		gameInstance.uiManager.endMsg!.classList.remove("hidden");
 		if (gameInstance.gameInfo!.mode === 'tournament') {
-			gameInstance.uiManager.turnToHomePage!.setAttribute("data-translate-key", "back_to_tournament_page");
+			gameInstance.uiManager.turnToHomePage!.setAttribute("data-translate-key", "game.EndMessage.back_to_tournament_page");
 			gameInstance.uiManager.turnToHomePage!.classList.remove("hidden");
 		} else {
 			gameInstance.uiManager.newMatchButton!.classList.remove("hidden");
