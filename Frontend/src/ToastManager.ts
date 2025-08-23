@@ -67,7 +67,7 @@ export class ToastManager {
 					<!-- Message -->
 					<div class="flex-1 pt-1">
 						<p
-						data-langm-key="${langm_key}"
+						data-translate-key="${langm_key}"
 						class="text-gray-800 font-semibold text-sm leading-relaxed">!_!</p>
 					</div>
 					<!-- Close button -->
@@ -83,7 +83,7 @@ export class ToastManager {
 		const toastElemet = this.stringToHtml(toast);
 		this.container?.appendChild(toastElemet);
 
-		exmp.applyLanguage();
+		exmp.applyLanguage2('toast-container');
 
 		requestAnimationFrame(() => {
 			toastElemet.style.transform = 'translateX(0)';
@@ -107,7 +107,7 @@ export class ToastManager {
 	private static hideToast(toastElemet: HTMLElement) {
 		toastElemet.style.transform = 'translateX(full)';
 		toastElemet.style.opacity = '0';
-
+		exmp.applyLanguage2()
 		setTimeout(() => {
 			if (this.container!) {
 				this.container!.removeChild(toastElemet);

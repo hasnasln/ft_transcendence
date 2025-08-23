@@ -165,6 +165,8 @@ function onSpaceKeyDown(event: KeyboardEvent) {
 }
 
 function listenTouchButtons() {
+  document.getElementById("move-buttons_left")?.classList.remove("hidden");
+
   let up_buttons = document.getElementById("up_touch_buttons_left");
   let down_buttons = document.getElementById("down_touch_buttons_left");
 
@@ -185,12 +187,37 @@ function listenTouchButtons() {
   });
 }
 
+function listenRigtPlayerTouchForLocalGame(){
+
+  document.getElementById("move-buttons_right")?.classList.remove("hidden");
+
+  let up_buttons = document.getElementById("up_touch_buttons_right");
+  let down_buttons = document.getElementById("down_touch_buttons_right");
+
+  up_buttons?.addEventListener("touchstart", () => {
+    GameInputHandler.getInstance().keyDown("arrowup");
+  });
+
+  up_buttons?.addEventListener("touchend", () => {
+    GameInputHandler.getInstance().keyUp("arrowup");
+  });
+
+  down_buttons?.addEventListener("touchstart", () => {
+    GameInputHandler.getInstance().keyDown("arrowdown");
+  });
+
+  down_buttons?.addEventListener("touchend", () => {
+    GameInputHandler.getInstance().keyUp("arrowdown");
+  });
+}
+
 export function listenPlayerInputs(gameInfo: GameInfo) {
   GameInputHandler.getInstance().listen();
   listenTouchButtons();
   if (gameInfo.mode === "remoteGame" || gameInfo.mode === "vsAI" || gameInfo.mode === "tournament") {
     GameInputHandler.getInstance().setMode("remote");
   } else if (gameInfo.mode === "localGame") {
+    listenRigtPlayerTouchForLocalGame();
     GameInputHandler.getInstance().setMode("local");
   } else {
     throw new Error(

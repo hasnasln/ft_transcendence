@@ -121,7 +121,9 @@ export async function getTournament(tournamentCode: string): Promise<TournamentD
         throw new Error(`Failed to fetch tournament data: ${result.message}`);
     }
 
-    console.log("Tournament Data received:", JSON.stringify(result.data, null, 2));
+
+    
+    console.log("Tournament Data received:", JSON.stringify(result.data as TournamentData, null, 2));
 
     return result.data as TournamentData;
 }

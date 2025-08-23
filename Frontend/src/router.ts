@@ -259,8 +259,7 @@ export class Router {
  * them to the page instance */
 function buttonAgent(e: MouseEvent, page: Page): void {
 	if (!page.onButtonClick) return;
-	if (!(e.target instanceof HTMLElement))
-		return;
+	if (!(e.target instanceof Element)) return;
 
 	const buttonId = e.target.closest('button')?.id;
 	if (!buttonId)

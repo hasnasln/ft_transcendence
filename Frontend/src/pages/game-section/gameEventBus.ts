@@ -6,6 +6,7 @@ import { updateScoreBoard, showEndMessage, startNextSet } from "./ui";
 import { WebSocketClient } from "./wsclient";
 import { Router } from "../../router";
 import {BabylonJsWrapper} from "./3d";
+import { exmp } from "../../lang/languageManager";
 
 export const gameEventTypes = [
     'SET_COMPLETED',
@@ -120,15 +121,15 @@ export function listenGameBusEvents() {
 	if (listenersLoaded) return;
 	listenersLoaded = true;
 	GameEventBus.getInstance().on('CONNECTING_TO_SERVER', async (event) => {
-		gameInstance.uiManager.onInfoShown("...");
+		gameInstance.uiManager.onInfoShown("game.loading");
 	});
 
 	GameEventBus.getInstance().on('CONNECTING_TO_SERVER_FAILED', async (event) => {
-		gameInstance.uiManager.onInfoShown("Sunucuya bağlanma başarısız oldu: " + event.payload.error);
+		gameInstance.uiManager.onInfoShown("game.InfoMessage.connection_failed", [{key: 'error', value: event.payload.reason}]);
 	});
 
 	GameEventBus.getInstance().on('CONNECTED_TO_SERVER', async () => {
-		gameInstance.uiManager.onInfoShown("Bağlantı hazır.");
+		gameInstance.uiManager.onInfoShown("game.InfoMessage.connection_ready");
 	});
 
 	GameEventBus.getInstance().on('SET_COMPLETED', async () => {
@@ -168,9 +169,9 @@ export function listenGameBusEvents() {
 
 	GameEventBus.getInstance().on('WAITING_FOR_RIVAL', () => {
 		if (gameInstance.gameStatus.game_mode === 'tournament') {
-			gameInstance.uiManager.onInfoShown("Turnuva rakibi için bekleniyor...");
+			gameInstance.uiManager.onInfoShown("game.InfoMessage.waiting_tournament_opponent");
 		} else {
-			gameInstance.uiManager.onInfoShown("Online bir rakip için bekleniyor...");
+			gameInstance.uiManager.onInfoShown("game.InfoMessage.waiting_online_opponent");
 		}
 	});
 
@@ -193,7 +194,7 @@ export function listenGameBusEvents() {
 		gameInstance.uiManager.hide(gameInstance.uiManager.endMsg ?? document.getElementById("end-message"));
 
 		if (gameInstance.gameStatus.game_mode === "remoteGame" || gameInstance.gameStatus.game_mode === "tournament") {
-			gameInstance.uiManager.onInfoShown(`${gameInstance.currentRival ?? ''} bekleniyor ...`);
+			gameInstance.uiManager.onInfoShown("game.InfoMessage.waiting_specific_opponent", [{key:"opponent", value: gameInstance.currentRival || "rakip"}]);
 		} else {
 			gameInstance.uiManager.onInfoHidden();
 		}
@@ -204,14 +205,11 @@ export function listenGameBusEvents() {
 	});
 
 	GameEventBus.getInstance().on('ENTER_PLAYING_PHASE',  async () => {
-		console.log("-------------------hasan");
 		console.log(`game phase: ${gameInstance.gameStatus.phase} => playing`);
 		gameInstance.gameStatus.phase = "playing";
 		await gameInstance.uiManager.setupScene();
 		listenPlayerInputs(gameInstance.gameInfo!);
 		console.log("Game Loop started due to playing phase entry.");
-		console.log("-------------------hasan2");
-		console.log("-------------------hasan3");
 		GameLoop.getInstance().start();
 		const x = document.getElementById("progress-container");
 		if (x) {
@@ -228,11 +226,11 @@ export function listenGameBusEvents() {
 	});
 
 	GameEventBus.getInstance().on('RIVAL_DISCONNECTED', () => {
-		gameInstance.uiManager.onInfoShown("Rakip bağlantısı kesildi. Bekleniyor...");
+		gameInstance.uiManager.onInfoShown("game.InfoMessage.opponent_disconnected_waiting");
 	});
 
 	GameEventBus.getInstance().on('RIVAL_RECONNECTED', () => {
-		gameInstance.uiManager.onInfoShown("Rakip yeniden bağlandı.");
+		gameInstance.uiManager.onInfoShown("game.InfoMessage.opponent_reconnected");
 		gameInstance.runAfter(() => {
 			gameInstance.uiManager.onInfoHidden();
 		}, 1000);
@@ -251,7 +249,7 @@ export function listenGameBusEvents() {
 			Router.getInstance().go('/play');
 		}
 		if (event.payload.reason === 'io server disconnect') {
-			gameInstance.uiManager.onInfoShown("Oyun sunucusu bağlantınızı reddetti. Başka bir oturum açık.");
+			gameInstance.uiManager.onInfoShown("game.InfoMessage.connection_rejected_duplicate_session");
 		}
 	});
 
@@ -263,7 +261,7 @@ export function listenGameBusEvents() {
 
 	GameEventBus.getInstance().on('RECONNECTION_GAVE_UP', (event) => {
 		if (gameInstance.gameStatus.currentGameStarted) {
-			gameInstance.uiManager.onInfoShown("Oyun sunucusuna yeniden bağlanma başarısız oldu.");
+			gameInstance.uiManager.onInfoShown("game.InfoMessage.reconnect_failed");
 			WebSocketClient.getInstance().reset();
 			gameInstance.runAfter(() => {
 				Router.getInstance().invalidatePage("/game");
@@ -275,7 +273,7 @@ export function listenGameBusEvents() {
 	GameEventBus.getInstance().on('CONNECTION_ERROR', (event) => {
 		const err = event.payload.reason;
 		if (err === "Existing session found.") {
-			gameInstance.uiManager.onInfoShown("Oyun sunucusu bağlantınızı reddetti. Başka bir oturum açık.");
+			gameInstance.uiManager.onInfoShown("game.InfoMessage.connection_rejected_duplicate_session");
 		}
 		/*console.error('Socket connection error:', err);
 		if (err.includes("token missing")) {

@@ -1,6 +1,7 @@
 import {en} from "./en";
 import {tr} from "./tr";
 import {fr} from "./fr";
+import { ValueAndUnit } from "@babylonjs/gui";
 
 type TranslationObject = {
 	[key: string]: string | TranslationObject;
@@ -68,6 +69,41 @@ export class LanguageManager
 				el.innerHTML = rawContent;
 		})
 	}
+
+	public applyLanguage2(id: string = "app") 
+	{
+		const dest = document.getElementById(id);
+		if(!dest)
+		{
+			console.error(`dil kısmı verilen id de: ${id} bir şey bulamadı`);
+			return;
+		}
+
+
+		const elemets = dest.querySelectorAll<HTMLElement>('[data-translate-key]');
+		if (!elemets || elemets.length === 0) {
+			console.warn(`No elements found with data-translate-key in element with id: ${id}`);
+			return;
+		}
+		elemets.forEach(element => {
+			const tkey = element.getAttribute('data-translate-key');
+			if (!tkey) return;
+
+			let rawContent = this.getLang(tkey);
+			
+			const placeholders = Array.from(element.attributes)
+			.filter((attr) => attr.name.startsWith('data-translate-placeholder-value-'))
+			.map((attr) => ({
+				key: attr.name.replace('data-translate-placeholder-value-',''),
+				value: attr.value,
+			}))
+
+			placeholders.forEach(({key,value}) => {
+				rawContent = rawContent.replaceAll(`{${key}}`, value);
+			})
+			element.innerHTML = rawContent;
+		});
+	}
 	
 	public getLanguage(): string {
 		return this.language;
@@ -104,3 +140,42 @@ export class LanguageManager
 }
 
 export const exmp = LanguageManager.getInstance();
+
+/**
+ * 
+ * 
+ * 
+ * function applylanguage() {
+  const elements = root.querySelectorAll('[translate-key]');
+
+  elements.forEach((element) => {
+    const tKey = element.getAttribute('translate-key');
+    if (!tKey) return;
+
+    // Dil kaynağını al (uygulamanda global getLanguage(key) olmalı)
+    let rawContent = typeof getLanguage === 'function' ? getLanguage(tKey) : tKey;
+    if (rawContent == null) return;
+
+    // translate-placeholder-value-* attribute'larını topla
+    const placeholders = Array.from(element.attributes)
+      .filter((attr) => attr.name.startsWith('translate-placeholder-value-'))
+      .map((attr) => ({
+        key: attr.name.replace('translate-placeholder-value-', ''),
+        value: attr.value,
+      }));
+
+    // Yer tutucuları değiştir
+    placeholders.forEach(({ key, value }) => {
+      rawContent = rawContent.replaceAll(`{${key}}`, value);
+    });
+
+    // Metni yaz
+    element.textContent = rawContent;
+  });
+
+  // Küçük yardımcı: regex kaçışı
+  function escapeRegExp(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+}
+ */
