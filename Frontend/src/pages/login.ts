@@ -151,7 +151,7 @@ export class LoginPage implements Page {
 					ModernOverlay.show('singin-success', 'success');
 				}
 			})
-			.then(() => {Router.getInstance().go('/');})
+			.then(() => Router.getInstance().go('/'))
 			.catch ((error: any) => {
 				// ModernOverlay.show('singin-errors.networkError', 'error');
 				console.error('Login error:', error);

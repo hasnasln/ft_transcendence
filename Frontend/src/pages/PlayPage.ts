@@ -225,6 +225,7 @@ export class PlayPage implements Page {
 	private goHome() {
 		Router.getInstance().go('/');
 	}
+	
 	public onButtonClick(buttonId: string): void {
 		switch (buttonId) {
 			case 'btn-vs-computer':
