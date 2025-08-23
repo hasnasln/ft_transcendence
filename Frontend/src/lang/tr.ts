@@ -229,7 +229,12 @@ export const tr  = {
 			"opponent_disconnected_match_winner": "Rakip bağlantısı kesildi, {winner} maçı kazandı.",
 			"opponent_disconnected_tournament_winner": "Rakip bağlantısı kesildi, {tournament} turnuvasını {winner} kazandı.",
 			"back_to_tournament_page":"Turnuva sayfasına dön",
-			
+		},
+		"Errors" : {
+			"tournament_winner_update_failed": "Turnuva kazananı güncellenemedi.",
+			"could_not_join":"Maça katılamadınız.",
+			"could_not_rejoin": "Maça yeniden katılamadınız.",
+			"connection_duplicated": "Bağlantı reddedildi, başka bir cihazda oturum açık.",
 		},
 		"loading": "Yükleniyor...",
 		"go-tournament-page": "Turnuva Sayfasına Dön",
