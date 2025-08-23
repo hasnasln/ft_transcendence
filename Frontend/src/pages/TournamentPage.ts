@@ -90,6 +90,7 @@ export class TournamentPage implements Page {
 	public onLoad(): void {
 		_apiManager.haveTournament()
 		.then((resposeWraper) => {
+			console.log('Tournament data fetched from server:', resposeWraper);
 			if (resposeWraper.success === false)localStorage.removeItem('tdata');                                           // tournament verisi yoksa localStorage'dan sil
 			else if (resposeWraper.success === true) localStorage.setItem('tdata', JSON.stringify(resposeWraper.data));     // tournament verisi varsa localStorage'a kaydet
 			return resposeWraper;
@@ -307,7 +308,7 @@ export class TournamentPage implements Page {
 				this.handleRefresh();
 				this.updateManagersStatus(true);
 			}
-			// Error handling is now done automatically by ActionHandler
+	
 		} catch (error) {
 			console.error('Error starting tournament:', error);
 			this.loadingManager.removeLoadingOverlay('start');
