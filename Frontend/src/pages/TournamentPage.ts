@@ -34,6 +34,9 @@ export class TournamentPage implements Page {
 	constructor() {
 	}
 
+	onShow(): void {
+		this.handleRefresh();
+	}
 	private loadTournamentData(defaultData: TournamentData ): TournamentData {
 		try {
 			const storedData = localStorage.getItem('tdata');
