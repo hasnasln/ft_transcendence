@@ -89,7 +89,7 @@ function createDetailsCard(tdata: TournamentData): string {
             ${createCardHeader()}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 ${createInfoCard('IdCard', tdata.code, TournamentIcons.getTournamentIdIcon(), 'from-purple-500 to-indigo-500')}
-                ${createInfoCard('Creater', getAdminUsername(tdata) || 'Unknown', TournamentIcons.getUserIcon(), 'from-blue-500 to-cyan-500')}
+                ${tdata.status == TournamentStatus.CREATED ? createInfoCard('Creater', getAdminUsername(tdata) || 'Unknown', TournamentIcons.getUserIcon(), 'from-blue-500 to-cyan-500') : ''}
                 ${createInfoCard('ActivePlayer', `${tdata.lobby_members.length} / 10`, TournamentIcons.getPlayersIcon(), 'from-green-500 to-emerald-500')}
                 ${createInfoCard('TournamentTime', getTournamentTimeDisplay(tdata), TournamentIcons.getTimeIcon(), 'from-pink-500 to-rose-500', 'tournament-time-subtitle')}
             </div>
