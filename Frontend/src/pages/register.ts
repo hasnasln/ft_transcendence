@@ -260,7 +260,6 @@ async function submit(e: Event): Promise<void> {
             else {
                 ModernOverlay.show('register-errors.registerFailed', 'error');
             }
-            // ModernOverlay.show(`auth-messages.${response.messageKey}`, 'error');
             return;
         }
 

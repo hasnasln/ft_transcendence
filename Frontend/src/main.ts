@@ -26,8 +26,6 @@ async function bootstrap() {
 	});
 
 	router.lazyRegisterPage("/tournament", {path: "TournamentPage", pageName: "TournamentPage"});
-	router.lazyRegisterPage("/login", {path: "login", pageName: "LoginPage"});
-	router.lazyRegisterPage("/register", {path: "register", pageName: "RegisterPage"});
     router.lazyRegisterPage("/email-verify", {path: "email-verify", pageName: "EmailVerifyPage"});
 	router.lazyRegisterPage("/play", {path: "PlayPage", pageName: "PlayPage"});
 	router.lazyRegisterPage("/game", {path: "game", pageName: "GamePage"});
