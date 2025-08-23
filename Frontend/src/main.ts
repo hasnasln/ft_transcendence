@@ -12,7 +12,7 @@ async function bootstrap() {
 
 	router.registerGuard({
 		canGo: (path: string) => {
-			if (["/register", "/login", "/500"].includes(path)) {
+			if (["/register", "/login", "/500", "/email-verify"].includes(path)) {
 				return true;
 			}
 
@@ -26,6 +26,9 @@ async function bootstrap() {
 	});
 
 	router.lazyRegisterPage("/tournament", {path: "TournamentPage", pageName: "TournamentPage"});
+	router.lazyRegisterPage("/login", {path: "login", pageName: "LoginPage"});
+	router.lazyRegisterPage("/register", {path: "register", pageName: "RegisterPage"});
+    router.lazyRegisterPage("/email-verify", {path: "email-verify", pageName: "EmailVerifyPage"});
 	router.lazyRegisterPage("/play", {path: "PlayPage", pageName: "PlayPage"});
 	router.lazyRegisterPage("/game", {path: "game", pageName: "GamePage"});
 	router.lazyRegisterPage("/", {path: "home", pageName: "HomePage"});
