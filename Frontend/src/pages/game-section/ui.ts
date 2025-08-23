@@ -164,7 +164,7 @@ export class GameUI {
 			this.turnToHomePage!.classList.add("hidden");
 			Router.getInstance().go('/tournament');
 		});
-
+		exmp.applyLanguage2();
 		this.show(this.turnToHomePage);
 	}
 
