@@ -68,7 +68,7 @@ export class ToastManager {
 					<div class="flex-1 pt-1">
 						<p
 						data-translate-key="${langm_key}"
-						class="text-gray-800 font-semibold text-sm leading-relaxed">!_!</p>
+						class="text-gray-800 font-semibold text-sm leading-relaxed"> </p>
 					</div>
 					<!-- Close button -->
 				</div>

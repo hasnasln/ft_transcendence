@@ -368,7 +368,7 @@ function getButtons(): string {
 					<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 18V6l8 6-8 6Z"/>
 				</svg>
 				<span
-				data-langm-key="game.strat">!_!
+				data-langm-key="game.strat"> 
 				</span>
 			</div>
 		</button>
@@ -383,7 +383,7 @@ function getButtons(): string {
 				</svg>
 				<span
 				data-langm-key="game.continue"
-				>!_!</span>
+				> </span>
 			</div>
 		</button>
 
@@ -398,7 +398,7 @@ function getButtons(): string {
 				</svg>
 				<span
 				data-langm-key="game.new"
-				>!_!</span>
+				> </span>
 			</div>
 		</button>
 
@@ -420,7 +420,7 @@ function getButtons(): string {
 				</svg>
 				<span
 				data-langm-key="game.goHome"
-				class="group-hover:text-blue-100 transition-colors duration-300">!_!</span>
+				class="group-hover:text-blue-100 transition-colors duration-300"> </span>
 			</div>
 		</button>
 

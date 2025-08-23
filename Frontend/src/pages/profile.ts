@@ -529,7 +529,7 @@ export class Profile implements Page {
 					tracking-tight leading-tight group-hover:from-gray-900 
 					group-hover:via-green-900 group-hover:to-gray-900
 					transition-all duration-700 mb-3"
-					>!_!
+					>
 					</h3>
 				</div>
 			</div>

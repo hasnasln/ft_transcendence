@@ -35,7 +35,7 @@ export class LoginPage implements Page {
 					<form id="login-form" class="flex flex-col space-y-8" autocomplete="off" novalidate>
 						<h2
 						data-langm-key="singin.login-b"
-						class="text-4xl font-extrabold text-center mb-8 title-gradient">!_!
+						class="text-4xl font-extrabold text-center mb-8 title-gradient"> 
 						</h2>
 						<input
 							type="text"
@@ -59,13 +59,13 @@ export class LoginPage implements Page {
 						<button
 						data-action="singin"
 						data-langm-key="singin.login-b"
-						type="submit" class="btn-premium w-full mt-4">!_!
+						type="submit" class="btn-premium w-full mt-4"> 
 						</button>
 						<div class="text-center mt-6">
 						<p 
 							data-langm-key="singin.no-account"
 							class="inline-block text-premium">
-							!_!
+							 
 						</p>
 						<button 
 							id="show-register"
@@ -73,7 +73,7 @@ export class LoginPage implements Page {
 							data-action="register"
 							
 							type="button"class="inline-block link-premium ml-2">
-							!_!
+							 
 						</button>
 						</div>
 					</form>
