@@ -133,7 +133,7 @@ export class Game {
 			try {
 				patchWinnersToTournament(this.tournament?.code as string, this.tournament?.roundNo as number, { uuid, username });
 			} catch (err: any) {
-				emitError('tournamentError', err.message, this.roomId);
+				emitError('tournamentError', "TOURNAMENT_WINNER_COULD_NOT_BE_UPDATED", this.roomId);
 			}
 			
 		}

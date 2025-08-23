@@ -161,7 +161,7 @@ export class MatchManager {
 		}
 		catch (err: any) {
 			console.error("Tournament match error:", err);
-			emitError('tournamentError', err.message, player.socket.id);
+			emitError('tournamentError', "COULD_NOT_JOINED", player.socket.id);
 			return
 		}
 	}
