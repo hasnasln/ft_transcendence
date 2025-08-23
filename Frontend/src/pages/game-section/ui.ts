@@ -172,6 +172,8 @@ export class GameUI {
 		if (gameInstance.gameStatus.game_mode === 'tournament') {
 			gameInstance.gameStatus.finalMatch = matchPlayers.finalMatch!;
 			gameInstance.gameStatus.roundNo = matchPlayers.roundNo;
+			gameInstance.gameStatus.tournamentName = matchPlayers.tournamentName!;
+			
 			
 			if (matchPlayers.finalMatch)
 				this.onInfoShown("game.InfoMessage.next_match_final_vs_rival", [{key:"rival", value: rival}]);
@@ -229,9 +231,6 @@ export function updateScoreBoard() {
 		gameInstance.uiManager.scoreTable.innerText = `${gameInstance.gameInfo.setState?.points.leftPlayer}  :  ${gameInstance.gameInfo.setState?.points.rightPlayer}`;
 	}
 	
-	// maç bitiminde 3 yazması gereken yerde 2 yazıp bitiriyor, maç bitiminde, son 
-	// sayı emit olarak gönderiliyor, bu yüzden burada 2 yazıyor.
-	// emitleri kontrol ettim geliyor
 	const setsHome = document.getElementById("sets-home");
 	const setsAway = document.getElementById("sets-away");
 	if (setsHome && setsAway) {
@@ -293,10 +292,10 @@ export function showEndMessage() {
 	gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-winner", winnerName || '');
 
 	if (gameInstance.gameInfo.mode === 'tournament' && gameInstance.gameStatus.finalMatch == true)
-		{
+		{console.log(`gameInstance.gameStatus.tournamentName : ${gameInstance.gameStatus.tournamentName}`);
 			gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "game.EndMessage.tournament_winner");
 			gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-winner", winnerName || '');
-			gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-tournament", gameInstance.gameStatus.tournamentCode || '');
+			gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-tournament", gameInstance.gameInfo.state?.tournamentName || '');
 		}
 	if (gameInstance.gameInfo.gameEndInfo?.endReason === 'disconnection') {
 		if (gameInstance.gameInfo.mode === 'localGame' || gameInstance.gameInfo.mode === 'vsAI')
@@ -310,7 +309,7 @@ export function showEndMessage() {
 			{
 				gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "game.EndMessage.opponent_disconnected_tournament_winner");
 				gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-winner", winnerName || '');
-				gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-tournament", gameInstance.gameStatus.tournamentCode || '');
+				gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-tournament", gameInstance.gameInfo.state?.tournamentName || '');
 			}
 	}
 

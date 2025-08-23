@@ -7,6 +7,7 @@ export interface MatchPlayers {
     right: { socketId: string, username: string };
     roundNo?: number;
     finalMatch?: boolean
+    tournamentName?: string;
 }
 
 type Side = 'leftPlayer' | 'rightPlayer'
