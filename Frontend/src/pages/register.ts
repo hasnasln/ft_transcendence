@@ -33,7 +33,7 @@ export class RegisterPage implements Page {
                     <form id="register-form" class="flex flex-col space-y-8" autocomplete="off" novalidate>
                         <h2 class="text-4xl font-extrabold text-center mb-8 title-gradient"
                             data-langm-key="singin.register-b">
-                            !_!
+                             
                         </h2>
                         <div class="text-center mx-auto mb-4">
                             ${illustrationSvg}
@@ -51,7 +51,7 @@ export class RegisterPage implements Page {
                             data-langm-path="placeholder"
                             type="text"
                             id="email"
-                            placeholder="!_!"
+                            placeholder=" "
                             class="input-premium w-full"
                         />
 
@@ -60,7 +60,7 @@ export class RegisterPage implements Page {
                             data-langm-path="placeholder"
                             type="password"
                             id="password"
-                            placeholder="!_!"
+                            placeholder=" "
                             class="input-premium w-full"
                         />
 
@@ -69,7 +69,7 @@ export class RegisterPage implements Page {
                             data-langm-path="placeholder"
                             type="password"
                             id="repeat-password"
-                            placeholder="!_!"
+                            placeholder=" "
                             class="input-premium w-full"
                         />
 
@@ -97,11 +97,13 @@ export class RegisterPage implements Page {
 
                         <button type="submit" class="btn-premium w-full mt-4">
                             ${exmp.getLang("singin.register-b") || "Kayıt Ol"}
+                        <button type="submit" class="btn-premium w-full mt-4" data-langm-key="singin.register-b">
+                             
                         </button>
 
                         <p class="text-center text-premium mt-6">
                             <button id="show-login" type="button" class="link-premium" data-langm-key="singin.login-b">
-                                !_!
+                                 
                             </button>
                         </p>
                     </form>
@@ -281,7 +283,7 @@ async function submit(e: Event): Promise<void> {
         setTimeout(() => {
             Router.getInstance().go('/email-verify');
         }, 1500);
-        
+
     } catch (error: any) {
         ModernOverlay.show('register-errors.networkError', 'error');
         console.error('Registration error:', error);

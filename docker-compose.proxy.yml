@@ -1,0 +1,14 @@
+services:
+  nginx:
+    container_name: proxy-service
+    image: proxy-service
+    build: /root/project/proxy
+    network_mode: host
+    volumes:
+      - ./proxy/config:/etc/nginx/transendence-config
+      - ./frontend/ft_trancendence/Frontend/dist:/var/www/html
+      - ./proxy/certificates:/etc/ssl/certs
+      - ./proxy/auth:/etc/auth
+    tty: true
+    stdin_open: true
+    restart: always

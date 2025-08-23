@@ -99,7 +99,6 @@ export class APIManager {
 	public async login(email: string, password: string): Promise<IApiResponseWrapper> {
 		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		this.active_pass = password;
-		localStorage.setItem('password', password);
 		try {
 			const response = await this.apiCall(`${this.baseUrl}/login`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',

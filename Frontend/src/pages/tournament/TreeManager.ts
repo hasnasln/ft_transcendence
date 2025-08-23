@@ -117,11 +117,34 @@ export class TournamentTreeManager {
         return winner.some(p => p.uuid === participant.uuid);
     }
 
+    private findByeParticipant(round: Round): Participant | undefined
+    {
+        if (!round.winners || round.winners.length === 0) {
+            return undefined;
+        }
+
+        for (const winner of round.winners) {
+            const isInMatches = round.matches.some(
+                (match) =>
+                    match.participant1.uuid === winner.uuid ||
+                    match.participant2.uuid === winner.uuid
+            );
+
+            if (!isInMatches) {
+                return winner;
+            }
+        }
+
+        return undefined;
+    }
+
+
     private renderTournamentTree(rounds: Round[]): string
     {
         console.log('Rendering tournament tree with rounds:', rounds);
 
-        const roundsHtml = rounds.map((round) => {
+        const roundsHtml = rounds.map((round) =>
+        {
             const isFinal =
                 round.expected_winner_count === 1 &&
                 (
@@ -137,7 +160,7 @@ export class TournamentTreeManager {
                 `
                 : `
                     <div class="round-title">
-                        <span class="round-no">${round.round_number}</span>
+                        <span class="round-no">${round.round_number}.</span>
                         <span data-langm-key="tournament-tree.round">TUR</span>
                     </div>
                 `;
@@ -178,11 +201,30 @@ export class TournamentTreeManager {
                 </div>
             `).join('');
 
+            let byeHtml = '';
+            let byePlayer = this.findByeParticipant(round);
+
+            if (byePlayer !== undefined)
+            {
+                byeHtml = `
+                    <div class="match-card bye">
+                        <div class="match-status status-BYE bg-yellow-300 round-full w-32 h-32">BYE</div>
+                        <div class="player winner">
+                            <span>${byePlayer.username}</span>
+                            <div class="player-status">
+                                <span class="trophy">🏆</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
             return `
                 <div class="tournament-round">
                     ${roundTitleHtml}
                     <div class="matches-container">
                         ${matchesHtml}
+                        ${byeHtml}
                     </div>
                 </div>
             `;

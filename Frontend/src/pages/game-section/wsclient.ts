@@ -175,7 +175,7 @@ export class WebSocketClient {
 
         this.socket.on('gameServerError', (errorMessage: string) => {
             console.error('gameServerError', errorMessage);
-            gameInstance.uiManager.onInfoShown(`Game server Error: ${errorMessage}`);
+            gameInstance.uiManager.onInfoShown(`game.Errors.${errorMessage}`);
             setTimeout(() => {
                 gameInstance.uiManager.onInfoHidden();
                 Router.getInstance().go('/play')
@@ -184,7 +184,7 @@ export class WebSocketClient {
 
         this.socket.on('tournamentError', (errorMessage: string) => {
             console.error('Tournament error:', errorMessage);
-            gameInstance.uiManager.onInfoShown(`Turnuvaya hatası: ${errorMessage}`);
+            gameInstance.uiManager.onInfoShown(`game.Errors.${errorMessage}`);
             setTimeout(() => {
                 gameInstance.uiManager.onInfoHidden();
                 Router.getInstance().go('/tournament')

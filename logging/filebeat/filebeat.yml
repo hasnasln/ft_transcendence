@@ -1,0 +1,16 @@
+filebeat.inputs:
+  - type: log
+    id: docker-json
+    paths:
+      - /var/lib/docker/containers/*/*.log
+    json.message_key: log
+    json.add_error_key: true
+    keys_under_root: true
+    fields:
+      source: docker23
+
+processors:
+  - add_docker_metadata: ~
+
+output.logstash:
+  hosts: ["logstash:5044"]

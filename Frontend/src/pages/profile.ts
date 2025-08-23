@@ -339,12 +339,12 @@ export class Profile implements Page {
 					<h3
 					id="avatar-modal-title"
 					data-langm-key="profile-avatar-select-title"
-					class="text-2xl font-bold text-gray-800 mb-2">!_!
+					class="text-2xl font-bold text-gray-800 mb-2"> 
 					</h3>
 					<p
 					id="avatar-modal-subtitle"
 					class="text-gray-600"
-					data-langm-key="profile-avatar-select-subtitle">!_!
+					data-langm-key="profile-avatar-select-subtitle"> 
 					</p>
 				</div>
 				<div id="avatar-girid-v2"class="grid grid-cols-5 gap-3 mb-6">
@@ -354,7 +354,7 @@ export class Profile implements Page {
 				id="avatar-modal-cancel"
 				data-langm-key="profile-avatar-cancel"
 				class="w-full py-3 bg-gray-200 hover:bg-gray-300 rounded-xl
-				text-gray-700 font-semibold transition-colors duration-200">!_!
+				text-gray-700 font-semibold transition-colors duration-200"> 
 				</button>
 			</div>
 		</div>
@@ -404,7 +404,7 @@ export class Profile implements Page {
 			id="profile-main-title"
 			data-langm-key="profile.title"
 			class="text-3xl font-bold text-white relative z-10
-			tracking-tight leading-tight drop-shadow-lg">!_!
+			tracking-tight leading-tight drop-shadow-lg"> 
 			</h1>
 		</div>
 		`;
@@ -529,7 +529,7 @@ export class Profile implements Page {
 					tracking-tight leading-tight group-hover:from-gray-900 
 					group-hover:via-green-900 group-hover:to-gray-900
 					transition-all duration-700 mb-3"
-					>!_!
+					>
 					</h3>
 				</div>
 			</div>

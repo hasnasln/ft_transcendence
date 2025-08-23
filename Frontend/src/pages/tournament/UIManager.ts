@@ -10,10 +10,10 @@ export class TournamentUIManager {
                     <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
-                    <p class="text-blue-400 font-semibold text-sm" data-langm-key="tournament-ui.tournament-started">!_!</p>
+                    <p class="text-blue-400 font-semibold text-sm" data-langm-key="tournament-ui.tournament-started"></p>
                 </div>
                 <div class="text-center">
-                    <p class="text-blue-300 text-xs" data-langm-key="tournament-ui.players-can-join-matches">!_!</p>
+                    <p class="text-blue-300 text-xs" data-langm-key="tournament-ui.players-can-join-matches"></p>
                 </div>
             </div>
         `;
@@ -25,7 +25,7 @@ export class TournamentUIManager {
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                 </svg>
-                <span data-langm-key="tournament-ui.start-tournament">!_!</span>
+                <span data-langm-key="tournament-ui.start-tournament"></span>
             </div>
         `;
     }
@@ -37,10 +37,10 @@ export class TournamentUIManager {
                     <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
-                    <p class="text-green-400 font-semibold text-sm" data-langm-key="tournament-ui.tournament-can-start">!_!</p>
+                    <p class="text-green-400 font-semibold text-sm" data-langm-key="tournament-ui.tournament-can-start"></p>
                 </div>
                 <div class="text-center">
-                    <p class="text-green-300 text-xs" data-langm-key="tournament-ui.can-start-with-players" data-langm-tmp="${playerCount}">!_!</p>
+                    <p class="text-green-300 text-xs" data-langm-key="tournament-ui.can-start-with-players" data-langm-tmp="${playerCount}"></p>
                 </div>
             </div>
         `;
@@ -114,7 +114,7 @@ export class TournamentUIManager {
     createTreeModalHeader(): string {
         return `
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-gray-800" data-langm-key="tournament-ui.tournament-tree">!_!</h2>
+                <h2 class="text-2xl font-bold text-gray-800" data-langm-key="tournament-ui.tournament-tree"></h2>
                 <button id="close-tree-modal" class="p-2 hover:bg-gray-100 rounded-full transition-colors" data-langm-key="tournament-ui.close" data-langm-path="title">${TournamentIcons.getCloseIcon()}</button>
             </div>
         `;
@@ -124,9 +124,9 @@ export class TournamentUIManager {
         return `
             <div class="mt-6 pt-4 border-t border-gray-200">
                 <div class="flex items-center justify-between">
-                    <div class="text-sm text-gray-500" data-langm-key="tournament-ui.tree-tip">!_!</div>
+                    <div class="text-sm text-gray-500" data-langm-key="tournament-ui.tree-tip"></div>
                     <button id="refresh-tree" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-2">${TournamentIcons.getRefreshIcon()}
-                        <span data-langm-key="tournament-ui.refresh">!_!</span>
+                        <span data-langm-key="tournament-ui.refresh"></span>
                     </button>
                 </div>
             </div>
@@ -139,13 +139,13 @@ export class TournamentUIManager {
                 <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 shadow-2xl max-w-md w-full mx-4">
                     <div class="text-center">
                         <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">${TournamentIcons.getTreeLoadingIcon()}</div>
-                        <h3 class="text-xl font-bold text-white mb-4" data-langm-key="tournament-ui.creating-tree">!_!</h3>
+                        <h3 class="text-xl font-bold text-white mb-4" data-langm-key="tournament-ui.creating-tree"></h3>
                         <div class="flex items-center justify-center space-x-2">
                             <div class="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></div>
                             <div class="w-2 h-2 bg-purple-400 rounded-full animate-pulse delay-100"></div>
                             <div class="w-2 h-2 bg-indigo-400 rounded-full animate-pulse delay-200"></div>
                         </div>
-                        <p class="text-gray-300 text-sm mt-4" data-langm-key="tournament-ui.preparing-data">!_!</p>
+                        <p class="text-gray-300 text-sm mt-4" data-langm-key="tournament-ui.preparing-data"></p>
                     </div>
                 </div>
             </div>
@@ -156,7 +156,7 @@ export class TournamentUIManager {
         return `
             <div class="flex items-center justify-center space-x-2">
                 <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <span data-langm-key="tournament-ui.starting-game">!_!</span>
+                <span data-langm-key="tournament-ui.starting-game"></span>
             </div>
         `;
     }
@@ -165,7 +165,7 @@ export class TournamentUIManager {
         return `
             <div class="flex items-center justify-center space-x-2">
                 ${TournamentIcons.getGameIcon()}
-                <span data-langm-key="tournament-ui.start-game">!_!</span>
+                <span data-langm-key="tournament-ui.start-game"></span>
             </div>
         `;
     }
@@ -189,7 +189,7 @@ export class TournamentUIManager {
             <div class="flex items-center justify-center space-x-2">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/> </svg>
-                <span data-langm-key="tournament-ui.tournament-started-button">!_!</span>
+                <span data-langm-key="tournament-ui.tournament-started-button"></span>
             </div>
         `;
     }

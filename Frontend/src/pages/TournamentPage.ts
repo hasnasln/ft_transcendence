@@ -34,6 +34,19 @@ export class TournamentPage implements Page {
 	constructor() {
 	}
 
+	onShow(): void {
+		_apiManager.haveTournament()
+		.then((resposeWraper) => {
+			console.log('Tournament data fetched from server:', resposeWraper);
+			if (resposeWraper.success === false)localStorage.removeItem('tdata');                                           // tournament verisi yoksa localStorage'dan sil
+			else if (resposeWraper.success === true) localStorage.setItem('tdata', JSON.stringify(resposeWraper.data));     // tournament verisi varsa localStorage'a kaydet
+			return resposeWraper;
+		})
+		.then((responseWraper) => {
+			if (responseWraper.success) 
+				this.handleRefresh();
+		})
+	}
 	private loadTournamentData(defaultData: TournamentData ): TournamentData {
 		try {
 			const storedData = localStorage.getItem('tdata');
@@ -87,6 +100,7 @@ export class TournamentPage implements Page {
 	public onLoad(): void {
 		_apiManager.haveTournament()
 		.then((resposeWraper) => {
+			console.log('Tournament data fetched from server:', resposeWraper);
 			if (resposeWraper.success === false)localStorage.removeItem('tdata');                                           // tournament verisi yoksa localStorage'dan sil
 			else if (resposeWraper.success === true) localStorage.setItem('tdata', JSON.stringify(resposeWraper.data));     // tournament verisi varsa localStorage'a kaydet
 			return resposeWraper;
@@ -304,7 +318,7 @@ export class TournamentPage implements Page {
 				this.handleRefresh();
 				this.updateManagersStatus(true);
 			}
-			// Error handling is now done automatically by ActionHandler
+	
 		} catch (error) {
 			console.error('Error starting tournament:', error);
 			this.loadingManager.removeLoadingOverlay('start');
@@ -315,6 +329,7 @@ export class TournamentPage implements Page {
 		try {
 			this.notificationManager.showRefreshLoading(this.loadingManager);
 			exmp.applyLanguage();
+			this.data 
 			const refreshResult = await this.actionHandler.refreshTournament();
 
 			if (refreshResult.success && refreshResult.data) {
