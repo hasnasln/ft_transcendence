@@ -120,7 +120,7 @@ export class APIManager {
 				localStorage.setItem('email', data.email);
 			} else {
 				result.success = false;
-				result.message = data.message;
+				result.message = data.error;
 			}
 			
 			return result;
@@ -164,6 +164,46 @@ export class APIManager {
 			throw error;
 		}
 	}
+
+    public async verifyEmailToken(token: string): Promise<IApiResponseWrapper> {
+        const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
+        try {
+            const response = await this.apiCall(`${this.baseUrl}/verify`, HTTPMethod.PATCH, {
+                'Content-Type': 'application/json',
+            }, JSON.stringify({ token }));
+
+            const data = await response.json();
+            result.code = response.status;
+            result.success = response.ok;
+            result.data = response.ok ? data : null;
+            result.message = response.ok ? data.message : (data.error || data.message);
+
+            return result;
+        } catch (error) {
+            console.error('Error in verifyEmailToken:', error);
+            throw error;
+        }
+    }
+
+    public async resendVerification(email: string): Promise<IApiResponseWrapper> {
+        const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
+        try {
+            const response = await this.apiCall(`http://auth.transendence.com:8081/api/auth/send-mail`, HTTPMethod.POST, {
+                'Content-Type': 'application/json',
+            }, JSON.stringify({ email }));
+
+            const data = await response.json();
+            result.code = response.status;
+            result.success = response.ok;
+            result.data = response.ok ? data : null;
+            result.message = data.message;
+
+            return result;
+        } catch (error) {
+            console.error('Error in resendVerification:', error);
+            throw error;
+        }
+    }
 
 	public async updateSomething(name: string, data: string, data2?:string): Promise<IApiResponseWrapper> {
 		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };

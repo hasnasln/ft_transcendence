@@ -27,9 +27,11 @@ export const tr  = {
 		"email": "E-posta Giriniz",
 		"password": "Şifre Giriniz",
 		"confirmPassword": "Şifreyi Tekrar Giriniz",
-		"register": "Kayıt Ol"
-	},
-	"register-success": "Kayıt başarılı! Lütfen giriş yapın.",
+		"register": "Kayıt Ol",
+        "captcha-text": "Doğrulamak için kaydırın",
+        "success": "Onaylandı",
+},
+	"register-success": "Kayıt başarılı!",
 	"register-errors": {
 		"required": {
 			"name": "İsim gerekli",
@@ -322,6 +324,7 @@ export const tr  = {
 		"USERNAME_EXISTS": "Bu kullanıcı adı zaten mevcut",
 		"EMAIL_EXISTS": "Bu e-posta adresi zaten mevcut",
 		"USER_REGISTERED": "Kullanıcı başarıyla kaydedildi",
+        "USER_VERIFIED": "Kullanıcı başarıyla doğrulandı",
 
 		"USER_NOT_FOUND": "Kullanıcı bulunamadı",
 		"EMAIL_ALREADY_IN_USE": "E-posta adresi zaten kullanımda",
