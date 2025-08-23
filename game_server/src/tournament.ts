@@ -112,7 +112,9 @@ export function extractMatch(tournament: TournamentData, participantId: string):
 
 export async function getTournament(tournamentCode: string): Promise<TournamentData | null> {
     const result = await tournamentApiCall(`tournament/${tournamentCode}`, HTTPMethod.GET)
-
+    if (result instanceof Error) {
+        throw result;
+    }
     if (result.statusCode === 404) {
         return null;
     }
@@ -130,7 +132,9 @@ export async function getTournament(tournamentCode: string): Promise<TournamentD
 
 export async function patchWinnersToTournament(tournamentCode: string, roundNumber: number, winner: Participant) {
     const response = await tournamentApiCall(`tournament/${tournamentCode}`, HTTPMethod.PATCH, {}, JSON.stringify({round_number: roundNumber, winner: winner}));
-
+    if (response instanceof Error) {
+        throw response;
+    }
     if (response.statusCode !== 200) {
         throw new Error(`Failed to patch winners to tournament: ${response.message}`);
     }
@@ -138,7 +142,9 @@ export async function patchWinnersToTournament(tournamentCode: string, roundNumb
 
 export async function joinMatch(tournamentCode: string, roundNumber: number, participant: Participant) {
     const response = await tournamentApiCall(`tournament/${tournamentCode}/join-match`, HTTPMethod.PATCH, {}, JSON.stringify({round_number:  roundNumber, participant: participant }));
-
+    if (response instanceof Error) {
+        throw response;
+    }
     if (response.statusCode !== 200) {
         throw new Error(`Failed to join match by code: ${response.message}`);
     }
@@ -147,6 +153,10 @@ export async function joinMatch(tournamentCode: string, roundNumber: number, par
 export async function leaveMatch(tournamentCode: string, roundNumber: number, participant: Participant) {
     const response = await tournamentApiCall(`tournament/${tournamentCode}/leave-match`,
         HTTPMethod.PATCH, {}, JSON.stringify({round_number:  roundNumber, participant: participant }));
+
+    if (response instanceof Error) {
+        throw response;
+    }
 
     if (response.statusCode !== 200) {
         throw new Error(`Failed to join match by code: ${response.message}`);

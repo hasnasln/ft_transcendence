@@ -12,7 +12,7 @@ export class HTTPMethod extends String {
     public static PATCH: string = 'PATCH';
 }
 
-export function tournamentApiCall(endpoint: string, method: string, headers?: HeadersInit, body?: BodyInit, token?: string): Promise<ApiResult> {
+export function tournamentApiCall(endpoint: string, method: string, headers?: HeadersInit, body?: BodyInit, token?: string): Promise<ApiResult | Error> {
 	const url = process.env.TOURNAMENT_SERVICE_URL ?? 'http://tournament.transendence.com';
 	headers = headers || {};
 	return apiCall(`${url}/api/${endpoint}`, method, {
@@ -22,7 +22,7 @@ export function tournamentApiCall(endpoint: string, method: string, headers?: He
 	}, body, token);
 }
 
-export async function apiCall(url: string, method: string, headers: HeadersInit, body?: BodyInit, token?: string): Promise<ApiResult> {
+export async function apiCall(url: string, method: string, headers: HeadersInit, body?: BodyInit, token?: string): Promise<ApiResult | Error> {
 	const options: RequestInit = {
 		method,
 		headers: {
@@ -44,7 +44,7 @@ export async function apiCall(url: string, method: string, headers: HeadersInit,
 			responseBody = await response.json();
 		} catch (error) {
 			console.error('Error in fetch:', error);
-			throw error;
+			return error as Error;
 		}
 		return { statusCode: response.status, message: response.ok ? responseBody.message : responseBody.error, data: responseBody.data } satisfies ApiResult;
 	} else {

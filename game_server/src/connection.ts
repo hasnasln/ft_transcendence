@@ -51,7 +51,7 @@ export class ConnectionHandler {
         }
     
         const response = await apiCall('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined, token);
-        if (response.statusCode !== 200) {
+        if (response instanceof Error || response.statusCode !== 200) {
             return new Error("Token validation error: " + response.message);
         }
         

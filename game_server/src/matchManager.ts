@@ -8,7 +8,6 @@ import {
 	joinMatch,
 	leaveMatch,
 	generateMatchId,
-	patchWinnersToTournament,
 	TournamentStatus
 } from "./tournament";
 import { emitError } from "./errorHandling";
@@ -16,7 +15,6 @@ import { GameEmitter } from "./gameEmitter";
 import { ConnectionHandler } from "./connection";
 import { GameBuilder } from "./gameBuilder";
 import { GameQueue } from "./queueManager";
-import {tournamentApiCall} from "./httpApiManager";
 
 type ApprovalAnswer = {player: Player, answer: 'accept' | 'refuse' | 'timeout'};
 
@@ -176,7 +174,12 @@ export class MatchManager {
 		if (game.tournament && game.state === 'waiting') {
 			const matchId = generateMatchId(game.tournament.code, game.tournament.roundNo, game.players[0], game.players[1]);
 			const matchedPlayers = this.waitingTournamentMatches.get(matchId);
-			leaveMatch(game.tournament.code, game.tournament.roundNo, player);
+			try {
+				leaveMatch(game.tournament.code, game.tournament.roundNo, {uuid: player.uuid, username: player.username});
+			} catch (error) {
+				console.error("Error leaving match:", error);
+				emitError('tournamentError', (error as Error).message, player.socket.id);
+			}
 			if (matchedPlayers) {
 				this.waitingTournamentMatches.delete(matchId);
 				matchedPlayers.forEach(p => p.socket.leave(game.roomId));
