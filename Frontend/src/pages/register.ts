@@ -95,9 +95,7 @@ export class RegisterPage implements Page {
                             </div>
                         </div>
 
-                        <button type="submit" class="btn-premium w-full mt-4">
-                            ${exmp.getLang("singin.register-b") || "Kayıt Ol"}
-                        <button type="submit" class="btn-premium w-full mt-4" data-langm-key="singin.register-b">
+                        <button type="submit" class="btn-premium w-full mt-4" data-langm-key="singin.register-b" disabled>
                              
                         </button>
 

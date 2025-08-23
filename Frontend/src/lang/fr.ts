@@ -31,7 +31,7 @@ export const fr = {
       "captcha-text": "Faites glisser pour vérifier",
       "success": "Approuvé",
 },
-	"register-success": "Inscription réussie ! Veuillez vous connecter.",
+	"register-success": "Inscription réussie !",
 	"register-errors": {
 	  "required": {
 		"name": "Prénom requis",
@@ -258,6 +258,7 @@ export const fr = {
 		"USERNAME_EXISTS": "Ce nom d’utilisateur existe déjà",
 		"EMAIL_EXISTS": "Cette adresse e-mail existe déjà",
 		"USER_REGISTERED": "Utilisateur enregistré avec succès",
+        "USER_VERIFIED": "Utilisateur vérifié avec succès",
 
 		"USER_NOT_FOUND": "Utilisateur non trouvé",
 		"EMAIL_ALREADY_IN_USE": "Adresse e-mail déjà utilisée",

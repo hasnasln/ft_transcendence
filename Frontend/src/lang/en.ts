@@ -31,7 +31,7 @@ export const en = {
       "captcha-text": "Slide to verify",
       "success": "Approved"
 	},
-	"register-success": "Registration successful! Please log in.",
+	"register-success": "Registration successful!",
 	"register-errors": {
 	  "required": {
 		"name": "First name required",
@@ -258,6 +258,7 @@ export const en = {
 		"USERNAME_EXISTS": "This username already exists",
 		"EMAIL_EXISTS": "This email address already exists",
 		"USER_REGISTERED": "User registered successfully",
+        "USER_VERIFIED": "User verified successfully",
 
 		"USER_NOT_FOUND": "User not found",
 		"EMAIL_ALREADY_IN_USE": "Email address already in use",
