@@ -132,8 +132,8 @@ export const tr  = {
 		"create-button": "Turnuva Oluştur",
 		"m-title-for-showjoin": "Turnuva Oluştur",
 		"m-title-for-showcreate": "Turnuvaya Katıl",
-		"m-join-button": "--->",
-		"m-create-button": "<---"
+		"m-join-button": "->",
+		"m-create-button": "<-"
 	},
 	"tournament-second-page":{
 		"title": "Turnuva Kontrol Paneli",
@@ -142,9 +142,9 @@ export const tr  = {
 			"header": "Turnuva Bilgileri",
 			"header2": "Detaylı istatistikler",
 			"button":{
-				"refresh": "--Yenile",
-				"tree": "--Turnuva Ağacı",
-				"exit": "--Cıkış",
+				"refresh": "Yenile",
+				"tree": "Turnuva Ağacı",
+				"exit": "Cıkış",
 			},
 			"IdCard": "Turnuva ID",
 			"IdCard-description": "Turnuvaya katılım için benzersiz kod",
@@ -172,8 +172,8 @@ export const tr  = {
 
 		},
 		"PlayersPanel": {
-			"title":"--Katılımcılar",
-			"title2": "--Turnuva oyuncuları",
+			"title":"Katılımcılar",
+			"title2": "Turnuva oyuncuları",
 			"PlayerCard": {
 				"Role":{
 					"Admin": "Admin",
@@ -351,7 +351,6 @@ export const tr  = {
 		"EMAIL_SEND_FAILED": "E-posta gönderilemedi",
 		"USER_NOT_VERIFIED": "Kullanıcı doğrulanmamış",
 		"USER_ALREADY_VERIFIED": "Kullanıcı zaten doğrulanmış",
-		// bizim fronttan dönen mesajlar
 		"PASSWORD_MISMATCH": "Şifreler uyuşmuyor"
 	},
 	"tournament-messages": {

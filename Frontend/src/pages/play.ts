@@ -183,15 +183,15 @@ export class GameManager {
 				new AbortablePromise(this.abortHandler!)
 				.then(() => GameEventBus.getInstance().emit({ type: 'CONNECTED_TO_SERVER' }))
 				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_WAITING_PHASE' }))
-				.then(() => this.enterWaitingPhase(this.gameStatus)) // wait for rival finding
+				.then(() => this.enterWaitingPhase(this.gameStatus))
 				.then(() => this.uiManager.onStartButtonShown())
 				.then(() => new Promise<void>((resolve) => {
 					GameEventBus.getInstance().once('READY_BUTTON_CLICK', () => resolve(), "game");
-				})) // wait for start click
+				}))
 				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_READY_PHASE' }))
 				.then(() => this.enterReadyPhase())
-				.then(() => listenStateUpdates(this.gameInfo!)) // start listening to the game server
-				.then(() => waitGameStart(this.gameInfo!)) // wait game server for start the game
+				.then(() => listenStateUpdates(this.gameInfo!))
+				.then(() => waitGameStart(this.gameInfo!))
 				.then(() => GameEventBus.getInstance().emit({ type: 'ENTER_PLAYING_PHASE' }));
 			});
 	}
@@ -200,7 +200,7 @@ export class GameManager {
 		this.abortHandler?.abort();
 		this.abortHandler = undefined;
 
-		this.timers.forEach(timer => clearTimeout(timer)); /* assume timers are not async */
+		this.timers.forEach(timer => clearTimeout(timer));
 		this.timers = [];
 
 		GameLoop.getInstance().stop();
@@ -234,7 +234,7 @@ export class GameManager {
 			return;
 		}
 
-		console.log("Network kopması algılandı, oyunu duraklatıyoruz.");
+		
 		this.uiManager.onInfoShown("game.InfoMessage.network_lost_reconnect_countdown", [{ key: "s", value: "15" }]);
 	}
 

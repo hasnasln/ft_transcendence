@@ -215,7 +215,7 @@ export class PlayPage implements Page {
 	}
 
 	private goBack() {
-		console.log("Going back to the previous page");
+		
 		// gameInstance.finalize();
 		Router.getInstance().invalidatePage("/game");
 		Router.getInstance().invalidatePage("/play");

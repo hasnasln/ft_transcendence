@@ -14,11 +14,11 @@ export class LanguageManager
 	private languageChoises: string[];
 
 	private constructor() {
-		this.language = localStorage.getItem('language') ||'tr'; // Default language
-		this.languageChoises = ['tr', 'en', 'fr']; // Available languages
+		this.language = localStorage.getItem('language') ||'tr';
+		this.languageChoises = ['tr', 'en', 'fr'];
 		this.languageData = new Map();
 		
-		console.log('languageManager instance created');
+		
 		localStorage.setItem('language', this.language);
 		if (this.language === 'tr')
 			this.languageData.set(this.language, tr);
@@ -29,7 +29,7 @@ export class LanguageManager
 	}
 
 	public static getInstance(): LanguageManager {
-		if (!LanguageManager.instance) { // sadece ilk defa çağırıldığında instance oluştur , tek bir nesne geriye kalan her yerde kullanılacak
+		if (!LanguageManager.instance) {
 			LanguageManager.instance = new LanguageManager();
 		}
 		return LanguageManager.instance;
@@ -39,7 +39,6 @@ export class LanguageManager
 		if (this.language === language) return;
 
 		this.language = language;
-		// alt kısımı farklı bir fonsiyon içerisine alınabilir
 		if (this.language === 'tr')
 			this.languageData.set(this.language, tr);
 		else if (this.language === 'en')

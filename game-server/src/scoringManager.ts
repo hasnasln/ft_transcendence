@@ -18,7 +18,7 @@ export class ScoringManager {
 		const leftScore = this.scores.leftPlayer;
 		const rightScore = this.scores.rightPlayer;
 
-		if ((leftScore >= 3 || rightScore >= 3) && Math.abs(leftScore - rightScore) >= 2) {
+		if ((leftScore >= 11 || rightScore >= 11) && Math.abs(leftScore - rightScore) >= 2) {
 			const winner: Side = leftScore > rightScore ? 'leftPlayer' : 'rightPlayer';
 			this.completeSet(winner);
 		}

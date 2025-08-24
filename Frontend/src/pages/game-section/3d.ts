@@ -1,10 +1,3 @@
-/* Lazy BabylonJS importer – keeps the initial bundle tiny
-   Usage:
-     await BabylonJsWrapper.load();              // load when you actually need 3‑D
-     const { Mesh, Scene } = BabylonJsWrapper.getInstance();
-     const sphere = MeshBuilder.CreateSphere("s", { diameter: 1 }, Scene);
-*/
-
 import {GameScene} from "./gameScene";
 
 export class BabylonJsWrapper {

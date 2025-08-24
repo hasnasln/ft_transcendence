@@ -10,7 +10,7 @@ export class HTTPMethod extends String {
 
 export interface IApiSetSettings {
 	ball_color: string,
-	language: string //! kaldırılacak
+	language: string
 }
 
 export interface IApiRegister {
@@ -76,7 +76,7 @@ export class APIManager {
 			if (body) {
 				options.body = body;
 			}
-			console.log("API Call:", url, method, headers, body);
+			
 			const response = await fetch(url, options);
 			if (response.status >= 500 && response.status < 600) {
 				Router.getInstance().go('/500', true);
@@ -88,7 +88,7 @@ export class APIManager {
 				Router.getInstance().go('/login', true);
 				throw new Error('Unauthorized access, redirecting to login');
 			}
-			console.log("API Response:", response);
+			
 			return response;
 		} catch (error) {
 			console.error('Error in fetch:', error);
@@ -129,10 +129,7 @@ export class APIManager {
 		}
 	}
 
-	/*
-	!logout kısmında dil özelliğini setleyebilirz ? bakacağım
-	*/
-	public async logout(): Promise<any> { // local storage temizlenecek
+	public async logout(): Promise<any> {
 		try {
 			this.setToken(null);
 			localStorage.removeItem('token');
@@ -150,7 +147,7 @@ export class APIManager {
 
 	public async register(registerData: IApiRegister): Promise<IApiResponseWrapper> {
 		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
-		console.log("Register data:", registerData);
+		
 		try {
 			const response = await this.apiCall(`${this.baseUrl}/register`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
@@ -212,7 +209,6 @@ export class APIManager {
 	public async updateSomething(name: string, data: string, data2?:string): Promise<IApiResponseWrapper> {
 		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
 		
-		//! nul olmayan güncellencek - bos olmayan 
 		const x: IApiRegister = {
 			username: localStorage.getItem('username') || '',
 			email: localStorage.getItem('email') || '',

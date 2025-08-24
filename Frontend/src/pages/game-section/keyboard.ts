@@ -57,7 +57,6 @@ export class GameInputHandler {
 
   private recomputeDirection(side: Side): Direction {
     const { up, down } = this.keysDown[side];
-    // kural: ikisi aynıysa (ikisi true veya ikisi false) => stop
     if (up === down) return "stop";
     return up ? "up" : "down";
   }
@@ -70,7 +69,6 @@ export class GameInputHandler {
         player_side: side,
       });
     } else if (this.mode === "remote") {
-      // remote modda server hangi oyuncu olduğunu bilir
       WebSocketClient.getInstance().emit("player-move", { direction: direction });
     } else {
       throw new Error("KeyboardInputHandler mode is not set. Set to 'local' or 'remote'.");

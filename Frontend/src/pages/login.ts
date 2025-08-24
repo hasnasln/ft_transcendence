@@ -88,7 +88,7 @@ export class LoginPage implements Page {
 		if(!flag) {
 			flag = true;
 			const login_form = document.getElementById('login-main');
-			if (!login_form) { console.log("hata var"); return;}
+			if (!login_form) { 
 			login_form.addEventListener('click', (event) => {
 				event.preventDefault();
 				const target = (event.target as HTMLElement).closest('[data-action]');

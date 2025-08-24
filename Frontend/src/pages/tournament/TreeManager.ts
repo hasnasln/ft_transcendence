@@ -15,16 +15,16 @@ export class TournamentTreeManager {
     }
 
     async handleTree(flag: boolean = true): Promise<void> {
-        if (flag) // reflesh de de aynı fonsiyonu kullanmak için yaptım
+        if (flag)
         {
-            this.removeExistingTreeModal(); // inerhtml kullandığımız için buna gerek olmayabilir
+            this.removeExistingTreeModal();
             this.createTreeLoadingOverlay();
         }
         _apiManager.getTournament(this.data.code)
         .then((response) => {
             if(flag) {
                 this.createTreeModalOverlay(response.data);
-                console.log('Tournament data:', response.data);
+                
             }
             exmp.applyLanguage();
             return response;
@@ -62,7 +62,7 @@ export class TournamentTreeManager {
             }
         })
         .then(() => {
-            if (!flag) return; // sadece ilk çağrıda event listener ekle
+            if (!flag) return;
             this.setupTreeModalEventListeners();
         })
         .catch((error) => {
@@ -146,7 +146,7 @@ export class TournamentTreeManager {
 
     private renderTournamentTree(rounds: Round[]): string
     {
-        console.log('Rendering tournament tree with rounds:', rounds);
+        
 
         const roundsHtml = rounds.map((round) =>
         {
@@ -234,9 +234,7 @@ export class TournamentTreeManager {
                 </div>
             `;
         }).join('');
-
-        // --- ŞAMPİYON BLOĞU ---
-
+        
         const finalRound = rounds.find(r =>
             r.is_completed && r.expected_winner_count === 1 && r.winners?.length === 1
         );

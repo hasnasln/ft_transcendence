@@ -132,8 +132,8 @@ export const en = {
     "create-button": "Create Tournament",
     "m-title-for-showjoin": "Create Tournament",
     "m-title-for-showcreate": "Join Tournament",
-    "m-join-button": "--->",
-    "m-create-button": "<---"
+    "m-join-button": "->",
+    "m-create-button": "<-"
   },
   "tournament-second-page": {
     "title": "Tournament Dashboard",
@@ -142,9 +142,9 @@ export const en = {
       "header": "Tournament Information",
       "header2": "Detailed statistics",
       "button": {
-        "refresh": "--Refresh",
-        "tree": "--Tournament Bracket",
-        "exit": "--Exit"
+        "refresh": "Refresh",
+        "tree": "Tournament Bracket",
+        "exit": "Exit"
       },
       "IdCard": "Tournament ID",
       "IdCard-description": "Unique code for joining the tournament",
@@ -171,8 +171,8 @@ export const en = {
       }
     },
     "PlayersPanel": {
-      "title": "--Participants",
-      "title2": "--Tournament players",
+      "title": "Participants",
+      "title2": "Tournament players",
       "PlayerCard": {
         "Role": {
           "Admin": "Admin",
@@ -347,7 +347,6 @@ export const en = {
     "EMAIL_SEND_FAILED": "Failed to send email",
     "USER_NOT_VERIFIED": "User not verified",
     "USER_ALREADY_VERIFIED": "User already verified",
-    // bizim fronttan dönen mesajlar
     "PASSWORD_MISMATCH": "Passwords do not match"
   },
   "tournament-messages": {

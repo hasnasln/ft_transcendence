@@ -132,8 +132,8 @@ export const fr = {
     "create-button": "Créer le tournoi",
     "m-title-for-showjoin": "Créer un tournoi",
     "m-title-for-showcreate": "Rejoindre un tournoi",
-    "m-join-button": "--->",
-    "m-create-button": "<---"
+    "m-join-button": "->",
+    "m-create-button": "<-"
   },
   "tournament-second-page": {
     "title": "Tableau de bord du tournoi",
@@ -142,9 +142,9 @@ export const fr = {
       "header": "Informations sur le tournoi",
       "header2": "Statistiques détaillées",
       "button": {
-        "refresh": "--Actualiser",
-        "tree": "--Arbre du tournoi",
-        "exit": "--Quitter"
+        "refresh": "Actualiser",
+        "tree": "Arbre du tournoi",
+        "exit": "Quitter"
       },
       "IdCard": "ID du tournoi",
       "IdCard-description": "Code unique pour rejoindre le tournoi",
@@ -171,8 +171,8 @@ export const fr = {
       }
     },
     "PlayersPanel": {
-      "title": "--Participants",
-      "title2": "--Joueurs du tournoi",
+      "title": "Participants",
+      "title2": "Joueurs du tournoi",
       "PlayerCard": {
         "Role": {
           "Admin": "Admin",
@@ -347,7 +347,6 @@ export const fr = {
     "EMAIL_SEND_FAILED": "Échec de l’envoi de l’e-mail",
     "USER_NOT_VERIFIED": "Utilisateur non vérifié",
     "USER_ALREADY_VERIFIED": "Utilisateur déjà vérifié",
-    // bizim fronttan dönen mesajlar
     "PASSWORD_MISMATCH": "Les mots de passe ne correspondent pas"
   },
   "tournament-messages": {

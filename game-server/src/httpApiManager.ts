@@ -33,8 +33,8 @@ export async function apiCall(url: string, method: string, headers: HeadersInit,
 	if (body) {
 		options.body = body;
 	}
-	console.log("options", options);
-	console.log("url", url);
+	
+	
 
 	const response = await fetch(url, options);
 	const contentType = response.headers.get('Content-Type') || '';

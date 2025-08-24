@@ -45,10 +45,10 @@ export class CameraController {
             switch (true) {
                 case (evt.shiftKey && (evt.key === 'r' || evt.key === 'R')):
                     if (this.rotationActive) {
-                        console.log("resetcamera olacak");
+                        
                         this.resetCamera();
                     }
-                    console.log(`shift + R ye basıldı, this.rotationActive = ${this.rotationActive}`);
+                    
                     this.rotationActive = !this.rotationActive;
                     break;
             }

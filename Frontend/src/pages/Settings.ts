@@ -7,18 +7,18 @@ export class Settings implements Page{
 	private selectedLanguage = localStorage.getItem('language') || 'tr';
 	private tmpLanguage: string | null = null;
 	private colors = [
-		'#3b82f6', // Electric Blue
-		'#ef4444', // Vibrant Red
-		'#10b981', // Emerald Green
-		'#f59e0b', // Amber Gold
-		'#8b5cf6', // Deep Purple
-		'#ec4899', // Hot Pink
-		'#06b6d4', // Bright Cyan
-		'#84cc16', // Electric Lime
-		'#f97316', // Bright Orange
-		'#6366f1', // Rich Indigo
-		'#14b8a6', // Teal
-		'#64748b'  // Modern Gray
+		'#3b82f6', 
+		'#ef4444', 
+		'#10b981', 
+		'#f59e0b', 
+		'#8b5cf6', 
+		'#ec4899', 
+		'#06b6d4', 
+		'#84cc16', 
+		'#f97316', 
+		'#6366f1', 
+		'#14b8a6', 
+		'#64748b' 
 	];
 	private langFlags: { [key: string]: string } = {
 		"tr": "🇹🇷",
@@ -84,16 +84,15 @@ export class Settings implements Page{
 
 	private initializeEventListeners(): void {
 
-		console.log('Initializing settings event listeners');
+		
 		const settingsMain = document.getElementById('settings_main');
 		if (!settingsMain) {
 			console.error('settings_main not found in initializeEventListeners');
 			return;
 		}
 
-		// createColorGridV2 nin eventleri
 		const grid = document.getElementById('scolor_section');
-		if(!grid) console.log('onload da aranan grid bulunamadı');
+		if(!grid) 
 		else{
 			grid.addEventListener('click', (e) => {
 				const card = (e.target as HTMLElement).closest('.group\\/card') as HTMLElement;
@@ -110,7 +109,6 @@ export class Settings implements Page{
 			});
 		}
 
-		// createLanguageDropdownV2 eventleri
 		const container = document.getElementById('dropdownHTML') as HTMLElement;
 		const currentBtn = container.querySelector('#current-lang-btn') as HTMLButtonElement;
 		const dropdownMenu = container.querySelector('#dropdown-menu-lang') as HTMLElement;
@@ -121,17 +119,16 @@ export class Settings implements Page{
 
 		dropdownMenu.querySelectorAll('button[data-lang]').forEach((btn) => {
 			btn.addEventListener('click', () => {
-				this.tmpLanguage = (btn as HTMLElement).getAttribute('data-lang')!; // geçici olarak seçilen dili sakla
+				this.tmpLanguage = (btn as HTMLElement).getAttribute('data-lang')!;
 				this.selectLanguage(this.tmpLanguage, currentBtn, dropdownMenu, this.langFlags, this.langNames, exmp.getLanguageChoises());
 			});
 		});
 
-		// createFooterV2 eventleri
 		const footer = document.getElementById('s-footer');
-		if(!footer) console.log('onload da aranan footer bulunamadı');
+		if(!footer) 
 		else {
 			const saveBtn = footer.querySelector('#settings-save-btn') as HTMLButtonElement;
-			saveBtn.addEventListener('mousedown', (e) => { // buton üzerindeki dalga efekti için mousedown kullanıyoruz
+			saveBtn.addEventListener('mousedown', (e) => {
 				const ripple = document.createElement('div');
 				const rect = saveBtn.getBoundingClientRect();
 				const size = Math.max(rect.width, rect.height);
@@ -159,7 +156,7 @@ export class Settings implements Page{
 		const closeBtn = settingsMain.querySelector('[data-action="close"]');
 		if (closeBtn) {
 			closeBtn.addEventListener('click', (e) => {
-				console.log('Close button clicked');
+				
 				e.preventDefault();
 				e.stopPropagation();
 				this.close();
@@ -168,7 +165,7 @@ export class Settings implements Page{
 
 		settingsMain.addEventListener('click', (e) => {
 			if (e.target === settingsMain) {
-				console.log('Overlay clicked, closing settings');
+				
 				this.close();
 			}
 		});
@@ -178,20 +175,19 @@ export class Settings implements Page{
 		this.close();
 		exmp.setLanguage(this.selectedLanguage);
 		localStorage.setItem('ballColor', this.selectedColor);
-		console.log('Settings saved successfully');
+		
 	}
 
 	private close(): void {
 		if (!this.isOpen) return;
 		
-		console.log('Closing settings with enhanced animation');
+		
 		const settingsMain = document.getElementById('settings_main');
 		if (settingsMain) {
 
 			settingsMain.style.opacity = '0';
 			settingsMain.style.backdropFilter = 'blur(0px)';
 
-			//! burada bir önceki animasyon bitmesi bekleniyor ama doğru yöntem olmadığını konuşmuştuk
 			setTimeout(() => {
 				settingsMain.remove();
 				this.isOpen = false;
@@ -483,7 +479,6 @@ export class Settings implements Page{
 	
 	private selectColor(color: string, grid: HTMLElement, colors: string[]): void {
 		this.selectedColor = color;
-		// localStorage.setItem('ballColor', color);
 
 		grid.querySelectorAll('.group\\/card').forEach((card, index) => {
 		const isSelected = colors[index] === color;
@@ -496,7 +491,6 @@ export class Settings implements Page{
 			card.classList.add('border-gray-200/60', 'hover:border-gray-400/80');
 		}
 		
-		// seçimi belli etmek için üzerinede olan sihay nokta
 		const existingCheck = card.querySelector('.animate-pulse');
 		if (existingCheck) existingCheck.remove();
 
@@ -520,7 +514,6 @@ export class Settings implements Page{
 		}
 	}
 
-	//! dil seçiminden sonra dropdown menü aşağı inerken ufak bir atlama oluyor onu düzeltmek lazım
 	private closeDropdown(dropdownMenu: HTMLElement, currentBtn: HTMLElement): void {
 		const arrow = currentBtn.querySelector('svg');
 		dropdownMenu.style.transform = 'translateY(8px) scale(0.00)';

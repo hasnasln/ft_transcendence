@@ -31,7 +31,7 @@ export function creaters(container: HTMLElement, top: string, left: string, rang
 		y += direction * speed;
 
 		if (y <= -range || y >= range) {
-			direction *= -1; // Yön değiştir
+			direction *= -1;
 		}
 
 		createrDiv.style.transform = `translateY(${baseY + y}px)`;

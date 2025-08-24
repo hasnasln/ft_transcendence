@@ -127,7 +127,6 @@ export function listenStateUpdates(gameInfo: GameInfo): void {
     WebSocketClient.getInstance().on("updateState", (setState: SetState) => gameInfo.setState = setState);
     WebSocketClient.getInstance().on("pu", (raw: string) => {
         const [y1, y2] = raw.split(':').map(Number);
-        //console.log("got: ", y1);
         gameInfo.paddle = {p1y: y1, p2y: y2};
     });
     WebSocketClient.getInstance().on("opponent-disconnected", () => {

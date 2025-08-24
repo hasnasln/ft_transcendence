@@ -287,7 +287,7 @@ export function showSetToast(message: string): Promise<void> {
 
 export async function startNextSet() {
 	const winnerName = gameInstance.gameInfo!.setState!.points.leftPlayer > gameInstance.gameInfo!.setState!.points.rightPlayer ? gameInstance.gameInfo?.setState?.usernames.left : gameInstance.gameInfo?.setState?.usernames.right;
-	await showSetToast(winnerName || '');  // 3 saniye bekler
+	await showSetToast(winnerName || '');
 }
 
 export function showEndMessage() {
@@ -297,7 +297,7 @@ export function showEndMessage() {
 	gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-winner", winnerName || '');
 
 	if (gameInstance.gameInfo.mode === 'tournament' && gameInstance.gameStatus.finalMatch == true)
-		{console.log(`gameInstance.gameStatus.tournamentName : ${gameInstance.gameStatus.tournamentName}`);
+		{
 			gameInstance.uiManager.endMsg!.setAttribute("data-translate-key", "game.EndMessage.tournament_winner");
 			gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-winner", winnerName || '');
 			gameInstance.uiManager.endMsg!.setAttribute("data-translate-placeholder-value-tournament", gameInstance.gameInfo.state?.tournamentName || '');

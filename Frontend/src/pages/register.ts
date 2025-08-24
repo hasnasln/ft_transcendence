@@ -161,7 +161,6 @@ export class RegisterPage implements Page {
             handle.style.left = `${newLeft}px`;
             progress.style.width = `${newLeft + handle.clientWidth}px`;
 
-            // Eşik: %92 sonrası otomatik doğrula, "snap" efekti
             if (newLeft >= maxLeft * 0.92) {
                 setVerified();
                 removeListeners();

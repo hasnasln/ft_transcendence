@@ -100,7 +100,7 @@ export class ToastManager {
 
 			setTimeout(() => {
 				this.hideToast(toastElemet);
-			}, duration); // Duration for auto-hide
+			}, duration);
 		}
 	}
 
@@ -117,7 +117,7 @@ export class ToastManager {
 				this.container!.remove();
 				this.container = null;
 			}
-		}, 300); // Match the transition duration
+		}, 300);
 	}
 
 	private static stringToHtml(str: string): HTMLElement {

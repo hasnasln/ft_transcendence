@@ -33,12 +33,12 @@ export class GameLoop {
 			let y = curY + gameInstance.gameInfo!.ballVelocity.y * dt;
 			const allowedHorizontalRange = gameInstance.gameInfo!.constants!.groundWidth / 2 - gameInstance.gameInfo!.constants!.ballRadius;
 			if (x < -allowedHorizontalRange || x > allowedHorizontalRange) {
-				x = curX; /* client-side prediction */
+				x = curX;
 			}
 
 			const allowedVerticalRange = gameInstance.gameInfo!.constants!.groundHeight / 2 - gameInstance.gameInfo!.constants!.ballRadius;
 			if (y < -allowedVerticalRange || y > allowedVerticalRange) {
-				y = curY; /* client-side prediction */
+				y = curY;
 			}
 
 			gameInstance.gameInfo!.ballPosition.x = x;

@@ -117,7 +117,7 @@ export class Router {
 	public async getPageByPath(path: string): Promise<Page> {
 		const foundPage = this.pages.get(path);
 		if (foundPage) {
-			console.log("Found page in cache for path:", path);
+			
 			return foundPage;
 		}
 
@@ -143,7 +143,7 @@ export class Router {
 	private savePageInfo(path: string, page: Page, popstate: boolean): void {
 		if (!popstate)
 			window.history.pushState({path: path}, '', path);
-		console.log(`Router saved page info for path: ${path}`);
+		
 		this.currentPath = path;
 		this.currentPage = page;
 	}
@@ -162,12 +162,11 @@ export class Router {
 			this.setContent(pageContent);
 			this.savePageInfo(path, page, popstate);
 
-			// bu sizi rahatsız ediyorsa iyi developersınız demektir.
 			requestAnimationFrame(() => {
 				this.injectButtonListener();
 				page.onLoad?.();
 			});
-			console.log(`Router created new page for path: ${path}`);
+			
 		});
 	}
 
@@ -186,7 +185,6 @@ export class Router {
 			return;
 		}
 
-		// page'in url'ini reverse index'le bulur.
 		const legacyPagePath = this.pages.entries().find(([_, page]) => page === legacyPage)?.[0];
 
 		if (legacyPagePath) {
@@ -195,7 +193,6 @@ export class Router {
 				contentContainer.classList.add('hidden');
 			}
 		} else {
-			// non-indexed page, do not cache.
 			this.activePages.delete(this.currentPath);
 			contentContainer?.remove();
 		}

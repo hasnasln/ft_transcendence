@@ -89,7 +89,6 @@ export class Profile implements Page {
 		});
 		exmp.applyLanguage();
 
-		// render profile eventlestenırlar
 		sidebar.addEventListener('click', (e) => {
 			e.stopPropagation();
 		});
@@ -100,16 +99,12 @@ export class Profile implements Page {
 			}
 		});
 
-		//create Porfile Header event listeners
-
 		const closeButton = document.querySelector('[data-action="close"]') as HTMLButtonElement;
 		closeButton.addEventListener('click', (e) => { this.close(); });
 
-		// create profile info section event listeners
 		const profileImageWraper = document.getElementById('profile-image-container') as HTMLDivElement;
 		profileImageWraper.addEventListener('click', () => {
-			//! buradaki bind a bakılacak
-			console.log('Avatar selector opened');
+			
 			this.showAvatarSelector();
 		});
 
@@ -122,7 +117,6 @@ export class Profile implements Page {
 			this.handleAction(action);
 		});
 
-		// show avatar selector event listener
 		this.isInitializeEvetListener();
 	}
 
@@ -245,9 +239,6 @@ export class Profile implements Page {
 
 	private onloadAvatarModal(modal: string): void {
 
-		//! aşağıdaki kullanımda öncedek eklenmiş tüm evetler kayboluyor body yeniden yazılıyor
-		//! document.body.innerHTML += modal;
-
 		document.body.appendChild(this.stringToElement(modal));
 		exmp.applyLanguage();
 		const avatar_modal = document.getElementById('avatar-modal') as HTMLDivElement;
@@ -271,7 +262,7 @@ export class Profile implements Page {
 
 			const avatar = target.getAttribute('data-avatar');
 			if (avatar) {
-				this.selectAvatar(avatar); // <<== CALLBACK ÇAĞRILIYOR
+				this.selectAvatar(avatar);
 				this.closeModal();
 			}
 		});

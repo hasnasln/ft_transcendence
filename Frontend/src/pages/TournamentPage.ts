@@ -39,8 +39,8 @@ export class TournamentPage implements Page {
 		_apiManager.haveTournament()
 		.then((resposeWraper) => {
 			console.log('Tournament data fetched from server:', resposeWraper);
-			if (resposeWraper.success === false)localStorage.removeItem('tdata');                                           // tournament verisi yoksa localStorage'dan sil
-			else if (resposeWraper.success === true) localStorage.setItem('tdata', JSON.stringify(resposeWraper.data));     // tournament verisi varsa localStorage'a kaydet
+			if (resposeWraper.success === false)localStorage.removeItem('tdata');
+			else if (resposeWraper.success === true) localStorage.setItem('tdata', JSON.stringify(resposeWraper.data));
 			return resposeWraper;
 		})
 		.then((responseWraper) => {
@@ -79,17 +79,6 @@ export class TournamentPage implements Page {
 		return ``
 	}
 
-	/**
-	 * 
-	 * @returns 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * class="min-h-screen w-full p-4 sm:p-6 lg:p-8  relative overflow-hidden">
-			
-	 * 
-	 */
 	private renderFirstSection(): string {
 		const tempDiv = document.createElement('div');
 		tempDiv.id = "tournament-main";
@@ -109,8 +98,8 @@ export class TournamentPage implements Page {
 		_apiManager.haveTournament()
 		.then((resposeWraper) => {
 			console.log('Tournament data fetched from server:', resposeWraper);
-			if (resposeWraper.success === false)localStorage.removeItem('tdata');                                           // tournament verisi yoksa localStorage'dan sil
-			else if (resposeWraper.success === true) localStorage.setItem('tdata', JSON.stringify(resposeWraper.data));     // tournament verisi varsa localStorage'a kaydet
+			if (resposeWraper.success === false)localStorage.removeItem('tdata');
+			else if (resposeWraper.success === true) localStorage.setItem('tdata', JSON.stringify(resposeWraper.data));
 			return resposeWraper;
 		})
 		.then((responseWraper) => {
@@ -131,7 +120,7 @@ export class TournamentPage implements Page {
 			let htmlcontent;
 			if (localStorage.getItem('tdata') === null) {
 				htmlcontent = this.renderFirstSection();
-				console.log();
+				
 			} else {
 				const tdata: TournamentData = JSON.parse(localStorage.getItem('tdata')!);
 				htmlcontent = this.renderTournament(tdata);
@@ -284,7 +273,6 @@ export class TournamentPage implements Page {
 				await this.stateManager.handleCreateSuccess(container, createResult.data);
 				this.updateManagersData(createResult.data);
 			}
-			// Error handling is now done automatically by ActionHandler
 		} catch (error) {
 			console.error('Create tournament error:', error);
 			this.loadingManager.removeLoadingOverlay('create');
