@@ -240,7 +240,11 @@ export const fr = {
     },
     "loading": "Chargement…",
     "go-tournament-page": "Retour à la page du tournoi",
-    "play-game": "Jouer un match avec {rival}"
+    "play-game": "Jouer un match avec {rival}",
+    "tournament_name": "Nom du Tournoi: {tournament}",
+    "round_number": "Numéro du Tour: {round}",
+    "final_match_round_no": "Match Final",
+    "set_winner": "{winner} a gagné le set"
   },
   "play": {
     "Menu": {

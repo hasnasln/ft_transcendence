@@ -325,6 +325,13 @@ function isPlayButtonCreated(ttada: TournamentData): boolean {
                 if (uid === byeParticipant?.uuid) {
                     return false;
                 }
+                if (round_tmp!.is_completed)
+                {
+                    if (ttada.participants.some((p: Participant) => p.uuid === uid)) {
+                        return true;
+                    }
+                    return false;
+                }
             }
             return true;
         }

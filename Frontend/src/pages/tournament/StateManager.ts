@@ -19,20 +19,19 @@ export class TournamentStateManager {
     }
 
     async handleRefreshSuccess(updatedData: TournamentData): Promise<void> {
-        this.data.lobby_members = updatedData.lobby_members;
+        this.data = updatedData;
         return _apiManager.getTournament(this.data.code)
         .then(async (response) => {
             const tournamentStarted = response.data?.status === TournamentStatus.ONGOING;
             if (tournamentStarted) {
                 this.status = true;
-                this.data.status = TournamentStatus.ONGOING;
             }
             const uid = localStorage.getItem('uuid');
             this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid ));
 
-            console.log("6");
             await this.delay(500);
-            this.completeRefresh(response.data!);
+            if (updatedData.participants!.some(p => p.uuid === uid ))
+                this.completeRefresh(response.data!);
         })
         .catch((error) => {
             console.error("Error during tournament refresh:", error);

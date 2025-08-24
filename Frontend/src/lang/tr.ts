@@ -242,6 +242,10 @@ export const tr  = {
 		"loading": "Yükleniyor...",
 		"go-tournament-page": "Turnuva Sayfasına Dön",
 		"play-game" : "{rival} ile maç oyna",
+		"tournament_name": "Turnuva Adı: {tournament}",
+		"round_number": "Tur Numarası: {round}",
+		"final_match_round_no": "Final Maçı",
+		"set_winner": "Seti {winner} kazandı"
 	},
 	"play" :{
 		"Menu": {

@@ -241,17 +241,20 @@ export function updateScoreBoard() {
 	if (gameInstance.gameInfo.mode === 'tournament') {
 		if (gameInstance.uiManager.roundNoTable) {
 			if (gameInstance.gameStatus.finalMatch) {
-				gameInstance.uiManager.roundNoTable.innerText = `Final maçı`;
+				gameInstance.uiManager.roundNoTable.setAttribute("data-translate-key", "game.final_match_round_no");
 			} else {
 				const roundNumber = gameInstance.gameInfo.state?.roundNumber || 1;
-				gameInstance.uiManager.roundNoTable.innerText = `Round ${roundNumber}`;
+				gameInstance.uiManager.roundNoTable.setAttribute("data-translate-key", "game.round_number");
+				gameInstance.uiManager.roundNoTable.setAttribute("data-translate-placeholder-value-round", String(roundNumber));
 			}
 		}
 
 		if (gameInstance.uiManager.tournamentIDTable) {
-			gameInstance.uiManager.tournamentIDTable.innerText = `Turnuva Adı : ${gameInstance.gameInfo.state?.tournamentName}`;
+			gameInstance.uiManager.tournamentIDTable.setAttribute("data-translate-key", "game.tournament_name");
+			gameInstance.uiManager.tournamentIDTable.setAttribute("data-translate-placeholder-value-tournament", gameInstance.gameInfo.state?.tournamentName || '');
 		}
 	}
+	exmp.applyLanguage2();
 }
 
 export function initializeGameUI() {
@@ -267,11 +270,13 @@ export function initializeGameUI() {
 	updateScoreBoard();
 }
 
-export function showSetToast(gameInfo: GameInfo, message: string): Promise<void> {
+export function showSetToast(message: string): Promise<void> {
 	return new Promise((resolve) => {
 		const toast = document.getElementById("set-toast")!;
-		toast.textContent = message;
+		toast.setAttribute("data-translate-key", "game.set_winner");
+		toast.setAttribute("data-translate-placeholder-value-winner", message);
 		toast.classList.remove("hidden");
+		exmp.applyLanguage2();
 
 		gameInstance.runAfter(() => {
 			toast.classList.add("hidden");
@@ -282,7 +287,7 @@ export function showSetToast(gameInfo: GameInfo, message: string): Promise<void>
 
 export async function startNextSet() {
 	const winnerName = gameInstance.gameInfo!.setState!.points.leftPlayer > gameInstance.gameInfo!.setState!.points.rightPlayer ? gameInstance.gameInfo?.setState?.usernames.left : gameInstance.gameInfo?.setState?.usernames.right;
-	await showSetToast(gameInstance.gameInfo!, `Seti ${winnerName} kazandı !`);  // 3 saniye bekler
+	await showSetToast(winnerName || '');  // 3 saniye bekler
 }
 
 export function showEndMessage() {
