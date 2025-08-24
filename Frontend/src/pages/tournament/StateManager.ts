@@ -20,23 +20,15 @@ export class TournamentStateManager {
 
     async handleRefreshSuccess(updatedData: TournamentData): Promise<void> {
         this.data = updatedData;
-        return _apiManager.getTournament(this.data.code)
-        .then(async (response) => {
-            const tournamentStarted = response.data?.status === TournamentStatus.ONGOING;
-            if (tournamentStarted) {
-                this.status = true;
-            }
-            const uid = localStorage.getItem('uuid');
-            this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid ));
-
-            await this.delay(500);
-            if (updatedData.participants!.some(p => p.uuid === uid ))
-                this.completeRefresh(response.data!);
-        })
-        .catch((error) => {
-            console.error("Error during tournament refresh:", error);
-            ModernOverlay.show('global-error', 'error');
-        })
+        const tournamentStarted = this.data.status === TournamentStatus.ONGOING;
+        if (tournamentStarted) {
+            this.status = true;
+        }
+        const uid = localStorage.getItem('uuid');
+        this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid ));
+        await this.delay(500);
+        if (updatedData.participants!.some(p => p.uuid === uid ))
+            this.completeRefresh(this.data!);
     }
 
     async handleCreateSuccess(container: HTMLElement, tournamentData: TournamentData): Promise<void> {
@@ -81,15 +73,15 @@ export class TournamentStateManager {
 
     public updateRefreshUI(tournamentStarted: boolean, is_players: boolean): void {
 
+        const startButton = document.getElementById('start-button');
+        if (startButton) {
+            startButton.style.display = 'none';
+        }
+        const startInfo = document.querySelector('.tournament-start-info');
+        if (startInfo) {
+            startInfo.innerHTML = this.uiManager.createTournamentStartedInfoHTML();
+        }
         if (tournamentStarted && is_players){
-            const startButton = document.getElementById('start-button');
-            if (startButton) {
-                startButton.style.display = 'none';
-            }
-            const startInfo = document.querySelector('.tournament-start-info');
-            if (startInfo) {
-                startInfo.innerHTML = this.uiManager.createTournamentStartedInfoHTML();
-            }
             setTimeout(() => {
                 const playButton = document.getElementById('play-button');
                 if (playButton) {

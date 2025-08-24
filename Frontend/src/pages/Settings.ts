@@ -215,8 +215,10 @@ export class Settings implements Page{
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
 					</svg>
 				</button>
-				<h1 class="text-3xl font-bold text-white relative z-10
-					tracking-tight leading-tight drop-shadow-lg">Ayarlar
+				<h1 
+				data-langm-key="settings.title"
+				class="text-3xl font-bold text-white relative z-10
+					tracking-tight leading-tight drop-shadow-lg">
 				</h1>
 			</div>
 		`;

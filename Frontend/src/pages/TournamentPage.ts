@@ -45,7 +45,7 @@ export class TournamentPage implements Page {
 		})
 		.then((responseWraper) => {
 			if (responseWraper.success) 
-				return this.handleRefresh();
+				return this.handleRefresh(false);
 		})
 		.catch(() => {
 			ToastManager.ShowToast('error', "global-error");
@@ -241,7 +241,7 @@ export class TournamentPage implements Page {
 				await this.exitTournament(container);
 				break;
 			case 'refresh':
-				await this.handleRefresh();
+				await this.handleRefresh(true);
 				break;
 			case 'start-tournament':
 				await this.handleStartTournament();
@@ -325,7 +325,7 @@ export class TournamentPage implements Page {
 			this.loadingManager.removeLoadingOverlay('start');
 			
 			if (startResult.success) {
-				await this.handleRefresh();
+				await this.handleRefresh(false);
 				this.updateManagersStatus(true);
 			}
 	
@@ -335,27 +335,10 @@ export class TournamentPage implements Page {
 			ModernOverlay.show('tournament-messages.ERR_INTERNAL_SERVER', 'error');
 		}
 	}
-	private async handleRefresh(): Promise<void> {
-		try {
-			this.notificationManager.showRefreshLoading(this.loadingManager);//todo remove ?
-			const refreshResult = await this.actionHandler.refreshTournament();
-			
-			if (refreshResult.success && refreshResult.data) {
-				await this.stateManager.handleRefreshSuccess(refreshResult.data);
-				this.updateManagersData(refreshResult.data);
-				console.log('Tournament data refreshed successfully:', refreshResult.data);
-			}
-			
-		} catch (error) {
-			console.error('Refresh error:', error);
+	private async handleRefresh(flag:boolean): Promise<void> {
+		if (flag) {
+			this.onLoad()
 		}
-
-		setTimeout(() => {
-			const refreshButton = document.querySelector('[data-action="refresh"]') as HTMLElement;
-			const refreshIcon = refreshButton.querySelector('svg') as SVGElement;
-			refreshButton?.classList.remove('animate-spin');
-			refreshIcon?.classList.remove('animate-spin');
-		}, 1000);
 	}
 	private async exitTournament(container: HTMLElement): Promise<void> {
 		try {
