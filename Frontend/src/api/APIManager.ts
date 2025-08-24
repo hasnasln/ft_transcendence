@@ -98,7 +98,6 @@ export class APIManager {
 
 	public async login(email: string, password: string): Promise<IApiResponseWrapper> {
 		const result: IApiResponseWrapper = { success: false, messageKey: '', data: null, code: 0 };
-		this.active_pass = password;
 		try {
 			const response = await this.apiCall(`${this.baseUrl}/login`, HTTPMethod.POST, {
 				'Content-Type': 'application/json',
@@ -136,6 +135,12 @@ export class APIManager {
 	public async logout(): Promise<any> { // local storage temizlenecek
 		try {
 			this.setToken(null);
+			localStorage.removeItem('token');
+			localStorage.removeItem('username');
+			localStorage.removeItem('uuid');
+			localStorage.removeItem('email');
+			this.uuid = null;
+			this.active_pass = null;
 			Router.getInstance().invalidateAllPages();
 		} catch (error) {
 			console.error('Error in logout:', error);
