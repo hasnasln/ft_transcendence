@@ -331,9 +331,6 @@ export class MatchManager {
 
     private onGameApproved(game: Game) {
         console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} match approved. Starting the game...`);
-
-
-
         game.start();
     }
 

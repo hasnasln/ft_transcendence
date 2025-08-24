@@ -88,7 +88,7 @@ export class LoginPage implements Page {
 		if(!flag) {
 			flag = true;
 			const login_form = document.getElementById('login-main');
-			if (!login_form) { 
+			if (login_form) { 
 			login_form.addEventListener('click', (event) => {
 				event.preventDefault();
 				const target = (event.target as HTMLElement).closest('[data-action]');
@@ -124,11 +124,12 @@ export class LoginPage implements Page {
 			});
 		}
 	}
-
+	}
 	private getInputValue(id: string): string {
 		const input = document.getElementById(id) as HTMLInputElement;
 		return input ? input.value.trim() : '';
 	}
+	
 
 	async handleLogin(): Promise<void> {
 		const nicnameOrMail = this.getInputValue('nicname_or_mail_input');

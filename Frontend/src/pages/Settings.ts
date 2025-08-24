@@ -92,8 +92,8 @@ export class Settings implements Page{
 		}
 
 		const grid = document.getElementById('scolor_section');
-		if(!grid) 
-		else{
+		if(grid) 	
+		{
 			grid.addEventListener('click', (e) => {
 				const card = (e.target as HTMLElement).closest('.group\\/card') as HTMLElement;
 				if (card) {
@@ -125,8 +125,7 @@ export class Settings implements Page{
 		});
 
 		const footer = document.getElementById('s-footer');
-		if(!footer) 
-		else {
+		if(footer) {
 			const saveBtn = footer.querySelector('#settings-save-btn') as HTMLButtonElement;
 			saveBtn.addEventListener('mousedown', (e) => {
 				const ripple = document.createElement('div');
