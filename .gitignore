@@ -2,5 +2,5 @@
 **/.parcel-cache/
 **/dist/
 .idea/
-auth/database/**
-Frontend/src/**.js
+auth/database/*
+Frontend/src/**/*.js
