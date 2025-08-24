@@ -68,8 +68,8 @@ export class ConnectionHandler {
     public acceptConnection(socket: Socket, player: Player): boolean {
         if (this.connectedPlayersMap.has(player.username)) {
             emitError('gameServerError',"CONNECTION_DUPLICATED", socket.id);
-            socket.disconnect(true);
-            return false;
+        setTimeout(() => { player.socket.disconnect(); }, 1000);
+        return false;
         }
         
         this.connectedPlayersMap.set(player.username, player);
@@ -97,7 +97,7 @@ export class ConnectionHandler {
                 MatchManager.getInstance().handleReconnect(player, game);
             } catch (err: any) {
                 emitError('gameServerError', "COULD_NOT_REJOIN", socket.id);
-                socket.disconnect(true);
+                setTimeout(() => { player.socket.disconnect(); }, 1000);
                 console.log(err);
                 return;
             }
