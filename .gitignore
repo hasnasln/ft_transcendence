@@ -3,3 +3,4 @@
 **/dist/
 .idea/
 auth/database/**
+Frontend/src/**.js
