@@ -417,4 +417,4 @@ export class APIManager {
 	}
 }
 
-export const _apiManager = APIManager.getInstance('http://auth.transendence.com/api/auth', 'http://tournament.transendence.com/api/tournament');
+export const _apiManager = APIManager.getInstance('https://auth.transendence.com/api/auth', 'https://tournament.transendence.com/api/tournament');

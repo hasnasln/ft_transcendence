@@ -50,7 +50,7 @@ export class ConnectionHandler {
             return new Error("Authentication error: token missing");
         }
     
-        const response = await apiCall('http://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined, token);
+        const response = await apiCall('https://auth.transendence.com/api/auth/validate', HTTPMethod.POST, {}, undefined, token);
         if (response instanceof Error || response.statusCode !== 200) {
             return new Error("Token validation error: " + response.message);
         }

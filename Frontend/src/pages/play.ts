@@ -172,7 +172,7 @@ export class GameManager {
 		this.uiManager.cacheDOMElements();
 		GamePage.enablePage();
 		GameEventBus.getInstance().emit({ type: 'CONNECTING_TO_SERVER' });
-		WebSocketClient.getInstance().connect("game.transendence.com")
+		WebSocketClient.getInstance().connect("https://game.transendence.com")
 			.catch(err => {
 				GameEventBus.getInstance().emit({ type: 'CONNECTING_TO_SERVER_FAILED', payload: { error: err } });
 				throw new Error("WebSocket connection failed.");
