@@ -1,8 +1,9 @@
 import { _apiManager } from '../../api/APIManager';
-import {TournamentData, TournamentStatus } from './tournamentTypes';
+import {Round, TournamentData, TournamentStatus } from './tournamentTypes';
 import { ShowTournament } from './MainRenderer';
 import { t_first_section } from './FormComponents';
 import { ModernOverlay } from '../../components/ModernOverlay';
+import { TournamentTreeManager } from './TreeManager';
 
 export class TournamentStateManager {
     private data: TournamentData;
@@ -27,7 +28,7 @@ export class TournamentStateManager {
                 this.data.status = TournamentStatus.ONGOING;
             }
             const uid = localStorage.getItem('uuid');
-            this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid));
+            this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid );
             await this.delay(500);
             this.completeRefresh(response.data!);
         })
@@ -67,8 +68,19 @@ export class TournamentStateManager {
         t_first_section(container);
     }
 
+    public findLastRound(r: Round []): Round | undefined {
+        for (let i = 0; i <= r.length; i++) {
+            if (r[i].round_number === r.length) {
+                return r[i];
+            }
+        }
+        return undefined;
+    }
+
     public updateRefreshUI(tournamentStarted: boolean, is_players: boolean): void {
-        if (tournamentStarted && is_players) {
+        const byParticipant = TournamentTreeManager.findByeParticipant(this.findLastRound(this.data.tournament_start!.rounds)!);
+        const uid = localStorage.getItem('uuid');
+        if (tournamentStarted && is_players && !(uid === byParticipant?.uuid)) {
             const startButton = document.getElementById('start-button');
             if (startButton) {
                 startButton.style.display = 'none';
