@@ -142,6 +142,12 @@ export class MatchManager {
 
 			const match = extractMatch(tournament, player.uuid);
 
+			if (match instanceof Error) {
+				emitError('tournamentError', match.message, player.socket.id);
+				player.socket.disconnect();
+				return;
+			}
+
 			let matchedPlayers: Player[] | undefined = this.waitingTournamentMatches.get(match.match_id);
 			if (!matchedPlayers) {
 				matchedPlayers = []
@@ -160,7 +166,8 @@ export class MatchManager {
 		catch (err: any) {
 			console.error("Tournament match error:", err);
 			emitError('tournamentError', "COULD_NOT_JOINED", player.socket.id);
-			return
+			player.socket.disconnect();
+			return;
 		}
 	}
 

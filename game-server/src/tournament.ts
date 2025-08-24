@@ -69,7 +69,7 @@ export function generateMatchId(tournamentCode: string, roundNumber: number, par
     return `${tournamentCode}_r${roundNumber}_m${first}_vs_${second}`;
 }
 
-export function extractMatch(tournament: TournamentData, participantId: string): { roundNumber: number, match_id: string, finalMatch: boolean }
+export function extractMatch(tournament: TournamentData, participantId: string): { roundNumber: number, match_id: string, finalMatch: boolean } | Error
 {
     try
     {
@@ -85,28 +85,27 @@ export function extractMatch(tournament: TournamentData, participantId: string):
             .find(m => m.participant1.uuid === participantId || m.participant2.uuid === participantId);
 
         if (!match) {
-            if(activeRound.winners && activeRound.winners.find(p => p.uuid === participantId) !== undefined)
-                throw new Error(`You qualified to the next round ! Wait for the next round.`);
+            if (activeRound.winners && activeRound.winners.find(p => p.uuid === participantId) !== undefined)
+                return new Error(`You qualified to the next round ! Wait for the next round.`);
             else
-                throw new Error(`You have already played your match in this round : ${activeRound.round_number}. Wait for the next round.`);
+                return new Error(`You have already played your match in this round : ${activeRound.round_number}. Wait for the next round.`);
         }
 
-        switch (match.status)
-        {
+        switch (match.status) {
             case MatchStatus.ONGOING:
-                throw new Error(`Match is ongoing. Match ID: ${match.participant1.uuid} vs ${match.participant2.uuid}`);
+                return new Error(`Match is ongoing. Match ID: ${match.participant1.uuid} vs ${match.participant2.uuid}`);
             case MatchStatus.COMPLETED:
-                throw new Error(`Match is already completed. Match ID: ${match.participant1.uuid} vs ${match.participant2.uuid}`);
-            case MatchStatus.CANCELLED:     
-                throw new Error(`Match is cancelled. Match ID: ${match.participant1.uuid} vs ${match.participant2.uuid}`);
-        }        
+                return new Error(`Match is already completed. Match ID: ${match.participant1.uuid} vs ${match.participant2.uuid}`);
+            case MatchStatus.CANCELLED:
+                return new Error(`Match is cancelled. Match ID: ${match.participant1.uuid} vs ${match.participant2.uuid}`);
+        }
 
         const match_id: string = generateMatchId(tournament.code, roundNumber, match.participant1, match.participant2);
         return { roundNumber, match_id, finalMatch }
     }
     catch (err: any) {
         console.error("Error extracting match:", err);
-        throw new Error(err);
+        return new Error(err);
     }   
 }
 
