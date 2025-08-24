@@ -234,7 +234,7 @@ export const fr = {
     },
     "Errors": {
       "tournament_winner_update_failed": "Échec de la mise à jour du vainqueur du tournoi.",
-      "could_not_join": "Impossible de rejoindre le match.",
+      "could_not_joined": "Impossible de rejoindre le match.",
       "could_not_rejoin": "Impossible de rejoindre à nouveau le match.",
       "connection_duplicated": "Connexion refusée, session active sur un autre appareil.",
       "not_found": "Tournoi introuvable",

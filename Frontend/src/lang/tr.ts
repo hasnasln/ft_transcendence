@@ -235,7 +235,7 @@ export const tr  = {
 		},
 		"Errors" : {
 			"tournament_winner_update_failed": "Turnuva kazananı güncellenemedi.",
-			"could_not_join":"Maça katılamadınız.",
+			"could_not_joined":"Maça katılamadınız.",
 			"could_not_rejoin": "Maça yeniden katılamadınız.",
 			"connection_duplicated": "Bağlantı reddedildi, başka bir cihazda oturum açık.",
 			"not_found": "Turnuva bulunamadı",

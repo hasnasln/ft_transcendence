@@ -234,7 +234,7 @@ export const en = {
     },
     "Errors": {
       "tournament_winner_update_failed": "Failed to update tournament winner.",
-      "could_not_join": "Could not join the match.",
+      "could_not_joined": "Could not join the match.",
       "could_not_rejoin": "Could not rejoin the match.",
       "connection_duplicated": "Connection rejected, session active on another device.",
       "not_found": "Tournament not found",
