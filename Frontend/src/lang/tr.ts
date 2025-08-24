@@ -431,7 +431,8 @@ export const tr  = {
 		"round": "TUR",
 		"vs": "VS",
 		"refresh": "Yenile",
-		"refreshing": "Yenileniyor..."
+		"refreshing": "Yenileniyor...",
+		"no-tree": "Turnuva ağacı henüz oluşturulmadı",
 	},
 	"tournament-confirmation": {
 		"start-title": "🏆 Turnuva Başlatma Onayı",

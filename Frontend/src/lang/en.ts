@@ -426,7 +426,8 @@ export const en = {
     "round": "ROUND",
     "vs": "VS",
     "refresh": "Refresh",
-    "refreshing": "Refreshing..."
+    "refreshing": "Refreshing...",
+    "no-tree": "No Tournament Bracket Available",
   },
   "tournament-confirmation": {
     "start-title": "🏆 Start Tournament Confirmation",

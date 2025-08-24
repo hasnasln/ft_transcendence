@@ -426,7 +426,8 @@ export const fr = {
     "round": "TOUR",
     "vs": "VS",
     "refresh": "Actualiser",
-    "refreshing": "Actualisation…"
+    "refreshing": "Actualisation…",
+    "no-tree": "Pas d’arbre de tournoi disponible",
   },
   "tournament-confirmation": {
     "start-title": "🏆 Confirmation de démarrage du tournoi",
