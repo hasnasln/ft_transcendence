@@ -11,13 +11,13 @@ services:
     networks:
       - elk-net
     volumes:
-      - ./snapshots:/usr/share/elasticsearch/snapshots
+      - ./logging/snapshots:/usr/share/elasticsearch/snapshots
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.9.0
     container_name: logstash
     volumes:
-      - ./logstash/pipeline/:/usr/share/logstash/pipeline/
+      - ./logging/logstash/pipeline/:/usr/share/logstash/pipeline/
     ports:
       - "5044:5044"
     depends_on:
@@ -41,8 +41,7 @@ services:
     image: docker.elastic.co/beats/filebeat:8.9.0
     container_name: filebeat
     volumes:
-      - './filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml'
-      - './fakelogs:/var/log/'
+      - './logging/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro'
     depends_on:
       - logstash
     networks:
