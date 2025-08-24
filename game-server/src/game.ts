@@ -6,7 +6,6 @@ import {GameOrchestrator} from "./orchestrator";
 import {Ball, DEFAULT_GAME_ENTITY_CONFIG, GameEntityFactory, GameEnvironment} from "./gameEntity";
 import {patchWinnersToTournament} from "./tournament";
 import {emitError} from "./errorHandling";
-import { ConnectionHandler } from "./connection";
 
 export type Side = 'leftPlayer' | 'rightPlayer';
 export type GameMode = 'vsAI' | 'localGame' | 'remoteGame' | 'tournament';

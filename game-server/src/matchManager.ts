@@ -194,7 +194,6 @@ export class MatchManager {
 			return;
 		}
 
-		/* game.players.length == 1 */
 		if (game.gameMode === 'vsAI' || game.gameMode === 'localGame') {
 			game.finalize(game.gameMode === 'vsAI' ? "Robot" : "Friend");
 			this.clearGame(game);
@@ -281,12 +280,10 @@ export class MatchManager {
 
 					console.log(`[${new Date().toISOString()}] ${game.roomId.padStart(10)} tournament match cannot start. Winner by default is ${winner.username}.`);
 					
-					//this.cancelGame(game, 'approval refused');
 					game.finalize(winner.username);
 					ConnectionHandler.getInstance().getServer().to(game.roomId).emit("match-cancelled", {});
 					game.players.forEach(p => p.socket.leave(game.roomId));
 
-					// Patch the winner to the tournament
 					if (!game.tournament)
 						console.error("Tournament info missing in a tournament game.");
 				}

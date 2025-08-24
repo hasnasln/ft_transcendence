@@ -74,7 +74,7 @@ export class AIPlayerInput implements InputProvider {
 
 		if (now - this.lastDecisionTime >= this.refreshTime) {
 			this.lastDecisionTime = now;
-			this.targetY = predictBallY(ball, groundWidth / 2, groundHeight / 2, this.game.getLeftPaddle() === paddle, this.game.environment);
+			this.targetY = predictBallY(ball, groundWidth / 2, groundHeight / 2);
 		}
 
 		const diff = this.targetY - paddle.position.y;

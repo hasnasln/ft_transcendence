@@ -6,7 +6,6 @@ import { updateScoreBoard, showEndMessage, startNextSet } from "./ui";
 import { WebSocketClient } from "./wsclient";
 import { Router } from "../../router";
 import {BabylonJsWrapper} from "./3d";
-import { exmp } from "../../lang/languageManager";
 
 export const gameEventTypes = [
     'SET_COMPLETED',
@@ -146,7 +145,6 @@ export function listenGameBusEvents() {
 		if (!gameInstance.gameInfo || !gameInstance.gameInfo.state)
 			throw new Error("Game state is not initialized.");
 
-		console.log(`game phase: ${gameInstance.gameStatus.phase} => completed`);
 		gameInstance.gameStatus.phase = "completed";
 		gameInstance.uiManager.onInfoHidden();
 		updateScoreBoard();
@@ -275,17 +273,6 @@ export function listenGameBusEvents() {
 		if (err === "Existing session found.") {
 			gameInstance.uiManager.onInfoShown("game.InfoMessage.connection_rejected_duplicate_session");
 		}
-		/*console.error('Socket connection error:', err);
-		if (err.includes("token missing")) {
-			alert("Token eksik. Lütfen tekrar giriş yapın.");
-			Router.getInstance().go('/login');
-		} else if (err.includes("Token validation error")) {
-			alert("Token doğrulama hatası :" + err);
-			Router.getInstance().go('/login');
-		} else if (err.includes("Game server error")) {
-			alert("Aynı anda birden fazla oyuna katılamazsınız.");
-			Router.getInstance().go('/');
-		}*/
 	});
 
 	GameEventBus.getInstance().on('BALL_POSITION_RESET', event => {

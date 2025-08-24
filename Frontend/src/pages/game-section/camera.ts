@@ -55,7 +55,6 @@ export class CameraController {
             }
 
             switch (key) {
-                // Zoom In (yakınlaş)
                 case "+":
                     if (this.rotationActive) {
                         const nextRadius = this.radius - Math.sign(this.radius) * this.zoomStep;
@@ -65,7 +64,6 @@ export class CameraController {
                     }
                     break;
 
-                // Zoom Out (uzaklaş)
                 case "-":
                     if (this.rotationActive) {
                         const nextRadius = this.radius + Math.sign(this.radius) * this.zoomStep;
@@ -75,7 +73,6 @@ export class CameraController {
                     }
                     break;
 
-                // Sağ dönüş (kamera sağa bakacak şekilde dönsün)
                 case "6":
                     if (this.rotationActive) {
                         this.angleXZ += this.rotStep;
@@ -83,7 +80,6 @@ export class CameraController {
                     }
                     break;
 
-                // Sol dönüş
                 case "4":
                     if (this.rotationActive) {
                         this.angleXZ -= this.rotStep;
@@ -91,7 +87,6 @@ export class CameraController {
                     }
                     break;
 
-                // Yukarı-aşağı dönüş istersen:
                 case "8":
                     if (this.rotationActive) {
                         this.angleYZ += this.rotStep;
@@ -105,7 +100,6 @@ export class CameraController {
                     }
                     break;
 
-                // Reset: ilk konuma/dönüşe dön
                 case "r":
                 case "R":
                     if (this.rotationActive)
@@ -130,8 +124,6 @@ export class CameraController {
         const y = Math.sin(this.angleYZ) * (-this.radius);
         const z = Math.cos(this.angleXZ) * Math.cos(this.angleYZ) * (-this.radius);
         this.camera.position.set(x, y, z);
-        console.log(`ayarlanan camera.position = (${x}, ${y}, ${z});`);
-        console.log(`this.angleYZ = ${this.angleYZ}`);
         this.camera.setTarget(this.target);
         this.camera.upVector.set(0, Math.cos(this.angleYZ) < 0 ? -1 : 1, 0);
     }

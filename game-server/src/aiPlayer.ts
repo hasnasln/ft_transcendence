@@ -3,16 +3,13 @@ import {GameEnvironment} from "./gameEntity";
 
 //Bu fonksiyon, topun AI paddle'ının X konumuna vardığında hangi Y konumunda olacağını tahmin eder.
 
-export function predictBallY(ball: Ball, paddleX: number, topBound: number, mirror: boolean = false, environment?: GameEnvironment): number {
+export function predictBallY(ball: Ball, paddleX: number, topBound: number): number {
 	let x = ball.position.x;
 	let y = ball.position.y;
 	let vx = ball.velocity.x;
 	let vy = ball.velocity.y;
 
-	if (mirror && environment) {
-		x *= -1;
-		vx *= -1;
-	}
+	
 
 	const bottomBound = -topBound;
 	const otherPaddleX = -paddleX;
@@ -61,13 +58,6 @@ export function predictBallY(ball: Ball, paddleX: number, topBound: number, mirr
 			x += vx * timeToWallY;
 		}
 	}
-
-/*	if (environment) {
-		if (environment.leftPaddle.height < ball.position.y)
-			y -= environment.leftPaddle.height / 2 - environment.ball.radius;
-		else
-			y += environment.leftPaddle.height / 2 - environment.ball.radius;
-	}*/
 
 	y = Math.min(y, topBound);
 	y = Math.max(y, bottomBound);

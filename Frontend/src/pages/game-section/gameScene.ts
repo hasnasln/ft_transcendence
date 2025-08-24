@@ -36,49 +36,6 @@ export function createScene(): { canvas: HTMLCanvasElement; engine: Engine; scen
     const scene = new (BabylonJsWrapper.getInstance().Scene)(engine);
     scene.clearColor = new (BabylonJsWrapper.getInstance().Color4)(0, 0, 0, 0);
 
-
-    // let tick = 0;
-    // let lastFpsValues: number[] = []
-
-    // function setScale(level: number, initial = false): void {
-    //     engine.setHardwareScalingLevel(level);
-    //     if (!initial) {
-    //         gameInstance.uiManager.onInfoShown("Hardware scaling level set to " + level.toFixed(2));
-    //         setTimeout(() => {
-    //             gameInstance.uiManager.onInfoHidden();
-    //         }, 500);
-    //     }
-    // }
-
-    // let lvl = 1 / (window.devicePixelRatio * 2);
-    // if (localStorage.getItem("hardwareScalingLevel")) {
-    //     lvl = parseFloat(localStorage.getItem("hardwareScalingLevel")!);
-    //     if (isNaN(lvl) || lvl < 0.5 || lvl > 3) {
-    //         lvl = 1 / (window.devicePixelRatio * 2);
-    //     }
-    // }
-
-    // setScale(lvl, true);
-
-    // if (localStorage.getItem("autoHardwareScale") !== "false") {
-    //     scene.onAfterRenderObservable.add(() => {
-    //         if (++tick % 60) return;
-    //         const fps = engine.getFps();
-    //         const lvl = engine.getHardwareScalingLevel();
-
-    //         lastFpsValues.push(fps);
-    //         if (lastFpsValues.length > 10) lastFpsValues.shift();
-    //         console.log(lastFpsValues);
-
-    //         if (lastFpsValues.slice(0,2).every(f=>f<60) && lvl < 3) setScale(Math.min(3, lvl + 0.10));
-    //         else if (lastFpsValues.slice(0,2).every(f=>f>80) && lvl > 1) setScale(Math.max(1, lvl - 0.10));
-
-    //         if (lastFpsValues.length >= 10 && lastFpsValues.every(f=> f>60)) {
-    //             localStorage.setItem("hardwareScalingLevel", String(engine.getHardwareScalingLevel()));
-    //         }
-    //     });
-    // }
-
     return {canvas, engine, scene};
 }
 

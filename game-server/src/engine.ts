@@ -28,9 +28,6 @@ function sum(a: Position, b: Position): Position {
 	return {x: a.x + b.x, y: a.y + b.y};
 }
 
-function diff(a: Position, b: Position): Position {
-	return {x: a.x - b.x, y: a.y - b.y};
-}
 
 export class PhysicsEngine {
     private static instance: PhysicsEngine;
@@ -69,7 +66,6 @@ export class PhysicsEngine {
     }
 }
 
-//todo it is not engine's responsibility 
 function skipIfMatchOver(g: Game, _dt: number): boolean {
 	return g.state === 'playing';
 }
@@ -159,13 +155,13 @@ function handlePaddleBounce(g: Game, dt: number): boolean {
 	return true;
 }
 
-function applyAirResistance(g: Game, dt: number): boolean {
+function applyAirResistance(g: Game, _dt: number): boolean {
 	g.environment.ball.velocity.x *= g.environment.ball.airResistanceFactor;
 	g.environment.ball.velocity.y *= g.environment.ball.airResistanceFactor;
 	return true;
 }
 
-function enforceSpeedLimits(g: Game, dt: number): boolean {
+function enforceSpeedLimits(g: Game, _dt: number): boolean {
 	const speed = Math.hypot(g.environment.ball.velocity.x, g.environment.ball.velocity.y);
 	if (speed < g.environment.ball.minimumSpeed) {
 		g.environment.ball.velocity = setLength(g.environment.ball.velocity, g.environment.ball.minimumSpeed);
@@ -173,7 +169,7 @@ function enforceSpeedLimits(g: Game, dt: number): boolean {
 		g.environment.ball.velocity = setLength(g.environment.ball.velocity, g.environment.ball.maximumSpeed);
 	}
 	//Oyun zig-zag a dönmesin kontrolü
-	if (g.environment.ball.velocity.x !== 0 && Math.abs(g.environment.ball.velocity.y / g.environment.ball.velocity.x) > 2)
+	if (g.environment.ball.velocity.x !== 0 && Math.abs(g.environment.ball.velocity.y / g.environment.ball.velocity.x) > 1.6)
 		g.environment.ball.velocity.y /= 1.02;
 	return true;
 }
