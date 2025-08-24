@@ -621,7 +621,6 @@ export class Profile implements Page {
 		return [
 			{name: exmp.getLang("profile-settings.username"), type: 'text', placeholder: exmp.getLang("profile-settings.username-placeholder"), action: 'nick-name'},
 			{name: exmp.getLang("profile-settings.password"), type: 'password', placeholder: exmp.getLang("profile-settings.password-placeholder"), action: 'password'},
-			{name: exmp.getLang("profile-settings.email"), type: 'email', placeholder: exmp.getLang("profile-settings.email-placeholder"), action: 'email'},
 		]
 	}
 }

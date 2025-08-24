@@ -7,6 +7,12 @@ import { ModernOverlay } from "../components/ModernOverlay.js";
 
 export class RegisterPage implements Page {
 
+    onUnHide(): void {
+		requestAnimationFrame(() => {
+			exmp.applyLanguage();
+		});
+	}
+
     evaluate(): string {
         return `<div class="min-h-screen flex items-center justify-center relative overflow-hidden" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #1e3a8a 75%, #1e40af 100%)">
             <div class="absolute inset-0 opacity-5 pointer-events-none">
@@ -279,7 +285,7 @@ async function submit(e: Event): Promise<void> {
 
         setTimeout(() => {
             Router.getInstance().go('/email-verify');
-        }, 1500);
+        }, 500);
 
     } catch (error: any) {
         ModernOverlay.show('global-error', 'error');

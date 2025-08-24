@@ -1,5 +1,6 @@
 import { TournamentData, TournamentStatus} from './tournamentTypes';
 import { TournamentIcons } from './IconsHelper';
+import { Round, Participant, Match } from './tournamentTypes';
 
 export function ShowTournament(container: HTMLElement, tdata: TournamentData): void {
     container.innerHTML = createTournamentPageHTML(tdata);
@@ -279,6 +280,57 @@ function createStartInfo(canStart: boolean, playerCount: number): string {
         `;
     }
 }
+
+function findByeParticipant(round: Round): Participant | undefined
+{
+    if (!round.winners || round.winners.length === 0) {
+        return undefined;
+    }
+
+    for (const winner of round.winners) {
+        const isInMatches = round.matches.some(
+            (match) =>
+                match.participant1.uuid === winner.uuid ||
+                match.participant2.uuid === winner.uuid
+        );
+
+        if (!isInMatches) {
+            return winner;
+        }
+    }
+
+    return undefined;
+}
+
+
+function isPlayButtonCreated(ttada: TournamentData): boolean {
+
+    switch (ttada.status) {
+        case TournamentStatus.CREATED:
+        case TournamentStatus.COMPLETED:
+        return false;
+            break;
+        case TournamentStatus.ONGOING:
+        {
+            if (ttada.tournament_start)
+            {
+                let round_tmp;
+                ttada.tournament_start.rounds.forEach((round: Round) => {
+                    if (round.is_completed == false)
+                        round_tmp = round;
+                });
+                const byeParticipant = findByeParticipant(round_tmp!);
+                const uid = localStorage.getItem('uuid');
+
+                if (uid === byeParticipant?.uuid) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+}
+
 function createPlayersPanel(tdata: TournamentData): string {
     return `
         <div class="lg:col-span-1 space-y-6">
@@ -287,7 +339,7 @@ function createPlayersPanel(tdata: TournamentData): string {
                 <div id="list-player" class="space-y-3 max-h-64 sm:max-h-80 lg:max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent pr-2">
                     <!-- Players will be dynamically loaded here -->
                 </div>
-                ${tdata.status == TournamentStatus.ONGOING ? createPlayButton(): ''}
+                ${isPlayButtonCreated(tdata) ? createPlayButton(): ''}
             </div>
         </div>
     `;

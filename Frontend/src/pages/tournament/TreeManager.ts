@@ -120,7 +120,7 @@ export class TournamentTreeManager {
         return winner.some(p => p.uuid === participant.uuid);
     }
 
-    static findByeParticipant(round: Round): Participant | undefined
+    private findByeParticipant(round: Round): Participant | undefined
     {
         if (!round.winners || round.winners.length === 0) {
             return undefined;
@@ -205,7 +205,7 @@ export class TournamentTreeManager {
             `).join('');
 
             let byeHtml = '';
-            let byePlayer = TournamentTreeManager.findByeParticipant(round);
+            let byePlayer = this.findByeParticipant(round);
 
             if (byePlayer !== undefined)
             {

@@ -19,17 +19,14 @@ export class TournamentStateManager {
     }
 
     async handleRefreshSuccess(updatedData: TournamentData): Promise<void> {
-        console.log("------------------------!------------------------");
         this.data.lobby_members = updatedData.lobby_members;
         return _apiManager.getTournament(this.data.code)
         .then(async (response) => {
-            console.log("4");
             const tournamentStarted = response.data?.status === TournamentStatus.ONGOING;
             if (tournamentStarted) {
                 this.status = true;
                 this.data.status = TournamentStatus.ONGOING;
             }
-            console.log("5");
             const uid = localStorage.getItem('uuid');
             this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid ));
 
@@ -84,15 +81,8 @@ export class TournamentStateManager {
     }
 
     public updateRefreshUI(tournamentStarted: boolean, is_players: boolean): void {
-        let byParticipant: Participant | undefined;
-        let uid = localStorage.getItem('uuid');
-        let flag = false;
-        if (this.data.tournament_start)
-        {
-            flag = true;
-            const byParticipant = TournamentTreeManager.findByeParticipant(this.findLastRound(this.data.tournament_start!.rounds)!);
-        }
-        if (tournamentStarted && is_players && (flag && !(uid === byParticipant?.uuid))) {
+
+        if (tournamentStarted && is_players){
             const startButton = document.getElementById('start-button');
             if (startButton) {
                 startButton.style.display = 'none';
