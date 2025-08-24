@@ -28,7 +28,7 @@ export class TournamentStateManager {
                 this.data.status = TournamentStatus.ONGOING;
             }
             const uid = localStorage.getItem('uuid');
-            this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid );
+            this.updateRefreshUI(tournamentStarted, updatedData.participants!.some(p => p.uuid === uid ));
             await this.delay(500);
             this.completeRefresh(response.data!);
         })
