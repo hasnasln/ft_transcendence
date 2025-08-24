@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   game:
-    build: /root/project/frontend/ft_trancendence/game-server
+    build: ./game-server
     image: game-service:latest
     container_name: game-service
     network_mode: host

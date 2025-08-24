@@ -10,8 +10,8 @@ down:
 	docker compose -f docker-compose.monitoring.yml down
 
 build-frontend:
-	npm install --prefix frontend/ft_trancendence/Frontend
-	npm run build --prefix frontend/ft_trancendence/Frontend
+	npm install --prefix Frontend
+	npm run build --prefix Frontend
 
 proxy:
 	docker compose -f docker-compose.proxy.yml up -d

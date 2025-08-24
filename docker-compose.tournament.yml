@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   tournament:
-    build: /root/project/drafts/bkas/transcendence/tournament
+    build: ./backend/tournament
     image: tournament-service:latest
     container_name: tournament-service
     network_mode: host
@@ -10,4 +10,4 @@ services:
       - "9090:9090"
     restart: unless-stopped
     env_file:
-      - /root/project/drafts/bkas/transcendence/tournament/.env
+      - ./backend/tournament/.env
