@@ -287,11 +287,7 @@ export function showSetToast(message: string): Promise<void> {
 
 export async function startNextSet() {
 	const winnerName = gameInstance.gameInfo!.setState!.points.leftPlayer > gameInstance.gameInfo!.setState!.points.rightPlayer ? gameInstance.gameInfo?.setState?.usernames.left : gameInstance.gameInfo?.setState?.usernames.right;
-<<<<<<< HEAD
 	await showSetToast(winnerName || '');  // 3 saniye bekler
-=======
-	await showSetToast(gameInstance.gameInfo!, `Seti ${winnerName} kazandı !`);
->>>>>>> cb5b706 (sabah push u)
 }
 
 export function showEndMessage() {
