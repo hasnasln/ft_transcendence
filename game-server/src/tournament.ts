@@ -75,7 +75,7 @@ export function extractMatch(tournament: TournamentData, participantId: string):
     {
         const activeRound = tournament.tournament_start!.rounds.find(r => !r.is_completed);
         if (!activeRound) {
-            throw new Error(`No Active Round in the tournament ${tournament.name}`);
+            return new Error(`no_active_round`);
         }
 
         const roundNumber = activeRound.round_number;
@@ -86,18 +86,18 @@ export function extractMatch(tournament: TournamentData, participantId: string):
 
         if (!match) {
             if (activeRound.winners && activeRound.winners.find(p => p.uuid === participantId) !== undefined)
-                return new Error(`You qualified to the next round ! Wait for the next round.`);
+                return new Error(`qualified_next_round`);
             else
-                return new Error(`You have already played your match in this round : ${activeRound.round_number}. Wait for the next round.`);
+                return new Error(`already_played`);
         }
 
         switch (match.status) {
             case MatchStatus.ONGOING:
-                return new Error(`Match is ongoing. Match ID: ${match.participant1.uuid} vs ${match.participant2.uuid}`);
+                return new Error(`match_ongoing`);
             case MatchStatus.COMPLETED:
-                return new Error(`Match is already completed. Match ID: ${match.participant1.uuid} vs ${match.participant2.uuid}`);
+                return new Error(`match_already_completed`);
             case MatchStatus.CANCELLED:
-                return new Error(`Match is cancelled. Match ID: ${match.participant1.uuid} vs ${match.participant2.uuid}`);
+                return new Error(`match_cancelled`);
         }
 
         const match_id: string = generateMatchId(tournament.code, roundNumber, match.participant1, match.participant2);
@@ -122,8 +122,6 @@ export async function getTournament(tournamentCode: string): Promise<TournamentD
         throw new Error(`Failed to fetch tournament data: ${result.message}`);
     }
 
-
-    
     console.log("Tournament Data received:", JSON.stringify(result.data as TournamentData, null, 2));
 
     return result.data as TournamentData;

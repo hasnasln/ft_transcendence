@@ -236,7 +236,19 @@ export const en = {
       "tournament_winner_update_failed": "Failed to update tournament winner.",
       "could_not_join": "Could not join the match.",
       "could_not_rejoin": "Could not rejoin the match.",
-      "connection_duplicated": "Connection rejected, session active on another device."
+      "connection_duplicated": "Connection rejected, session active on another device.",
+      "not_found": "Tournament not found",
+      "tournament_completed": "Tournament completed",
+      "eliminated": "You have been eliminated from the tournament",
+      "not_registered": "You are not registered for the tournament",
+      "no_active_round": "No active round found in the tournament",
+      "qualified_next_round": "You advanced to the next round",
+      "already_played": "You have already played your match in this round, please wait for the next round",
+      "match_ongoing": "The match is already ongoing",
+      "match_already_completed": "Your match has already been completed",
+      "match_cancelled": "The match has been cancelled",
+      "TOURNAMENT_WINNER_COULD_NOT_BE_UPDATED": "The tournament winner could not be updated."
+
     },
     "loading": "Loading...",
     "go-tournament-page": "Return to Tournament Page",

@@ -37,7 +37,6 @@ export class CameraController {
             light.intensity = 0.5;
         });
 
-        // 2. Klavye dinleyicisi ekleyelim
         scene.onKeyboardObservable.add((kbInfo) => {
             if (kbInfo.type !== B.KeyboardEventTypes.KEYDOWN) return;
             const evt = kbInfo.event as KeyboardEvent;

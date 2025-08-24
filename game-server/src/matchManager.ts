@@ -131,20 +131,20 @@ export class MatchManager {
 		{
 			const tournament = await getTournament(tournamentCode!);
 			if (!tournament)
-				throw new Error(`Tournament with code ${tournamentCode} not found.`);
+				throw new Error(`not_found`);
 			else if (tournament.status === TournamentStatus.COMPLETED)
-				throw new Error(`Tournament with code ${tournament.name} is already completed.`);
+				throw new Error(`tournament_completed`);
 
 			if(tournament.lobby_members.find(m => m.uuid === player.uuid) === undefined)
-				throw new Error(`You are not registered in the tournament ${tournament.name}.`);
+				throw new Error(`not_registered`);
 			else if (tournament.participants.find(p => p.uuid === player.uuid) === undefined)
-				throw new Error(`You eliminated from the tournament ${tournament.name}.`);
+				throw new Error(`eliminated`);
 
 			const match = extractMatch(tournament, player.uuid);
 
 			if (match instanceof Error) {
 				emitError('tournamentError', match.message, player.socket.id);
-				player.socket.disconnect();
+				setTimeout(() => { player.socket.disconnect(); }, 1000);
 				return;
 			}
 
@@ -165,8 +165,8 @@ export class MatchManager {
 		}
 		catch (err: any) {
 			console.error("Tournament match error:", err);
-			emitError('tournamentError', "COULD_NOT_JOINED", player.socket.id);
-			player.socket.disconnect();
+			emitError('tournamentError', err.message, player.socket.id);
+			setTimeout(() => { player.socket.disconnect(); }, 1000);
 			return;
 		}
 	}

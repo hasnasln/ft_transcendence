@@ -2,7 +2,6 @@ import {BabylonJsWrapper} from "./3d";
 import {updateScoreBoard} from "./ui";
 import {gameInstance} from "../play";
 import {GameEventBus} from "./gameEventBus";
-import {GameInputHandler} from "./keyboard";
 
 export class GameLoop {
 	private static instance: GameLoop;

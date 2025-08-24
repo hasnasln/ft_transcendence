@@ -77,13 +77,11 @@ export class GameInputHandler {
     }
   }
 
-  /** returns 'should event be cancelled' */
   public keyDown(key: string): boolean {
     const m = this.mapKey(key);
     if (!m) return false;
 
     const { side, dir } = m;
-    // idempotent: zaten true ise gereksiz güncelleme yapmayız
     if (!this.keysDown[side][dir]) {
       this.keysDown[side][dir] = true;
       const next = this.recomputeDirection(side);
@@ -95,7 +93,6 @@ export class GameInputHandler {
     return true;
   }
 
-  /** returns 'should event be cancelled' */
   public keyUp(key: string): boolean {
     const m = this.mapKey(key);
     if (!m) return false;
@@ -131,9 +128,7 @@ export class GameInputHandler {
   }
 }
 
-// Global handler'lar
 function onKeyDown(event: KeyboardEvent) {
-  // auto-repeat spam’ini azalt (opsiyonel)
   if (event.repeat) return;
   if (GameInputHandler.getInstance().keyDown(event.key)) {
     event.preventDefault();
@@ -146,9 +141,8 @@ function onKeyUp(event: KeyboardEvent) {
   }
 }
 
-// Space auto-repeat spam’ini engelle
 function onSpaceKeyDown(event: KeyboardEvent) {
-  if (event.code !== "Space" || event.repeat) return; // <= önemli
+  if (event.code !== "Space" || event.repeat) return;
   const gameInfo = gameInstance.gameInfo;
   if (!gameInfo) return;
   if (gameInfo.mode !== "vsAI" && gameInfo.mode !== "localGame") return;

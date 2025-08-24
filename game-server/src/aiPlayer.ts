@@ -1,7 +1,4 @@
 import { Ball } from "./game";
-import {GameEnvironment} from "./gameEntity";
-
-//Bu fonksiyon, topun AI paddle'ının X konumuna vardığında hangi Y konumunda olacağını tahmin eder.
 
 export function predictBallY(ball: Ball, paddleX: number, topBound: number): number {
 	let x = ball.position.x;

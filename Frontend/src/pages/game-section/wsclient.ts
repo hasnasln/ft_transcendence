@@ -116,7 +116,7 @@ export class WebSocketClient {
                 rememberUpgrade: true,
                 reconnection: true,
                 reconnectionAttempts: 15,
-                reconnectionDelay: 200, // 200ms
+                reconnectionDelay: 200,
                 randomizationFactor: 0,
                 timeout: 20_000,
             });
@@ -190,12 +190,5 @@ export class WebSocketClient {
                 Router.getInstance().go('/tournament')
             }, 5000);
         });
-
-        this.socket.on('goToNextRound', () => {
-            console.log('Bir üst tura yükseldiniz:');
-            gameInstance.uiManager.onTurnToTournamentButton();
-        });
-
-
     }
 } 

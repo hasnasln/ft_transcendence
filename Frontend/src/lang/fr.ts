@@ -236,7 +236,19 @@ export const fr = {
       "tournament_winner_update_failed": "Échec de la mise à jour du vainqueur du tournoi.",
       "could_not_join": "Impossible de rejoindre le match.",
       "could_not_rejoin": "Impossible de rejoindre à nouveau le match.",
-      "connection_duplicated": "Connexion refusée, session active sur un autre appareil."
+      "connection_duplicated": "Connexion refusée, session active sur un autre appareil.",
+      "not_found": "Tournoi introuvable",
+      "tournament_completed": "Tournoi terminé",
+      "eliminated": "Vous avez été éliminé du tournoi",
+      "not_registered": "Vous n'êtes pas inscrit au tournoi",
+      "no_active_round": "Aucun tour actif",
+      "qualified_next_round": "Vous êtes qualifié pour le tour suivant",
+      "already_played": "Vous avez déjà joué votre match dans ce tour, veuillez attendre le prochain",
+      "match_ongoing": "Le match est déjà en cours",
+      "match_already_completed": "Votre match est déjà terminé",
+      "match_cancelled": "Le match a été annulé",
+      "TOURNAMENT_WINNER_COULD_NOT_BE_UPDATED": "Le vainqueur du tournoi n’a pas pu être mis à jour."
+
     },
     "loading": "Chargement…",
     "go-tournament-page": "Retour à la page du tournoi",
