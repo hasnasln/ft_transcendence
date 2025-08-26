@@ -2,5 +2,7 @@
 **/.parcel-cache/
 **/dist/
 .idea/
+auth/**/*
+auth/database/data.sqlite-shm
 auth/database/*
 Frontend/src/**/*.js
