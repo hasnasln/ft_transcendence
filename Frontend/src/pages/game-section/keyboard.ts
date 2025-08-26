@@ -148,7 +148,6 @@ function onSpaceKeyDown(event: KeyboardEvent) {
 
   event.preventDefault();
   gameInfo.state!.isPaused = !gameInfo.state!.isPaused;
-  console.log("Game paused status: ", gameInfo.state!.isPaused);
   if (gameInfo.state!.isPaused) {
     GameEventBus.getInstance().emit({ type: "GAME_PAUSED", payload: gameInfo });
   } else {

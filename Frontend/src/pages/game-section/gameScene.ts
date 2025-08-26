@@ -30,11 +30,24 @@ export class GameScene {
     }
 }
 
+export function destroyTrailFor(duration: number = 100): void {
+    const tr = gameInstance.uiManager.ball!.trail;
+    tr.stop();
+    tr.setEnabled(false);
+
+    gameInstance.runAfter(() => {
+        tr.reset();
+        tr.setEnabled(true);
+        tr.start();
+    },duration);
+}
+
 export function createScene(): { canvas: HTMLCanvasElement; engine: Engine; scene: Scene } {
     const canvas = document.getElementById("game-canvas") as HTMLCanvasElement;
     const engine = new (BabylonJsWrapper.getInstance().Engine)(canvas, true);
     const scene = new (BabylonJsWrapper.getInstance().Scene)(engine);
     scene.clearColor = new (BabylonJsWrapper.getInstance().Color4)(0, 0, 0, 0);
+    scene.skipPointerMovePicking = true;
 
     return {canvas, engine, scene};
 }
@@ -47,11 +60,11 @@ export function createGround(scene: Scene, gameInfo: GameInfo): {
     const groundSize = {
         width,
         height: width * (152.5 / 274),
-        sideOrientation: BabylonJsWrapper.getInstance().Mesh.DOUBLESIDE,
+        sideOrientation: undefined as any,
     };
     const ground = BabylonJsWrapper.getInstance().MeshBuilder.MeshBuilder.CreatePlane("ground", groundSize, scene);
     ground.material = createMaterial("groundMaterial", scene, GameScene.getInstance().GROUND_COLOR);
-    const edgeWidth = GameScene.getInstance().EDGE_WIDTH * window.devicePixelRatio;
+    const edgeWidth = GameScene.getInstance().EDGE_WIDTH;
     applyEdgeRendering(ground, edgeWidth, GameScene.getInstance().EDGE_COLOR_LIGHT);
     return {ground, groundSize};
 }
@@ -85,25 +98,37 @@ export function createPaddles(scene: Scene, gameInfo: GameInfo): { paddle1: Mesh
 }
 
 export function createWalls(scene: Scene, gameInfo: GameInfo): { bottomWall: Mesh; topWall: Mesh } {
-    const height = 1.5 * gameInfo.constants?.paddleWidth!;
-    const size = {width: gameInstance.uiManager.groundSize!.width, height, depth: 1};
+    const height = 1.5 * gameInfo.constants!.paddleWidth!;
+    const size = { width: gameInstance.uiManager.groundSize!.width, height, depth: 1 };
+
     const material = createMaterial("wall", scene, GameScene.getInstance().WALL_COLOR);
+
     const bottomWall = createWall("bottomWall", size, scene, {
         y: -gameInstance.uiManager.groundSize!.height / 2 - height / 2,
         material
     });
+
     const topWall = createWall("topWall", size, scene, {
         y: gameInstance.uiManager.groundSize!.height / 2 + height / 2,
-        material: material.clone("topWall")
+        material
     });
-    [bottomWall, topWall].forEach(w => applyEdgeRendering(w));
-    return {bottomWall, topWall};
+
+    const walls = BabylonJsWrapper.getInstance().Mesh.MergeMeshes([bottomWall, topWall], true, true, undefined, false, true);
+    if (walls) {
+        applyEdgeRendering(walls);
+        walls.isPickable = false;
+        walls.freezeWorldMatrix();
+    }
+    material.freeze();
+
+    return { bottomWall, topWall };
 }
 
 export function createMaterial(name: string, scene: Scene, color: Color3): StandardMaterial {
     const B = BabylonJsWrapper.getInstance();
     const mat = new B.StandardMaterial(name, scene);
     mat.diffuseColor = color;
+    mat.backFaceCulling = true;
     return mat;
 }
 
@@ -115,7 +140,7 @@ export function createPaddleMaterial(name: string, scene: Scene, d: Color3, e: C
 
 export function applyEdgeRendering(mesh: Mesh, width?: number, color?: Color4): void {
     mesh.enableEdgesRendering();
-    mesh.edgesWidth = width ?? GameScene.getInstance().EDGE_WIDTH * window.devicePixelRatio;
+    mesh.edgesWidth = width ?? GameScene.getInstance().EDGE_WIDTH;
     mesh.edgesColor = color ?? GameScene.getInstance().EDGE_COLOR;
 }
 

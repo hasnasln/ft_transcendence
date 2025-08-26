@@ -6,6 +6,7 @@ import { updateScoreBoard, showEndMessage, startNextSet } from "./ui";
 import { WebSocketClient } from "./wsclient";
 import { Router } from "../../router";
 import {BabylonJsWrapper} from "./3d";
+import {destroyTrailFor} from "./gameScene";
 
 export const gameEventTypes = [
     'SET_COMPLETED',
@@ -162,6 +163,7 @@ export function listenGameBusEvents() {
 		gameInstance.uiManager.resumeButton?.classList.remove("hidden");
 		gameInstance.uiManager.newMatchButton?.classList.remove("hidden");
 		gameInstance.uiManager.turnToHomePage?.classList.remove("hidden");
+		GameLoop.getInstance().lastUpdateTime = undefined;
 	});
 
 	GameEventBus.getInstance().on('WAITING_FOR_RIVAL', () => {
@@ -275,15 +277,7 @@ export function listenGameBusEvents() {
 	});
 
 	GameEventBus.getInstance().on('BALL_POSITION_RESET', event => {
-		const tr = gameInstance.uiManager.ball!.trail;
-		tr.stop();
-		tr.setEnabled(false);
-
-		setTimeout(() => {
-			tr.reset();
-			tr.setEnabled(true);
-			tr.start();
-		},100);
+		destroyTrailFor(100);
 	});
 
 	GameEventBus.getInstance().on('BALL_PADDLE_HIT', event => {

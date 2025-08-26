@@ -207,6 +207,7 @@ export class GameUI {
 		gameInstance.gameStatus.currentGameStarted = true;
 		const glow = new (BabylonJsWrapper.getInstance().GlowLayer)("glow", this.scene);
 		glow.intensity = 0.7;
+		this.engine.setHardwareScalingLevel(1/(window.devicePixelRatio*2));
 	}
 
 	public isSceneReady(): boolean {
