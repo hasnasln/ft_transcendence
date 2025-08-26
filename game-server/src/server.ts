@@ -5,7 +5,6 @@ import { GameOrchestrator } from "./orchestrator";
 ConnectionHandler.getInstance().init();
 GameOrchestrator.getInstance().start(60);
 
-//todo clean up old timestamps gracefully
 setInterval(() => {
 	const now = Date.now();
 	for (const [username, disconnectEvent] of MatchManager.getInstance().disconnectTimestamps) {

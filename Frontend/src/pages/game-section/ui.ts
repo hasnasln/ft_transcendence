@@ -126,19 +126,20 @@ export class GameUI {
 	}
 
 	public onInfoShown(key: string, placeholders?: {key:string, value:string} [] ): void {
-		this.info!.classList.remove("hidden");
-		this.info!.setAttribute('data-translate-key', key)
+		if (!this.info) return;
+		this.info.classList.remove("hidden");
+		this.info.setAttribute('data-translate-key', key)
 		if (placeholders){
 			placeholders.forEach((placeholder) => {
-				this.info!.setAttribute(`data-translate-placeholder-value-${placeholder.key}`, placeholder.value);
+				this.info?.setAttribute(`data-translate-placeholder-value-${placeholder.key}`, placeholder.value);
 			});
-			this.info!.classList.remove("hidden");
+			this.info?.classList.remove("hidden");
 		}
 		exmp.applyLanguage2();
 	}
 
 	public onInfoHidden(): void {
-		this.info!.classList.add("hidden");
+		this.info?.classList.add("hidden");
 	}
 
 	public hide(element: HTMLElement | null | undefined): void {

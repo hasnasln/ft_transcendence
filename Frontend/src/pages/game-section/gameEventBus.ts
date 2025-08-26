@@ -244,8 +244,9 @@ export function listenGameBusEvents() {
 		else {
 			gameInstance.finalize();
 			Router.getInstance().invalidatePage("/game");
-			Router.getInstance().invalidatePage("/play");
-			Router.getInstance().go('/play');
+			const targetPath = gameInstance.tournamentMode ? '/tournament' : '/play';
+			Router.getInstance().invalidatePage(targetPath);
+			Router.getInstance().go(targetPath);
 		}
 		if (event.payload.reason === 'io server disconnect') {
 			gameInstance.uiManager.onInfoShown("game.InfoMessage.connection_rejected_duplicate_session");

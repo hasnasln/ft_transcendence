@@ -176,18 +176,16 @@ export class WebSocketClient {
         this.socket.on('gameServerError', (errorMessage: string) => {
             console.error('gameServerError', errorMessage);
             gameInstance.uiManager.onInfoShown(`game.Errors.${errorMessage}`);
-            setTimeout(() => {
+            gameInstance.runAfter(() => {
                 gameInstance.uiManager.onInfoHidden();
-                Router.getInstance().go('/play')
             }, 5000);
         });
 
         this.socket.on('tournamentError', (errorMessage: string) => {
             console.error('Tournament error:', errorMessage);
             gameInstance.uiManager.onInfoShown(`game.Errors.${errorMessage}`);
-            setTimeout(() => {
+            gameInstance.runAfter(() => {
                 gameInstance.uiManager.onInfoHidden();
-                Router.getInstance().go('/tournament')
             }, 5000);
         });
     }
