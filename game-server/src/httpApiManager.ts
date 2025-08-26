@@ -13,7 +13,7 @@ export class HTTPMethod extends String {
 }
 
 export function tournamentApiCall(endpoint: string, method: string, headers?: HeadersInit, body?: BodyInit, token?: string): Promise<ApiResult | Error> {
-	const url = process.env.TOURNAMENT_SERVICE_URL ?? 'https://unsafetournament.transendence.com';
+	const url = process.env.TOURNAMENT_SERVICE_URL ?? 'http://unsafetournament.transendence.com';
 	headers = headers || {};
 	return apiCall(`${url}/api/${endpoint}`, method, {
 		...headers,
