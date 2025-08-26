@@ -1,12 +1,12 @@
-import {BabylonJsWrapper} from "./3d";
 import {updateScoreBoard} from "./ui";
 import {gameInstance} from "../play";
 import {GameEventBus} from "./gameEventBus";
+import {destroyTrailFor} from "./gameScene";
 
 export class GameLoop {
 	private static instance: GameLoop;
 	private gameLoopRunning: boolean = false;
-	private lastUpdateTime: number = 0;
+	public lastUpdateTime: number | undefined = 0;
 
 	private constructor() { }
 
@@ -18,37 +18,44 @@ export class GameLoop {
 	}
 
 	private updateEnvironment(): void {
-		const Vector3 = BabylonJsWrapper.getInstance().Vector3;
-		const dt = ((Date.now() - this.lastUpdateTime) * 60) / 1000;
+		const gi = gameInstance.gameInfo!;
+		const ui = gameInstance.uiManager;
+		const dt = this.lastUpdateTime ? ( ((Date.now() - this.lastUpdateTime) * 60) / 1000) : 0;
 
 		{
-			if (!gameInstance.gameInfo!.ballPosition) {
-				return
+			if (!gi.ballPosition) {
+				return;
 			}
 
-			const curX = gameInstance.gameInfo!.ballPosition.x;
-			const curY = gameInstance.gameInfo!.ballPosition.y;
+			const curX = gi.ballPosition.x;
+			const curY = gi.ballPosition.y;
 
-			let x = curX + gameInstance.gameInfo!.ballVelocity.x * dt;
-			let y = curY + gameInstance.gameInfo!.ballVelocity.y * dt;
-			const allowedHorizontalRange = gameInstance.gameInfo!.constants!.groundWidth / 2 - gameInstance.gameInfo!.constants!.ballRadius;
-			if (x < -allowedHorizontalRange || x > allowedHorizontalRange) {
+			let x = curX + gi.ballVelocity.x * dt;
+			let y = curY + gi.ballVelocity.y * dt;
+
+			const r = gi.constants!.ballRadius;
+			const halfW = gi.constants!.groundWidth / 2 - r;
+			if (x < -halfW || x > halfW) {
 				x = curX;
 			}
 
-			const allowedVerticalRange = gameInstance.gameInfo!.constants!.groundHeight / 2 - gameInstance.gameInfo!.constants!.ballRadius;
-			if (y < -allowedVerticalRange || y > allowedVerticalRange) {
+			const halfH = gi.constants!.groundHeight / 2 - r;
+			if (y < -halfH || y > halfH) {
 				y = curY;
 			}
 
-			gameInstance.gameInfo!.ballPosition.x = x;
-			gameInstance.gameInfo!.ballPosition.y = y;
+			if (Math.hypot(gi.ballPosition.x - x, gi.ballPosition.y - y) >= 5) {
+				destroyTrailFor(100);
+			}
 
-			gameInstance.uiManager.ball!.ball.position = new Vector3(x, y, -gameInstance.gameInfo!.constants?.ballRadius!);
+			gi.ballPosition.x = x;
+			gi.ballPosition.y = y;
+
+			ui.ball!.ball.position.set(x, y, -r);
 		}
 
-		gameInstance.uiManager.paddle1.position.y = gameInstance.gameInfo!.paddle?.p1y!;
-		gameInstance.uiManager.paddle2.position.y = gameInstance.gameInfo!.paddle?.p2y!;
+		ui.paddle1.position.y = gi.paddle!.p1y!;
+		ui.paddle2.position.y = gi.paddle!.p2y!;
 
 		this.lastUpdateTime = Date.now();
 	}
