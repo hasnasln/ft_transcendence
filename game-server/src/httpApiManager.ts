@@ -13,7 +13,7 @@ export class HTTPMethod extends String {
 }
 
 export function tournamentApiCall(endpoint: string, method: string, headers?: HeadersInit, body?: BodyInit, token?: string): Promise<ApiResult | Error> {
-	const url = process.env.TOURNAMENT_SERVICE_URL ?? 'https://tournament.transendence.com';
+	const url = process.env.TOURNAMENT_SERVICE_URL ?? 'https://unsafetournament.transendence.com';
 	headers = headers || {};
 	return apiCall(`${url}/api/${endpoint}`, method, {
 		...headers,
@@ -33,8 +33,6 @@ export async function apiCall(url: string, method: string, headers: HeadersInit,
 	if (body) {
 		options.body = body;
 	}
-	
-	
 
 	const response = await fetch(url, options);
 	const contentType = response.headers.get('Content-Type') || '';
