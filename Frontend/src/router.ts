@@ -185,7 +185,7 @@ export class Router {
 			return;
 		}
 
-		const legacyPagePath = this.pages.entries().find(([_, page]) => page === legacyPage)?.[0];
+		const legacyPagePath = Array.from(this.pages.entries()).find(([_, page]) => page === legacyPage)?.[0];
 
 		if (legacyPagePath) {
 			if (contentContainer) {
