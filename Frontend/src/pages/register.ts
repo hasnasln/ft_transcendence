@@ -169,12 +169,14 @@ export class RegisterPage implements Page {
         };
 
         const onPointerDown = (e: MouseEvent | TouchEvent) => {
-            if (verified) return;
             dragging = true;
-            startLeft = parseFloat(handle.style.left || '0');
-            startX = (e instanceof TouchEvent) ? e.touches[0].clientX : (e as MouseEvent).clientX;
+
+            const isTouch = 'touches' in e; 
+            startX = isTouch ? e.touches[0].clientX : (e as MouseEvent).clientX;
+
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onPointerUp);
+
             document.addEventListener('touchmove', onTouchMove, { passive: false });
             document.addEventListener('touchend', onPointerUp);
         };
