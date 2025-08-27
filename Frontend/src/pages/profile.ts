@@ -127,7 +127,7 @@ export class Profile implements Page {
 				this.handleX(action);
 				break;
 			case 'password':
-				this.hendle_password(action);
+				this.handlePassword(action);
 				break;
 			case 'close':
 				this.close();
@@ -137,7 +137,7 @@ export class Profile implements Page {
 		}
 	}
 
-	private async hendle_password(action: string): Promise<void> {
+	private async handlePassword(action: string): Promise<void> {
 		const old_pass = document.querySelector('#' + action + '_eski') as HTMLInputElement;
 		const new_pass = document.querySelector('#' + action) as HTMLInputElement;
 		
