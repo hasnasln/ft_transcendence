@@ -92,6 +92,7 @@ services:
   filebeat:
     image: docker.elastic.co/beats/filebeat:8.9.0
     container_name: filebeat
+    user: "root"
     volumes:
       - './logging/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml'
       - './logging/fakelogs:/var/log/'
