@@ -46,8 +46,7 @@ export class TournamentActionHandler {
             if (localStorage.getItem('tdata') === null) {
                 const joinResponse = await _apiManager.joinTournament(tournamentId);
                 if (joinResponse.success === false) {
-                    const messageKey = joinResponse.message as TournamentResponseMessages;
-                    ModernOverlay.show(`tournament-messages.${messageKey}`, 'error');
+                    ModernOverlay.show(`tournament-messages.${joinResponse.messageKey}`, 'error');
                     
                     return {
                         success: false
