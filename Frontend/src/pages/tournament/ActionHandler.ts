@@ -54,8 +54,7 @@ export class TournamentActionHandler {
                 }
                 const tournamentResponse = await _apiManager.getTournament(tournamentId);
                 if (tournamentResponse.success === false) {
-                    const messageKey = tournamentResponse.message as TournamentResponseMessages;
-                    ModernOverlay.show(`tournament-messages.${messageKey}`, 'error');
+                    ModernOverlay.show(`tournament-messages.${tournamentResponse.messageKey}`, 'error');
                     
                     return {
                         success: false
