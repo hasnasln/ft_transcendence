@@ -75,6 +75,7 @@ services:
       - ELASTICSEARCH_PASSWORD=${KIBANA_PWD}
       - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=asdasdasdsadasdasdasdasdasdasdas
       - XPACK_SECURITY_ENCRYPTIONKEY=asdasdasdsadasdasdasdasdasaaaaaa
+      - SERVER_PUBLIC_BASE_URL=https://kibana.transendence.com:5601
     ports:
       - "5601:5601"
     depends_on:
@@ -94,6 +95,8 @@ services:
     volumes:
       - './logging/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml'
       - './logging/fakelogs:/var/log/'
+      - '/var/lib/docker/containers:/var/lib/docker/containers:ro'
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
     depends_on:
       kibana_settings:
         condition: service_completed_successfully
