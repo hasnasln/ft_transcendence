@@ -21,8 +21,7 @@ export class TournamentActionHandler {
         try {
             const response = await _apiManager.createTournament(tournamentName);
             if (response.success === false) {
-                const messageKey = response.message as TournamentResponseMessages;
-                ModernOverlay.show(`tournament-messages.${messageKey}`, 'error');
+                ModernOverlay.show(`tournament-messages.${response.messageKey}`, 'error');
                 
                 return {
                     success: false
@@ -92,8 +91,7 @@ export class TournamentActionHandler {
                     success: true
                 };
             } else {
-                const messageKey = response.message as TournamentResponseMessages;
-                ModernOverlay.show(`tournament-messages.${messageKey}`, 'error');
+                ModernOverlay.show(`tournament-messages.${response.messageKey}`, 'error');
                 
                 return {
                     success: false
@@ -141,8 +139,7 @@ export class TournamentActionHandler {
             }
 
             if (!response.success) {
-                const messageKey = response.messageKey as TournamentResponseMessages;
-                ModernOverlay.show(`tournament-messages.${messageKey}`, 'error');
+                ModernOverlay.show(`tournament-messages.${response.messageKey}`, 'error');
 
                 return {
                     success: false
