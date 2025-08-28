@@ -124,7 +124,7 @@ export class LanguageManager
 			const k = keys[i];
 
 			if (currentData[k] === undefined) {
-				return key;
+				return this.getLang('global-error');
 			}
 
 			currentData = currentData[k];
@@ -133,7 +133,7 @@ export class LanguageManager
 				return currentData;
 			}
 		}
-		return key;
+		return this.getLang('global-error');
 	}
 }
 
